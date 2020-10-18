@@ -60,6 +60,7 @@ class Actor {
 
         this.rageGained = 0 // remove?
         this.rageSpent = 0
+        this.flurryUptime = 0
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -118,6 +119,7 @@ class Actor {
         this.hasteMod = 0
         this.rageGained = 0 // remove?
         this.rageSpent = 0
+        this.flurryUptime = 0
     }
 
 }
@@ -178,6 +180,7 @@ function main() {
     let dtps = [];
     let rageGained = [];
     let rageSpent = [];
+    let flurryUptime = [];
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
     for (let _i in range(_simDuration/0.4+1)) snapshots.push([]);
@@ -241,6 +244,7 @@ function main() {
         tps.push(threat/_simDuration)
         dps.push(damage/_simDuration)
         rageGained.push(Tank.rageGained/_simDuration)
+        flurryUptime.push(Tank.flurryUptime/(_simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
         Tank.rageGained = 0
         rageSpent.push(Tank.rageSpent/_simDuration)
         Tank.rageSpent = 0
@@ -248,6 +252,7 @@ function main() {
     }
     let end = Date.now()
 
+    // Some console logging...
     let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms in ${(end-start)/1000} seconds.`;
     console.log(ret);
     console.log(`TPS: ${average(tps)}`);
@@ -258,20 +263,27 @@ function main() {
     console.log(`gainRPS: ${average(rageGained)}`);
     console.log(`spentRPS: ${average(rageSpent)}`);
 
+    // Make the result table
+    let testVec = [];
+    for (let ability in results) {
+        testVec.push(`<td>${ability}:</td><td>${Math.round(average(results[`${ability}`])*100)/100}</td>`);
+    }
+
     let el_div = document.querySelector("#outputContainer");
     el_div.innerHTML = `
     <table>
-        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td></tr>
-        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
-        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
-        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td></tr>
-        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
+        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${testVec[0]}</tr>
+        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${testVec[1]}</tr>
+        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${testVec[2]}</tr>
+        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td>${testVec[3]}</tr>
+        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td>${testVec[4]}</tr>
+        <tr><td>Flurry uptime: </td><td>${Math.round(average(flurryUptime)*100)/100}%</td>${testVec[5]}</tr>
     </table>`;
 
     var x = linspace(0, _simDuration, _simDuration/0.4+1);
 
 
-
+    // Make the graph
     var y_avg = [];
     var y_95 = [];
     var y_05 = [];

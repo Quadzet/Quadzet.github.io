@@ -22,6 +22,7 @@ class Aura {
     handleGameTick(ms, owner, events) {
         if (this.duration <= 0) return;
         this.duration = this.duration - _timeStep;
+        if (this.name == "Flurry") owner.flurryUptime += _timeStep;
         if (this.duration <= 0) {
             events.push({
             "type": "buff lost",
