@@ -286,11 +286,13 @@ function main() {
 
     // Make the graph
     var y_avg = [];
+    var y_99 = [];
     var y_95 = [];
     var y_05 = [];
     var y_01 = [];
     snapshots.forEach(snapshot => {
         y_avg.push(Math.round(average(snapshot)));
+        y_99.push(Math.round(quantile(snapshot, 0.99)));
         y_95.push(Math.round(quantile(snapshot, 0.95)));
         y_05.push(Math.round(quantile(snapshot, 0.05)));
         y_01.push(Math.round(quantile(snapshot, 0.01)));
@@ -309,6 +311,21 @@ function main() {
             size: 4,
         }
     }
+
+    var trace99 = {
+        x: x,
+        y: y_99,
+        mode: 'lines+markers',
+        name: "99th percentile",
+        line: {
+            color: '#569C81',
+            shape: `${lineShape}`,
+        },
+        marker: {
+            size: 4,
+        }
+    }
+
     var trace95 = {
         x: x,
         y: y_95,
@@ -356,7 +373,7 @@ function main() {
 // light gray c8ced1
 
 
-    var plotData = [ trace95, traceAvg, trace05, trace01 ];
+    var plotData = [ trace99, trace95, traceAvg, trace05, trace01 ];
     var layout = {
         title: 'Threat Distribution',
         width: 1440,
