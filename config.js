@@ -2,8 +2,8 @@
 
 // GLOBALS 
 let _landedHits = ["hit", "crit", "block", 'crit block'];
-let _simDuration = 15; // Fight duration in seconds
-let _iterations = 1000; // Number of fights simulated
+let _simDuration = 12; // Fight duration in seconds
+let _iterations = 10000; // Number of fights simulated
 let _timeStep = 25; // Timestep used for each fight
 
 

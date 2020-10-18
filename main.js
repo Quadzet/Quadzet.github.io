@@ -164,7 +164,7 @@ function main() {
     let rageSpent = [];
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
-    for (let i in range(_simDuration*2+1)) snapshots.push([]);
+    for (let i in range(_simDuration/0.4+1)) snapshots.push([]);
     for (let i in range(_iterations)) {
         
         let snapshot = 0;
@@ -193,7 +193,7 @@ function main() {
             
             events = events.concat(iterationEvents);
 
-            if (ms == snapshot*500) {
+            if (ms == snapshot*400) {
                 let snapshotThreat = 0;
                 events.forEach(event => {
                     if (event.threat) snapshotThreat += event.threat;
@@ -250,7 +250,7 @@ function main() {
         <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
     </table>`;
 
-    var x = linspace(0, _simDuration, _simDuration*2+1);
+    var x = linspace(0, _simDuration, _simDuration/0.4+1);
 
 
 
@@ -259,41 +259,99 @@ function main() {
     var y_05 = [];
     var y_01 = [];
     snapshots.forEach(snapshot => {
-        y_avg.push(average(snapshot));
-        y_95.push(quantile(snapshot, 0.95));
-        y_05.push(quantile(snapshot, 0.05));
-        y_01.push(quantile(snapshot, 0.01));
+        y_avg.push(Math.round(average(snapshot)));
+        y_95.push(Math.round(quantile(snapshot, 0.95)));
+        y_05.push(Math.round(quantile(snapshot, 0.05)));
+        y_01.push(Math.round(quantile(snapshot, 0.01)));
     });
 
     var traceAvg = {
         x: x,
         y: y_avg,
-        type: 'lines+markers',
-        name: "Average Threat"
+        mode: 'lines+markers',
+        name: "Average Threat",
+        line: {
+            color: '#939C56',
+            shape: 'spline',
+        },
+        marker: {
+            size: 4,
+        }
     }
     var trace95 = {
         x: x,
         y: y_95,
-        type: 'lines+markers',
-        name: "95th percentile"
+        mode: 'lines+markers',
+        name: "95th percentile",
+        line: {
+            color: '#569B65',
+            shape: 'spline',
+        },
+        marker: {
+            size: 4,
+        }
     }
 
     var trace05 = {
         x: x,
         y: y_05,
-        type: 'lines+markers',
-        name: "5th percentile"
+        mode: 'lines+markers',
+        name: "5th percentile",
+        line: {
+            color: '#966C44',
+            shape: 'spline',
+        },
+        marker: {
+            size: 4,
+        }
     }
     var trace01 = {
         x: x,
         y: y_01,
-        type: 'lines+markers',
-        name: "1st percentile"
+        mode: 'lines+markers',
+        name: "1st percentile",
+        line: {
+            color: '#964343',
+            shape: 'spline',
+        },
+        marker: {
+            size: 4,
+        }
     }
+
+// BG grey 222629
+// dark grey 474b4f
+// medium grey 6b6e70
+// light gray c8ced1
+
 
     var plotData = [ trace95, traceAvg, trace05, trace01 ];
     var layout = {
-        title: 'Threat Distribution'
+        title: 'Threat Distribution',
+        width: 1440,
+        height: 810,
+
+        plot_bgcolor: "#222629",
+        paper_bgcolor: "#222629",
+        
+        titlefont: {color: "#c8ced1"}, 
+        xaxis:{
+            title:"Time (s)", 
+            titlefont: {color: "#c8ced1"},
+            tickfont: {color: "#c8ced1"}, 
+            rangemode: "tozero",
+            gridcolor: "#474b4f",
+            linecolor: "#c8ced1",
+        },
+        yaxis:{
+            title:"Threat",
+            titlefont: {color: "#c8ced1"},
+            tickcolor: "#c8ced1",
+            tickfont: {color: "#c8ced1"},
+            rangemode: "tozero",
+            gridcolor: "#474b4f",
+            linecolor: "#c8ced1"},
+        legend: {font: {color: "#c8ced1"}},
     }
     Plotly.newPlot('plotContainer', plotData, layout);
 
