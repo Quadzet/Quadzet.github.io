@@ -104,6 +104,22 @@ class Actor {
                 ability.currentCooldown = getParryHastedSwing(ability.currentCooldown, ability.baseCooldown);
         });
     }
+
+    reset() {
+        this.abilities.forEach(ability => { ability.currentCooldown = 0; });
+        this.auras.forEach(aura => {
+            aura.stacks = 0;
+            aura.duration = 0;
+        })
+        this.GCD = 0
+        this.rage = 45 // TODO: start-rage
+        this.isHeroicStrikeQueued = false
+        this.damageMod = 0.9 // Defensive Stance, functions the same for boss and tank
+        this.hasteMod = 0
+        this.rageGained = 0 // remove?
+        this.rageSpent = 0
+    }
+
 }
 
 function performAction(events, ms, attacker, defender) {
@@ -147,7 +163,7 @@ function main() {
 
     let Tank = new Actor("Tank", "Boss", playerAbilities, config["tankStats"], TankAuras)
     let Boss = new Actor("Boss", "Tank", bossAbilities, config["bossStats"], BossAuras)
-
+    
     let start = Date.now()
     let results = {
         "MH Swing": Array.apply(null, Array(_iterations)).map((x, i) => 0),
@@ -164,8 +180,12 @@ function main() {
     let rageSpent = [];
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
-    for (let i in range(_simDuration/0.4+1)) snapshots.push([]);
+    for (let _i in range(_simDuration/0.4+1)) snapshots.push([]);
     for (let i in range(_iterations)) {
+
+        // Reset buffs, GCD, cooldowns...
+        Tank.reset();
+        Boss.reset();
         
         let snapshot = 0;
         let events = [];
@@ -212,8 +232,6 @@ function main() {
                     if (event.threat) threat += event.threat;
                     if (event.damage) damage += event.damage;
                     for (let ability in results) {
-                        if (ability == "Sunder Armor") {
-                        }
                         results[`${ability}`][i] += getAmount(event, ability, "threat")/_simDuration;
                     }
                 }
@@ -272,7 +290,7 @@ function main() {
         name: "Average Threat",
         line: {
             color: '#939C56',
-            shape: 'spline',
+            shape: 'hv',
         },
         marker: {
             size: 4,
@@ -285,7 +303,7 @@ function main() {
         name: "95th percentile",
         line: {
             color: '#569B65',
-            shape: 'spline',
+            shape: 'hv',
         },
         marker: {
             size: 4,
@@ -299,7 +317,7 @@ function main() {
         name: "5th percentile",
         line: {
             color: '#966C44',
-            shape: 'spline',
+            shape: 'hv',
         },
         marker: {
             size: 4,
@@ -312,7 +330,7 @@ function main() {
         name: "1st percentile",
         line: {
             color: '#964343',
-            shape: 'spline',
+            shape: 'hv',
         },
         marker: {
             size: 4,
@@ -342,6 +360,10 @@ function main() {
             rangemode: "tozero",
             gridcolor: "#474b4f",
             linecolor: "#c8ced1",
+            autotick: false,
+            ticks: 'outside',
+            tick0: 0,
+            dtick: 1.5,
         },
         yaxis:{
             title:"Threat",
