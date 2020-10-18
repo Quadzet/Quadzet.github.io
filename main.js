@@ -282,6 +282,7 @@ function main() {
 
     var x = linspace(0, _simDuration, _simDuration/0.4+1);
 
+    let lineShape = document.querySelector("#lineSelect").options[document.querySelector("#lineSelect").selectedIndex].value
 
     // Make the graph
     var y_avg = [];
@@ -302,7 +303,7 @@ function main() {
         name: "Average Threat",
         line: {
             color: '#939C56',
-            shape: 'hv',
+            shape: `${lineShape}`,
         },
         marker: {
             size: 4,
@@ -315,7 +316,7 @@ function main() {
         name: "95th percentile",
         line: {
             color: '#569B65',
-            shape: 'hv',
+            shape: `${lineShape}`,
         },
         marker: {
             size: 4,
@@ -329,7 +330,7 @@ function main() {
         name: "5th percentile",
         line: {
             color: '#966C44',
-            shape: 'hv',
+            shape: `${lineShape}`,
         },
         marker: {
             size: 4,
@@ -342,7 +343,7 @@ function main() {
         name: "1st percentile",
         line: {
             color: '#964343',
-            shape: 'hv',
+            shape: `${lineShape}`,
         },
         marker: {
             size: 4,
