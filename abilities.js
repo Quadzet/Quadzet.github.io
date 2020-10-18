@@ -46,11 +46,7 @@ class Ability {
 }
 
 class MHSwing extends Ability {
-    //constructor(name, baseCooldown, rageCost, onGCD, staticThreat = 0, threatScaling = 1) {
-    //    super(name, baseCooldown, rageCost, onGCD, staticThreat, threatScaling)
-    //}
     use(attacker, defender) {
-        //console.log(damageEvent);
         let damageEvent = {};
         // Heroic Strike
         if (attacker.isHeroicStrikeQueued && attacker.rage > 15) {

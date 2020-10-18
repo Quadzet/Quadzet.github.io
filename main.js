@@ -8,6 +8,35 @@ function average(array) {
 const range = (length) =>
   Array.from({ length }, (_, i) => i)
 
+function linspace(start, end, length = Math.max(Math.round(end-start) + 1, 1)) {
+    if(length < 2) { return length === 1 ? [start] : [] ; }
+    var i, ret = Array(length);
+    length--;
+    for(i = length; i >= 0; i--) { ret[i] = (i*end+(length-i)*start)/length; }
+    return ret;
+}
+
+const asc = arr => arr.sort((a, b) => a - b);
+
+// sample standard deviation
+const std = (arr) => {
+    const mu = mean(arr);
+    const diffArr = arr.map(a => (a - mu) ** 2);
+    return Math.sqrt(sum(diffArr) / (arr.length - 1));
+};
+
+const quantile = (arr, q) => {
+    const sorted = asc(arr);
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (sorted[base + 1] !== undefined) {
+        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    } else {
+        return sorted[base];
+    }
+};
+
 function getAmount(event, ability, type) {
     if (event[`${type}`] && event.ability == ability) return event[`${type}`];
     else return 0;
@@ -82,7 +111,6 @@ function performAction(events, ms, attacker, defender) {
         if (ability.isUsable(attacker)) {
             let abilityEvent = ability.use(attacker, defender);
 
-            //console.log(abilityEvent);
             if(abilityEvent) { // DANGEROUS
 
                 // TODO: Move these into Ability.use()
@@ -129,7 +157,6 @@ function main() {
         "Sunder Armor": Array.apply(null, Array(_iterations)).map((x, i) => 0),
         "Revenge": Array.apply(null, Array(_iterations)).map((x, i) => 0),
     };
-    //console.log(results.MHSwing.length);
     let tps = [];
     let dps = [];
     let dtps = [];
@@ -166,8 +193,6 @@ function main() {
             
             events = events.concat(iterationEvents);
 
-            //console.log(events);
-
             if (ms == snapshot*500) {
                 let snapshotThreat = 0;
                 events.forEach(event => {
@@ -179,27 +204,18 @@ function main() {
             ms+=_timeStep
         }
 
-        //console.log(events);
         events.forEach(event => {
             if (event) {
                 if (event.source == "Boss") {
                     if (event.damage) dmgTaken += event.damage;
                 } else {
-                    //print(formatEvent(event))
-                    //console.log(event.threat);
                     if (event.threat) threat += event.threat;
                     if (event.damage) damage += event.damage;
                     for (let ability in results) {
-                        //console.log(ability);
-                        //console.log(results[`${ability}`]);
                         if (ability == "Sunder Armor") {
-                            //console.log(getAmount(event, ability, "threat")/_simDuration);
-                            //console.log(event);
-                            //console.log(event.damage && event.ability == ability);
                         }
                         results[`${ability}`][i] += getAmount(event, ability, "threat")/_simDuration;
                     }
-                    //results.forEach(result => result.ability[i] += getAmount(event, ability, "threat")/_simDuration);
                 }
             }
         });
@@ -223,5 +239,64 @@ function main() {
         console.log(`${ability}: ${average(results[`${ability}`])}`);
     console.log(`gainRPS: ${average(rageGained)}`);
     console.log(`spentRPS: ${average(rageSpent)}`);
+
+    let el_div = document.querySelector("#outputContainer");
+    el_div.innerHTML = `
+    <table>
+        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td></tr>
+        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
+        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
+        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td></tr>
+        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
+    </table>`;
+
+    var x = linspace(0, _simDuration, _simDuration*2+1);
+
+
+
+    var y_avg = [];
+    var y_95 = [];
+    var y_05 = [];
+    var y_01 = [];
+    snapshots.forEach(snapshot => {
+        y_avg.push(average(snapshot));
+        y_95.push(quantile(snapshot, 0.95));
+        y_05.push(quantile(snapshot, 0.05));
+        y_01.push(quantile(snapshot, 0.01));
+    });
+
+    var traceAvg = {
+        x: x,
+        y: y_avg,
+        type: 'lines+markers',
+        name: "Average Threat"
+    }
+    var trace95 = {
+        x: x,
+        y: y_95,
+        type: 'lines+markers',
+        name: "95th percentile"
+    }
+
+    var trace05 = {
+        x: x,
+        y: y_05,
+        type: 'lines+markers',
+        name: "5th percentile"
+    }
+    var trace01 = {
+        x: x,
+        y: y_01,
+        type: 'lines+markers',
+        name: "1st percentile"
+    }
+
+    var plotData = [ trace95, traceAvg, trace05, trace01 ];
+    var layout = {
+        title: 'Threat Distribution'
+    }
+    Plotly.newPlot('plotContainer', plotData, layout);
+
 }
+
 
