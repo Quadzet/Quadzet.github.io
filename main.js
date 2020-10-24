@@ -53,7 +53,8 @@ class Actor {
         this.armor = stats.baseArmor
         this.stats = stats
         this.GCD = 0
-        this.rage = 45 // TODO: start-rage
+        this.rage = _startRage
+        console.log(this.rage)
         this.isHeroicStrikeQueued = false
 
         this.auras = auras
@@ -113,7 +114,7 @@ class Actor {
             aura.duration = 0;
         })
         this.GCD = 0
-        this.rage = 45 // TODO: start-rage
+        this.rage = _startRage
         this.isHeroicStrikeQueued = false
         this.damageMod = 0.9 // Defensive Stance, functions the same for boss and tank
         this.hasteMod = 0
@@ -167,9 +168,6 @@ function main() {
     let bossSettings = document.querySelector("#bossSettings");
     let calcSettings = document.querySelector("#calcSettings");
     fetchSettings(calcSettings, tankSettings, bossSettings)
-
-    console.log(_iterations)
-    console.log(_simDuration)
 
     let playerAbilities = [
         new Bloodthirst("Bloodthirst", 6000, 30, true),

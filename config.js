@@ -6,6 +6,7 @@ let _simDuration = 12; // Fight duration in seconds
 let _iterations = 10000; // Number of fights simulated
 let _timeStep = 25; // Timestep used for each fight
 let _config = {}; // tank and boss settings
+let _startRage = 0;
 
 class StaticStats {
     constructor(stats) {
@@ -40,6 +41,7 @@ function fetchSettings(calcSettings, tankSettings, bossSettings) {
 
     _iterations = Number(calcSettings.querySelector("#iterations").value)
     _simDuration = Number(calcSettings.querySelector("#fightLength").value)
+    _startRage = Number(tankSettings.querySelector("#startRage").value)
 
     _config = {
         tankStats: new StaticStats({
