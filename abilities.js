@@ -41,7 +41,7 @@ class Ability {
     }
 
     isUsable(actor) {
-        return this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost;
+        return this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage >= this.rageCost;
     }
 }
 
