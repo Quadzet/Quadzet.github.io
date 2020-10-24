@@ -177,15 +177,3 @@ class HeroicStrike extends Ability {
         return (actor.isHeroicStrikeQueued == false && actor.rage > 50);
     }
 }
-
-// TODO: Move this to an appropriate place... Probably when implementing actual ability priorities
-let playerAbilities = [
-                new Bloodthirst("Bloodthirst", 6000, 30, true),
-                new Revenge("Revenge", 5000, 5, true, 273, 2.25),
-                new HeroicStrike("Heroic Strike", 0, 15, false, 175),
-                new SunderArmor("Sunder Armor", 0, 15, true, 260),
-                new OHSwing("OH Swing", config.tankStats.OHSwing, 0, false),
-                new MHSwing("MH Swing", config.tankStats.MHSwing, 0, false),
-            ];
-
-let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];

@@ -163,8 +163,26 @@ function performAction(events, ms, attacker, defender) {
 
 function main() {
 
-    let Tank = new Actor("Tank", "Boss", playerAbilities, config["tankStats"], TankAuras)
-    let Boss = new Actor("Boss", "Tank", bossAbilities, config["bossStats"], BossAuras)
+    let tankSettings = document.querySelector("#tankSettings");
+    let bossSettings = document.querySelector("#bossSettings");
+    let calcSettings = document.querySelector("#calcSettings");
+    fetchSettings(calcSettings, tankSettings, bossSettings)
+
+    console.log(_iterations)
+    console.log(_simDuration)
+
+    let playerAbilities = [
+        new Bloodthirst("Bloodthirst", 6000, 30, true),
+        new Revenge("Revenge", 5000, 5, true, 273, 2.25),
+        new HeroicStrike("Heroic Strike", 0, 15, false, 175),
+        new SunderArmor("Sunder Armor", 0, 15, true, 260),
+        new OHSwing("OH Swing", _config.tankStats.OHSwing, 0, false),
+        new MHSwing("MH Swing", _config.tankStats.MHSwing, 0, false),
+    ];
+    let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
+
+    let Tank = new Actor("Tank", "Boss", playerAbilities, _config["tankStats"], TankAuras)
+    let Boss = new Actor("Boss", "Tank", bossAbilities, _config["bossStats"], BossAuras)
     
     let start = Date.now()
     let results = {
@@ -272,6 +290,7 @@ function main() {
     let el_div = document.querySelector("#outputContainer");
     el_div.innerHTML = `
     <table>
+        <tr><th>General Stats</th><th></th><th>Ability TPS</th><th></th></tr>
         <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${testVec[0]}</tr>
         <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${testVec[1]}</tr>
         <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${testVec[2]}</tr>

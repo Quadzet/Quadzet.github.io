@@ -5,7 +5,7 @@ let _landedHits = ["hit", "crit", "block", 'crit block'];
 let _simDuration = 12; // Fight duration in seconds
 let _iterations = 10000; // Number of fights simulated
 let _timeStep = 25; // Timestep used for each fight
-
+let _config = {}; // tank and boss settings
 
 class StaticStats {
     constructor(stats) {
@@ -36,42 +36,47 @@ class StaticStats {
     }
 }
 
-const config = {
-    tankStats: new StaticStats({
+function fetchSettings(calcSettings, tankSettings, bossSettings) {
+
+    _iterations = Number(calcSettings.querySelector("#iterations").value)
+    _simDuration = Number(calcSettings.querySelector("#fightLength").value)
+
+    _config = {
+        tankStats: new StaticStats({
             type: "tank",
             level: 60,
 
-            MHMin: 86,
-            MHMax: 162,
-            MHSwing: 2200,
+            MHMin: Number(tankSettings.querySelector("#MHMin").value),
+            MHMax: Number(tankSettings.querySelector("#MHMax").value),
+            MHSwing: Number(tankSettings.querySelector("#MHSwing").value)*1000,
 
-            OHMin: 83,
-            OHMax: 154,
-            OHSwing: 2300,
+            OHMin: Number(tankSettings.querySelector("#OHMin").value),
+            OHMax: Number(tankSettings.querySelector("#OHMax").value),
+            OHSwing: Number(tankSettings.querySelector("#OHSwing").value)*1000,
 
-            MHWepSkill: 311,
-            OHWepSkill: 307,
-            crit: 25.4,
-            AP: 1202, //912,
+            MHWepSkill: Number(tankSettings.querySelector("#MHWepSkill").value),
+            OHWepSkill: Number(tankSettings.querySelector("#OHWepSkill").value),
+            AP: Number(tankSettings.querySelector("#AP").value),
+            crit: Number(tankSettings.querySelector("#crit").value),
+            hit: Number(tankSettings.querySelector("#hit").value),
+            
+            parry: Number(tankSettings.querySelector("#parry").value),
+            dodge: Number(tankSettings.querySelector("#dodge").value),
+            block: Number(tankSettings.querySelector("#block").value),
             blockValue: 0,
-            hit: 6,
-
-            parry: 7.72,
-            dodge: 21.67,
-            block: 0,
-            defense: 343,
-            baseArmor: 5982,
+            defense: Number(tankSettings.querySelector("#defense").value),
+            baseArmor: Number(tankSettings.querySelector("#armor").value),
 
             threatMod: 1.495,
         }),
 
-    bossStats: new StaticStats({
+        bossStats: new StaticStats({
             type: "boss",
             level: 63,
 
-            MHMin: 5000,
-            MHMax: 5000,
-            MHSwing: 2000,
+            MHMin: Number(bossSettings.querySelector("#swingMin").value),
+            MHMax: Number(bossSettings.querySelector("#swingMax").value),
+            MHSwing: Number(bossSettings.querySelector("#swingTimer").value)*1000,
 
             MHWepSkill: 315,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
@@ -82,8 +87,9 @@ const config = {
             dodge: 5,    // 6.5% with skilldiff
             block: 5,
             defense: 315,
-            baseArmor: 3731,
+            baseArmor: Number(bossSettings.querySelector("#armor").value),
 
             threatMod: 0,
         })
+    }
 }
