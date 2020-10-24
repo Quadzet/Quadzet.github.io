@@ -54,7 +54,6 @@ class Actor {
         this.stats = stats
         this.GCD = 0
         this.rage = _startRage
-        console.log(this.rage)
         this.isHeroicStrikeQueued = false
 
         this.auras = auras
@@ -77,7 +76,17 @@ class Actor {
         return this.armor;
     }
 
-    //def AP()
+    getAP() {
+        let AP = this.stats.AP;
+        this.auras.forEach(aura => {
+            if (aura.duration > 0) {
+                if (aura.strMod > 0) {
+                    AP += aura.strMod * 2; // TODO: Kings, Hakkar buff, AP buffs etc 
+                }
+            }
+        });
+        return AP;
+    }
     getDamageMod() {
         let damageMod = this.damageMod
         this.auras.forEach(aura => {
@@ -179,9 +188,13 @@ function main() {
     ];
     let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
 
+    let TankAuras = [...defaultTankAuras]
+    addCrusader(TankAuras); // Adds crusader auras to tank if they are set in config.
+
     let Tank = new Actor("Tank", "Boss", playerAbilities, _config["tankStats"], TankAuras)
     let Boss = new Actor("Boss", "Tank", bossAbilities, _config["bossStats"], BossAuras)
     
+
     let start = Date.now()
     let results = {
         "MH Swing": Array.apply(null, Array(_iterations)).map((x, i) => 0),

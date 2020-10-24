@@ -31,7 +31,7 @@ class Ability {
     weaponSwingRoll(attacker) {
         return (
             Math.random()*(attacker.stats.MHMax - attacker.stats.MHMin) +
-            attacker.stats.MHMin + attacker.stats.AP*attacker.stats.MHSwing/
+            attacker.stats.MHMin + attacker.getAP()*attacker.stats.MHSwing/
             (14*1000));
     }
 
@@ -89,7 +89,7 @@ class MHSwing extends Ability {
 class OHSwing extends Ability {
 
     use(attacker, defender) {
-        let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.stats.AP*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
+        let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
         damage *= 0.625*(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
         let damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, !attacker.isHeroicStrikeQueued, true);
 
@@ -109,7 +109,7 @@ class OHSwing extends Ability {
 
 class Bloodthirst extends Ability {
     use(attacker, defender) {
-        let damage = 0.45*attacker.stats.AP;
+        let damage = 0.45*attacker.getAP();
         damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
         let damageEvent = rollAttack(attacker.stats, defender.stats, damage, true, false, false, true);
         damageEvent.threat = 0;

@@ -13,6 +13,7 @@ class Aura {
         if (!input.maxStacks) this.maxStacks = -1; else this.maxStacks = input.maxStacks;
         if (!input.scalingStacks) this.scalingStacks = false; else this.scalingStacks = input.scalingStacks;
 
+        if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
         if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // additive
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
         if (!input.hasteMod) this.hasteMod = 0; else this.hasteMod = input.hasteMod; // percentage
@@ -218,9 +219,53 @@ class DefensiveState extends Aura {
     }
 }
 
+class CrusaderMH extends Aura {
+    constructor(input) {
+        super(input);
+    }
+    handleEvent(owner, event, events) {
+        if (event.type == "damage" && event.ability != "OH Swing" && _landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < owner.stats.MHSwing/(60*1000)) { 
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: event.timestamp,
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
+                    });
+            }
+        }
+    }
+}
+
+class CrusaderOH extends Aura {
+    constructor(input) {
+        super(input);
+    }
+    handleEvent(owner, event, events) {
+        if (event.type == "damage" && event.ability == "OH Swing" && _landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < owner.stats.OHSWing/(60*1000)) { 
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: event.timestamp,
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
+                    });
+            }
+        }
+    }
+}
+
 
 // All available tank auras
-let TankAuras = [
+const defaultTankAuras = [
         new Flurry({
                 name: "Flurry",
                 maxDuration: 12000,
@@ -246,8 +291,34 @@ let TankAuras = [
                 target: "Tank",
                 source: "Tank",
         }),
-
 ]
+
+function addCrusader(Auras) {
+    if(_crusaderMH) {
+        Auras.push(new CrusaderMH({
+                        name: "Crusader",
+                        maxDuration: 15000,
+
+                        strMod: 100,
+
+                        target: "Tank",
+                        source: "Tank",
+        }));
+    }
+
+    if(_crusaderOH) {
+        Auras.push(new CrusaderOH({
+                name: "Crusader",
+                maxDuration: 15000,
+
+                strMod: 100,
+
+                target: "Tank",
+                source: "Tank",
+        }));
+    }
+}
+
 
 // All available boss auras
 let BossAuras = [
