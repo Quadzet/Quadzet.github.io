@@ -62,6 +62,7 @@ class Actor {
         this.rageGained = 0 // remove?
         this.rageSpent = 0
         this.flurryUptime = 0
+        this.crusaderUptime = 0
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -133,6 +134,7 @@ class Actor {
         this.rageGained = 0 // remove?
         this.rageSpent = 0
         this.flurryUptime = 0
+        this.crusaderUptime = 0
     }
 
 }
@@ -211,6 +213,7 @@ function main() {
         "Bloodthirst": Array.apply(null, Array(_iterations)).map((x, i) => 0),
         "Sunder Armor": Array.apply(null, Array(_iterations)).map((x, i) => 0),
         "Revenge": Array.apply(null, Array(_iterations)).map((x, i) => 0),
+        "Thunderfury": Array.apply(null, Array(_iterations)).map((x, i) => 0),
     };
     let tps = [];
     let dps = [];
@@ -218,6 +221,7 @@ function main() {
     let rageGained = [];
     let rageSpent = [];
     let flurryUptime = [];
+    let crusaderUptime = [];
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
     for (let _i in range(_simDuration/0.4+1)) snapshots.push([]);
@@ -282,6 +286,7 @@ function main() {
         dps.push(damage/_simDuration)
         rageGained.push(Tank.rageGained/_simDuration)
         flurryUptime.push(Tank.flurryUptime/(_simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
+        crusaderUptime.push(Tank.crusaderUptime/(_simDuration*10))
         Tank.rageGained = 0
         rageSpent.push(Tank.rageSpent/_simDuration)
         Tank.rageSpent = 0
@@ -316,6 +321,7 @@ function main() {
         <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td>${testVec[3]}</tr>
         <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td>${testVec[4]}</tr>
         <tr><td>Flurry uptime: </td><td>${Math.round(average(flurryUptime)*100)/100}%</td>${testVec[5]}</tr>
+        <tr><td>Crusader uptime: </td><td>${Math.round(average(crusaderUptime)*100)/100}%</td>${testVec[6]}</tr>
     </table>`;
 
     var x = linspace(0, _simDuration, _simDuration/0.4+1);

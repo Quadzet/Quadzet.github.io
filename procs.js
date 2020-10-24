@@ -4,6 +4,7 @@ class Proc {
 
     constructor(input) {
 
+        if (!input.name) this.name = "unknown"; else this.name = input.name;
         if (!input.damage) this.damage = 0; else this.damage = input.damage;
 
     }
@@ -27,6 +28,7 @@ class Thunderfury extends Proc {
                     "type": "damage",
                     "ability": this.name,
                     "hit": "hit",
+                    "timestamp": event.timestamp,
                     "damage": this.damage*source.damageMod, // don't count enrage, use default 0.9 only
                     "threat": (252 + this.damage)*source.threatMod, // 252 from debuff applications, my own testing.
                 }
