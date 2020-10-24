@@ -43,7 +43,7 @@ function getAmount(event, ability, type) {
 }
 
 class Actor {
-    constructor(name, target, abilities, stats, auras) {
+    constructor(name, target, abilities, stats, auras, procs) {
         this.name = name
         this.target = target
         this.abilities = abilities
@@ -57,6 +57,7 @@ class Actor {
         this.isHeroicStrikeQueued = false
 
         this.auras = auras
+        this.procs = procs
 
         this.rageGained = 0 // remove?
         this.rageSpent = 0
@@ -87,6 +88,7 @@ class Actor {
         });
         return AP;
     }
+
     getDamageMod() {
         let damageMod = this.damageMod
         this.auras.forEach(aura => {
@@ -109,6 +111,7 @@ class Actor {
             else this.rageSpent -= rage;
         }
     }
+
     addParryHaste() {
         this.abilities.forEach(ability => {
             if (["MH Swing", "Auto Attack"].includes(ability.name))
@@ -153,7 +156,8 @@ function performAction(events, ms, attacker, defender) {
                 // Update Actor Auras if the event applies to the Aura
                 attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
                 defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
-            
+                attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
+                
                 if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
             }
         }
@@ -189,10 +193,14 @@ function main() {
     let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
 
     let TankAuras = [...defaultTankAuras]
-    addCrusader(TankAuras); // Adds crusader auras to tank if they are set in config.
+    let BossAuras = [...defaultBossAuras]
+    addOptionalAuras(TankAuras, BossAuras); // Adds crusader/thunderfury etc auras to tank/boss if they are set in config.
 
-    let Tank = new Actor("Tank", "Boss", playerAbilities, _config["tankStats"], TankAuras)
-    let Boss = new Actor("Boss", "Tank", bossAbilities, _config["bossStats"], BossAuras)
+    let TankProcs = getTankProcs();
+    let BossProcs = [];
+
+    let Tank = new Actor("Tank", "Boss", playerAbilities, _config["tankStats"], TankAuras, TankProcs)
+    let Boss = new Actor("Boss", "Tank", bossAbilities,   _config["bossStats"], BossAuras, BossProcs)
     
 
     let start = Date.now()

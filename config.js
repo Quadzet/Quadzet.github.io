@@ -49,6 +49,7 @@ function fetchSettings(calcSettings, tankSettings, bossSettings) {
 
     _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
+    _thunderfury = tankSettings.querySelector("#thunderfury").checked
 
     _config = {
         tankStats: new StaticStats({

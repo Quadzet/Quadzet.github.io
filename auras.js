@@ -7,6 +7,8 @@ class Aura {
         if (!input.target) this.target = "unknown"; else this.target = input.target;
         if (!input.source) this.source = "unknown"; else this.source = input.source;
 
+        if (!input.damage) this.damage = 0; else this.damage = input.damage;
+
         if (!input.duration) this.duration = 0;
         if (!input.maxDuration) this.maxDuration = 0; else this.maxDuration = input.maxDuration;
         if (!input.stacks) this.stacks = 0;
@@ -19,7 +21,7 @@ class Aura {
         if (!input.hasteMod) this.hasteMod = 0; else this.hasteMod = input.hasteMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
     }
-    // Return self if an update needs to be made in Actor
+
     handleGameTick(ms, owner, events) {
         if (this.duration <= 0) return;
         this.duration = this.duration - _timeStep;
@@ -263,8 +265,27 @@ class CrusaderOH extends Aura {
     }
 }
 
+class ThunderfuryDebuff extends Aura {
+    constructor(input) {
+        super(input);
+    }
+    handleEvent(owner, event, events) {
+        if (event.type == "damage" && event.ability == "Thunderfury" && _landedHits.includes(event.hit)) {
 
-// All available tank auras
+            if (this.duration <= 0) owner.hasteMod += this.hasteMod;
+            this.duration = this.maxDuraton;
+            events.push({
+                type: "buff gained",
+                timestamp: event.timestamp, 
+                name: this.name,
+                stacks: this.stacks,
+                target: this.target,
+                source: this.source,
+                });
+        }
+    }
+}
+
 const defaultTankAuras = [
         new Flurry({
                 name: "Flurry",
@@ -293,9 +314,38 @@ const defaultTankAuras = [
         }),
 ]
 
-function addCrusader(Auras) {
+const defaultBossAuras = [
+    new SunderArmorDebuff({
+            name: "Sunder Armor",
+            maxDuration: 30000,
+            maxStacks: 5,
+            armorMod: -450,
+            scalingStacks: true,
+
+            target: "Boss",
+            source: "Tank",
+            }),
+    new FaerieFire({
+            name: "Faerie Fire",
+            maxDuration: 30000,
+            armorMod: -505,
+
+            target: "Boss",
+            source: "Tank",
+            }),
+    new CurseOfRecklessness({
+            name: "Curse of Recklessness",
+            maxDuration: 30000,
+            armorMod: -640,
+
+            target: "Boss",
+            source: "Tank",
+            }),
+]
+
+function addOptionalAuras(tankAuras, bossAuras) {
     if(_crusaderMH) {
-        Auras.push(new CrusaderMH({
+        tankAuras.push(new CrusaderMH({
                         name: "Crusader",
                         maxDuration: 15000,
 
@@ -307,7 +357,7 @@ function addCrusader(Auras) {
     }
 
     if(_crusaderOH) {
-        Auras.push(new CrusaderOH({
+        tankAuras.push(new CrusaderOH({
                 name: "Crusader",
                 maxDuration: 15000,
 
@@ -317,35 +367,17 @@ function addCrusader(Auras) {
                 source: "Tank",
         }));
     }
+
+    if(_thunderfury) {
+        bossAuras.push(new ThunderfuryDebuff({
+                name: "Thunderfury",
+                maxDuration: 12000,
+
+                hasteMod: -20,
+
+                target: "Boss",
+                source: "Tank",
+        }));
+    }
+
 }
-
-
-// All available boss auras
-let BossAuras = [
-        new SunderArmorDebuff({
-                name: "Sunder Armor",
-                maxDuration: 30000,
-                maxStacks: 5,
-                armorMod: -450,
-                scalingStacks: true,
-
-                target: "Boss",
-                source: "Tank",
-                }),
-        new FaerieFire({
-                name: "Faerie Fire",
-                maxDuration: 30000,
-                armorMod: -505,
-
-                target: "Boss",
-                source: "Tank",
-                }),
-        new CurseOfRecklessness({
-                name: "Curse of Recklessness",
-                maxDuration: 30000,
-                armorMod: -640,
-
-                target: "Boss",
-                source: "Tank",
-                }),
-]
