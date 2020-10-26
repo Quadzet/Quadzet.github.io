@@ -85,6 +85,9 @@ class Actor {
                 if (aura.strMod > 0) {
                     AP += aura.strMod * 2; // TODO: Kings, Hakkar buff, AP buffs etc 
                 }
+                if (aura.APMod > 0) {
+                    AP += aura.APMod;
+                }
             }
         });
         return AP;
@@ -291,6 +294,7 @@ function main() {
         rageSpent.push(Tank.rageSpent/_simDuration)
         Tank.rageSpent = 0
         dtps.push(dmgTaken/_simDuration)
+        //console.log(events)
     }
     let end = Date.now()
 

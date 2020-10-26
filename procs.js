@@ -40,6 +40,34 @@ class Thunderfury extends Proc {
     }
 }
 
+class WindfuryProc extends Proc {
+    constructor(input) {
+        super(input)
+    }
+    handleEvent(source, target, event, events) {
+        if (event.type == "damage" && event.ability != "OH Swing" && _landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < 0.2) {
+                let procEvent = {
+                    "type": "extra attack",
+                    "source": event.ability,
+                    "ability": this.name,
+                    "timestamp": event.timestamp,
+                }
+                events.push(procEvent);
+
+                // Ensure that the Windfury buff gets applied and that it resets MH swing timer
+                source.auras.forEach(aura => aura.handleEvent(target, procEvent, events))
+                source.abilities.forEach(ability => {
+                    if (ability.name == "MH Swing") {
+                        ability.currentCooldown = 0;
+                    }
+                })
+            }
+        }
+    }
+}
+
 function getTankProcs() {
     let ret = []
     if(_thunderfury) {
@@ -50,6 +78,15 @@ function getTankProcs() {
             })
         )
     }
+
+    if(_windfury) {
+        ret.push(
+            new WindfuryProc({
+                name: "Windfury", 
+            })
+        )
+    }
+
     return ret;
 }
 

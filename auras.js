@@ -15,8 +15,9 @@ class Aura {
         if (!input.maxStacks) this.maxStacks = -1; else this.maxStacks = input.maxStacks;
         if (!input.scalingStacks) this.scalingStacks = false; else this.scalingStacks = input.scalingStacks;
 
+        if (!input.APMod) this.APMod = 0; else this.APMod = input.APMod; // additive
         if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
-        if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // additive
+        if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
         if (!input.hasteMod) this.hasteMod = 0; else this.hasteMod = input.hasteMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
@@ -287,6 +288,44 @@ class ThunderfuryDebuff extends Aura {
     }
 }
 
+class WindfuryBuff extends Aura {
+    constructor(input) {
+        super(input)
+    }
+    handleEvent(owner, event, events) {
+        if (event.type == "extra attack" && event.ability == "Windfury") {
+            this.duration = this.maxDuration;
+            let stacks = 2;
+            if (["MH Swing", "Heroic Strike"].includes(event.source)) stacks = 1; // MH Swing removes a stack itself.
+            this.stacks = stacks
+            events.push({
+                type: "buff gained",
+                timestamp: event.timestamp, 
+                name: this.name,
+                stacks: stacks,
+                target: this.target,
+                source: this.source,
+                });
+        }
+        if (event.type == "damage" && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.ability)) {
+            if (this.stacks > 0) {
+                events.push({
+                    "type": "buff lost",
+                    "timestamp": event["timestamp"],
+                    "name": this.name,
+                    "stacks": this.stacks,
+                    "source": this.source,
+                    "target": this.target,
+                    });
+            }
+            this.stacks = Math.max(0, this.stacks - 1);
+            if (this.stacks == 0) this.duration = Math.min(this.duration, 400); // Buff remains for one batch after its last stack is removed
+        }
+    }
+}
+
+
+
 const defaultTankAuras = [
         new Flurry({
                 name: "Flurry",
@@ -347,13 +386,13 @@ const defaultBossAuras = [
 function addOptionalAuras(tankAuras, bossAuras) {
     if(_crusaderMH) {
         tankAuras.push(new CrusaderMH({
-                        name: "Crusader",
-                        maxDuration: 15000,
+                name: "Crusader",
+                maxDuration: 15000,
 
-                        strMod: 100,
+                strMod: 100,
 
-                        target: "Tank",
-                        source: "Tank",
+                target: "Tank",
+                source: "Tank",
         }));
     }
 
@@ -380,5 +419,18 @@ function addOptionalAuras(tankAuras, bossAuras) {
                 source: "Tank",
         }));
     }
+
+    if(_windfury) {
+        tankAuras.push(new WindfuryBuff({
+                name: "Windfury", 
+                maxDuration: 1500,
+                maxStacks: 2,
+                APMod: 315,
+
+                target: "Tank",
+                source: "Tank",
+        }));
+    }
+
 
 }
