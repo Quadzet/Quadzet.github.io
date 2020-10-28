@@ -16,6 +16,14 @@ let _crusaderMH = true;
 let _crusaderOH = false;
 let _windfury = false;
 
+// Trinkets
+let _kots = false;
+let _diamondflask = false;
+let _earthstrike = false;
+let _slayerscrest = false;
+let _jomgabbar = false;
+let _lgg = false; 
+
 class StaticStats {
     constructor(stats) {
         this.type = stats.type;
@@ -40,12 +48,19 @@ class StaticStats {
         this.block = stats.block;
         this.defense = stats.defense;
         this.baseArmor = stats.baseArmor;
+        this.baseHealth = stats.baseHealth;
 
         this.threatMod = stats.threatMod;
     }
 }
 
-function fetchSettings(calcSettings, tankSettings, bossSettings) {
+function fetchSettings() {
+
+    let tankSettings = document.querySelector("#tankSettings");
+    let bossSettings = document.querySelector("#bossSettings");
+    let calcSettings = document.querySelector("#calcSettings");
+    let trinkets = document.querySelector("#trinkets");
+
 
     _iterations = Number(calcSettings.querySelector("#iterations").value)
     _simDuration = Number(calcSettings.querySelector("#fightLength").value)
@@ -55,6 +70,14 @@ function fetchSettings(calcSettings, tankSettings, bossSettings) {
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
     _thunderfury = tankSettings.querySelector("#thunderfury").checked
     _windfury = tankSettings.querySelector("#windfury").checked
+
+    // Trinkets
+    _kots = trinkets.querySelector("#kots").checked
+    _earthstrike = trinkets.querySelector("#earthstrike").checked
+    _diamondflask = trinkets.querySelector("#diamondflask").checked
+    _jomgabbar = trinkets.querySelector("#jomgabbar").checked
+    _slayerscrest = trinkets.querySelector("#slayerscrest").checked
+    _lgg = trinkets.querySelector("#lgg").checked
 
     _config = {
         tankStats: new StaticStats({
@@ -81,6 +104,7 @@ function fetchSettings(calcSettings, tankSettings, bossSettings) {
             blockValue: 0,
             defense: Number(tankSettings.querySelector("#defense").value),
             baseArmor: Number(tankSettings.querySelector("#armor").value),
+            baseHealth: Number(tankSettings.querySelector("#health").value),
 
             threatMod: 1.495,
         }),

@@ -310,12 +310,12 @@ class WindfuryBuff extends Aura {
         if (event.type == "damage" && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.ability)) {
             if (this.stacks > 0) {
                 events.push({
-                    "type": "buff lost",
-                    "timestamp": event["timestamp"],
-                    "name": this.name,
-                    "stacks": this.stacks,
-                    "source": this.source,
-                    "target": this.target,
+                    type: "buff lost",
+                    timestamp: event["timestamp"],
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
                     });
             }
             this.stacks = Math.max(0, this.stacks - 1);
@@ -324,7 +324,103 @@ class WindfuryBuff extends Aura {
     }
 }
 
+class PrePullAura extends Aura {
+    handleGameTick(ms, owner, events) {
+        // Use at pull
+        if(ms == 0) {
+            this.duration = this.maxDuration;
+            events.push({
+                type: "buff gained",
+                timestamp: ms, 
+                name: this.name,
+                stacks: this.stacks,
+                target: this.target,
+                source: this.source,
+                });
+            owner.hasteMod += this.hasteMod;
+            return;
+        }
+        if (this.duration <= 0) return;
+        this.duration = this.duration - _timeStep;
+        if (this.duration <= 0) {
+            events.push({
+            "type": "buff lost",
+            "timestamp": ms,
+            "name": this.name,
+            "stacks": this.stacks,
+            "source": this.source,
+            "target": this.target,
+            })
+            if (this.hasteMod > 0) owner.hasteMod -= this.hasteMod;
+        }
 
+    }
+}
+
+class JomGabbar extends Aura {
+    handleGameTick(ms, owner, events) {
+        // Use at pull
+        if(ms == 0) {
+            this.duration = this.maxDuration;
+            events.push({
+                type: "buff gained",
+                timestamp: ms, 
+                name: this.name,
+                stacks: this.stacks,
+                target: this.target,
+                source: this.source,
+                });
+            this.stacks = 1;
+            return;
+        }
+        this.duration -= _timeStep;
+        if(this.duration <= 0) {
+            if(this.stacks >= 10) {
+                events.push({
+                    type: "buff lost",
+                    timestamp: ms,
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
+                });
+                this.stacks = 0;
+            } else {
+                this.stacks += 1;
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: ms, 
+                    name: this.name,
+                    stacks: this.stacks,
+                    target: this.target,
+                    source: this.source,
+                    });
+            }
+        }
+    }
+}
+
+class LifegivingGem extends Aura {
+    handleGameTick(ms, owner, events) {
+        // Use at pull
+        if(ms == 0) {
+            this.duration = this.maxDuration;
+            let threat = owner.stats.baseHealth * 0.15 * 0.5;// * owner.threatMod; // TODO: Verify.
+            events.push({
+                type: "buff gained",
+                timestamp: ms, 
+                name: this.name,
+                threat: threat,
+                stacks: this.stacks,
+                target: this.target,
+                source: this.source,
+                });
+            this.stacks = 1;
+            return;
+        }
+    }
+}
 
 const defaultTankAuras = [
         new Flurry({
@@ -432,5 +528,74 @@ function addOptionalAuras(tankAuras, bossAuras) {
         }));
     }
 
+    // TRINKETS
+    if(_kots) {
+        tankAuras.push(new PrePullAura({
+            name: "Kiss of the Spider",
+            maxDuration: 15000,
+            hasteMod: 20,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
+    if(_diamondflask) {
+        tankAuras.push(new PrePullAura({
+            name: "Diamond Flask",
+            maxDuration: 60000,
+            strMod: 75,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
+    if(_earthstrike) {
+        tankAuras.push(new PrePullAura({
+            name: "Earthstrike",
+            maxDuration: 20000,
+            APMod: 280,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
+    if(_slayerscrest) {
+        tankAuras.push(new PrePullAura({
+            name: "Slayer's Crest",
+            maxDuration: 20000,
+            APMod: 260,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
+    if(_jomgabbar) {
+        tankAuras.push(new JomGabbar({
+            name: "Jom Gabbar",
+            maxDuration: 2000,
+            APMod: 65,
+
+            scalingStacks: true,
+            stacks: 1,
+
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
+    if(_lgg) {
+        tankAuras.push(new LifegivingGem({
+            name: "Lifegiving Gem",
+            maxDuration: 20000,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }  
 
 }

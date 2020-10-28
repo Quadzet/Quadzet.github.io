@@ -86,7 +86,8 @@ class Actor {
                     AP += aura.strMod * 2; // TODO: Kings, Hakkar buff, AP buffs etc 
                 }
                 if (aura.APMod > 0) {
-                    AP += aura.APMod;
+                    if(!aura.scalingStacks) AP += aura.APMod;
+                    else AP += aura.APMod * aura.stacks;
                 }
             }
         });
@@ -182,10 +183,8 @@ function performAction(events, ms, attacker, defender) {
 
 function main() {
 
-    let tankSettings = document.querySelector("#tankSettings");
-    let bossSettings = document.querySelector("#bossSettings");
-    let calcSettings = document.querySelector("#calcSettings");
-    fetchSettings(calcSettings, tankSettings, bossSettings)
+    // Fetch and set all user input settings
+    fetchSettings()
 
     let playerAbilities = [
         new Bloodthirst("Bloodthirst", 6000, 30, true),
