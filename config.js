@@ -81,7 +81,7 @@ function fetchSettings() {
     _diamondflask = trinkets.querySelector("#diamondflask").checked
     _jomgabbar = trinkets.querySelector("#jomgabbar").checked
     _slayerscrest = trinkets.querySelector("#slayerscrest").checked
-    _lgg = trinkets.querySelector("#lgg").checked
+    //_lgg = trinkets.querySelector("#lgg").checked
 
     _config = {
         tankStats: new StaticStats({
