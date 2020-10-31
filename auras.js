@@ -20,6 +20,7 @@ class Aura {
         if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
         if (!input.hasteMod) this.hasteMod = 0; else this.hasteMod = input.hasteMod; // percentage
+        if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
     }
 
@@ -480,6 +481,19 @@ const defaultBossAuras = [
 ]
 
 function addOptionalAuras(tankAuras, bossAuras) {
+
+    if(_deathwish) {
+        tankAuras.push(new PrePullAura({
+            name: "Death Wish",
+            maxDuration: 28500, // uses a gcd
+            damageMod: 1.2,
+            percArmorMod: -20,
+
+            target: "Tank",
+            source: "Tank",
+        }));
+    }
+
     if(_crusaderMH) {
         tankAuras.push(new CrusaderMH({
                 name: "Crusader",

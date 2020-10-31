@@ -13,9 +13,10 @@ let _config = {}; // tank and boss settings
 
 // Tank Settings
 let _startRage = 0;
-let _thunderfury = true;
+let _deathwish = true;
 let _crusaderMH = true;
 let _crusaderOH = false;
+let _thunderfury = true;
 let _windfury = false;
 
 // Trinkets
@@ -70,6 +71,7 @@ function fetchSettings() {
     _startRage = Number(tankSettings.querySelector("#startRage").value)
     //_firstBatch = Number(graphSettings.querySelector("#firstbatch").value)
 
+    _deathwish = tankSettings.querySelector("#deathwish").checked
     _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
     _thunderfury = tankSettings.querySelector("#thunderfury").checked

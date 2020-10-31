@@ -66,6 +66,7 @@ class Actor {
     }
     getArmor() {
         this.armor = this.stats.baseArmor
+        let percArmorMod = 1;
         this.auras.forEach(aura => {
             if (aura.duration > 0) {
                 if (aura.armorMod != 0) {
@@ -73,9 +74,10 @@ class Actor {
                     if (aura.scalingStacks) multiplier = aura.stacks;
                     this.armor += aura.armorMod * multiplier;
                 }
+                if (aura.percArmorMod != 1) percArmorMod *= (1 + aura.percArmorMod/100);
             }
         });
-        return this.armor;
+        return this.armor * percArmorMod;
     }
 
     getAP() {
