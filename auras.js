@@ -19,7 +19,7 @@ class Aura {
         if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
         if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
-        if (!input.hasteMod) this.hasteMod = 0; else this.hasteMod = input.hasteMod; // percentage
+        if (!input.hastePerc) this.hastePerc = 0; else this.hastePerc = input.hastePerc; // percentage
         if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
     }
@@ -38,7 +38,7 @@ class Aura {
             "source": this.source,
             "target": this.target,
             })
-            if (this.hasteMod > 0) owner.hasteMod -= this.hasteMod;
+            if (this.hastePerc > 0) owner.hastePerc -= this.hastePerc;
         }
     }
 
@@ -131,7 +131,7 @@ class Flurry extends Aura {
                     });
                 if (this.stacks == 1) {
                     this.duration = 0;
-                    owner.hasteMod -= this.hasteMod;
+                    owner.hastePerc -= this.hastePerc;
                 }
             }
             this.stacks = Math.max(0, this.stacks - 1);
@@ -141,8 +141,8 @@ class Flurry extends Aura {
             ["Bloodthirst", "MH Swing", "OH Swing", "Revenge", "Heroic Strike"].includes(event.ability) &&
             (event.hit == "crit" || event.hit == 'crit block')) {
 
-            // If gaining the buff (not just refreshing), update the owner hasteMod
-            if (this.duration <= 0 || this.stacks == 0) owner.hasteMod += this.hasteMod;
+            // If gaining the buff (not just refreshing), update the owner hastePerc
+            if (this.duration <= 0 || this.stacks == 0) owner.hastePerc += this.hastePerc;
             this.stacks = this.maxStacks;
             this.duration = this.maxDuraton;
             events.push({
@@ -275,7 +275,7 @@ class ThunderfuryDebuff extends Aura {
     handleEvent(owner, event, events) {
         if (event.type == "damage" && event.ability == "Thunderfury" && _landedHits.includes(event.hit)) {
 
-            if (this.duration <= 0) owner.hasteMod += this.hasteMod;
+            if (this.duration <= 0) owner.hastePerc += this.hastePerc;
             this.duration = this.maxDuraton;
             events.push({
                 type: "buff gained",
@@ -338,7 +338,7 @@ class PrePullAura extends Aura {
                 target: this.target,
                 source: this.source,
                 });
-            owner.hasteMod += this.hasteMod;
+            owner.hastePerc += this.hastePerc;
             return;
         }
         if (this.duration <= 0) return;
@@ -352,7 +352,7 @@ class PrePullAura extends Aura {
             "source": this.source,
             "target": this.target,
             })
-            if (this.hasteMod > 0) owner.hasteMod -= this.hasteMod;
+            if (this.hastePerc > 0) owner.hastePerc -= this.hastePerc;
         }
 
     }
@@ -428,7 +428,7 @@ const defaultTankAuras = [
                 name: "Flurry",
                 maxDuration: 12000,
                 maxStacks: 3,
-                hasteMod: 30,
+                hastePerc: 30,
 
                 target: "Tank",
                 source: "Tank",
@@ -523,7 +523,7 @@ function addOptionalAuras(tankAuras, bossAuras) {
                 name: "Thunderfury",
                 maxDuration: 12000,
 
-                hasteMod: -20,
+                hastePerc: -20,
 
                 target: "Boss",
                 source: "Tank",
@@ -547,7 +547,7 @@ function addOptionalAuras(tankAuras, bossAuras) {
         tankAuras.push(new PrePullAura({
             name: "Kiss of the Spider",
             maxDuration: 15000,
-            hasteMod: 20,
+            hastePerc: 20,
 
             target: "Tank",
             source: "Tank",

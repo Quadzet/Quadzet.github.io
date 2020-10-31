@@ -18,6 +18,8 @@ let _crusaderMH = true;
 let _crusaderOH = false;
 let _thunderfury = true;
 let _windfury = false;
+let _wcb = false;
+let _dmf = false;
 
 // Trinkets
 let _kots = false;
@@ -41,6 +43,8 @@ class StaticStats {
 
         this.MHWepSkill = stats.MHWepSkill;
         this.OHWepSkill = stats.OHWepSkill;
+        this.damageMod = stats.damageMod;
+        this.hastePerc = stats.hastePerc;
         this.crit = stats.crit;
         this.AP = stats.AP;
         this.blockValue = stats.blockValue;
@@ -76,6 +80,8 @@ function fetchSettings() {
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
     _thunderfury = tankSettings.querySelector("#thunderfury").checked
     _windfury = tankSettings.querySelector("#windfury").checked
+    _wcb = tankSettings.querySelector("#wcb").checked
+    _dmf = tankSettings.querySelector("#dmf").checked
 
     // Trinkets
     _kots = trinkets.querySelector("#kots").checked
@@ -100,6 +106,8 @@ function fetchSettings() {
 
             MHWepSkill: Number(tankSettings.querySelector("#MHWepSkill").value),
             OHWepSkill: Number(tankSettings.querySelector("#OHWepSkill").value),
+            damageMod: _dmf ? 0.99 : 0.9, // Defensive Stance + dmf
+            hastePerc: _wcb ? 10 : 0, 
             AP: Number(tankSettings.querySelector("#AP").value),
             crit: Number(tankSettings.querySelector("#crit").value),
             hit: Number(tankSettings.querySelector("#hit").value),
@@ -124,6 +132,8 @@ function fetchSettings() {
             MHSwing: Number(bossSettings.querySelector("#swingTimer").value)*1000,
 
             MHWepSkill: 315,
+            damageMod: 0.9, // Defensive Stance
+            hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,
             blockValue: 47,

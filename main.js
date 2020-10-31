@@ -48,8 +48,8 @@ class Actor {
         this.target = target
         this.abilities = abilities
         this.threatMod = 1.495
-        this.damageMod = 0.9 // Defensive Stance, functions the same for boss and tank
-        this.hasteMod = 0
+        this.damageMod = stats.damageMod
+        this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.stats = stats
         this.GCD = 0
@@ -135,8 +135,8 @@ class Actor {
         this.GCD = 0
         this.rage = _startRage
         this.isHeroicStrikeQueued = false
-        this.damageMod = 0.9 // Defensive Stance, functions the same for boss and tank
-        this.hasteMod = 0
+        this.damageMod = this.stats.damageMod
+        this.hastePerc = this.stats.hastePerc
         this.rageGained = 0 // remove?
         this.rageSpent = 0
         this.flurryUptime = 0
@@ -174,7 +174,7 @@ function performAction(events, ms, attacker, defender) {
     // Ability cds and aura durations tick down
     attacker.abilities.forEach(ability => {
         if (["MH Swing", "OH Swing", "Auto Attack"].includes(ability.name))
-            ability.currentCooldown = ability.currentCooldown - _timeStep*(1+attacker.hasteMod/100);
+            ability.currentCooldown = ability.currentCooldown - _timeStep*(1+attacker.hastePerc/100);
         else ability.currentCooldown = ability.currentCooldown - _timeStep;
     });
     attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events));
