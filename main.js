@@ -20,9 +20,9 @@ const asc = arr => arr.sort((a, b) => a - b);
 
 // sample standard deviation
 const std = (arr) => {
-    const mu = mean(arr);
+    const mu = average(arr);
     const diffArr = arr.map(a => (a - mu) ** 2);
-    return Math.sqrt(sum(diffArr) / (arr.length - 1));
+    return Math.sqrt(diffArr.reduce((a, b) => a + b) / (arr.length - 1));
 };
 
 const quantile = (arr, q) => {
@@ -226,6 +226,7 @@ function main() {
     let rageSpent = [];
     let flurryUptime = [];
     let crusaderUptime = [];
+    let breaches = 0;
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
     for (let _i in range(_simDuration*1000/_snapshotLen+1)) snapshots.push([]);
@@ -269,6 +270,16 @@ function main() {
                 snapshots[snapshot].push(snapshotThreat);
                 snapshot += 1;
             }
+
+            if (ms == _breakpointTime) {
+                let breakpointThreat = 0;
+                events.forEach(event => {
+                    if (event.threat) breakpointThreat += event.threat;
+                })
+                breaches += breakpointThreat < _breakpointValue ? 1 : 0;
+            }
+
+
             ms+=_timeStep
         }
 
@@ -311,22 +322,26 @@ function main() {
     console.log(`spentRPS: ${average(rageSpent)}`);
 
     // Make the result table
-    let testVec = [];
+    let abilityVec = [];
     for (let ability in results) {
-        testVec.push(`<td>${ability}:</td><td>${Math.round(average(results[`${ability}`])*100)/100}</td>`);
+        abilityVec.push(`<td>${ability}:</td><td>${Math.round(average(results[`${ability}`])*100)/100}</td>`);
     }
+    let threatStatsVec = [];
+    threatStatsVec.push(`<td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td>`)
+    threatStatsVec.push(`<td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td>`)
+    threatStatsVec.push(`<td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td>`)
 
     let el_div = document.querySelector("#outputContainer");
     el_div.innerHTML = `
     <table>
-        <tr><th>General Stats</th><th></th><th>Ability TPS</th><th></th></tr>
-        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${testVec[0]}</tr>
-        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${testVec[1]}</tr>
-        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${testVec[2]}</tr>
-        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td>${testVec[3]}</tr>
-        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td>${testVec[4]}</tr>
-        <tr><td>Flurry uptime: </td><td>${Math.round(average(flurryUptime)*100)/100}%</td>${testVec[5]}</tr>
-        <tr><td>Crusader uptime: </td><td>${Math.round(average(crusaderUptime)*100)/100}%</td>${testVec[6]}</tr>
+        <tr><th>General Stats</th><th></th><th>Ability TPS</th><th/><th>Threat Stats</th></tr>
+        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${abilityVec[0]}${threatStatsVec[0]}</tr>
+        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${abilityVec[1]}${threatStatsVec[1]}</tr>
+        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${abilityVec[2]}${threatStatsVec[2]}</tr>
+        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td>${abilityVec[3]}</tr>
+        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td>${abilityVec[4]}</tr>
+        <tr><td>Flurry uptime: </td><td>${Math.round(average(flurryUptime)*100)/100}%</td>${abilityVec[5]}</tr>
+        <tr><td>Crusader uptime: </td><td>${Math.round(average(crusaderUptime)*100)/100}%</td>${abilityVec[6]}</tr>
     </table>`;
 
     var x = linspace(0, _simDuration, _simDuration*1000/_snapshotLen + 1);

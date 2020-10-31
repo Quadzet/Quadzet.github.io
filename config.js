@@ -9,6 +9,8 @@ let _simDuration = 12; // Fight duration in seconds
 let _iterations = 10000; // Number of fights simulated
 let _snapshotLen = 400;
 let _config = {}; // tank and boss settings
+let _breakpointValue = 0;
+let _breakpointTime = 0;
 //let _firstBatch = 0;
 
 // Tank Settings
@@ -72,9 +74,12 @@ function fetchSettings() {
 
     _iterations = Number(calcSettings.querySelector("#iterations").value)
     _simDuration = Number(calcSettings.querySelector("#fightLength").value)
-    _startRage = Number(tankSettings.querySelector("#startRage").value)
+    _breakpointValue = Number(calcSettings.querySelector("#TBPvalue").value)
+    _breakpointTime = Number(calcSettings.querySelector("#TBPtime").value)
+    _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
     //_firstBatch = Number(graphSettings.querySelector("#firstbatch").value)
-
+    
+    _startRage = Number(tankSettings.querySelector("#startRage").value)
     _deathwish = tankSettings.querySelector("#deathwish").checked
     _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
