@@ -114,7 +114,7 @@ function fetchSettings() {
             
             parry: Number(tankSettings.querySelector("#parry").value),
             dodge: Number(tankSettings.querySelector("#dodge").value),
-            block: Number(tankSettings.querySelector("#block").value),
+            block: 0, //Number(tankSettings.querySelector("#block").value),
             blockValue: 0,
             defense: Number(tankSettings.querySelector("#defense").value),
             baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
