@@ -107,7 +107,7 @@ function fetchSettings() {
             block: Number(tankSettings.querySelector("#block").value),
             blockValue: 0,
             defense: Number(tankSettings.querySelector("#defense").value),
-            baseArmor: Number(tankSettings.querySelector("#armor").value),
+            baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
             baseHealth: Number(tankSettings.querySelector("#health").value),
 
             threatMod: 1.495,
@@ -130,7 +130,7 @@ function fetchSettings() {
             dodge: 5,    // 6.5% with skilldiff
             block: 5,
             defense: 315,
-            baseArmor: Number(bossSettings.querySelector("#armor").value),
+            baseArmor: Number(bossSettings.querySelector("#bossarmor").value),
 
             threatMod: 0,
         })
