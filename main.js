@@ -226,7 +226,7 @@ function main() {
     let crusaderUptime = [];
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
-    for (let _i in range(_simDuration/0.4+1)) snapshots.push([]);
+    for (let _i in range(_simDuration*1000/_snapshotLen+1)) snapshots.push([]);
     for (let i in range(_iterations)) {
 
         // Reset buffs, GCD, cooldowns...
@@ -259,7 +259,7 @@ function main() {
             
             events = events.concat(iterationEvents);
 
-            if (ms == snapshot*400) {
+            if (ms == snapshot*_snapshotLen) {
                 let snapshotThreat = 0;
                 events.forEach(event => {
                     if (event.threat) snapshotThreat += event.threat;
@@ -327,7 +327,7 @@ function main() {
         <tr><td>Crusader uptime: </td><td>${Math.round(average(crusaderUptime)*100)/100}%</td>${testVec[6]}</tr>
     </table>`;
 
-    var x = linspace(0, _simDuration, _simDuration/0.4+1);
+    var x = linspace(0, _simDuration, _simDuration*1000/_snapshotLen + 1);
 
     let lineShape = document.querySelector("#lineSelect").options[document.querySelector("#lineSelect").selectedIndex].value
 

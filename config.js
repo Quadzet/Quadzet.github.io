@@ -7,7 +7,9 @@ const _timeStep = 25; // Timestep used for each fight
 // Calc Settings
 let _simDuration = 12; // Fight duration in seconds
 let _iterations = 10000; // Number of fights simulated
+let _snapshotLen = 400;
 let _config = {}; // tank and boss settings
+//let _firstBatch = 0;
 
 // Tank Settings
 let _startRage = 0;
@@ -60,11 +62,13 @@ function fetchSettings() {
     let bossSettings = document.querySelector("#bossSettings");
     let calcSettings = document.querySelector("#calcSettings");
     let trinkets = document.querySelector("#trinkets");
+    //let graphSettings = document.querySelector("#graphSettings");
 
 
     _iterations = Number(calcSettings.querySelector("#iterations").value)
     _simDuration = Number(calcSettings.querySelector("#fightLength").value)
     _startRage = Number(tankSettings.querySelector("#startRage").value)
+    //_firstBatch = Number(graphSettings.querySelector("#firstbatch").value)
 
     _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
     _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
