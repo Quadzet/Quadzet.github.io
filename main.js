@@ -225,6 +225,12 @@ async function main() {
     document.querySelector("#barContainer").style.display = `block`;
     let progressPerc = 0;
 
+    var worker = new Worker('./workers/worker.js');
+    worker.postMessage('hej')
+    worker.addEventListener('message', function(e) {
+        console.log(e.data);
+    })
+
     let tps = [];
     let dps = [];
     let dtps = [];
