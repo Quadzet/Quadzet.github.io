@@ -1,5 +1,6 @@
 "use strict";
-
+function sleep(ms) { return new Promise((r) => 
+    setTimeout(r, ms)); }
 
 function average(array) {
     if (array) return array.reduce((a, b) => a + b) / array.length;
@@ -183,7 +184,7 @@ function performAction(events, ms, attacker, defender) {
 }
 
 
-function main() {
+async function main() {
 
     // Fetch and set all user input settings
     fetchSettings()
@@ -219,6 +220,11 @@ function main() {
         "Revenge": Array.apply(null, Array(_iterations)).map((x, i) => 0),
         "Thunderfury": Array.apply(null, Array(_iterations)).map((x, i) => 0),
     };
+
+    document.querySelector("#progressBar").style.display = `block`;
+    document.querySelector("#barContainer").style.display = `block`;
+    let progressPerc = 0;
+
     let tps = [];
     let dps = [];
     let dtps = [];
@@ -231,7 +237,6 @@ function main() {
     let snapshots = [];
     for (let _i in range(_simDuration*1000/_snapshotLen+1)) snapshots.push([]);
     for (let i in range(_iterations)) {
-
         // Reset buffs, GCD, cooldowns...
         Tank.reset();
         Boss.reset();
@@ -306,8 +311,19 @@ function main() {
         rageSpent.push(Tank.rageSpent/_simDuration)
         Tank.rageSpent = 0
         dtps.push(dmgTaken/_simDuration)
+
+        // Fill the progressbar
+        if (i/_iterations > progressPerc/100) {
+            progressPerc += 1;
+            document.querySelector("#progressBar").style.width = `${progressPerc}%`
+            await sleep(0);
+        }
         //console.log(events)
     }
+    document.querySelector("#progressBar").style.display = `none`;
+    document.querySelector("#barContainer").style.display = `none`;
+    document.querySelector("#plotContainer").style.display = `block`;
+    document.querySelector("#resultContainer").style.display = `block`;
     let end = Date.now()
 
     // Some console logging...
@@ -331,8 +347,8 @@ function main() {
     threatStatsVec.push(`<td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td>`)
     threatStatsVec.push(`<td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td>`)
 
-    let el_div = document.querySelector("#outputContainer");
-    el_div.innerHTML = `
+    let el_div = document.querySelector("#resultContainer");
+    el_div.innerHTML = `<h3>Results</h3>
     <table>
         <tr><th>General Stats</th><th></th><th>Ability TPS</th><th/><th>Threat Stats</th></tr>
         <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${abilityVec[0]}${threatStatsVec[0]}</tr>
