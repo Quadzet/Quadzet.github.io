@@ -80,12 +80,17 @@ async function main() {
     document.querySelector("#barContainer").style.display = `block`;
 
     let numWorkers = window.navigator.hardwareConcurrency;
-    let remainderIterations = _iterations - Math.round(_iterations/numWorkers)*numWorkers
+    let remainderIterations = _iterations - Math.floor(_iterations/numWorkers)*numWorkers
     let numWorkersDone = 0;
     let progressPerc = 0;
     for (var i = 0; i < numWorkers; i++) {
         var worker = new Worker('./workers/worker.js');
-        let iterations = i == 0 ? Math.round(_iterations/numWorkers) + remainderIterations : Math.round(_iterations/numWorkers);
+        let iterations = i == 0 ? Math.floor(_iterations/numWorkers) + remainderIterations : Math.floor(_iterations/numWorkers);
+        if (iterations <= 0) {
+            numWorkersDone++;
+            continue;
+        }
+        console.log(iterations)
         worker.postMessage({
             globals: {
                 _simDuration: _simDuration,
