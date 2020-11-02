@@ -1,7 +1,7 @@
 "use strict";
 
 function updateRage(attacker, hit, rageCost) {
-    if (hit in ["dodge", "parry", "miss"]) attacker.addRage(-0.25*rageCost, true); // Default ability refund 80%
+    if (hit in ["dodge", "parry", "miss"]) attacker.addRage(-0.2*rageCost, true); // Default ability refund 80%
     else attacker.addRage(-rageCost, true);
 }
 
