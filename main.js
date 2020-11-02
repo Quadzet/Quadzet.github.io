@@ -90,7 +90,6 @@ async function main() {
             numWorkersDone++;
             continue;
         }
-        console.log(iterations)
         worker.postMessage({
             globals: {
                 _simDuration: _simDuration,
