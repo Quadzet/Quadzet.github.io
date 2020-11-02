@@ -156,8 +156,6 @@ async function main() {
         let end = Date.now()
 
         // Some console logging...
-        console.log(`number of results: ${tps.length}`)
-        console.log(tps.reduce((a, b) => a + b) / tps.length);
         let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
         console.log(`TPS: ${average(tps)}`);

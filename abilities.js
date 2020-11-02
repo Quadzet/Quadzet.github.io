@@ -104,6 +104,7 @@ class Bloodthirst extends Ability {
 class Revenge extends Ability {
     use(attacker, defender) {
         let damage = Math.random()*18 + 81; // Rank6: 81-99 dmg
+        damage += attacker.stats.twoPieceDreadnaught ? 75 : 0;
         damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
         let damageEvent = rollAttack(attacker.stats, defender.stats, damage, true, false, false, true);
         damageEvent.threat = 0;

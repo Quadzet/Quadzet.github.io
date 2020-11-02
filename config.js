@@ -38,6 +38,9 @@ let _slayerscrest = false;
 let _jomgabbar = false;
 let _lgg = false; 
 
+// Other Bonuses
+let _twoPieceDreadnaught = false;
+
 class StaticStats {
     constructor(stats) {
         this.type = stats.type;
@@ -69,6 +72,8 @@ class StaticStats {
         this.critMod = stats.critMod;
         this.threatMod = stats.threatMod;
         this.startRage = stats.startRage;
+
+        this.twoPieceDreadnaught = stats.twoPieceDreadnaught;
     }
 }
 
@@ -79,6 +84,7 @@ function fetchSettings() {
     let calcSettings = document.querySelector("#calcSettings");
     let talents = document.querySelector("#talents");
     let trinkets = document.querySelector("#trinkets");
+    let bonuses = document.querySelector("#bonuses");
     //let graphSettings = document.querySelector("#graphSettings");
 
 
@@ -111,6 +117,9 @@ function fetchSettings() {
     _diamondflask = trinkets.querySelector("#diamondflask").checked
     _jomgabbar = trinkets.querySelector("#jomgabbar").checked
     _slayerscrest = trinkets.querySelector("#slayerscrest").checked
+
+    // Other Bonuses
+    _twoPieceDreadnaught = bonuses.querySelector("#twoPieceDreadnaught").checked
     //_lgg = trinkets.querySelector("#lgg").checked
 
     _config = {
@@ -145,6 +154,8 @@ function fetchSettings() {
             threatMod: 1.3 * (1 + 0.03*_defiance),
             critMod: 2 + _impale*0.1,
             startRage: _startRage,
+
+            twoPieceDreadnaught: _twoPieceDreadnaught,
         }),
 
         bossStats: new StaticStats({
