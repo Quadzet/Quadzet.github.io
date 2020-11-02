@@ -74,7 +74,7 @@ function fetchSettings() {
 
 
     _iterations = Number(calcSettings.querySelector("#iterations").value)
-    _simDuration = Number(calcSettings.querySelector("#fightLength").value)
+    _simDuration = Math.round(Math.ceil(Number(calcSettings.querySelector("#fightLength").value)*2.5)*4)/10
     _breakpointValue = Number(calcSettings.querySelector("#TBPvalue").value)
     _breakpointTime = Number(calcSettings.querySelector("#TBPtime").value)
     _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
