@@ -43,6 +43,12 @@ function getAmount(event, ability, type) {
     else return 0;
 }
 
+// Fill the progressbar
+async function updateProgressbar(progressPerc) {
+    document.querySelector("#progressBar").style.width = `${progressPerc}%`
+    await sleep(0);
+}
+
 
 async function main() {
 
@@ -69,12 +75,14 @@ async function main() {
     let snapshots = []
     let breaches = 0
 
+    updateProgressbar(0)
     document.querySelector("#progressBar").style.display = `block`;
     document.querySelector("#barContainer").style.display = `block`;
 
     let numWorkers = window.navigator.hardwareConcurrency;
     let remainderIterations = _iterations - Math.round(_iterations/numWorkers)*numWorkers
     let numWorkersDone = 0;
+    let progressPerc = 0;
     for (var i = 0; i < numWorkers; i++) {
         var worker = new Worker('./workers/worker.js');
         let iterations = i == 0 ? Math.round(_iterations/numWorkers) + remainderIterations : Math.round(_iterations/numWorkers);
@@ -112,30 +120,30 @@ async function main() {
             console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
         })
         worker.addEventListener('message', function(e) {
-            for (let ability in results) {
-                results[`${ability}`] = results[`${ability}`].concat(e.data.results[`${ability}`]);
-            }
-            tps = tps.concat(e.data.tps);
-            dps = dps.concat(e.data.dps);
-            dtps = dtps.concat(e.data.dtps);
-            rageGained = rageGained.concat(e.data.rageGained);
-            rageSpent = rageSpent.concat(e.data.rageSpent);
-            flurryUptime = flurryUptime.concat(e.data.flurryUptime);
-            crusaderUptime = crusaderUptime.concat(e.data.crusaderUptime);
-            snapshots = snapshots.concat(e.data.snapshots);
-            breaches += e.data.breaches;
-            if (++numWorkersDone === numWorkers) {
-                postResults();
+            if (e.data.type == 'progressUpdate') {
+                progressPerc += e.data.progressPerc / numWorkers;
+                updateProgressbar(progressPerc);
+            } else {
+                for (let ability in results) {
+                    results[`${ability}`] = results[`${ability}`].concat(e.data.results[`${ability}`]);
+                }
+                tps = tps.concat(e.data.tps);
+                dps = dps.concat(e.data.dps);
+                dtps = dtps.concat(e.data.dtps);
+                rageGained = rageGained.concat(e.data.rageGained);
+                rageSpent = rageSpent.concat(e.data.rageSpent);
+                flurryUptime = flurryUptime.concat(e.data.flurryUptime);
+                crusaderUptime = crusaderUptime.concat(e.data.crusaderUptime);
+                snapshots = snapshots.concat(e.data.snapshots);
+                breaches += e.data.breaches;
+                if (++numWorkersDone === numWorkers) {
+                    postResults();
+                }
             }
         })
     }
     
     function postResults() {
-
-        document.querySelector("#progressBar").style.display = `none`;
-        document.querySelector("#barContainer").style.display = `none`;
-        document.querySelector("#plotContainer").style.display = `block`;
-        document.querySelector("#resultContainer").style.display = `block`;
 
         let end = Date.now()
 
@@ -301,6 +309,11 @@ async function main() {
             legend: {font: {color: "#c8ced1"}},
         }
         Plotly.newPlot('plotContainer', plotData, layout);
+
+        document.querySelector("#progressBar").style.display = `none`;
+        document.querySelector("#barContainer").style.display = `none`;
+        document.querySelector("#plotContainer").style.display = `block`;
+        document.querySelector("#resultContainer").style.display = `block`;
     }
 }
 

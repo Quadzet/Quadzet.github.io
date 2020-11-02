@@ -798,6 +798,7 @@ self.addEventListener('message', function(e) {
     let breaches = 0;
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
+    let progressPerc = 0;
     for (let _i in range(globals._simDuration*1000/globals._snapshotLen+1)) snapshots.push([]);
     for (let i in range(globals._iterations)) {
         // Reset buffs, GCD, cooldowns...
@@ -875,6 +876,12 @@ self.addEventListener('message', function(e) {
         Tank.rageSpent = 0
         dtps.push(dmgTaken/globals._simDuration)
         //console.log(events)
+        if (i/globals._iterations >= progressPerc/100) {
+            progressPerc += 1;
+            postMessage({
+                        type: 'progressUpdate',
+                        progressPerc: 1})
+        }
     }
     ret = {
         tps: tps,
