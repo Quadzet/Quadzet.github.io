@@ -3,6 +3,7 @@
 function updateRage(attacker, hit, rageCost) {
     if (hit in ["dodge", "parry", "miss"]) attacker.addRage(-0.2*rageCost, true); // Default ability refund 80%
     else attacker.addRage(-rageCost, true);
+    if (attacker.stats.fivePieceWrath && Math.random() < 0.2) attacker.addRage(5, true)
 }
 
 class Ability {

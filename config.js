@@ -40,6 +40,7 @@ let _lgg = false;
 
 // Other Bonuses
 let _twoPieceDreadnaught = false;
+let _fivePieceWrath = false;
 
 class StaticStats {
     constructor(stats) {
@@ -74,6 +75,7 @@ class StaticStats {
         this.startRage = stats.startRage;
 
         this.twoPieceDreadnaught = stats.twoPieceDreadnaught;
+        this.fivePieceWrath = stats.fivePieceWrath;
     }
 }
 
@@ -120,6 +122,7 @@ function fetchSettings() {
 
     // Other Bonuses
     _twoPieceDreadnaught = bonuses.querySelector("#twoPieceDreadnaught").checked
+    _fivePieceWrath = bonuses.querySelector("#fivePieceWrath").checked
     //_lgg = trinkets.querySelector("#lgg").checked
 
     _config = {
@@ -156,6 +159,7 @@ function fetchSettings() {
             startRage: _startRage,
 
             twoPieceDreadnaught: _twoPieceDreadnaught,
+            fivePieceWrath: _fivePieceWrath,
         }),
 
         bossStats: new StaticStats({
