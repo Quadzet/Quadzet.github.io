@@ -23,6 +23,13 @@ let _windfury = false;
 let _wcb = false;
 let _dmf = false;
 
+// Talents
+let _impHS = 3;
+let _impSA = 0;
+let _defiance = 5;
+let _impale = 0;
+let _dwspec = 5;
+
 // Trinkets
 let _kots = false;
 let _diamondflask = false;
@@ -59,6 +66,7 @@ class StaticStats {
         this.baseArmor = stats.baseArmor;
         this.baseHealth = stats.baseHealth;
 
+        this.critMod = stats.critMod;
         this.threatMod = stats.threatMod;
         this.startRage = stats.startRage;
     }
@@ -69,6 +77,7 @@ function fetchSettings() {
     let tankSettings = document.querySelector("#tankSettings");
     let bossSettings = document.querySelector("#bossSettings");
     let calcSettings = document.querySelector("#calcSettings");
+    let talents = document.querySelector("#talents");
     let trinkets = document.querySelector("#trinkets");
     //let graphSettings = document.querySelector("#graphSettings");
 
@@ -88,6 +97,13 @@ function fetchSettings() {
     _windfury = tankSettings.querySelector("#windfury").checked
     _wcb = tankSettings.querySelector("#wcb").checked
     _dmf = tankSettings.querySelector("#dmf").checked
+
+    // Talents 
+    _impHS = Number(talents.querySelector("#impHS").value) 
+    _impSA = Number(talents.querySelector("#impSA").value) 
+    _defiance = Number(talents.querySelector("#defiance").value) 
+    _impale = Number(talents.querySelector("#impale").value) 
+    _dwspec = Number(talents.querySelector("#dwspec").value) 
 
     // Trinkets
     _kots = trinkets.querySelector("#kots").checked
@@ -126,7 +142,8 @@ function fetchSettings() {
             baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
             baseHealth: Number(tankSettings.querySelector("#health").value),
 
-            threatMod: 1.495,
+            threatMod: 1.3 * (1 + 0.03*_defiance),
+            critMod: 2 + _impale*0.1,
             startRage: _startRage,
         }),
 
@@ -151,6 +168,7 @@ function fetchSettings() {
             defense: 315,
             baseArmor: Number(bossSettings.querySelector("#bossarmor").value),
 
+            critMod: 2,
             threatMod: 0,
             startRage: 0,
         })

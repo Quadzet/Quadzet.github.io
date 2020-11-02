@@ -86,27 +86,6 @@ class MHSwing extends Ability {
 }
 
 
-class OHSwing extends Ability {
-
-    use(attacker, defender) {
-        let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
-        damage *= 0.625*(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-        let damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, !attacker.isHeroicStrikeQueued, true);
-
-        damageEvent.threat = 0;
-        damageEvent.threat = this.threatCalculator(damageEvent, attacker);
-        damageEvent.ability = this.name;
-        // Add rage
-        if (damageEvent.hit == "miss") return;
-        else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
-        else {
-            attacker.addRage(damageEvent.damage*7.5/230.6, true);
-            defender.addRage(damageEvent.damage*2.5/230.6);
-        }
-        return damageEvent;
-    }
-}
-
 class Bloodthirst extends Ability {
     use(attacker, defender) {
         let damage = 0.45*attacker.getAP();

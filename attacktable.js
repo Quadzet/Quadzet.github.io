@@ -49,7 +49,7 @@ function twoRollTankBossTable(stats, defStats, damage) {
         let crit_roll = 100*Math.random();
         let block_roll = 100*Math.random();
         if (crit_roll < crit && block_roll < block) {
-            damage = Math.max(0, damage*2 - blockValue);
+            damage = Math.max(0, damage*stats.critMod - blockValue); // Impale
             type = 'crit block';
         }
         else if (block_roll < block) {
@@ -57,7 +57,7 @@ function twoRollTankBossTable(stats, defStats, damage) {
             type = 'block';
         }
         else if (crit_roll < crit) {
-            damage = damage*2;
+            damage = damage*stats.critMod; // Impale
             type = 'crit';
         }
     }
@@ -104,7 +104,7 @@ function rollTankBossTable(stats, defStats, damage, yellow = false, dualWieldMis
         type = "glance";
     }
     else if ((!yellow && rng < miss + parry + dodge + block + glance + crit) || (rng < miss + parry + dodge + block + crit)) {
-        damage = damage*2;
+        damage = damage*(yellow ? stats.critMod : 2); // Impale
         type = "crit";
     }
     else type = "hit";

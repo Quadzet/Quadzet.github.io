@@ -86,7 +86,6 @@ async function main() {
     for (var i = 0; i < numWorkers; i++) {
         var worker = new Worker('./workers/worker.js');
         let iterations = i == 0 ? Math.round(_iterations/numWorkers) + remainderIterations : Math.round(_iterations/numWorkers);
-        console.log(iterations)
         worker.postMessage({
             globals: {
                 _simDuration: _simDuration,
@@ -105,6 +104,11 @@ async function main() {
                 _windfury: _windfury,
                 _wcb: _wcb,
                 _dmf: _dmf,
+
+                _impHS: _impHS,
+                _impSA: _impSA,
+                _defiance: _defiance,
+                _dwspec: _dwspec,
 
                 _kots: _kots,
                 _diamondflask: _diamondflask,

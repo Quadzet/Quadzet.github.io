@@ -4,7 +4,7 @@ class Actor {
         this.name = name
         this.target = target
         this.abilities = abilities
-        this.threatMod = 1.495
+        this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor

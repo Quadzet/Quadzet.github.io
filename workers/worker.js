@@ -32,7 +32,25 @@ self.addEventListener('message', function(e) {
         return ret;
     }
 
-    "use strict";
+    class OHSwing extends Ability {
+
+        use(attacker, defender) {
+            let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
+            damage *= (0.5 + 0.025*globals._dwspec)*(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+            let damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, !attacker.isHeroicStrikeQueued, true);
+            damageEvent.threat = 0;
+            damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+            damageEvent.ability = this.name;
+            // Add rage
+            if (damageEvent.hit == "miss") return;
+            else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
+            else {
+                attacker.addRage(damageEvent.damage*7.5/230.6, true);
+                defender.addRage(damageEvent.damage*2.5/230.6);
+            }
+            return damageEvent;
+        }
+    }
 
     class Proc {
 
@@ -509,7 +527,7 @@ self.addEventListener('message', function(e) {
             // Use at pull
             if(ms == 0) {
                 this.duration = this.maxDuration;
-                let threat = owner.stats.baseHealth * 0.15 * 0.5;// * owner.threatMod; // TODO: Verify.
+                let threat = owner.stats.baseHealth * 0.15 * 0.5;
                 events.push({
                     type: "buff gained",
                     timestamp: ms, 
@@ -762,8 +780,8 @@ self.addEventListener('message', function(e) {
     let playerAbilities = [
         new Bloodthirst("Bloodthirst", 6000, 30, true),
         new Revenge("Revenge", 5000, 5, true, 273, 2.25),
-        new HeroicStrike("Heroic Strike", 0, 15, false, 175),
-        new SunderArmor("Sunder Armor", 0, 15, true, 260),
+        new HeroicStrike("Heroic Strike", 0, 15 - globals._impHS, false, 175),
+        new SunderArmor("Sunder Armor", 0, 15 - globals._impSA, true, 260),
         new OHSwing("OH Swing", globals._config.tankStats.OHSwing, 0, false),
         new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false),
     ];
