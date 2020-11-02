@@ -60,6 +60,7 @@ class StaticStats {
         this.baseHealth = stats.baseHealth;
 
         this.threatMod = stats.threatMod;
+        this.startRage = stats.startRage;
     }
 }
 
@@ -126,6 +127,7 @@ function fetchSettings() {
             baseHealth: Number(tankSettings.querySelector("#health").value),
 
             threatMod: 1.495,
+            startRage: _startRage,
         }),
 
         bossStats: new StaticStats({
@@ -150,6 +152,7 @@ function fetchSettings() {
             baseArmor: Number(bossSettings.querySelector("#bossarmor").value),
 
             threatMod: 0,
+            startRage: 0,
         })
     }
 }
