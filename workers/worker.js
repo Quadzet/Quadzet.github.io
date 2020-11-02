@@ -876,7 +876,6 @@ self.addEventListener('message', function(e) {
         dtps.push(dmgTaken/globals._simDuration)
         //console.log(events)
     }
-    console.log("Calculations complete!")
     ret = {
         tps: tps,
         dps: dps,
@@ -891,5 +890,6 @@ self.addEventListener('message', function(e) {
     }
 
     postMessage(ret);
+    close();
 
 })

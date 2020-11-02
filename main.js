@@ -51,13 +51,13 @@ async function main() {
 
     let start = Date.now()
     let results = {
-        "MH Swing": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "OH Swing": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "Heroic Strike": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "Bloodthirst": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "Sunder Armor": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "Revenge": Array.apply(null, Array(_iterations)).map((x, i) => 0),
-        "Thunderfury": Array.apply(null, Array(_iterations)).map((x, i) => 0),
+        "MH Swing": [],
+        "OH Swing": [],
+        "Heroic Strike": [],
+        "Bloodthirst": [],
+        "Sunder Armor": [],
+        "Revenge": [],
+        "Thunderfury": [],
     };
     let tps = []
     let dps = []
@@ -72,68 +72,77 @@ async function main() {
     document.querySelector("#progressBar").style.display = `block`;
     document.querySelector("#barContainer").style.display = `block`;
 
-    let numWorkers = 2;
-
+    let numWorkers = window.navigator.hardwareConcurrency;
+    let remainderIterations = _iterations - Math.round(_iterations/numWorkers)*numWorkers
+    let numWorkersDone = 0;
     for (var i = 0; i < numWorkers; i++) {
-        
+        var worker = new Worker('./workers/worker.js');
+        let iterations = i == 0 ? Math.round(_iterations/numWorkers) + remainderIterations : Math.round(_iterations/numWorkers);
+        console.log(iterations)
+        worker.postMessage({
+            globals: {
+                _simDuration: _simDuration,
+                _iterations: iterations,
+                _timeStep: _timeStep,
+                _snapshotLen: _snapshotLen,
+                _config: _config,
+                _breakpointValue: _breakpointValue,
+                _breakpointTime: _breakpointTime,
+                
+                _startRage: _startRage,
+                _deathwish: _deathwish,
+                _crusaderMH: _crusaderMH,
+                _crusaderOH: _crusaderOH,
+                _thunderfury: _thunderfury,
+                _windfury: _windfury,
+                _wcb: _wcb,
+                _dmf: _dmf,
+
+                _kots: _kots,
+                _diamondflask: _diamondflask,
+                _earthstrike: _earthstrike,
+                _slayerscrest: _slayerscrest,
+                _jomgabbar: _jomgabbar,
+                _lgg: _lgg,
+
+                _landedHits: _landedHits,
+            },
+        })
+        worker.addEventListener('error', function(e)  {
+            console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
+        })
+        worker.addEventListener('message', function(e) {
+            for (let ability in results) {
+                results[`${ability}`] = results[`${ability}`].concat(e.data.results[`${ability}`]);
+            }
+            tps = tps.concat(e.data.tps);
+            dps = dps.concat(e.data.dps);
+            dtps = dtps.concat(e.data.dtps);
+            rageGained = rageGained.concat(e.data.rageGained);
+            rageSpent = rageSpent.concat(e.data.rageSpent);
+            flurryUptime = flurryUptime.concat(e.data.flurryUptime);
+            crusaderUptime = crusaderUptime.concat(e.data.crusaderUptime);
+            snapshots = snapshots.concat(e.data.snapshots);
+            breaches += e.data.breaches;
+            if (++numWorkersDone === numWorkers) {
+                postResults();
+            }
+        })
     }
     
-    var worker = new Worker('./workers/worker.js');
-    worker.postMessage({
-                globals: {
-                    _simDuration: _simDuration,
-                    _iterations: _iterations,
-                    _timeStep: _timeStep,
-                    _snapshotLen: _snapshotLen,
-                    _config: _config,
-                    _breakpointValue: _breakpointValue,
-                    _breakpointTime: _breakpointTime,
-                    
-                    _startRage: _startRage,
-                    _deathwish: _deathwish,
-                    _crusaderMH: _crusaderMH,
-                    _crusaderOH: _crusaderOH,
-                    _thunderfury: _thunderfury,
-                    _windfury: _windfury,
-                    _wcb: _wcb,
-                    _dmf: _dmf,
+    function postResults() {
 
-                    _kots: _kots,
-                    _diamondflask: _diamondflask,
-                    _earthstrike: _earthstrike,
-                    _slayerscrest: _slayerscrest,
-                    _jomgabbar: _jomgabbar,
-                    _lgg: _lgg,
-
-                    _landedHits: _landedHits,
-                },
-            })
-
-    document.querySelector("#progressBar").style.display = `none`;
-    document.querySelector("#barContainer").style.display = `none`;
-    document.querySelector("#plotContainer").style.display = `block`;
-    document.querySelector("#resultContainer").style.display = `block`;
-
-    worker.addEventListener('error', function(e)  {
-        console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
-    })
-
-    worker.addEventListener('message', function(e) {
-        results = e.data.results;
-        tps = e.data.tps;
-        dps = e.data.dps;
-        dtps = e.data.dtps;
-        rageGained = e.data.rageGained;
-        rageSpent = e.data.rageSpent;
-        flurryUptime = e.data.flurryUptime;
-        crusaderUptime = e.data.crusaderUptime;
-        snapshots = e.data.snapshots;
-        breaches = e.data.breaches;
+        document.querySelector("#progressBar").style.display = `none`;
+        document.querySelector("#barContainer").style.display = `none`;
+        document.querySelector("#plotContainer").style.display = `block`;
+        document.querySelector("#resultContainer").style.display = `block`;
 
         let end = Date.now()
 
         // Some console logging...
-        let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms in ${(end-start)/1000} seconds.`;
+        console.log(`number of results: ${tps.length}`)
+        console.log(tps.reduce((a, b) => a + b) / tps.length);
+        let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
         console.log(`TPS: ${average(tps)}`);
         console.log(`DPS: ${average(dps)}`);
@@ -292,7 +301,7 @@ async function main() {
             legend: {font: {color: "#c8ced1"}},
         }
         Plotly.newPlot('plotContainer', plotData, layout);
-    })
+    }
 }
 
 
