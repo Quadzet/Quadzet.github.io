@@ -863,20 +863,22 @@ self.addEventListener('message', function(e) {
         let threat = 0;
         let damage = 0;
         let dmgTaken = 0;
-
-        // Set armor debuffs...
-        Boss.auras.forEach(aura => {
-            if (aura.name == "Sunder Armor") {
-                for (let _j in range(5)) { 
-                    aura.handleEvent(Boss, { "type": "damage", "ability": "Sunder Armor", "hit": "hit", "timestamp": ms}, events);
-                }
-            }
-            if (aura.name == "Faerie Fire") aura.handleEvent(Boss, { "type": "damage", "ability": "Faerie Fire", "hit": "hit", "timestamp": ms}, events);
-            if (aura.name == "Curse of Recklessness") aura.handleEvent(Boss, { "type": "damage", "ability": "Curse of Recklessness", "hit": "hit", "timestamp": ms}, events);
-        });
-
+        let debuffsApplied = false;
         while(ms <= globals._simDuration*1000) {
-
+            // Set armor debuffs...
+            if (ms >= globals._config.debuffDelay && !debuffsApplied) {
+                Boss.auras.forEach(aura => {
+                    if (aura.name == "Sunder Armor") {
+                        for (let _j in range(5)) { 
+                            aura.handleEvent(Boss, { "type": "damage", "ability": "Sunder Armor", "hit": "hit", "timestamp": ms}, events);
+                        }
+                    }
+                    if (aura.name == "Faerie Fire") aura.handleEvent(Boss, { "type": "damage", "ability": "Faerie Fire", "hit": "hit", "timestamp": ms}, events);
+                    if (aura.name == "Curse of Recklessness") aura.handleEvent(Boss, { "type": "damage", "ability": "Curse of Recklessness", "hit": "hit", "timestamp": ms}, events);
+                });
+                debuffsApplied = true;
+            }
+            
             let iterationEvents = [];
             performAction(iterationEvents, ms, Tank, Boss);
             performAction(iterationEvents, ms, Boss, Tank);

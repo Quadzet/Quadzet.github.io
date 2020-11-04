@@ -42,6 +42,10 @@ let _lgg = false;
 // Other Bonuses
 let _twoPieceDreadnaught = false;
 let _fivePieceWrath = false;
+let _threatenchant = false;
+
+// Fight config
+let _debuffDelay = 0;
 
 class StaticStats {
     constructor(stats) {
@@ -77,6 +81,7 @@ class StaticStats {
 
         this.twoPieceDreadnaught = stats.twoPieceDreadnaught;
         this.fivePieceWrath = stats.fivePieceWrath;
+        this.threatenchant = stats.threatenchant;
     }
 }
 
@@ -88,16 +93,18 @@ function fetchSettings() {
     let talents = document.querySelector("#talents");
     let trinkets = document.querySelector("#trinkets");
     let bonuses = document.querySelector("#bonuses");
-    //let graphSettings = document.querySelector("#graphSettings");
 
+    // Boss Settings
+    _debuffDelay = Number(bossSettings.querySelector("#debuffdelay").value)
 
+    // Calc Settings
     _iterations = Number(calcSettings.querySelector("#iterations").value)
     _simDuration = Math.round(Math.ceil(Number(calcSettings.querySelector("#fightLength").value)*2.5)*4)/10
     _breakpointValue = Number(calcSettings.querySelector("#TBPvalue").value)
     _breakpointTime = Number(calcSettings.querySelector("#TBPtime").value)
     _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
-    //_firstBatch = Number(graphSettings.querySelector("#firstbatch").value)
     
+    // Tank Settings
     _startRage = Number(tankSettings.querySelector("#startRage").value)
     _deathwish = tankSettings.querySelector("#deathwish").checked
     _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
@@ -125,6 +132,7 @@ function fetchSettings() {
     // Other Bonuses
     _twoPieceDreadnaught = bonuses.querySelector("#twoPieceDreadnaught").checked
     _fivePieceWrath = bonuses.querySelector("#fivePieceWrath").checked
+    _threatenchant = bonuses.querySelector("#threatenchant").checked
     //_lgg = trinkets.querySelector("#lgg").checked
 
     _config = {
@@ -156,7 +164,7 @@ function fetchSettings() {
             baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
             baseHealth: Number(tankSettings.querySelector("#health").value),
 
-            threatMod: 1.3 * (1 + 0.03*_defiance),
+            threatMod: 1.3 * (1 + 0.03*_defiance) * _threatenchant ? 1.02 : 1,
             critMod: 2 + _impale*0.1,
             startRage: _startRage,
 
@@ -188,6 +196,7 @@ function fetchSettings() {
             critMod: 2,
             threatMod: 0,
             startRage: 0,
-        })
+        }),
+        debuffDelay: _debuffDelay*1000, // seconds -> ms
     }
 }
