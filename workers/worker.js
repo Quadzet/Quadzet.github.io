@@ -12,15 +12,24 @@ self.addEventListener('message', function(e) {
 
     function getTankProcs() {
         let ret = []
-        if(globals._thunderfury) {
+        if(globals._thunderfuryMH) {
             ret.push(
-                new Thunderfury({
+                new ThunderfuryMH({
                     name: "Thunderfury",
                     damage: 300,
                 })
             )
         }
-    
+
+        if(globals._thunderfuryOH) {
+            ret.push(
+                new ThunderfuryOH({
+                    name: "Thunderfury",
+                    damage: 300,
+                })
+            )
+        }
+
         if(globals._windfury) {
             ret.push(
                 new WindfuryProc({
@@ -67,7 +76,7 @@ self.addEventListener('message', function(e) {
     
     }
     
-    class Thunderfury extends Proc {
+    class ThunderfuryMH extends Proc {
         constructor(input) {
             super(input)
         }
@@ -92,6 +101,31 @@ self.addEventListener('message', function(e) {
         }
     }
     
+    class ThunderfuryOH extends Proc {
+        constructor(input) {
+            super(input)
+        }
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
+                    // TODO: Spell-AttackTable ! Needed for crits mainly, potentially also for resists
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": this.damage*source.damageMod, // don't count enrage, use default 0.9 only
+                        "threat": (252 + this.damage)*source.threatMod, // 252 from debuff applications, my own testing.
+                    }
+                    events.push(procEvent);
+                    // Ensure that the target the get debuff applied
+                    target.auras.forEach(aura => aura.handleEvent(target, procEvent, events))
+                }
+            }
+        }
+    }
+
     class WindfuryProc extends Proc {
         constructor(input) {
             super(input)
@@ -639,7 +673,7 @@ self.addEventListener('message', function(e) {
             }));
         }
 
-        if(globals._thunderfury) {
+        if(globals._thunderfuryMH || globals._thunderfuryOH) {
             bossAuras.push(new ThunderfuryDebuff({
                     name: "Thunderfury",
                     maxDuration: 12000,
