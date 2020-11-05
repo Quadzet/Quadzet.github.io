@@ -28,7 +28,7 @@ function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
 function twoRollTankBossTable(stats, defStats, damage) {
     let wepSkill = stats.MHWepSkill;
     let miss = getPlayerMissChance(wepSkill, defStats.defense, stats.hit, false);
-    let parry = defStats.parry - 0.1 * (wepSkill - defStats.defense);
+    let parry = 14;
     let dodge = defStats.dodge - 0.1 * (wepSkill - defStats.defense);
     let blockValue = defStats.blockValue;
     let block = Math.min(5, 5 + (defStats.defense - wepSkill) * 0.1);
@@ -73,7 +73,7 @@ function rollTankBossTable(stats, defStats, damage, yellow = false, dualWieldMis
     let wepSkill = stats.MHWepSkill;
     if (OHSwing) wepSkill = stats.OHWepSkill;
     let miss = getPlayerMissChance(wepSkill, defStats.defense, stats.hit, dualWieldMiss);
-    let parry = defStats.parry - 0.1 * (wepSkill - defStats.defense);
+    let parry = 14;
     let dodge = defStats.dodge - 0.1 * (wepSkill - defStats.defense);
     let blockValue = defStats.blockValue;
     let block = Math.min(5, 5 + (defStats.defense - wepSkill) * 0.1);
