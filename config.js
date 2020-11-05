@@ -134,7 +134,7 @@ function fetchSettings() {
     _fivePieceWrath = bonuses.querySelector("#fivePieceWrath").checked
     _threatenchant = bonuses.querySelector("#threatenchant").checked
     //_lgg = trinkets.querySelector("#lgg").checked
-
+    
     _config = {
         tankStats: new StaticStats({
             type: "tank",
@@ -164,7 +164,7 @@ function fetchSettings() {
             baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
             baseHealth: 0, //Number(tankSettings.querySelector("#health").value),
 
-            threatMod: 1.3 * (1 + 0.03*_defiance) * _threatenchant ? 1.02 : 1,
+            threatMod: 1.3 * (1 + 0.03*_defiance) * (_threatenchant ? 1.02 : 1),
             critMod: 2 + _impale*0.1,
             startRage: _startRage,
 
