@@ -162,7 +162,7 @@ function fetchSettings() {
             blockValue: 0,
             defense: Number(tankSettings.querySelector("#defense").value),
             baseArmor: Number(tankSettings.querySelector("#tankarmor").value),
-            baseHealth: Number(tankSettings.querySelector("#health").value),
+            baseHealth: 0, //Number(tankSettings.querySelector("#health").value),
 
             threatMod: 1.3 * (1 + 0.03*_defiance) * _threatenchant ? 1.02 : 1,
             critMod: 2 + _impale*0.1,
