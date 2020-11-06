@@ -202,6 +202,7 @@ async function main() {
     let crusaderUptime = []
     let snapshots = []
     let breaches = 0
+    let bossSwings = 0;
 
     updateProgressbar(0)
     document.querySelector("#progressBar").style.display = `block`;
@@ -273,6 +274,7 @@ async function main() {
                 crusaderUptime = crusaderUptime.concat(e.data.crusaderUptime);
                 snapshots = snapshots.concat(e.data.snapshots);
                 breaches += e.data.breaches;
+                bossSwings += e.data.bossSwings;
                 if (++numWorkersDone === numWorkers) {
                     postResults();
                 }
@@ -283,7 +285,7 @@ async function main() {
     function postResults() {
 
         let end = Date.now()
-
+        console.log(`Boss swingtimer: ${(_simDuration * _iterations)/bossSwings}`)
         // Some console logging...
         let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
@@ -308,7 +310,7 @@ async function main() {
         let el_div = document.querySelector("#resultContainer");
         el_div.innerHTML = `<h3>Results</h3>
         <table>
-            <tr><th>General Stats</th><th></th><th>Ability TPS</th><th/><th>Threat Stats</th></tr>
+            <tr><th>General Stats</th><th></th><th>Ability TPS</th><th/><th>Statistics</th></tr>
             <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${abilityVec[0]}${threatStatsVec[0]}</tr>
             <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${abilityVec[1]}${threatStatsVec[1]}</tr>
             <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${abilityVec[2]}${threatStatsVec[2]}</tr>

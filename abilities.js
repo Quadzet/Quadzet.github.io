@@ -46,47 +46,6 @@ class Ability {
     }
 }
 
-class MHSwing extends Ability {
-    use(attacker, defender) {
-        let damageEvent = {};
-        // Heroic Strike
-        if (attacker.isHeroicStrikeQueued && attacker.rage > 15) {
-            let damage = this.weaponSwingRoll(attacker) + 157;
-            damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-            damageEvent = rollAttack(attacker.stats, defender.stats, damage, true);
-            this.staticThreat = 175;
-            damageEvent.threat = this.threatCalculator(damageEvent, attacker);
-            this.staticThreat = 0;
-            damageEvent.ability = "Heroic Strike";
-
-            // Remove rage
-            updateRage(attacker, damageEvent.hit, 15);
-        }
-        // White Swing
-        else {
-            let damage = this.weaponSwingRoll(attacker);
-            damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-            damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, true);
-
-            damageEvent.threat = 0;
-            damageEvent.threat = this.threatCalculator(damageEvent, attacker);
-            damageEvent.ability = "MH Swing";
-
-            // Add rage
-            if (damageEvent.hit == "miss") return;
-            else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
-            else {
-                attacker.addRage(damageEvent.damage*7.5/230.6, true);
-                defender.addRage(damageEvent.damage*2.5/230.6, true);
-            }
-        }
-
-        attacker.isHeroicStrikeQueued = false;
-        return damageEvent;
-    }
-}
-
-
 class Bloodthirst extends Ability {
     use(attacker, defender) {
         let damage = 0.45*attacker.getAP();
@@ -141,7 +100,7 @@ class SunderArmor extends Ability {
         return damageEvent;
     }
     isUsable(actor) {
-        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > 60);
+        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > 35);
     }
 }
 
@@ -155,6 +114,6 @@ class HeroicStrike extends Ability {
         };
     }
     isUsable(actor) {
-        return (actor.isHeroicStrikeQueued == false && actor.rage > 50);
+        return (actor.isHeroicStrikeQueued == false && actor.rage > this.rageCost);
     }
 }

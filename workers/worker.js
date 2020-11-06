@@ -41,6 +41,45 @@ self.addEventListener('message', function(e) {
         return ret;
     }
 
+    class MHSwing extends Ability {
+        use(attacker, defender) {
+            let damageEvent = {};
+            // Heroic Strike
+            if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - globals._impHS)) {
+                let damage = this.weaponSwingRoll(attacker) + 157;
+                damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+                damageEvent = rollAttack(attacker.stats, defender.stats, damage, true);
+                this.staticThreat = 175;
+                damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+                this.staticThreat = 0;
+                damageEvent.ability = "Heroic Strike";
+                // Remove rage
+                updateRage(attacker, damageEvent.hit, (15 - globals._impHS));
+            }
+            // White Swing
+            else {
+                let damage = this.weaponSwingRoll(attacker);
+                damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+                damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, true);
+                
+                damageEvent.threat = 0;
+                damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+                damageEvent.ability = "MH Swing";
+                
+                // Add rage
+                if (damageEvent.hit == "miss") return damageEvent;
+                else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
+                else {
+                    attacker.addRage(damageEvent.damage*7.5/230.6, true);
+                    defender.addRage(damageEvent.damage*2.5/230.6, true);
+                }
+            }
+            
+            attacker.isHeroicStrikeQueued = false;
+            return damageEvent;
+        }
+    }
+
     class OHSwing extends Ability {
 
         use(attacker, defender) {
@@ -51,7 +90,7 @@ self.addEventListener('message', function(e) {
             damageEvent.threat = this.threatCalculator(damageEvent, attacker);
             damageEvent.ability = this.name;
             // Add rage
-            if (damageEvent.hit == "miss") return;
+            if (damageEvent.hit == "miss") return damageEvent;
             else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
             else {
                 attacker.addRage(damageEvent.damage*7.5/230.6, true);
@@ -774,24 +813,21 @@ self.addEventListener('message', function(e) {
             if (ability.isUsable(attacker)) {
                 let abilityEvent = ability.use(attacker, defender);
     
-                if(abilityEvent) { // DANGEROUS
-    
-                    // TODO: Move these into Ability.use()
-                    abilityEvent.timestamp = ms;
-                    abilityEvent.target = defender.name;
-                    abilityEvent.source = attacker.name;
-    
-                    events.push(abilityEvent);
-                    ability.currentCooldown = ability.baseCooldown;
-                    if (ability.onGCD) attacker.GCD = 1500;
-    
-                    // Update Actor Auras if the event applies to the Aura
-                    attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
-                    defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
-                    attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
-                    
-                    if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
-                }
+                // TODO: Move these into Ability.use()
+                abilityEvent.timestamp = ms;
+                abilityEvent.target = defender.name;
+                abilityEvent.source = attacker.name;
+
+                events.push(abilityEvent);
+                ability.currentCooldown = ability.baseCooldown;
+                if (ability.onGCD) attacker.GCD = 1500;
+
+                // Update Actor Auras if the event applies to the Aura
+                attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
+                defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
+                attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
+                
+                if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
             }
         })
     
@@ -851,6 +887,7 @@ self.addEventListener('message', function(e) {
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
     let progressPerc = 0;
+    let bossSwings = 0; 
     for (let _i in range(globals._simDuration*1000/globals._snapshotLen+1)) snapshots.push([]);
     for (let i in range(globals._iterations)) {
         // Reset buffs, GCD, cooldowns...
@@ -910,6 +947,7 @@ self.addEventListener('message', function(e) {
             if (event) {
                 if (event.source == "Boss") {
                     if (event.damage) dmgTaken += event.damage;
+                    if (event.ability == "MH Swing") bossSwings += 1;
                 } else {
                     if (event.threat) threat += event.threat;
                     if (event.damage) damage += event.damage;
@@ -948,6 +986,7 @@ self.addEventListener('message', function(e) {
         results: results,
         breaches: breaches,
         snapshots: snapshots,
+        bossSwings: bossSwings,
     }
 
     postMessage(ret);

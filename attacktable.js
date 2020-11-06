@@ -118,13 +118,15 @@ function rollTankBossTable(stats, defStats, damage, yellow = false, dualWieldMis
 // Boss hitting the tank
 function rollBossTankTable(stats, defStats, damage, yellow = false) {
     let wepSkill = stats.MHWepSkill;
-    let miss = 5 - 0.04 * (wepSkill - defStats.defense);
-    let parry = defStats.parry - 0.04 * (wepSkill - 300);
-    let dodge = defStats.dodge - 0.04 * (wepSkill - 300);
+    let miss = Math.max(0, 5 - 0.04 * (wepSkill - defStats.defense));
+    let parry = defStats.parry - 0.04 * (wepSkill - defStats.defense);
+    let dodge = defStats.dodge - 0.04 * (wepSkill - defStats.defense);
     let blockValue = defStats.blockValue;
-    let block = defStats.block + (wepSkill - defStats.defense) * 0.04;
-    let crit  = stats.crit + 0.04 * (wepSkill - defStats.defense);
+    let block = Math.max(0, defStats.block + (wepSkill - defStats.defense) * 0.04);
+    let crit  = Math.max(0, stats.crit + 0.04 * (wepSkill - defStats.defense));
     let crush = (wepSkill - Math.min(300, defStats.defense)) * 2 - 15;
+
+//    console.log(`miss: ${miss}   parry: ${parry}   dodge: ${dodge}   block: ${block}   crit: ${crit}   crush: ${crush}`)
 
     let rng = 100*Math.random();
     let type = "";
