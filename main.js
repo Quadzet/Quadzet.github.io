@@ -62,6 +62,7 @@ function saveInput()
     localStorage.setItem("hands", document.querySelector("#hands").selectedIndex)
     localStorage.setItem("waist", document.querySelector("#waist").selectedIndex)
     localStorage.setItem("legs", document.querySelector("#legs").selectedIndex)
+    localStorage.setItem("feet", document.querySelector("#feet").selectedIndex)
     localStorage.setItem("ringone", document.querySelector("#ringone").selectedIndex)
     localStorage.setItem("ringtwo", document.querySelector("#ringtwo").selectedIndex)
     localStorage.setItem("trinketone", document.querySelector("#trinketone").selectedIndex)
@@ -71,6 +72,17 @@ function saveInput()
     localStorage.setItem("offhand", document.querySelector("#offhand").selectedIndex)
     localStorage.setItem("mhweptypelist", document.getElementById("mhweptypelist").selectedIndex)
     localStorage.setItem("ohweptypelist", document.getElementById("ohweptypelist").selectedIndex)
+
+    localStorage.setItem("headenchant", document.querySelector("#headenchant").selectedIndex)
+    localStorage.setItem("shoulderenchant", document.querySelector("#shoulderenchant").selectedIndex)
+    localStorage.setItem("backenchant", document.querySelector("#backenchant").selectedIndex)
+    localStorage.setItem("chestenchant", document.querySelector("#chestenchant").selectedIndex)
+    localStorage.setItem("wristenchant", document.querySelector("#wristenchant").selectedIndex)
+    localStorage.setItem("handenchant", document.querySelector("#handenchant").selectedIndex)
+    localStorage.setItem("legenchant", document.querySelector("#legenchant").selectedIndex)
+    localStorage.setItem("feetenchant", document.querySelector("#feetenchant").selectedIndex)
+    localStorage.setItem("mhwepenchant", document.querySelector("#mhwepenchant").selectedIndex)
+    localStorage.setItem("ohwepenchant", document.querySelector("#ohwepenchant").selectedIndex)
 
     localStorage.setItem("startRage", document.querySelector("#startRage").value)
     localStorage.setItem("deathwish", document.querySelector("#deathwish").checked)
@@ -83,6 +95,10 @@ function saveInput()
     localStorage.setItem("dmf", document.querySelector("#dmf").checked)
 
     // Talents 
+    localStorage.setItem("deflection", document.getElementById("deflection").value)
+    localStorage.setItem("cruelty", document.getElementById("cruelty").value)
+    localStorage.setItem("anticipation", document.getElementById("anticipation").value)
+    localStorage.setItem("toughness", document.getElementById("toughness").value)
     localStorage.setItem("impHS", document.querySelector("#impHS").value) 
     localStorage.setItem("impSA", document.querySelector("#impSA").value) 
     localStorage.setItem("impale", document.querySelector("#impale").value) 
@@ -131,6 +147,7 @@ function loadInput()
     document.querySelector("#hands").selectedIndex = localStorage.getItem("hands") ? localStorage.getItem("hands") : 0;
     document.querySelector("#waist").selectedIndex = localStorage.getItem("waist") ? localStorage.getItem("waist") : 0;
     document.querySelector("#legs").selectedIndex = localStorage.getItem("legs") ? localStorage.getItem("legs") : 0;
+    document.querySelector("#feet").selectedIndex = localStorage.getItem("feet") ? localStorage.getItem("feet") : 0;
     document.querySelector("#ringone").selectedIndex = localStorage.getItem("ringone") ? localStorage.getItem("ringone") : 0;
     document.querySelector("#ringtwo").selectedIndex = localStorage.getItem("ringtwo") ? localStorage.getItem("ringtwo") : 0;
     document.querySelector("#trinketone").selectedIndex = localStorage.getItem("trinketone") ? localStorage.getItem("trinketone") : 0;
@@ -143,6 +160,17 @@ function loadInput()
     document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 0;
     document.querySelector("#offhand").selectedIndex = localStorage.getItem("offhand") ? localStorage.getItem("offhand") : 0;
 
+    document.querySelector("#headenchant").selectedIndex = localStorage.getItem("headenchant") ? localStorage.getItem("headenchant") : 0;
+    document.querySelector("#shoulderenchant").selectedIndex = localStorage.getItem("shoulderenchant") ? localStorage.getItem("shoulderenchant") : 0;
+    document.querySelector("#backenchant").selectedIndex = localStorage.getItem("backenchant") ? localStorage.getItem("backenchant") : 0;
+    document.querySelector("#chestenchant").selectedIndex = localStorage.getItem("chestenchant") ? localStorage.getItem("chestenchant") : 0;
+    document.querySelector("#wristenchant").selectedIndex = localStorage.getItem("wristenchant") ? localStorage.getItem("wristenchant") : 0;
+    document.querySelector("#handenchant").selectedIndex = localStorage.getItem("handenchant") ? localStorage.getItem("handenchant") : 0;
+    document.querySelector("#legenchant").selectedIndex = localStorage.getItem("legenchant") ? localStorage.getItem("legenchant") : 0;
+    document.querySelector("#feetenchant").selectedIndex = localStorage.getItem("feetenchant") ? localStorage.getItem("feetenchant") : 0;
+    document.querySelector("#mhwepenchant").selectedIndex = localStorage.getItem("mhwepenchant") ? localStorage.getItem("mhwepenchant") : 0;
+    document.querySelector("#ohwepenchant").selectedIndex = localStorage.getItem("ohwepenchant") ? localStorage.getItem("ohwepenchant") : 0;
+
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
     document.querySelector("#deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
     document.querySelector("#crusaderMH").checked = localStorage.getItem("crusaderMH") == "false" ? false : true;
@@ -154,6 +182,10 @@ function loadInput()
     document.querySelector("#dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
 
     // Talents 
+    document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
+    document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
+    document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
+    document.getElementById("toughness").value = localStorage.getItem("toughness") ? localStorage.getItem("toughness") : 3;
     document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 3; 
     document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
@@ -201,8 +233,6 @@ async function main() {
     // Fetch and set all user input settings
     //fetchSettings()
     updateStats();
-
-    console.log(_simDuration)
 
     let start = Date.now()
     let results = {

@@ -7113,6 +7113,389 @@ let weapons = {
     }
 }
 
+let enchants = {
+    "None": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Agility": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 15,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Crusader": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Dodge": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 1,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Greater Agility": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 7,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Greater Stamina": {
+       "strength": 0,
+       "stamina": 7,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Greater Stats": {
+       "strength": 4,
+       "stamina": 4,
+       "agility": 4,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Greater Strength": {
+       "strength": 7,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Lesser Agility": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 3,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Libram of Constitution": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Libram of Rapidity": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Libram of Voracity (+8 Agi)": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 8,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Libram of Voracity (+8 Sta)": {
+       "strength": 0,
+       "stamina": 8,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Libram of Voracity (+8 Str)": {
+       "strength": 8,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Major Health": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Might of the Scourge": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 1,
+       "attackpower": 26,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Minor Haste": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Minor Speed": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Presence of Might": {
+       "strength": 0,
+       "stamina": 10,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 15,
+       "defense": 7,
+       "armor": 0,
+       "parry": 0
+    },
+    "Stats": {
+       "strength": 3,
+       "stamina": 3,
+       "agility": 3,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Strength": {
+       "strength": 15,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Subtlety": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Superior Agility": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 15,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Superior Stamina": {
+       "strength": 0,
+       "stamina": 9,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Superior Strength": {
+       "strength": 9,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Threat": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    },
+    "Zandalar Signet of Might": {
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 30,
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "armor": 0,
+       "parry": 0
+    }
+} 
+
+
+
+
 let weaponlists = {
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
     <option value="Annihilator">Annihilator</option>
@@ -7232,20 +7615,6 @@ let weaponlists = {
 
 
 //1,13,14,15,4,5,6,3,2,7,11,9,8,10,12,16,17
-/*
-function updateWeaponList()
-{
-    let mhselect = document.getElementById("mainhand")
-    let weapontype = document.getElementById("mhweptypelist").value
-
-    mhselect.innerHTML = weaponlists[weapontype]
-
-    let ohselect = document.getElementById("offhand")
-    weapontype = document.getElementById("ohweptypelist").value
-
-    ohselect.innerHTML = weaponlists[weapontype]
-    updateStats();
-}*/
 
 function updateMHWeaponList(doUpdateStats)
 {
@@ -7267,6 +7636,51 @@ function updateOHWeaponList(doUpdateStats)
 
 function updateStats()
 {
+    // Boss Settings
+    _debuffDelay = Number(document.querySelector("#debuffdelay").value)
+
+    // Calc Settings
+    _iterations = Number(document.querySelector("#iterations").value)
+    _simDuration = Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10
+    _breakpointValue = Number(document.querySelector("#TBPvalue").value)
+    _breakpointTime = Number(document.querySelector("#TBPtime").value)
+    _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
+
+    // Tank Settings
+    _startRage = Number(document.querySelector("#startRage").value)
+    _deathwish = document.querySelector("#deathwish").checked
+    _crusaderMH = document.querySelector("#crusaderMH").checked
+    _crusaderOH = document.querySelector("#crusaderOH").checked
+    _thunderfuryMH = document.querySelector("#thunderfuryMH").checked
+    _thunderfuryOH = document.querySelector("#thunderfuryOH").checked
+    _windfury = document.querySelector("#windfury").checked
+    _wcb = document.querySelector("#wcb").checked
+    _dmf = document.querySelector("#dmf").checked
+
+    // Talents 
+    let deflection = Number(document.getElementById("deflection").value)
+    let cruelty = Number(document.getElementById("cruelty").value)
+    let anticipation = Number(document.getElementById("anticipation").value)
+    let toughness = Number(document.getElementById("toughness").value)
+    _impHS = Number(document.getElementById("impHS").value) 
+    _impSA = Number(document.getElementById("impSA").value) 
+    _defiance = Number(document.getElementById("defiance").value) 
+    _impale = Number(document.getElementById("impale").value) 
+    _dwspec = Number(document.getElementById("dwspec").value) 
+
+    // Trinkets
+    _kots = document.querySelector("#kots").checked
+    _earthstrike = document.querySelector("#earthstrike").checked
+    _diamondflask = document.querySelector("#diamondflask").checked
+    _jomgabbar = document.querySelector("#jomgabbar").checked
+    _slayerscrest = document.querySelector("#slayerscrest").checked
+
+    // Other Bonuses
+    _twoPieceDreadnaught = document.querySelector("#twoPieceDreadnaught").checked
+    _fivePieceWrath = document.querySelector("#fivePieceWrath").checked
+    _threatenchant = document.querySelector("#threatenchant").checked
+
+
     let race = document.querySelector("#race").value
     let head = document.querySelector("#head").value
     let neck = document.querySelector("#neck").value
@@ -7277,6 +7691,7 @@ function updateStats()
     let hand = document.querySelector("#hands").value
     let waist = document.querySelector("#waist").value
     let leg = document.querySelector("#legs").value
+    let boots = document.querySelector("#feet").value
     let ringone = document.querySelector("#ringone").value
     let ringtwo = document.querySelector("#ringtwo").value
     let trinketone = document.querySelector("#trinketone").value
@@ -7284,6 +7699,17 @@ function updateStats()
     let ranged = document.querySelector("#ranged").value
     let mainhand = document.querySelector("#mainhand").value
     let offhand = document.querySelector("#offhand").value
+
+    let headenchant = document.querySelector("#headenchant").value
+    let shoulderenchant = document.querySelector("#shoulderenchant").value
+    let backenchant = document.querySelector("#backenchant").value
+    let chestenchant = document.querySelector("#chestenchant").value
+    let wristenchant = document.querySelector("#wristenchant").value
+    let handenchant = document.querySelector("#handenchant").value
+    let legenchant = document.querySelector("#legenchant").value
+    let feetenchant = document.querySelector("#feetenchant").value
+    let mhwepenchant = document.querySelector("#mhwepenchant").value
+    let ohwepenchant = document.querySelector("#ohwepenchant").value
 
     let gear = [
         races[race],
@@ -7296,6 +7722,7 @@ function updateStats()
         hands[hand],
         waists[waist],
         legs[leg],
+        feet[boots],
         rings[ringone],
         rings[ringtwo],
         trinkets[trinketone],
@@ -7303,6 +7730,16 @@ function updateStats()
         rangedweps[ranged],
         weapons[mainhand],
         weapons[offhand],
+        enchants[headenchant],
+        enchants[shoulderenchant],
+        enchants[backenchant],
+        enchants[chestenchant],
+        enchants[wristenchant],
+        enchants[handenchant],
+        enchants[legenchant],
+        enchants[feetenchant],
+        enchants[mhwepenchant],
+        enchants[ohwepenchant],
     ]
 
     let strength = 0;
@@ -7314,7 +7751,7 @@ function updateStats()
     let armor = 0;
     let parry = 0;
     let dodge = 0;
-    let defense = 0;
+    let defense = Math.round(anticipation*2);
     let block = 0;
     let blockvalue = 0;
 
@@ -7351,19 +7788,19 @@ function updateStats()
                 ohwepskill += item.skill;
         }
     })
-    playermhskill
+
     document.getElementById("playerstrength").innerHTML = `${strength} + `;
     document.getElementById("playerstamina").innerHTML = `${stamina} + `;
     document.getElementById("playeragility").innerHTML = `${agility} + `;
     document.getElementById("playerhit").innerHTML = `${hit} + `;
-    document.getElementById("playercrit").innerHTML = `${crit} + `;
-    document.getElementById("playerattackpower").innerHTML = `${attackpower} + `;
-    document.getElementById("playerarmor").innerHTML = `${armor} + `;
-    document.getElementById("playerparry").innerHTML = `${parry} + `;
-    document.getElementById("playerdodge").innerHTML = `${dodge} + `;
-    document.getElementById("playerdefense").innerHTML = `${defense} + `;
-    document.getElementById("playerblock").innerHTML = `${block} + `;
-    document.getElementById("playerblockvalue").innerHTML = `${blockvalue} + `;
+    document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*100)/100} + `;
+    document.getElementById("playerattackpower").innerHTML = `${attackpower + strength*2} + `;
+    document.getElementById("playerarmor").innerHTML = `${Math.round((armor*(1+0.02*toughness) + agility*2)*100)/100} + `;
+    document.getElementById("playerparry").innerHTML = `${Math.round((parry + 5 + deflection + defense*0.04)*100)/100} + `;
+    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge + agility/20 + defense*0.04)*100)/100} + `;
+    document.getElementById("playerdefense").innerHTML = `${defense + 300} + `;
+    //document.getElementById("playerblock").innerHTML = `${block} + `;
+    //document.getElementById("playerblockvalue").innerHTML = `${blockvalue} + `;
     document.getElementById("playermhskill").innerHTML = `${mhwepskill} + `;
     document.getElementById("playerohskill").innerHTML = `${ohwepskill} + `;
 
@@ -7374,53 +7811,6 @@ function updateStats()
 
     // *** OLD STUFF ***
 
-    let tankSettings = document.querySelector("#tankSettings");
-    let bossSettings = document.querySelector("#bossSettings");
-    let calcSettings = document.querySelector("#calcSettings");
-    let talents = document.querySelector("#talents");
-    //let trinkets = document.querySelector("#trinkets");
-    let bonuses = document.querySelector("#bonuses");
-
-    // Boss Settings
-    _debuffDelay = Number(bossSettings.querySelector("#debuffdelay").value)
-
-    // Calc Settings
-    _iterations = Number(calcSettings.querySelector("#iterations").value)
-    _simDuration = Math.round(Math.ceil(Number(calcSettings.querySelector("#fightLength").value)*2.5)*4)/10
-    _breakpointValue = Number(calcSettings.querySelector("#TBPvalue").value)
-    _breakpointTime = Number(calcSettings.querySelector("#TBPtime").value)
-    _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
-    
-    // Tank Settings
-    _startRage = Number(tankSettings.querySelector("#startRage").value)
-    _deathwish = tankSettings.querySelector("#deathwish").checked
-    _crusaderMH = tankSettings.querySelector("#crusaderMH").checked
-    _crusaderOH = tankSettings.querySelector("#crusaderOH").checked
-    _thunderfuryMH = tankSettings.querySelector("#thunderfuryMH").checked
-    _thunderfuryOH = tankSettings.querySelector("#thunderfuryOH").checked
-    _windfury = tankSettings.querySelector("#windfury").checked
-    _wcb = tankSettings.querySelector("#wcb").checked
-    _dmf = tankSettings.querySelector("#dmf").checked
-
-    // Talents 
-    _impHS = Number(talents.querySelector("#impHS").value) 
-    _impSA = Number(talents.querySelector("#impSA").value) 
-    _defiance = Number(talents.querySelector("#defiance").value) 
-    _impale = Number(talents.querySelector("#impale").value) 
-    _dwspec = Number(talents.querySelector("#dwspec").value) 
-
-    // Trinkets
-    _kots = document.querySelector("#kots").checked
-    _earthstrike = document.querySelector("#earthstrike").checked
-    _diamondflask = document.querySelector("#diamondflask").checked
-    _jomgabbar = document.querySelector("#jomgabbar").checked
-    _slayerscrest = document.querySelector("#slayerscrest").checked
-
-    // Other Bonuses
-    _twoPieceDreadnaught = bonuses.querySelector("#twoPieceDreadnaught").checked
-    _fivePieceWrath = bonuses.querySelector("#fivePieceWrath").checked
-    _threatenchant = bonuses.querySelector("#threatenchant").checked
-    //_lgg = trinkets.querySelector("#lgg").checked
     
     _config = {
         tankStats: new StaticStats({
@@ -7463,9 +7853,9 @@ function updateStats()
             type: "boss",
             level: 63,
 
-            MHMin: Number(bossSettings.querySelector("#swingMin").value),
-            MHMax: Number(bossSettings.querySelector("#swingMax").value),
-            MHSwing: Number(bossSettings.querySelector("#swingTimer").value)*1000,
+            MHMin: Number(document.querySelector("#swingMin").value),
+            MHMax: Number(document.querySelector("#swingMax").value),
+            MHSwing: Number(document.querySelector("#swingTimer").value)*1000,
 
             MHWepSkill: 315,
             damageMod: 0.9, // Defensive Stance
@@ -7478,7 +7868,7 @@ function updateStats()
             dodge: 5,    // 6.5% with skilldiff
             block: 5,
             defense: 315,
-            baseArmor: Number(bossSettings.querySelector("#bossarmor").value),
+            baseArmor: Number(document.querySelector("#bossarmor").value),
 
             critMod: 2,
             threatMod: 0,
