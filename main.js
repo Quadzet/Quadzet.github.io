@@ -52,21 +52,26 @@ async function updateProgressbar(progressPerc) {
 function saveInput()
 {
     // Tank Settings
-    localStorage.setItem("AP", document.querySelector("#AP").value);
-    localStorage.setItem("crit", document.querySelector("#crit").value)
-    localStorage.setItem("hit", document.querySelector("#hit").value)
-    localStorage.setItem("MHWepSkill", document.querySelector("#MHWepSkill").value)
-    localStorage.setItem("OHWepSkill", document.querySelector("#OHWepSkill").value)
-    localStorage.setItem("MHMin", document.querySelector("#MHMin").value)
-    localStorage.setItem("MHMax", document.querySelector("#MHMax").value)
-    localStorage.setItem("MHSwing", document.querySelector("#MHSwing").value)
-    localStorage.setItem("OHMin", document.querySelector("#OHMin").value)
-    localStorage.setItem("OHMax", document.querySelector("#OHMax").value)
-    localStorage.setItem("OHSwing", document.querySelector("#OHSwing").value)
-    localStorage.setItem("parry", document.querySelector("#parry").value)
-    localStorage.setItem("dodge", document.querySelector("#dodge").value)
-    localStorage.setItem("defense", document.querySelector("#defense").value)
-    localStorage.setItem("tankarmor", document.querySelector("#tankarmor").value)
+    localStorage.setItem("race", document.querySelector("#race").selectedIndex)
+    localStorage.setItem("head", document.querySelector("#head").selectedIndex)
+    localStorage.setItem("neck", document.querySelector("#neck").selectedIndex)
+    localStorage.setItem("shoulder", document.querySelector("#shoulder").selectedIndex)
+    localStorage.setItem("cape", document.querySelector("#cape").selectedIndex)
+    localStorage.setItem("chest", document.querySelector("#chest").selectedIndex)
+    localStorage.setItem("wrist", document.querySelector("#wrist").selectedIndex)
+    localStorage.setItem("hands", document.querySelector("#hands").selectedIndex)
+    localStorage.setItem("waist", document.querySelector("#waist").selectedIndex)
+    localStorage.setItem("legs", document.querySelector("#legs").selectedIndex)
+    localStorage.setItem("ringone", document.querySelector("#ringone").selectedIndex)
+    localStorage.setItem("ringtwo", document.querySelector("#ringtwo").selectedIndex)
+    localStorage.setItem("trinketone", document.querySelector("#trinketone").selectedIndex)
+    localStorage.setItem("trinkettwo", document.querySelector("#trinkettwo").selectedIndex)
+    localStorage.setItem("ranged", document.querySelector("#ranged").selectedIndex)
+    localStorage.setItem("mainhand", document.querySelector("#mainhand").selectedIndex)
+    localStorage.setItem("offhand", document.querySelector("#offhand").selectedIndex)
+    localStorage.setItem("mhweptypelist", document.getElementById("mhweptypelist").selectedIndex)
+    localStorage.setItem("ohweptypelist", document.getElementById("ohweptypelist").selectedIndex)
+
     localStorage.setItem("startRage", document.querySelector("#startRage").value)
     localStorage.setItem("deathwish", document.querySelector("#deathwish").checked)
     localStorage.setItem("crusaderMH", document.querySelector("#crusaderMH").checked)
@@ -116,21 +121,28 @@ function saveInput()
 function loadInput()
 {
     // Tank Settings
-    document.querySelector("#AP").value = localStorage.getItem("AP") ? localStorage.getItem("AP") : 2000;
-    document.querySelector("#crit").value = localStorage.getItem("crit") ? localStorage.getItem("crit") : 40;
-    document.querySelector("#hit").value = localStorage.getItem("hit") ? localStorage.getItem("hit") : 6;
-    document.querySelector("#MHWepSkill").value = localStorage.getItem("MHWepSkill") ? localStorage.getItem("MHWepSkill") : 309;
-    document.querySelector("#OHWepSkill").value = localStorage.getItem("OHWepSkill") ? localStorage.getItem("OHWepSkill") : 309;
-    document.querySelector("#MHMin").value = localStorage.getItem("MHMin") ? localStorage.getItem("MHMin") : 60;
-    document.querySelector("#MHMax").value = localStorage.getItem("MHMax") ? localStorage.getItem("MHMax") : 145;
-    document.querySelector("#MHSwing").value = localStorage.getItem("MHSwing") ? localStorage.getItem("MHSwing") : 1.9;
-    document.querySelector("#OHMin").value = localStorage.getItem("OHMin") ? localStorage.getItem("OHMin") : 86;
-    document.querySelector("#OHMax").value = localStorage.getItem("OHMax") ? localStorage.getItem("OHMax") : 162;
-    document.querySelector("#OHSwing").value = localStorage.getItem("OHSwing") ? localStorage.getItem("OHSwing") : 2.2;
-    document.querySelector("#parry").value = localStorage.getItem("parry") ? localStorage.getItem("parry") : 7;
-    document.querySelector("#dodge").value = localStorage.getItem("dodge") ? localStorage.getItem("dodge") : 24;
-    document.querySelector("#defense").value = localStorage.getItem("defense") ? localStorage.getItem("defense") : 330;
-    document.querySelector("#tankarmor").value = localStorage.getItem("tankarmor") ? localStorage.getItem("tankarmor") : 6000;
+    document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 0;
+    document.querySelector("#head").selectedIndex = localStorage.getItem("head") ? localStorage.getItem("head") : 0;
+    document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 0;
+    document.querySelector("#shoulder").selectedIndex = localStorage.getItem("shoulder") ? localStorage.getItem("shoulder") : 0;
+    document.querySelector("#cape").selectedIndex = localStorage.getItem("cape") ? localStorage.getItem("cape") : 0;
+    document.querySelector("#chest").selectedIndex = localStorage.getItem("chest") ? localStorage.getItem("chest") : 0;
+    document.querySelector("#wrist").selectedIndex = localStorage.getItem("wrist") ? localStorage.getItem("wrist") : 0;
+    document.querySelector("#hands").selectedIndex = localStorage.getItem("hands") ? localStorage.getItem("hands") : 0;
+    document.querySelector("#waist").selectedIndex = localStorage.getItem("waist") ? localStorage.getItem("waist") : 0;
+    document.querySelector("#legs").selectedIndex = localStorage.getItem("legs") ? localStorage.getItem("legs") : 0;
+    document.querySelector("#ringone").selectedIndex = localStorage.getItem("ringone") ? localStorage.getItem("ringone") : 0;
+    document.querySelector("#ringtwo").selectedIndex = localStorage.getItem("ringtwo") ? localStorage.getItem("ringtwo") : 0;
+    document.querySelector("#trinketone").selectedIndex = localStorage.getItem("trinketone") ? localStorage.getItem("trinketone") : 0;
+    document.querySelector("#trinkettwo").selectedIndex = localStorage.getItem("trinkettwo") ? localStorage.getItem("trinkettwo") : 0;
+    document.querySelector("#ranged").selectedIndex = localStorage.getItem("ranged") ? localStorage.getItem("ranged") : 0;
+    document.querySelector("#mhweptypelist").selectedIndex = localStorage.getItem("mhweptypelist") ? localStorage.getItem("mhweptypelist") : 0;
+    document.querySelector("#ohweptypelist").selectedIndex = localStorage.getItem("ohweptypelist") ? localStorage.getItem("ohweptypelist") : 0;
+    updateMHWeaponList(false);
+    updateOHWeaponList(false);
+    document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 0;
+    document.querySelector("#offhand").selectedIndex = localStorage.getItem("offhand") ? localStorage.getItem("offhand") : 0;
+
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
     document.querySelector("#deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
     document.querySelector("#crusaderMH").checked = localStorage.getItem("crusaderMH") == "false" ? false : true;
@@ -176,12 +188,21 @@ function loadInput()
     document.querySelector("#lineSelect").selectedIndex = localStorage.getItem("lineSelect") ? localStorage.getItem("lineSelect") : 0;
 }  
 
+function onLoadPage()
+{
+    loadInput();
+    updateStats();
+}
+
 async function main() {
 
     // Cache the user input locally
     saveInput();
     // Fetch and set all user input settings
-    fetchSettings()
+    //fetchSettings()
+    updateStats();
+
+    console.log(_simDuration)
 
     let start = Date.now()
     let results = {

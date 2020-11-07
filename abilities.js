@@ -2,7 +2,7 @@
 
 function updateRage(attacker, hit, rageCost) {
     if (attacker.stats.fivePieceWrath && Math.random() < 0.25) rageCost = Math.max(rageCost - 5, 0) // 0.25 instead of 0.2 to account for parry/dodge streaks not consuming the buff
-    if (hit in ["dodge", "parry", "miss"]) attacker.addRage(-0.2*rageCost, true); // Default ability refund 80%
+    if (["dodge", "parry", "miss"].includes(hit)) attacker.addRage(-0.2*rageCost, true); // Default ability refund 80%
     else attacker.addRage(-rageCost, true);
 }
 
