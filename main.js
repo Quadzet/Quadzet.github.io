@@ -86,10 +86,6 @@ function saveInput()
 
     localStorage.setItem("startRage", document.querySelector("#startRage").value)
     localStorage.setItem("deathwish", document.querySelector("#deathwish").checked)
-    localStorage.setItem("crusaderMH", document.querySelector("#crusaderMH").checked)
-    localStorage.setItem("crusaderOH", document.querySelector("#crusaderOH").checked)
-    localStorage.setItem("thunderfuryMH", document.querySelector("#thunderfuryMH").checked)
-    localStorage.setItem("thunderfuryOH", document.querySelector("#thunderfuryOH").checked)
     localStorage.setItem("windfury", document.querySelector("#windfury").checked)
     localStorage.setItem("wcb", document.querySelector("#wcb").checked)
     localStorage.setItem("dmf", document.querySelector("#dmf").checked)
@@ -104,14 +100,44 @@ function saveInput()
     localStorage.setItem("impale", document.querySelector("#impale").value) 
     localStorage.setItem("defiance", document.querySelector("#defiance").value) 
     localStorage.setItem("dwspec", document.querySelector("#dwspec").value) 
+    
+    // Other Bonuses
+    localStorage.setItem("twoPieceDreadnaught", document.querySelector("#twoPieceDreadnaught").checked)
+    localStorage.setItem("fivePieceWrath", document.querySelector("#fivePieceWrath").checked)
+    
+    // Buffs
+    localStorage.setItem("mhstone", document.getElementById("mhstone").selectedIndex);
+    localStorage.setItem("ohstone", document.getElementById("ohstone").selectedIndex);
+    localStorage.setItem("strbuff", document.getElementById("strbuff").selectedIndex);
+    localStorage.setItem("apbuff", document.getElementById("apbuff").selectedIndex);
+    localStorage.setItem("agibuff", document.getElementById("agibuff").selectedIndex);
+    localStorage.setItem("statbuff", document.getElementById("statbuff").selectedIndex);
+    localStorage.setItem("foodbuff", document.getElementById("foodbuff").selectedIndex);
+    localStorage.setItem("alcohol", document.getElementById("alcohol").selectedIndex);
+    localStorage.setItem("potion", document.getElementById("potion").selectedIndex);
 
-    // Trinkets
-    localStorage.setItem("none", document.querySelector("#none").checked)
-    localStorage.setItem("kots", document.querySelector("#kots").checked)
-    localStorage.setItem("earthstrike", document.querySelector("#earthstrike").checked)
-    localStorage.setItem("diamondflask", document.querySelector("#diamondflask").checked)
-    localStorage.setItem("jomgabbar", document.querySelector("#jomgabbar").checked)
-    localStorage.setItem("slayerscrest", document.querySelector("#slayerscrest").checked)
+    localStorage.setItem("armorelixir", document.getElementById("armorelixir").checked);
+    localStorage.setItem("hpelixir", document.getElementById("hpelixir").checked);
+    localStorage.setItem("titans", document.getElementById("titans").checked);
+    localStorage.setItem("dragonslayer", document.getElementById("dragonslayer").checked);
+    localStorage.setItem("zandalar", document.getElementById("zandalar").checked);
+    localStorage.setItem("wcb", document.getElementById("wcb").checked);
+    localStorage.setItem("dmf", document.getElementById("dmf").checked);
+    localStorage.setItem("dmstamina", document.getElementById("dmstamina").checked);
+    localStorage.setItem("dmAP", document.getElementById("dmAP").checked);
+    localStorage.setItem("dmspell", document.getElementById("dmspell").checked);
+    localStorage.setItem("songflower", document.getElementById("songflower").checked);
+    localStorage.setItem("bshout", document.getElementById("bshout").checked);
+    localStorage.setItem("pack", document.getElementById("pack").checked);
+    localStorage.setItem("trueshot", document.getElementById("trueshot").checked);
+    localStorage.setItem("mark", document.getElementById("mark").checked);
+    localStorage.setItem("fortitude", document.getElementById("fortitude").checked);
+    localStorage.setItem("kings", document.getElementById("kings").checked);
+    localStorage.setItem("might", document.getElementById("might").checked);
+    localStorage.setItem("windfury", document.getElementById("windfury").checked);
+    localStorage.setItem("strofearth", document.getElementById("strofearth").checked);
+    localStorage.setItem("graceofair", document.getElementById("graceofair").checked);
+    localStorage.setItem("impweptotems", document.getElementById("impweptotems").checked);
 
     // Boss Settings
     localStorage.setItem("swingMin", document.querySelector("#swingMin").value)
@@ -119,11 +145,6 @@ function saveInput()
     localStorage.setItem("swingTimer", document.querySelector("#swingTimer").value)
     localStorage.setItem("bossarmor", document.querySelector("#bossarmor").value)
     localStorage.setItem("debuffdelay", document.querySelector("#debuffdelay").value)
-    
-    // Other Bonuses
-    localStorage.setItem("twoPieceDreadnaught", document.querySelector("#twoPieceDreadnaught").checked)
-    localStorage.setItem("fivePieceWrath", document.querySelector("#fivePieceWrath").checked)
-    localStorage.setItem("threatenchant", document.querySelector("#threatenchant").checked)
 
     // Calc Settings
     localStorage.setItem("iterations", document.querySelector("#iterations").value)
@@ -173,10 +194,6 @@ function loadInput()
 
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
     document.querySelector("#deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
-    document.querySelector("#crusaderMH").checked = localStorage.getItem("crusaderMH") == "false" ? false : true;
-    document.querySelector("#crusaderOH").checked = localStorage.getItem("crusaderOH") == "true" ? true : false;
-    document.querySelector("#thunderfuryMH").checked = localStorage.getItem("thunderfuryMH") == "false" ? false : true;
-    document.querySelector("#thunderfuryOH").checked = localStorage.getItem("thunderfuryOH") == "true" ? true : false;
     document.querySelector("#windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
     document.querySelector("#wcb").checked = localStorage.getItem("wcb") == "true" ? true : false;
     document.querySelector("#dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
@@ -191,14 +208,44 @@ function loadInput()
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
     document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
     document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 5; 
+    
+    // Other Bonuses
+    document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
+    document.querySelector("#fivePieceWrath").checked = localStorage.getItem("fivePieceWrath") == "true" ? true : false;
 
-    // Trinkets
-    document.querySelector("#none").checked = localStorage.getItem("none") == "true" ? true : false;
-    document.querySelector("#kots").checked = localStorage.getItem("kots") == "true" ? true : false;
-    document.querySelector("#earthstrike").checked = localStorage.getItem("earthstrike") == "true" ? true : false;
-    document.querySelector("#diamondflask").checked = localStorage.getItem("diamondflask") == "true" ? true : false;
-    document.querySelector("#jomgabbar").checked = localStorage.getItem("jomgabbar") == "true" ? true : false;
-    document.querySelector("#slayerscrest").checked = localStorage.getItem("slayerscrest") == "true" ? true : false;
+    // Buffs
+    document.getElementById("mhstone").selectedIndex = localStorage.getItem("mhstone") ? localStorage.getItem("mhstone") : 0;
+    document.getElementById("ohstone").selectedIndex = localStorage.getItem("ohstone") ? localStorage.getItem("ohstone") : 0;
+    document.getElementById("strbuff").selectedIndex = localStorage.getItem("strbuff") ? localStorage.getItem("strbuff") : 0;
+    document.getElementById("apbuff").selectedIndex = localStorage.getItem("apbuff") ? localStorage.getItem("apbuff") : 0;
+    document.getElementById("agibuff").selectedIndex = localStorage.getItem("agibuff") ? localStorage.getItem("agibuff") : 0;
+    document.getElementById("statbuff").selectedIndex = localStorage.getItem("statbuff") ? localStorage.getItem("statbuff") : 0;
+    document.getElementById("foodbuff").selectedIndex = localStorage.getItem("foodbuff") ? localStorage.getItem("foodbuff") : 0;
+    document.getElementById("alcohol").selectedIndex = localStorage.getItem("alcohol") ? localStorage.getItem("alcohol") : 0;
+    document.getElementById("potion").selectedIndex = localStorage.getItem("potion") ? localStorage.getItem("potion") : 0;
+
+    document.getElementById("armorelixir").checked = localStorage.getItem("armorelixir") == "true" ? true : false;
+    document.getElementById("hpelixir").checked = localStorage.getItem("hpelixir") == "true" ? true : false;
+    document.getElementById("titans").checked = localStorage.getItem("titans") == "true" ? true : false;
+    document.getElementById("dragonslayer").checked = localStorage.getItem("dragonslayer") == "true" ? true : false;
+    document.getElementById("zandalar").checked = localStorage.getItem("zandalar") == "true" ? true : false;
+    document.getElementById("wcb").checked = localStorage.getItem("wcb") == "true" ? true : false;
+    document.getElementById("dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
+    document.getElementById("dmstamina").checked = localStorage.getItem("dmstamina") == "true" ? true : false;
+    document.getElementById("dmAP").checked = localStorage.getItem("dmAP") == "true" ? true : false;
+    document.getElementById("dmspell").checked = localStorage.getItem("dmspell") == "true" ? true : false;
+    document.getElementById("songflower").checked = localStorage.getItem("songflower") == "true" ? true : false;
+    document.getElementById("bshout").checked = localStorage.getItem("bshout") == "true" ? true : false;
+    document.getElementById("pack").checked = localStorage.getItem("pack") == "true" ? true : false;
+    document.getElementById("trueshot").checked = localStorage.getItem("trueshot") == "true" ? true : false;
+    document.getElementById("mark").checked = localStorage.getItem("mark") == "true" ? true : false;
+    document.getElementById("fortitude").checked = localStorage.getItem("fortitude") == "true" ? true : false;
+    document.getElementById("kings").checked = localStorage.getItem("kings") == "true" ? true : false;
+    document.getElementById("might").checked = localStorage.getItem("might") == "true" ? true : false;
+    document.getElementById("windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
+    document.getElementById("strofearth").checked = localStorage.getItem("strofearth") == "true" ? true : false;
+    document.getElementById("graceofair").checked = localStorage.getItem("graceofair") == "true" ? true : false;
+    document.getElementById("impweptotems").checked = localStorage.getItem("impweptotems") == "true" ? true : false;
 
     // Boss Settings
     document.querySelector("#swingMin").value = localStorage.getItem("swingMin") ? localStorage.getItem("swingMin") : 4000;
@@ -206,11 +253,6 @@ function loadInput()
     document.querySelector("#swingTimer").value = localStorage.getItem("swingTimer") ? localStorage.getItem("swingTimer") : 2;
     document.querySelector("#bossarmor").value = localStorage.getItem("bossarmor") ? localStorage.getItem("bossarmor") : 3731;
     document.querySelector("#debuffdelay").value = localStorage.getItem("debuffdelay") ? localStorage.getItem("debuffdelay") : 0;
-    
-    // Other Bonuses
-    document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
-    document.querySelector("#fivePieceWrath").checked = localStorage.getItem("fivePieceWrath") == "true" ? true : false;
-    document.querySelector("#threatenchant").checked = localStorage.getItem("threatenchant") == "true" ? true : false;
 
     // Calc Settings
     document.querySelector("#iterations").value = localStorage.getItem("iterations") ? localStorage.getItem("iterations") : 10000;
@@ -287,8 +329,10 @@ async function main() {
                 _thunderfuryMH: _thunderfuryMH,
                 _thunderfuryOH: _thunderfuryOH,
                 _windfury: _windfury,
+                _windfuryAP: _windfuryAP,
                 _wcb: _wcb,
                 _dmf: _dmf,
+                _mrp: _mrp,
 
                 _impHS: _impHS,
                 _impSA: _impSA,
