@@ -688,6 +688,17 @@ self.addEventListener('message', function(e) {
             }));
         }
 
+        if(globals._mrp) {
+            tankAuras.push(new PrePullAura({
+                name: "Mighty Rage Potion",
+                maxDuration: 20000,
+                strMod: 60,
+
+                target: "Tank",
+                source: "Tank",
+            }));
+        }
+
         if(globals._crusaderMH) {
             tankAuras.push(new CrusaderMH({
                     name: "Crusader",
@@ -729,7 +740,7 @@ self.addEventListener('message', function(e) {
                     name: "Windfury", 
                     maxDuration: 1500,
                     maxStacks: 2,
-                    APMod: 315,
+                    APMod: globals._windfuryAP,
 
                     target: "Tank",
                     source: "Tank",
