@@ -695,6 +695,25 @@ let necks = {
     skill: 0,
     skilltype: 'none'
 },
+    "Master Dragonslayer's Medallion" : {
+    strength: 0,
+    stamina: 24,
+    agility: 14,
+
+    hit: 0,
+    crit: 0,
+    attackpower: 0,
+
+    armor: 0,
+    parry: 0,
+    dodge: 0,
+    defense: 7,
+    block: 0,
+    blockvalue: 0,
+
+    skill: 0,
+    skilltype: 'none'
+},
     "Mark of Fordring" : {
     strength: 0,
     stamina: 0,
@@ -727,6 +746,25 @@ let necks = {
     parry: 0,
     dodge: 0,
     defense: 0,
+    block: 0,
+    blockvalue: 0,
+
+    skill: 0,
+    skilltype: 'none'
+},
+"Pendant of the Qiraji Guardian" : {
+    strength: 12,
+    stamina: 17,
+    agility: 11,
+
+    hit: 0,
+    crit: 0,
+    attackpower: 0,
+
+    armor: 0,
+    parry: 0,
+    dodge: 0,
+    defense: 6,
     block: 0,
     blockvalue: 0,
 
