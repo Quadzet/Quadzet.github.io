@@ -123,14 +123,16 @@ self.addEventListener('message', function(e) {
             if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
                 let rng = Math.random()
                 if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
-                    // TODO: Spell-AttackTable ! Needed for crits mainly, potentially also for resists
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
                     let procEvent = {
                         "type": "damage",
                         "ability": this.name,
                         "hit": "hit",
                         "timestamp": event.timestamp,
-                        "damage": this.damage*source.damageMod, // don't count enrage, use default 0.9 only
-                        "threat": (252 + this.damage)*source.threatMod, // 252 from debuff applications, my own testing.
+                        "damage": damage, 
+                        "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
                     }
                     events.push(procEvent);
                     // Ensure that the target the get debuff applied
@@ -148,14 +150,16 @@ self.addEventListener('message', function(e) {
             if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
                 let rng = Math.random()
                 if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
-                    // TODO: Spell-AttackTable ! Needed for crits mainly, potentially also for resists
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
                     let procEvent = {
                         "type": "damage",
                         "ability": this.name,
                         "hit": "hit",
                         "timestamp": event.timestamp,
-                        "damage": this.damage*source.damageMod, // don't count enrage, use default 0.9 only
-                        "threat": (252 + this.damage)*source.threatMod, // 252 from debuff applications, my own testing.
+                        "damage": damage, // don't count enrage, use default 0.9 only
+                        "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
                     }
                     events.push(procEvent);
                     // Ensure that the target the get debuff applied

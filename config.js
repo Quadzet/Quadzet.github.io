@@ -288,6 +288,7 @@ function updateStats()
     let agility = 0;
     let hit = 0;
     let crit = 0;
+    let spellcrit = 0;
     let attackpower = 0;
     let armor = 0;
     let parry = 0;
@@ -406,6 +407,10 @@ function updateStats()
     stamina += document.getElementById("songflower").checked ? 15 : 0;
     agility += document.getElementById("songflower").checked ? 15 : 0;
     strength += document.getElementById("songflower").checked ? 15 : 0;
+    
+    spellcrit += document.getElementById("dragonslayer").checked ? 10 : 0;
+    spellcrit += document.getElementById("dmspell").checked ? 3 : 0;
+    spellcrit += document.getElementById("songflower").checked ? 5 : 0;
 
     strength += document.getElementById("strofearth").checked ? 77 : 0;
     agility += document.getElementById("graceofair").checked ? 77 : 0;
@@ -448,7 +453,6 @@ function updateStats()
     extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
 
-    console.log(agility)
     agility = Math.floor(agility)
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
@@ -517,6 +521,7 @@ function updateStats()
             hastePerc: _wcb ? 15 : 0, 
             AP: strength*2 + attackpower,
             crit: agility/20 + crit, // TODO: add wepskill
+            spellcrit: spellcrit,
             hit: hit,
             
             parry: parry + 5, // TODO talents, defense, check formula
@@ -582,6 +587,7 @@ class StaticStats {
         this.damageMod = stats.damageMod;
         this.hastePerc = stats.hastePerc;
         this.crit = stats.crit;
+        this.spellcrit = stats.spellcrit;
         this.AP = stats.AP;
         this.blockValue = stats.blockValue;
         this.hit = stats.hit;
