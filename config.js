@@ -204,6 +204,7 @@ function updateStats()
     _windfury = document.querySelector("#windfury").checked
     _wcb = document.querySelector("#wcb").checked
     _dmf = document.querySelector("#dmf").checked
+    let _goa = document.getElementById("goa").checked
 
     // Talents 
     let deflection = Number(document.getElementById("deflection").value)
@@ -377,8 +378,7 @@ function updateStats()
         _startRage = Math.min(100, _startRage + 45 + Math.random()*30);
         _mrp = true;
     }
-
-    // TODO: Gift of Arthas
+    
     armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
     armor += document.getElementById("armorelixir").checked ? 450 : 0;
     extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
@@ -566,6 +566,7 @@ function updateStats()
             startRage: 0,
         }),
         debuffDelay: _debuffDelay*1000, // seconds -> ms
+        goa: _goa,
     }
 }
 

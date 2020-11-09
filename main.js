@@ -120,6 +120,7 @@ function saveInput()
     localStorage.setItem("devo", document.getElementById("devo").checked);
     localStorage.setItem("imploh", document.getElementById("imploh").checked);
 
+    localStorage.setItem("goa", document.getElementById("goa").checked);
     localStorage.setItem("armorelixir", document.getElementById("armorelixir").checked);
     localStorage.setItem("hpelixir", document.getElementById("hpelixir").checked);
     localStorage.setItem("titans", document.getElementById("titans").checked);
@@ -233,6 +234,7 @@ function loadInput()
     document.getElementById("devo").checked = localStorage.getItem("devo") == "true" ? true : false;
     document.getElementById("imploh").checked = localStorage.getItem("imploh") == "true" ? true : false;
 
+    document.getElementById("goa").checked = localStorage.getItem("goa") == "true" ? true : false;
     document.getElementById("armorelixir").checked = localStorage.getItem("armorelixir") == "true" ? true : false;
     document.getElementById("hpelixir").checked = localStorage.getItem("hpelixir") == "true" ? true : false;
     document.getElementById("titans").checked = localStorage.getItem("titans") == "true" ? true : false;

@@ -37,7 +37,18 @@ self.addEventListener('message', function(e) {
                 })
             )
         }
-    
+        return ret;
+    }
+
+    function getBossProcs() {
+        let ret = [];
+        if(globals._config.goa) {
+            ret.push(
+                new GiftofArthasProc({
+                    name: "Gift of Arthas"
+                })
+            )
+        }
         return ret;
     }
 
@@ -46,7 +57,7 @@ self.addEventListener('message', function(e) {
             let damageEvent = {};
             // Heroic Strike
             if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - globals._impHS)) {
-                let damage = this.weaponSwingRoll(attacker) + 157;
+                let damage = this.weaponSwingRoll(attacker) + 157 + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
                 damageEvent = rollAttack(attacker.stats, defender.stats, damage, true);
                 this.staticThreat = 175;
@@ -58,7 +69,7 @@ self.addEventListener('message', function(e) {
             }
             // White Swing
             else {
-                let damage = this.weaponSwingRoll(attacker);
+                let damage = this.weaponSwingRoll(attacker) + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
                 damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, true);
                 
@@ -84,7 +95,8 @@ self.addEventListener('message', function(e) {
 
         use(attacker, defender) {
             let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
-            damage *= (0.5 + 0.025*globals._dwspec)*(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+            damage = damage*(0.5 + 0.025*globals._dwspec) +  defender.additivePhysBonus;
+            damage *=(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
             let damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, !attacker.isHeroicStrikeQueued, true);
             damageEvent.threat = 0;
             damageEvent.threat = this.threatCalculator(damageEvent, attacker);
@@ -167,6 +179,27 @@ self.addEventListener('message', function(e) {
                 }
             }
         }
+    }
+
+    class GiftofArthasProc extends Proc {
+        handleEvent(source, target, event, events) {
+            let rng = Math.random();
+            if (event.type == "damage" && event.source == "Boss") {
+                if (rng < 0.3*0.83) { // 17% chance to resist
+                    let procEvent = {
+                        type: "proc",
+                        threat: 90*target.threatMod, // Target of the melee is the tank
+                        source: event.ability,
+                        ability: this.name,
+                        timestamp: event.timestamp,
+                    }
+                    events.push(procEvent);
+                    source.auras.forEach(aura => { if (aura.name == "Gift of Arthas") aura.handleEvent(source, procEvent, events)})
+
+               }
+            }
+        }
+
     }
 
     class WindfuryProc extends Proc {
@@ -486,6 +519,40 @@ self.addEventListener('message', function(e) {
         }
     }
     
+    class GiftofArthas extends Aura {
+
+        handleGameTick(ms, owner, events) {
+            if (this.duration <= 0) return;
+            this.duration = this.duration - globals._timeStep;
+            if (this.duration <= 0) {
+                events.push({
+                "type": "buff lost",
+                "timestamp": ms,
+                "name": this.name,
+                "stacks": this.stacks,
+                "source": this.source,
+                "target": this.target,
+                })
+                owner.additivePhysBonus -= 8;
+            }
+        }
+
+        handleEvent(owner, event, events) {
+            if (event.type == "proc" && event.ability == "Gift of Arthas") {
+                if ( this.duration <= 0 ) owner.additivePhysBonus += 8;
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: event.timestamp, 
+                    name: this.name,
+                    stacks: this.stacks,
+                    target: this.target,
+                    source: this.source,
+                })
+            }
+        }
+    }
+
     class WindfuryBuff extends Aura {
         constructor(input) {
             super(input)
@@ -751,6 +818,16 @@ self.addEventListener('message', function(e) {
             }));
         }
 
+        if(globals._config.goa) {
+            bossAuras.push(new GiftofArthas({
+                name: "Gift of Arthas",
+                maxDuration: 180000,
+
+                target: "Boss",
+                source: "Tank",
+            }))
+        }
+
         // TRINKETS
         if(globals._kots) {
             tankAuras.push(new PrePullAura({
@@ -877,7 +954,7 @@ self.addEventListener('message', function(e) {
     addOptionalAuras(TankAuras, BossAuras); // Adds crusader/thunderfury etc auras to tank/boss if they are set in config.
 
     let TankProcs = getTankProcs();
-    let BossProcs = [];
+    let BossProcs = getBossProcs();
 
     let Tank = new Actor("Tank", "Boss", playerAbilities, globals._config.tankStats, TankAuras, TankProcs)
     let Boss = new Actor("Boss", "Tank", bossAbilities,   globals._config.bossStats, BossAuras, BossProcs)

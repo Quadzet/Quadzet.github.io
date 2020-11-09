@@ -6,6 +6,7 @@ class Actor {
         this.abilities = abilities
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
+        this.additivePhysBonus = 0; // Gift of Arthas
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.stats = stats
@@ -94,7 +95,8 @@ class Actor {
         this.isHeroicStrikeQueued = false
         this.damageMod = this.stats.damageMod
         this.hastePerc = this.stats.hastePerc
-        this.rageGained = 0 // remove?
+        this.additivePhysBonus = 0
+        this.rageGained = 0
         this.rageSpent = 0
         this.flurryUptime = 0
         this.crusaderUptime = 0
