@@ -378,6 +378,7 @@ function updateStats()
     }
 
     // TODO: Gift of Arthas
+    armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
     armor += document.getElementById("armorelixir").checked ? 450 : 0;
     extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
     extrahp += document.getElementById("titans").checked ? 1200 : 0;
@@ -388,18 +389,19 @@ function updateStats()
     attackpower += document.getElementById("trueshot").checked ? 100 : 0;
 
     let mark = document.getElementById("mark").checked; // Assumed to be improved
-    armor += mark ? 385 : 0;
-    stamina += mark ? 15 : 0;
-    agility += mark ? 15 : 0;
-    strength += mark ? 15 : 0;
+    armor += mark ? Math.floor(384.75) : 0;
+    stamina += mark ? 16 : 0;
+    agility += mark ? 16 : 0;
+    strength += mark ? 16 : 0;
     attackpower += document.getElementById("might").checked ? 222 : 0; // Assumed improved
     attackpower += document.getElementById("bshout").checked ? 290 : 0; // Assumed improved
 
     stamina += document.getElementById("fortitude").checked ? 70 : 0; // Assumed improved
+    stamina += document.getElementById("bloodpact").checked ? 42 : 0;
     
     attackpower += document.getElementById("dragonslayer").checked ? 140 : 0;
     crit += document.getElementById("dragonslayer").checked ? 5 : 0;
-    attackpower += document.getElementById("dmAP").checked ? 70 : 0;
+    attackpower += document.getElementById("dmAP").checked ? 200 : 0;
     crit += document.getElementById("songflower").checked ? 5 : 0;
     stamina += document.getElementById("songflower").checked ? 15 : 0;
     agility += document.getElementById("songflower").checked ? 15 : 0;
@@ -425,29 +427,41 @@ function updateStats()
 
     // Multiplicative buffs last
     stamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
-    stamina *= document.getElementById("zandalar").checked ? 1.1 : 1;
-    agility *= document.getElementById("zandalar").checked ? 1.1 : 1;
-    strength *= document.getElementById("zandalar").checked ? 1.1 : 1;
+    stamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    agility *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    strength *= document.getElementById("zandalar").checked ? 1.15 : 1;
     stamina *= document.getElementById("kings").checked ? 1.1 : 1;
     agility *= document.getElementById("kings").checked ? 1.1 : 1;
     strength *= document.getElementById("kings").checked ? 1.1 : 1;
 
+    armor *= document.getElementById("inspiration").checked ? 1.25 : 1;
+    armor *= document.getElementById("imploh").checked ? 1.3 : 1;
+
     extrastamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
-    extrastamina *= document.getElementById("zandalar").checked ? 1.1 : 1;
-    extraagility *= document.getElementById("zandalar").checked ? 1.1 : 1;
-    extrastrength *= document.getElementById("zandalar").checked ? 1.1 : 1;
+    extrastamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    extraagility *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    extrastrength *= document.getElementById("zandalar").checked ? 1.15 : 1;
     extrastamina *= document.getElementById("kings").checked ? 1.1 : 1;
     extraagility *= document.getElementById("kings").checked ? 1.1 : 1;
     extrastrength *= document.getElementById("kings").checked ? 1.1 : 1;
+
+    extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
+    extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
+
+    console.log(agility)
+    agility = Math.floor(agility)
+    strength = Math.floor(strength)
+    stamina = Math.floor(stamina)
+    armor = Math.floor(armor)
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
     document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)} `;
     document.getElementById("playeragility").innerHTML = `${Math.round(agility)} `;
     document.getElementById("playerhit").innerHTML = `${hit} `;
-    document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*100)/100} `;
+    document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*10)/10} `;
     document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)} `;
-    document.getElementById("playerarmor").innerHTML = `${Math.round((armor + agility*2)*100)/100} `;
+    document.getElementById("playerarmor").innerHTML = `${Math.floor(armor + agility*2)} `;
     document.getElementById("playerparry").innerHTML = `${Math.round((parry + 5 + deflection + defense*0.04)*100)/100} `;
     document.getElementById("playerdodge").innerHTML = `${Math.round((dodge + agility/20 + defense*0.04)*100)/100} `;
     document.getElementById("playerdefense").innerHTML = `${defense + 300} `;

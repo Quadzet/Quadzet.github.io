@@ -116,6 +116,10 @@ function saveInput()
     localStorage.setItem("alcohol", document.getElementById("alcohol").selectedIndex);
     localStorage.setItem("potion", document.getElementById("potion").selectedIndex);
 
+    localStorage.setItem("inspiration", document.getElementById("inspiration").checked);
+    localStorage.setItem("devo", document.getElementById("devo").checked);
+    localStorage.setItem("imploh", document.getElementById("imploh").checked);
+
     localStorage.setItem("armorelixir", document.getElementById("armorelixir").checked);
     localStorage.setItem("hpelixir", document.getElementById("hpelixir").checked);
     localStorage.setItem("titans", document.getElementById("titans").checked);
@@ -132,6 +136,7 @@ function saveInput()
     localStorage.setItem("trueshot", document.getElementById("trueshot").checked);
     localStorage.setItem("mark", document.getElementById("mark").checked);
     localStorage.setItem("fortitude", document.getElementById("fortitude").checked);
+    localStorage.setItem("bloodpact", document.getElementById("bloodpact").checked);
     localStorage.setItem("kings", document.getElementById("kings").checked);
     localStorage.setItem("might", document.getElementById("might").checked);
     localStorage.setItem("windfury", document.getElementById("windfury").checked);
@@ -224,6 +229,10 @@ function loadInput()
     document.getElementById("alcohol").selectedIndex = localStorage.getItem("alcohol") ? localStorage.getItem("alcohol") : 0;
     document.getElementById("potion").selectedIndex = localStorage.getItem("potion") ? localStorage.getItem("potion") : 0;
 
+    document.getElementById("inspiration").checked = localStorage.getItem("inspiration") == "true" ? true : false;
+    document.getElementById("devo").checked = localStorage.getItem("devo") == "true" ? true : false;
+    document.getElementById("imploh").checked = localStorage.getItem("imploh") == "true" ? true : false;
+
     document.getElementById("armorelixir").checked = localStorage.getItem("armorelixir") == "true" ? true : false;
     document.getElementById("hpelixir").checked = localStorage.getItem("hpelixir") == "true" ? true : false;
     document.getElementById("titans").checked = localStorage.getItem("titans") == "true" ? true : false;
@@ -240,6 +249,7 @@ function loadInput()
     document.getElementById("trueshot").checked = localStorage.getItem("trueshot") == "true" ? true : false;
     document.getElementById("mark").checked = localStorage.getItem("mark") == "true" ? true : false;
     document.getElementById("fortitude").checked = localStorage.getItem("fortitude") == "true" ? true : false;
+    document.getElementById("bloodpact").checked = localStorage.getItem("bloodpact") == "true" ? true : false;
     document.getElementById("kings").checked = localStorage.getItem("kings") == "true" ? true : false;
     document.getElementById("might").checked = localStorage.getItem("might") == "true" ? true : false;
     document.getElementById("windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
