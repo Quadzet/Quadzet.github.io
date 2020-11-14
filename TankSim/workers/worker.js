@@ -222,7 +222,7 @@ self.addEventListener('message', function(e) {
                     source.auras.forEach(aura => aura.handleEvent(target, procEvent, events))
                     source.abilities.forEach(ability => {
                         if (ability.name == "MH Swing") {
-                            ability.currentCooldown = 0;
+                            events.push(ability.use(source, target))
                         }
                     })
                 }
