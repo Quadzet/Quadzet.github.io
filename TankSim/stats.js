@@ -179,6 +179,22 @@ let races = {
 }
 
 let heads = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Circlet of Restless Dreams": {
     strength: 0,
     stamina: 38,
@@ -543,6 +559,22 @@ let heads = {
 }
 
 let necks = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Amulet of the Darkmoon" : {
     strength: 10,
     stamina: 10,
@@ -907,6 +939,22 @@ let necks = {
 }
 
 let chests = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Black Dragonscale Breastplate": {
        "crit": 0,
        "hit": 0,
@@ -1326,6 +1374,22 @@ let chests = {
  }
 
 let shoulders = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Abyssal Plate Epaulets" : {
     strength: 13,
     stamina: 13,
@@ -1671,7 +1735,22 @@ let shoulders = {
 }
 
 let capes = {
-
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Blackveil Cape": {
     strength: 6,
     stamina: 0,
@@ -2112,6 +2191,22 @@ let capes = {
 }
 
 let wrists = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Abyssal Plate Vambraces": {
        "strength": 11,
        "stamina": 11,
@@ -2467,6 +2562,22 @@ let wrists = {
 }
 
 let hands = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Aged Core Leather Gloves": {
        "crit": 1,
        "hit": 0,
@@ -2790,6 +2901,22 @@ let hands = {
 }
 
 let waists = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Arathi Plate Girdle": {
        "crit": 1,
        "hit": 0,
@@ -3129,6 +3256,22 @@ let waists = {
 }
 
 let legs = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Abyssal Plate Legplates": {
        "crit": 1,
        "hit": 0,
@@ -3548,6 +3691,22 @@ let legs = {
 }
 
 let feet = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Arathi Plate Greaves": {
        "crit": 0,
        "hit": 0,
@@ -3935,6 +4094,22 @@ let feet = {
 }
 
 let rings = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Archimtiros' Ring of Reckoning": {
        "crit": 0,
        "hit": 0,
@@ -4617,6 +4792,22 @@ let trinkets = {
 }
 
 let rangedweps = {
+    "None": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Ancient Bone Bow": {
        "crit": 0,
        "hit": 0,
