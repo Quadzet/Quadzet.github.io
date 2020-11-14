@@ -289,22 +289,13 @@ async function main() {
     updateStats();
 
     let start = Date.now()
-    let results = {
-        "MH Swing": [],
-        "OH Swing": [],
-        "Heroic Strike": [],
-        "Bloodthirst": [],
-        "Sunder Armor": [],
-        "Revenge": [],
-        "Thunderfury": [],
-    };
+    let results = {};
+    let uptimes = {};
     let tps = []
     let dps = []
     let dtps = []
     let rageGained = []
     let rageSpent = []
-    let flurryUptime = []
-    let crusaderUptime = []
     let snapshots = []
     let breaches = 0
     let bossSwings = 0;
@@ -369,16 +360,19 @@ async function main() {
                 progressPerc += e.data.progressPerc / numWorkers;
                 updateProgressbar(progressPerc);
             } else {
-                for (let ability in results) {
+                for (let ability in e.data.results) {
+                    if(!results[`${ability}`]) results[`${ability}`] = [];
                     results[`${ability}`] = results[`${ability}`].concat(e.data.results[`${ability}`]);
+                }
+                for (let ability in e.data.uptimes) {
+                    if(!uptimes[`${ability}`]) uptimes[`${ability}`] = [];
+                    uptimes[`${ability}`] = uptimes[`${ability}`].concat(e.data.uptimes[`${ability}`]);
                 }
                 tps = tps.concat(e.data.tps);
                 dps = dps.concat(e.data.dps);
                 dtps = dtps.concat(e.data.dtps);
                 rageGained = rageGained.concat(e.data.rageGained);
                 rageSpent = rageSpent.concat(e.data.rageSpent);
-                flurryUptime = flurryUptime.concat(e.data.flurryUptime);
-                crusaderUptime = crusaderUptime.concat(e.data.crusaderUptime);
                 snapshots = snapshots.concat(e.data.snapshots);
                 breaches += e.data.breaches;
                 bossSwings += e.data.bossSwings;
@@ -396,36 +390,51 @@ async function main() {
         // Some console logging...
         let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
-        console.log(`TPS: ${average(tps)}`);
-        console.log(`DPS: ${average(dps)}`);
-        console.log(`DTPS: ${average(dtps)}`);
+        console.log(`TPS: ${Math.round(average(tps)*100)/100}`);
+        console.log(`DPS: ${Math.round(average(dps)*100)/100}`);
+        console.log(`DTPS: ${Math.round(average(dtps)*100)/100}`);
         for (let ability in results)
-            console.log(`${ability}: ${average(results[`${ability}`])}`);
-        console.log(`gainRPS: ${average(rageGained)}`);
-        console.log(`spentRPS: ${average(rageSpent)}`);
+            console.log(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);
+        console.log(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
+        console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
 
-        // Make the result table
-        let abilityVec = [];
-        for (let ability in results) {
-            abilityVec.push(`<td>${ability}:</td><td>${Math.round(average(results[`${ability}`])*100)/100}</td>`);
+        let sortedResults = Object.keys(results).map(key => [key, results[key]])
+        sortedResults.sort((a,b) => average(b[1]) - average(a[1]))
+
+        let resultTable = `<table><tr><th>Ability TPS</th></tr>`;
+        for (let i in sortedResults) {
+            resultTable = resultTable.concat(`<tr><td>${sortedResults[i][0]}:</td><td>${Math.round(average(sortedResults[i][1])*100)/100}</td></tr>`)
         }
-        let threatStatsVec = [];
-        threatStatsVec.push(`<td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td>`)
-        threatStatsVec.push(`<td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td>`)
-        threatStatsVec.push(`<td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td>`)
+        resultTable = resultTable.concat(`</table>`)
+        let statsTable = 
+        `<table>
+        <tr><th>Statistics</th></tr>
+        <tr><td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td></tr>
+        <tr><td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td></tr>
+        <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td></tr>
+        </table>`
 
-        let el_div = document.querySelector("#resultContainer");
-        el_div.innerHTML = `<h3>Results</h3>
-        <table>
-            <tr><th>General Stats</th><th></th><th>Ability TPS</th><th/><th>Statistics</th></tr>
-            <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td>${abilityVec[0]}${threatStatsVec[0]}</tr>
-            <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td>${abilityVec[1]}${threatStatsVec[1]}</tr>
-            <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td>${abilityVec[2]}${threatStatsVec[2]}</tr>
-            <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td>${abilityVec[3]}</tr>
-            <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td>${abilityVec[4]}</tr>
-            <tr><td>Flurry uptime: </td><td>${Math.round(average(flurryUptime)*100)/100}%</td>${abilityVec[5]}</tr>
-            <tr><td>Crusader uptime: </td><td>${Math.round(average(crusaderUptime)*100)/100}%</td>${abilityVec[6]}</tr>
-        </table>`;
+        let generalTable = 
+        `<table>
+        <tr><th>General Stats</th></tr>
+        <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td></tr>
+        <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
+        <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
+        <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td></tr>
+        <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
+        `
+        let sortedUptimes = Object.keys(uptimes).map(key => [key, uptimes[key]])
+        sortedUptimes.sort((a,b) => average(b[1]) - average(a[1]))
+        for (let i in sortedUptimes) {
+            generalTable = generalTable.concat(`<tr><td>${sortedUptimes[i][0]} uptime:</td><td>${Math.round(average(sortedUptimes[i][1])*100)/100}%</td></tr>`)
+        }
+        generalTable = generalTable.concat(`</table>`)
+
+
+        document.getElementById("resultsHeader").innerHTML = `<h2>Results</h2>`
+        document.getElementById("generalStats").innerHTML = generalTable;
+        document.getElementById("abilitytps").innerHTML = resultTable;
+        document.getElementById("statistics").innerHTML = statsTable;
 
         var x = linspace(0, _simDuration, _simDuration*1000/_snapshotLen + 1);
 

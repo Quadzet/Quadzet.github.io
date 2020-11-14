@@ -17,10 +17,10 @@ class Actor {
         this.auras = auras
         this.procs = procs
 
+        this.uptimes = {}
+
         this.rageGained = 0 // remove?
         this.rageSpent = 0
-        this.flurryUptime = 0
-        this.crusaderUptime = 0
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -98,8 +98,7 @@ class Actor {
         this.additivePhysBonus = 0
         this.rageGained = 0
         this.rageSpent = 0
-        this.flurryUptime = 0
-        this.crusaderUptime = 0
+        this.uptimes = {}
     }
 
 }

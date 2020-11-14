@@ -236,6 +236,7 @@ self.addEventListener('message', function(e) {
             if (!input.name) this.name = "unknown"; else this.name = input.name;
             if (!input.target) this.target = "unknown"; else this.target = input.target;
             if (!input.source) this.source = "unknown"; else this.source = input.source;
+            if (!input.trackUptime) this.trackUptime = false; else this.trackUptime = input.trackUptime;
     
             if (!input.damage) this.damage = 0; else this.damage = input.damage;
     
@@ -257,8 +258,10 @@ self.addEventListener('message', function(e) {
         handleGameTick(ms, owner, events) {
             if (this.duration <= 0) return;
             this.duration = this.duration - globals._timeStep;
-            if (this.name == "Flurry") owner.flurryUptime += globals._timeStep;
-            if (this.name == "Crusader") owner.crusaderUptime += globals._timeStep;
+            if(this.trackUptime) {
+                if(!owner.uptimes[`${this.name}`]) owner.uptimes[`${this.name}`] = 0;
+                owner.uptimes[`${this.name}`] += globals._timeStep;
+            }
             if (this.duration <= 0) {
                 events.push({
                 "type": "buff lost",
@@ -483,7 +486,7 @@ self.addEventListener('message', function(e) {
         handleEvent(owner, event, events) {
             if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
                 let rng = Math.random()
-                if (rng < owner.stats.OHSWing/(60*1000)) { 
+                if (rng < owner.stats.OHSwing/(60*1000)) { 
                     this.duration = this.maxDuration;
                     events.push({
                         type: "buff gained",
@@ -694,6 +697,7 @@ self.addEventListener('message', function(e) {
                     maxStacks: 3,
                     hastePerc: 30,
     
+                    trackUptime: true,
                     target: "Tank",
                     source: "Tank",
                     }),
@@ -703,6 +707,7 @@ self.addEventListener('message', function(e) {
                     maxStacks: 12,
                     damageMod: 1.25,
     
+                    trackUptime: true,
                     target: "Tank",
                     source: "Tank",
                     }),
@@ -772,11 +777,12 @@ self.addEventListener('message', function(e) {
 
         if(globals._crusaderMH) {
             tankAuras.push(new CrusaderMH({
-                    name: "Crusader",
+                    name: "MH Crusader",
                     maxDuration: 15000,
 
                     strMod: 100,
 
+                    trackUptime: true,
                     target: "Tank",
                     source: "Tank",
             }));
@@ -784,11 +790,12 @@ self.addEventListener('message', function(e) {
 
         if(globals._crusaderOH) {
             tankAuras.push(new CrusaderOH({
-                    name: "Crusader",
+                    name: "OH Crusader",
                     maxDuration: 15000,
 
                     strMod: 100,
 
+                    trackUptime: true,
                     target: "Tank",
                     source: "Tank",
             }));
@@ -959,22 +966,13 @@ self.addEventListener('message', function(e) {
     let Tank = new Actor("Tank", "Boss", playerAbilities, globals._config.tankStats, TankAuras, TankProcs)
     let Boss = new Actor("Boss", "Tank", bossAbilities,   globals._config.bossStats, BossAuras, BossProcs)
 
-    let results = {
-        "MH Swing": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "OH Swing": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "Heroic Strike": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "Bloodthirst": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "Sunder Armor": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "Revenge": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-        "Thunderfury": Array.apply(null, Array(globals._iterations)).map((x, i) => 0),
-    };
+    let results = {};
     let tps = [];
     let dps = [];
     let dtps = [];
     let rageGained = [];
     let rageSpent = [];
-    let flurryUptime = [];
-    let crusaderUptime = [];
+    let uptimes = {};
     let breaches = 0;
     // snapshots are used to graph the threat percentiles
     let snapshots = [];
@@ -1043,18 +1041,23 @@ self.addEventListener('message', function(e) {
                 } else {
                     if (event.threat) threat += event.threat;
                     if (event.damage) damage += event.damage;
-                    for (let ability in results) {
-                        results[`${ability}`][i] += getAmount(event, ability, "threat")/globals._simDuration;
+                    if (event.threat && event.ability) {
+                        if(!results[`${event.ability}`]) results[`${event.ability}`] = [];
+                        if(results[`${event.ability}`][i]) results[`${event.ability}`][i] += event.threat/globals._simDuration
+                        else results[`${event.ability}`][i] = event.threat/globals._simDuration
                     }
                 }
             }
         });
 
+        for (let ability in Tank.uptimes) {
+            if(!uptimes[`${ability}`]) uptimes[`${ability}`] = []
+            uptimes[`${ability}`].push(Tank.uptimes[`${ability}`]/(globals._simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
+        }
+
         tps.push(threat/globals._simDuration)
         dps.push(damage/globals._simDuration)
         rageGained.push(Tank.rageGained/globals._simDuration)
-        flurryUptime.push(Tank.flurryUptime/(globals._simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
-        crusaderUptime.push(Tank.crusaderUptime/(globals._simDuration*10))
         Tank.rageGained = 0
         rageSpent.push(Tank.rageSpent/globals._simDuration)
         Tank.rageSpent = 0
@@ -1073,12 +1076,11 @@ self.addEventListener('message', function(e) {
         dtps: dtps,
         rageGained: rageGained,
         rageSpent: rageSpent,
-        flurryUptime: flurryUptime,
-        crusaderUptime: crusaderUptime,
         results: results,
         breaches: breaches,
         snapshots: snapshots,
         bossSwings: bossSwings,
+        uptimes: uptimes,
     }
 
     postMessage(ret);
