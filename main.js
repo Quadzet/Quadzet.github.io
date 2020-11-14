@@ -287,6 +287,12 @@ async function main() {
     // Fetch and set all user input settings
     //fetchSettings()
     updateStats();
+    
+    document.getElementById("errorContainer").innerHTML = ""
+    if(Number(document.getElementById("fightLength").value) > 120){
+        document.getElementById("errorContainer").innerHTML = "Please choose a fight duration below 120."
+        return;
+    }
 
     let start = Date.now()
     let results = {};
