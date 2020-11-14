@@ -40,6 +40,7 @@ let _earthstrike = false;
 let _slayerscrest = false;
 let _jomgabbar = false;
 let _lgg = false; 
+let _hoj = false;
 
 // Other Bonuses
 let _twoPieceDreadnaught = false;
@@ -498,6 +499,7 @@ function updateStats()
     _diamondflask = (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask")
     _jomgabbar = (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar")
     _slayerscrest = (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest")
+    _hoj = (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice")
 
 
 

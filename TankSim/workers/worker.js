@@ -37,6 +37,15 @@ self.addEventListener('message', function(e) {
                 })
             )
         }
+
+        if(globals._hoj) {
+            ret.push(
+                new HoJProc({
+                    name: "Hand of Justice", 
+                })
+            )
+        }
+
         return ret;
     }
 
@@ -225,6 +234,40 @@ self.addEventListener('message', function(e) {
                             events.push(ability.use(source, target))
                         }
                     })
+                }
+            }
+        }
+    }
+
+    class HoJProc extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability != "Sunder Armor" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.02) {
+                    let procEvent = {
+                        "type": "extra attack",
+                        "source": event.ability,
+                        "ability": this.name,
+                        "timestamp": event.timestamp,
+                    }
+                    events.push(procEvent);
+
+                    // Remove 600ms from the MH swing timer if it procs itself, due to an avg of 1.5 batch delay
+                    // If it's procced by another ability/OH swing, it's also 1.5 batched, but staatistically that does not matter.
+                    if(event.ability == "MH Swing") {
+                        source.abilities.forEach(ability => {
+                            if (ability.name == "MH Swing") {
+                                ability.currentCooldown -= 600;
+                            }
+                        })
+                    } else {
+                        source.abilities.forEach(ability => {
+                            if (ability.name == "MH Swing") {
+                                ability.currentCooldown = 0;
+                            }
+                        })
+                    }
+
                 }
             }
         }

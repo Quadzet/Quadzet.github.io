@@ -354,6 +354,7 @@ async function main() {
                 _slayerscrest: _slayerscrest,
                 _jomgabbar: _jomgabbar,
                 _lgg: _lgg,
+                _hoj: _hoj,
 
                 _landedHits: _landedHits,
             },
