@@ -878,6 +878,18 @@ self.addEventListener('message', function(e) {
             }))
         }
 
+        if(globals._berserking) {
+            tankAuras.push(new PrePullAura({
+                name: "Berserking",
+                maxDuration: 10000,
+                hastePerc: 10, // Assuming only 10%, anything else would be kinda weird
+
+
+                target: "Tank",
+                source: "Tank",
+            }))
+        }
+
         // TRINKETS
         if(globals._kots) {
             tankAuras.push(new PrePullAura({

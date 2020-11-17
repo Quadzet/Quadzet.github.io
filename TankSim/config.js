@@ -45,6 +45,7 @@ let _hoj = false;
 // Other Bonuses
 let _twoPieceDreadnaught = false;
 let _fivePieceWrath = false;
+let _berserking = false;
 
 // Fight config
 let _debuffDelay = 0;
@@ -222,6 +223,7 @@ function updateStats()
     _twoPieceDreadnaught = document.querySelector("#twoPieceDreadnaught").checked
     _fivePieceWrath = document.querySelector("#fivePieceWrath").checked
     let threatenchant = document.getElementById("handenchant").value == "Threat";
+    _berserking = document.getElementById("berserking").checked
 
 
     let race = document.querySelector("#race").value

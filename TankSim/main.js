@@ -104,6 +104,7 @@ function saveInput()
     // Other Bonuses
     localStorage.setItem("twoPieceDreadnaught", document.querySelector("#twoPieceDreadnaught").checked)
     localStorage.setItem("fivePieceWrath", document.querySelector("#fivePieceWrath").checked)
+    localStorage.setItem("berserking", document.querySelector("#berserking").checked)
     
     // Buffs
     localStorage.setItem("mhstone", document.getElementById("mhstone").selectedIndex);
@@ -218,6 +219,7 @@ function loadInput()
     // Other Bonuses
     document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
     document.querySelector("#fivePieceWrath").checked = localStorage.getItem("fivePieceWrath") == "true" ? true : false;
+    document.querySelector("#berserking").checked = localStorage.getItem("berserking") == "true" ? true : false;
 
     // Buffs
     document.getElementById("mhstone").selectedIndex = localStorage.getItem("mhstone") ? localStorage.getItem("mhstone") : 0;
@@ -355,6 +357,8 @@ async function main() {
                 _jomgabbar: _jomgabbar,
                 _lgg: _lgg,
                 _hoj: _hoj,
+
+                _berserking: _berserking,
 
                 _landedHits: _landedHits,
             },
