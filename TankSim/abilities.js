@@ -50,7 +50,7 @@ class Bloodthirst extends Ability {
     use(attacker, defender) {
         let damage = 0.45*attacker.getAP() + defender.additivePhysBonus;
         damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-        let damageEvent = rollAttack(attacker.stats, defender.stats, damage, true, false, false, true);
+        let damageEvent = rollAttack(attacker, defender, damage, true, false, false, true);
         damageEvent.threat = 0;
         damageEvent.threat = this.threatCalculator(damageEvent, attacker);
         damageEvent.ability = this.name;
@@ -66,7 +66,7 @@ class Revenge extends Ability {
         let damage = Math.random()*18 + 81 + defender.additivePhysBonus; // Rank6: 81-99 dmg
         damage += attacker.stats.twoPieceDreadnaught ? 75 : 0;
         damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-        let damageEvent = rollAttack(attacker.stats, defender.stats, damage, true, false, false, true);
+        let damageEvent = rollAttack(attacker, defender, damage, true, false, false, true);
         damageEvent.threat = 0;
         damageEvent.threat = this.threatCalculator(damageEvent, attacker);
         damageEvent.ability = this.name;
@@ -90,7 +90,7 @@ class Revenge extends Ability {
 class SunderArmor extends Ability {
     use(attacker, defender) {
         let damage = 0;
-        let damageEvent = rollAttack(attacker.stats, defender.stats, damage, true);
+        let damageEvent = rollAttack(attacker, defender, damage, true);
         if (damageEvent.hit == "crit") damageEvent.hit = "hit";  // TODO this can't crit...
         damageEvent.threat = 0;
         damageEvent.threat = this.threatCalculator(damageEvent, attacker);

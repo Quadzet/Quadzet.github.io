@@ -185,7 +185,7 @@ function loadInput()
     document.querySelector("#ohweptypelist").selectedIndex = localStorage.getItem("ohweptypelist") ? localStorage.getItem("ohweptypelist") : 4;
     updateMHWeaponList(false);
     updateOHWeaponList(false);
-    document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 29;
+    document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 28;
     document.querySelector("#offhand").selectedIndex = localStorage.getItem("offhand") ? localStorage.getItem("offhand") : 15;
 
     document.querySelector("#headenchant").selectedIndex = localStorage.getItem("headenchant") ? localStorage.getItem("headenchant") : 6;
@@ -337,13 +337,23 @@ async function main() {
                 _deathwish: _deathwish,
                 _crusaderMH: _crusaderMH,
                 _crusaderOH: _crusaderOH,
-                _thunderfuryMH: _thunderfuryMH,
-                _thunderfuryOH: _thunderfuryOH,
                 _windfury: _windfury,
                 _windfuryAP: _windfuryAP,
                 _wcb: _wcb,
                 _dmf: _dmf,
                 _mrp: _mrp,
+                
+                _thunderfuryMH: _thunderfuryMH,
+                _thunderfuryOH: _thunderfuryOH,
+                _edMH: _edMH,
+                _edOH: _edOH,
+                _qsMH: _qsMH,
+                _perdsMH: _perdsMH,
+                _perdsOH: _perdsOH,
+                _dbMH: _dbMH,
+                _dbOH: _dbOH,
+                _msaMH: _msaMH,
+                _msaOH: _msaOH,
 
                 _impHS: _impHS,
                 _impSA: _impSA,
@@ -409,6 +419,9 @@ async function main() {
         console.log(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
         console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
 
+        for(let result in results) {
+            results[`${result}`] = [...Array(_iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
+        }
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         sortedResults.sort((a,b) => average(b[1]) - average(a[1]))
 
@@ -434,9 +447,14 @@ async function main() {
         <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td></tr>
         <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
         `
+
+        for(let ability in uptimes) {
+            uptimes[`${ability}`] = [...Array(_iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
+        }
         let sortedUptimes = Object.keys(uptimes).map(key => [key, uptimes[key]])
         sortedUptimes.sort((a,b) => average(b[1]) - average(a[1]))
         for (let i in sortedUptimes) {
+            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(_iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
             generalTable = generalTable.concat(`<tr><td>${sortedUptimes[i][0]} uptime:</td><td>${Math.round(average(sortedUptimes[i][1])*100)/100}%</td></tr>`)
         }
         generalTable = generalTable.concat(`</table>`)

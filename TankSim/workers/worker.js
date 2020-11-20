@@ -5,6 +5,26 @@ self.addEventListener('message', function(e) {
 
     importScripts('../abilities.js', '../actor.js', '../attacktable.js');
 
+
+
+    function formatEvent(event) {
+        let output = ``
+        if(event["type"] == "damage") {
+            if(!["dodge", "parry", "miss"].includes(event["hit"])) {
+                output += `${event["timestamp"]/1000}: ${event["source"]}'s ${event["ability"]} ${ event["hit"]}s ${event["target"]} for ${event["damage"]} damage!`
+            } else {
+                output += `${event["timestamp"]/1000}: ${event["source"]}'s ${event["ability"]} is ${event["hit"] == "parry" ? `parried` : `dodged`} by ${event["target"]}!`
+            }
+        } else if(event["type"] == "buff gained") {
+            output += `${event["timestamp"]/1000}: ${event["target"]} gains ${event["name"]}${event["stacks"] != 0 ? `(${event["stacks"]})`  : ``}.`
+        } else if( event["type"] == "buff lost") {
+            output += `${event["timestamp"]/1000}: ${event["name"]}${event["stacks"] != 0 ? `(${event["stacks"]})`  : ``} fades from ${event["target"]}.`
+        } else if(event["type"] == "spell cast") {
+            output += `${event["timestamp"]/1000}: ${event["source"]} casts ${event["name"]}.`
+        }
+        return output
+    }
+
     function getAmount(event, ability, type) {
         if (event[`${type}`] && event.ability == ability) return event[`${type}`];
         else return 0;
@@ -46,6 +66,60 @@ self.addEventListener('message', function(e) {
             )
         }
 
+        if(globals._perdsMH) {
+            ret.push(
+                new PerdsMH({
+                    name: "Perdition's Blade MH",
+                    damage: 48,
+
+                })
+            )
+        }
+
+        if(globals._perdsOH) {
+            ret.push(
+                new PerdsOH({
+                    name: "Perdition's Blade OH",
+                    damage: 48,
+                })
+            )
+        }
+
+        if(globals._dbMH) {
+            ret.push(
+                new DeathbringerMH({
+                    name: "Deathbringer MH",
+                    damage: 125,
+                })
+            )
+        }
+
+        if(globals._dbOH) {
+            ret.push(
+                new DeathbringerOH({
+                    name: "Deathbringer OH",
+                    damage: 125,
+                })
+            )
+        }
+
+        if(globals._msaMH) {
+            ret.push(
+                new MSA({
+                    name: "Misplaced Servo Arm MH",
+                    damage: 125,
+                })
+            )
+        }
+
+        if(globals._msaOH) {
+            ret.push(
+                new MSA({
+                    name: "Misplaced Servo Arm OH",
+                    damage: 125,
+                })
+            )
+        }
         return ret;
     }
 
@@ -68,7 +142,7 @@ self.addEventListener('message', function(e) {
             if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - globals._impHS)) {
                 let damage = this.weaponSwingRoll(attacker) + 157 + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-                damageEvent = rollAttack(attacker.stats, defender.stats, damage, true);
+                damageEvent = rollAttack(attacker, defender, damage, true);
                 this.staticThreat = 175;
                 damageEvent.threat = this.threatCalculator(damageEvent, attacker);
                 this.staticThreat = 0;
@@ -80,7 +154,7 @@ self.addEventListener('message', function(e) {
             else {
                 let damage = this.weaponSwingRoll(attacker) + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-                damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, true);
+                damageEvent = rollAttack(attacker, defender, damage, false, true);
                 
                 damageEvent.threat = 0;
                 damageEvent.threat = this.threatCalculator(damageEvent, attacker);
@@ -106,7 +180,7 @@ self.addEventListener('message', function(e) {
             let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
             damage = damage*(0.5 + 0.025*globals._dwspec) +  defender.additivePhysBonus;
             damage *=(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-            let damageEvent = rollAttack(attacker.stats, defender.stats, damage, false, !attacker.isHeroicStrikeQueued, true);
+            let damageEvent = rollAttack(attacker, defender, damage, false, !attacker.isHeroicStrikeQueued, true);
             damageEvent.threat = 0;
             damageEvent.threat = this.threatCalculator(damageEvent, attacker);
             damageEvent.ability = this.name;
@@ -137,9 +211,6 @@ self.addEventListener('message', function(e) {
     }
     
     class ThunderfuryMH extends Proc {
-        constructor(input) {
-            super(input)
-        }
         handleEvent(source, target, event, events) {
             if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
                 let rng = Math.random()
@@ -164,9 +235,6 @@ self.addEventListener('message', function(e) {
     }
     
     class ThunderfuryOH extends Proc {
-        constructor(input) {
-            super(input)
-        }
         handleEvent(source, target, event, events) {
             if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
                 let rng = Math.random()
@@ -185,6 +253,116 @@ self.addEventListener('message', function(e) {
                     events.push(procEvent);
                     // Ensure that the target the get debuff applied
                     target.auras.forEach(aura => aura.handleEvent(target, procEvent, events))
+                }
+            }
+        }
+    }
+
+    class PerdsMH extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist [CITATION NEEDED] for the proc rate
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": damage, 
+                        "threat": damage*source.threatMod,
+                    }
+                    events.push(procEvent);
+                }
+            }
+        }
+    }
+    
+    class PerdsOH extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist 
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": damage, // don't count enrage, use default 0.9 only
+                        "threat": damage*source.threatMod,
+                    }
+                    events.push(procEvent);
+                }
+            }
+        }
+    }
+
+    class DeathbringerMH extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": damage, 
+                        "threat": damage*source.threatMod,
+                    }
+                    events.push(procEvent);
+                }
+            }
+        }
+    }
+    
+    class DeathbringerOH extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist 
+                    rng = Math.random(); // Two-roll
+                    let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": damage, // don't count enrage, use default 0.9 only
+                        "threat": damage*source.threatMod,
+                    }
+                    events.push(procEvent);
+                }
+            }
+        }
+    }
+
+    class MSA extends Proc {
+        handleEvent(source, target, event, events) {
+            if (event.type == "damage" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < 0.0933*0.83) { // 0.83 derives from 17% chance to resist
+                    rng = Math.random(); // Two-roll
+                    let critMod = 1; // MSA doesn't scale with spellcrit
+                    let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                    let procEvent = {
+                        "type": "damage",
+                        "ability": this.name,
+                        "hit": "hit",
+                        "timestamp": event.timestamp,
+                        "damage": damage, 
+                        "threat": damage*source.threatMod,
+                    }
+                    events.push(procEvent);
                 }
             }
         }
@@ -296,6 +474,7 @@ self.addEventListener('message', function(e) {
             if (!input.hastePerc) this.hastePerc = 0; else this.hastePerc = input.hastePerc; // percentage
             if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
             if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
+            if (!input.defenseMod) this.defenseMod = 0; else this.defenseMod = input.defenseMod; // additive
         }
     
         handleGameTick(ms, owner, events) {
@@ -315,6 +494,7 @@ self.addEventListener('message', function(e) {
                 "target": this.target,
                 })
                 if (this.hastePerc > 0) owner.hastePerc -= this.hastePerc;
+                if (this.defenseMod > 0) owner.defense -= this.defenseMod;
             }
         }
     
@@ -544,6 +724,64 @@ self.addEventListener('message', function(e) {
         }
     }
     
+    class DemolisherMH extends Aura {
+        handleEvent(owner, event, events) {
+            if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
+                    this.duration = this.maxDuration;
+                    events.push({
+                        type: "buff gained",
+                        timestamp: event.timestamp,
+                        name: this.name,
+                        stacks: this.stacks,
+                        source: this.source,
+                        target: this.target,
+                        });
+                }
+            }
+        }
+    }
+    
+    class DemolisherOH extends Aura {
+        handleEvent(owner, event, events) {
+            if (event.type == "damage" && event.ability == "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < owner.stats.OHSwing/(60*1000)) { 
+                    this.duration = this.maxDuration;
+                    events.push({
+                        type: "buff gained",
+                        timestamp: event.timestamp,
+                        name: this.name,
+                        stacks: this.stacks,
+                        source: this.source,
+                        target: this.target,
+                        });
+                }
+            }
+        }
+    }
+
+    class QuelMH extends Aura {
+        handleEvent(owner, event, events) {
+            if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < owner.stats.MHSwing*2/(60*1000)) { // swing*ppm/(60*1000)
+                    if (this.duration <= 0) owner.defense += this.defenseMod;
+                    this.duration = this.maxDuration;
+                    events.push({
+                        type: "buff gained",
+                        timestamp: event.timestamp,
+                        name: this.name,
+                        stacks: this.stacks,
+                        source: this.source,
+                        target: this.target,
+                        });
+                }
+            }
+        }
+    }
+
     class ThunderfuryDebuff extends Aura {
         constructor(input) {
             super(input);
@@ -634,7 +872,7 @@ self.addEventListener('message', function(e) {
             }
         }
     }
-    
+
     class PrePullAura extends Aura {
         handleGameTick(ms, owner, events) {
             // Use at pull
@@ -820,7 +1058,7 @@ self.addEventListener('message', function(e) {
 
         if(globals._crusaderMH) {
             tankAuras.push(new CrusaderMH({
-                    name: "MH Crusader",
+                    name: "Crusader MH",
                     maxDuration: 15000,
 
                     strMod: 100,
@@ -833,7 +1071,7 @@ self.addEventListener('message', function(e) {
 
         if(globals._crusaderOH) {
             tankAuras.push(new CrusaderOH({
-                    name: "OH Crusader",
+                    name: "Crusader OH",
                     maxDuration: 15000,
 
                     strMod: 100,
@@ -884,6 +1122,43 @@ self.addEventListener('message', function(e) {
                 maxDuration: 10000,
                 hastePerc: 10, // Assuming only 10%, anything else would be kinda weird
 
+
+                target: "Tank",
+                source: "Tank",
+            }))
+        }
+
+        if(globals._edMH) {
+            tankAuras.push(new DemolisherMH({
+                name: "Empyrean Demolisher MH",
+                maxDuration: 10000,
+                hastePerc: 20,
+                trackUptime: true,
+
+                target: "Tank",
+                source: "Tank",
+            }))
+        }
+
+        if(globals._edOH) {
+            tankAuras.push(new DemolisherOH({
+                name: "Empyrean Demolisher OH",
+                maxDuration: 10000,
+                hastePerc: 20,
+                trackUptime: true,
+
+                target: "Tank",
+                source: "Tank",
+            }))
+        }
+
+        if(globals._qsMH) {
+            tankAuras.push(new QuelMH({
+                name: "Quel'Serrar",
+                maxDuration: 10000,
+                armorMod: 300,
+                defenseMod: 13,
+                trackUptime: true,
 
                 target: "Tank",
                 source: "Tank",
@@ -1107,6 +1382,7 @@ self.addEventListener('message', function(e) {
 
         for (let ability in Tank.uptimes) {
             if(!uptimes[`${ability}`]) uptimes[`${ability}`] = []
+            //console.log(`${ability}: ${Tank.uptimes[`${ability}`]}`)
             uptimes[`${ability}`].push(Tank.uptimes[`${ability}`]/(globals._simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
         }
 
@@ -1117,7 +1393,9 @@ self.addEventListener('message', function(e) {
         rageSpent.push(Tank.rageSpent/globals._simDuration)
         Tank.rageSpent = 0
         dtps.push(dmgTaken/globals._simDuration)
-        //console.log(events)
+        events.forEach(event => {
+            //console.log(formatEvent(event))
+        })
         if (i/globals._iterations >= progressPerc/100) {
             progressPerc += 1;
             postMessage({

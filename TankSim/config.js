@@ -1,7 +1,7 @@
 "use strict";
 
 // GLOBALS 
-const _landedHits = ["hit", "crit", "block", "crit block"];
+const _landedHits = ["hit", "crit", "block", "crit block", "glance"];
 const _timeStep = 25; // Timestep used for each fight
 
 // Calc Settings
@@ -18,13 +18,24 @@ let _startRage = 0;
 let _deathwish = true;
 let _crusaderMH = true;
 let _crusaderOH = false;
-let _thunderfuryMH = true;
-let _thunderfuryOH = true;
 let _windfury = false;
 let _windfuryAP = 315;
 let _wcb = false;
 let _dmf = false;
 let _mrp = false;
+
+// Weapons
+let _thunderfuryMH = true;
+let _thunderfuryOH = false;
+let _edMH = false;
+let _edOH = false;
+let _qsMH = false;
+let _perdsMH = false;
+let _perdsOH = false;
+let _dbMH = false;
+let _dbOH = false;
+let _msaMH = false;
+let _msaOH = false;
 
 // Talents
 let _impHS = 3;
@@ -156,7 +167,6 @@ let weaponlists = {
     <option value="Zulian Slicer">Zulian Slicer</option>
     <option value="Teebu's Blazing Longsword">Teebu's Blazing Longsword</option>
     <option value="The Hungering Cold">The Hungering Cold</option>
-    <option value="Thrash Blade">Thrash Blade</option>
     <option value="Thunderfury">Thunderfury</option>
     <option value="Warblade of the Hakkari(MH)">Warblade of the Hakkari(MH)</option>
     <option value="Warblade of the Hakkari(OH)">Warblade of the Hakkari(OH)</option>
@@ -490,10 +500,21 @@ function updateStats()
     ohwepskill += extraohskill;
 
     // Tank Settings
-    _thunderfuryMH = mainhand == "Thunderfury";
-    _thunderfuryOH = offhand == "Thunderfury";
     _crusaderMH = mhwepenchant == "Crusader";
     _crusaderOH = ohwepenchant == "Crusader";
+
+    // Weapons
+    _thunderfuryMH = mainhand == "Thunderfury";
+    _thunderfuryOH = offhand == "Thunderfury";
+    _edMH = mainhand == "Empyrean Demolisher";
+    _edOH = offhand == "Empyrean Demolisher";
+    _qsMH = mainhand == "Quel'Serrar";
+    _perdsMH = mainhand == "Perdition's Blade";
+    _perdsOH = offhand == "Perdition's Blade";
+    _dbMH = mainhand == "Deathbringer";
+    _dbOH = offhand == "Deathbringer";
+    _msaMH = mainhand == "Misplaced Servo Arm";
+    _msaOH = offhand == "Misplaced Servo Arm";
 
     // Trinkets
     _kots = (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider")
@@ -502,8 +523,6 @@ function updateStats()
     _jomgabbar = (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar")
     _slayerscrest = (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest")
     _hoj = (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice")
-
-
 
 
     _config = {
