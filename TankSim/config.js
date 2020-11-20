@@ -353,6 +353,7 @@ function updateStats()
         }
     })
     armor *= (1+0.02*toughness); // Only applies to armor from gear
+    armor *= document.getElementById("imploh").checked ? 1.3 : 1;
     // Buffs
     let mhstone = document.getElementById("mhstone").value
     crit += mhstone == "Elemental" ? 2 : 0;
@@ -386,14 +387,11 @@ function updateStats()
     
     stamina += Number(document.getElementById("alcohol").value);
 
-    armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
     if(document.getElementById("potion").value == "Mighty Rage") {
         _startRage = Math.min(100, _startRage + 45 + Math.random()*30);
         _mrp = true;
     }
-    
-    armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
-    armor += document.getElementById("armorelixir").checked ? 450 : 0;
+
     extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
     extrahp += document.getElementById("titans").checked ? 1200 : 0;
     extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
@@ -403,7 +401,6 @@ function updateStats()
     attackpower += document.getElementById("trueshot").checked ? 100 : 0;
 
     let mark = document.getElementById("mark").checked; // Assumed to be improved
-    armor += mark ? Math.floor(384.75) : 0;
     stamina += mark ? 16 : 0;
     agility += mark ? 16 : 0;
     strength += mark ? 16 : 0;
@@ -443,7 +440,7 @@ function updateStats()
     let extramhskill = Number(document.getElementById("playerextramhskill").value);
     let extraohskill = Number(document.getElementById("playerextraohskill").value);
 
-    // Multiplicative buffs last
+    // Multiplicative buffs last, except for armor
     stamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
     stamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
     agility *= document.getElementById("zandalar").checked ? 1.15 : 1;
@@ -452,8 +449,12 @@ function updateStats()
     agility *= document.getElementById("kings").checked ? 1.1 : 1;
     strength *= document.getElementById("kings").checked ? 1.1 : 1;
 
+    armor += agility*2;
     armor *= document.getElementById("inspiration").checked ? 1.25 : 1;
-    armor *= document.getElementById("imploh").checked ? 1.3 : 1;
+    armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
+    armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
+    armor += document.getElementById("armorelixir").checked ? 450 : 0;
+    armor += mark ? Math.floor(384.75) : 0;
 
     extrastamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
     extrastamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
@@ -469,7 +470,6 @@ function updateStats()
     agility = Math.floor(agility)
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
-    armor = Math.floor(armor)
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
@@ -478,7 +478,7 @@ function updateStats()
     document.getElementById("playerhit").innerHTML = `${hit} `;
     document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*10)/10} `;
     document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)} `;
-    document.getElementById("playerarmor").innerHTML = `${Math.floor(armor + agility*2)} `;
+    document.getElementById("playerarmor").innerHTML = `${Math.round(armor)} `;
     document.getElementById("playerparry").innerHTML = `${Math.round((parry + 5 + deflection + defense*0.04)*100)/100} `;
     document.getElementById("playerdodge").innerHTML = `${Math.round((dodge + agility/20 + defense*0.04)*100)/100} `;
     document.getElementById("playerdefense").innerHTML = `${defense + 300} `;
