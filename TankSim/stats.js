@@ -6872,8 +6872,8 @@ let weapons = {
        "block": 0
     },
     "Fiery Retributor": {
-       "min": 56,
-       "max": 105,
+       "min": 58,
+       "max": 107,
        "swingtimer": 1.8,
        "strength": 7,
        "stamina": 0,
@@ -6907,7 +6907,7 @@ let weapons = {
        "blockvalue": 0,
        "block": 0
     },
-    "Iblis, Blade of the Fallen Seraph (Naxx)": {
+    "Iblis, Blade of the Fallen Seraph": {
        "min": 70,
        "max": 131,
        "swingtimer": 1.6,
@@ -7233,7 +7233,7 @@ let weapons = {
        "blockvalue": 0,
        "block": 0
     },
-    "Warblade of the Hakkari(MH)": {
+    "Warblade of the Hakkari (MH)": {
        "min": 59,
        "max": 110,
        "swingtimer": 1.7,
@@ -7251,7 +7251,7 @@ let weapons = {
        "blockvalue": 0,
        "block": 0
     },
-    "Warblade of the Hakkari(OH)": {
+    "Warblade of the Hakkari (OH)": {
        "min": 57,
        "max": 106,
        "swingtimer": 1.7,
@@ -7293,24 +7293,6 @@ let weapons = {
        "swingtimer": 2.6,
        "strength": 0,
        "stamina": 0,
-       "agility": 0,
-       "hit": 0,
-       "crit": 0,
-       "attackpower": 0,
-       "armor": 0,
-       "parry": 0,
-       "dodge": 0,
-       "defense": 0,
-       "skill": 0,
-       "blockvalue": 0,
-       "block": 0
-    },
-    "WSG Sword": {
-       "min": 78,
-       "max": 146,
-       "swingtimer": 2.7,
-       "strength": 13,
-       "stamina": 5,
        "agility": 0,
        "hit": 0,
        "crit": 0,

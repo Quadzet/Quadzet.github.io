@@ -762,6 +762,24 @@ self.addEventListener('message', function(e) {
         }
     }
 
+    class EskhandarMH extends Aura {
+        handleEvent(owner, event, events) {
+            if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
+                let rng = Math.random()
+                if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
+                    this.duration = this.maxDuration;
+                    events.push({
+                        type: "buff gained",
+                        timestamp: event.timestamp,
+                        name: this.name,
+                        stacks: this.stacks,
+                        source: this.source,
+                        target: this.target,
+                        });
+                }
+            }
+        }
+    }
     class QuelMH extends Aura {
         handleEvent(owner, event, events) {
             if (event.type == "damage" && event.ability != "OH Swing" && globals._landedHits.includes(event.hit)) {
@@ -1145,6 +1163,18 @@ self.addEventListener('message', function(e) {
                 name: "Empyrean Demolisher OH",
                 maxDuration: 10000,
                 hastePerc: 20,
+                trackUptime: true,
+
+                target: "Tank",
+                source: "Tank",
+            }))
+        }
+
+        if(globals._eskMH) {
+            tankAuras.push(new EskhandarMH({
+                name: "Eskhandar's Right Claw",
+                maxDuration: 5000,
+                hastePerc: 30,
                 trackUptime: true,
 
                 target: "Tank",

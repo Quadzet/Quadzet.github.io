@@ -34,6 +34,7 @@ let _perdsMH = false;
 let _perdsOH = false;
 let _dbMH = false;
 let _dbOH = false;
+let _eskMH = false;
 let _msaMH = false;
 let _msaOH = false;
 
@@ -60,6 +61,15 @@ let _berserking = false;
 
 // Fight config
 let _debuffDelay = 0;
+
+
+/*  TODOS 
+<option value="Felstriker">Felstriker</option>
+<option value="Arlokk's Grasp">Arlokk's Grasp</option>
+<option value="Thekal's Grasp">Thekal's Grasp</option>
+<option value="Eskhandar's Left Claw">Eskhandar's Left Claw</option>
+<option value="Teebu's Blazing Longsword">Teebu's Blazing Longsword</option>
+*/
 
 let weaponlists = {
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
@@ -94,7 +104,6 @@ let weaponlists = {
     <option value="Dragonfang Blade">Dragonfang Blade</option>
     <option value="Emerald Dragonfang">Emerald Dragonfang</option>
     <option value="Fang of the Faceless">Fang of the Faceless</option>
-    <option value="Felstriker">Felstriker</option>
     <option value="Finkle's Skinner">Finkle's Skinner</option>
     <option value="Glacial Blade">Glacial Blade</option>
     <option value="Gutgore Ripper">Gutgore Ripper</option>
@@ -111,15 +120,13 @@ let weaponlists = {
     <option value="The Lobotomizer">The Lobotomizer</option>
     <option value="The Thunderwood Poker">The Thunderwood Poker</option>`,
 
-    "Fists": `<option value="Arlokk's Grasp">Arlokk's Grasp</option>
+    "Fists": `
     <option value="Claw of the Black Drake">Claw of the Black Drake</option>
     <option value="Claw of the Frost Wyrm">Claw of the Frost Wyrm</option>
-    <option value="Eskhandar's Left Claw">Eskhandar's Left Claw</option>
     <option value="Eskhandar's Right Claw">Eskhandar's Right Claw</option>
     <option value="R14 Claw">R14 Claw</option>
     <option value="Lefty's Brass Knuckle">Lefty's Brass Knuckle</option>
     <option value="Silithid Claw">Silithid Claw</option>
-    <option value="Thekal's Grasp">Thekal's Grasp</option>
     <option value="Willey's Back Scratcher">Willey's Back Scratcher</option>`,
 
     "Maces": `<option value="Anubisath Warhammer">Anubisath Warhammer</option>
@@ -151,7 +158,7 @@ let weaponlists = {
     <option value="Dark Iron Reaver">Dark Iron Reaver</option>
     <option value="Fiery Retributor">Fiery Retributor</option>
     <option value="Gressil, Dawn of Ruin">Gressil, Dawn of Ruin</option>
-    <option value="Iblis, Blade of the Fallen Seraph (Naxx)">Iblis, Blade of the Fallen Seraph (Naxx)</option>
+    <option value="Iblis, Blade of the Fallen Seraph">Iblis, Blade of the Fallen Seraph</option>
     <option value="Krol Blade">Krol Blade</option>
     <option value="Lord General's Sword">Lord General's Sword</option>
     <option value="Maladath">Maladath</option>
@@ -165,20 +172,13 @@ let weaponlists = {
     <option value="Skullforge Reaver">Skullforge Reaver</option>
     <option value="Sword of Zeal">Sword of Zeal</option>
     <option value="Zulian Slicer">Zulian Slicer</option>
-    <option value="Teebu's Blazing Longsword">Teebu's Blazing Longsword</option>
     <option value="The Hungering Cold">The Hungering Cold</option>
     <option value="Thunderfury">Thunderfury</option>
-    <option value="Warblade of the Hakkari(MH)">Warblade of the Hakkari(MH)</option>
-    <option value="Warblade of the Hakkari(OH)">Warblade of the Hakkari(OH)</option>
+    <option value="Warblade of the Hakkari (MH)">Warblade of the Hakkari (MH)</option>
+    <option value="Warblade of the Hakkari (OH)">Warblade of the Hakkari (OH)</option>
     <option value="Widow's Remorse">Widow's Remorse</option>
-    <option value="Vis'kag the Bloodletter">Vis'kag the Bloodletter</option>
-    <option value="WSG Sword">WSG Sword</option>`,
+    <option value="Vis'kag the Bloodletter">Vis'kag the Bloodletter</option>`,
 }
-
-
-
-
-//1,13,14,15,4,5,6,3,2,7,11,9,8,10,12,16,17
 
 function updateMHWeaponList(doUpdateStats)
 {
@@ -440,6 +440,15 @@ function updateStats()
     let extramhskill = Number(document.getElementById("playerextramhskill").value);
     let extraohskill = Number(document.getElementById("playerextraohskill").value);
 
+    // Set bonuses
+    if(mainhand == "Dal'Rend's Sacred Charge" && offhand == "Dal'Rend's Tribal Guardian") attackpower += 50;
+    if(mainhand == "Warblade of the Hakkari (MH)" && offhand == "Warblade of the Hakkari (OH)") {
+        mhwepskill += 6
+        ohwepskill += 6
+    }
+
+
+
     // Multiplicative buffs last, except for armor
     stamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
     stamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
@@ -513,6 +522,7 @@ function updateStats()
     _perdsOH = offhand == "Perdition's Blade";
     _dbMH = mainhand == "Deathbringer";
     _dbOH = offhand == "Deathbringer";
+    _eskMH = mainhand == "Eskhandar's Right Claw";
     _msaMH = mainhand == "Misplaced Servo Arm";
     _msaOH = offhand == "Misplaced Servo Arm";
 
