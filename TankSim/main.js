@@ -167,7 +167,7 @@ function loadInput()
     // Tank Settings
     document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 4;
     document.querySelector("#head").selectedIndex = localStorage.getItem("head") ? localStorage.getItem("head") : 2;
-    document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 13;
+    document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 14;
     document.querySelector("#shoulder").selectedIndex = localStorage.getItem("shoulder") ? localStorage.getItem("shoulder") : 5;
     document.querySelector("#cape").selectedIndex = localStorage.getItem("cape") ? localStorage.getItem("cape") : 6;
     document.querySelector("#chest").selectedIndex = localStorage.getItem("chest") ? localStorage.getItem("chest") : 11;

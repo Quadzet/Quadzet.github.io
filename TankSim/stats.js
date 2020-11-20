@@ -746,6 +746,22 @@ let necks = {
     skill: 0,
     skilltype: 'none'
 },
+    "Mark of C'Thun": {
+        "crit": 0,
+        "hit": 1,
+        "strength": 0,
+        "stamina": 24,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 1,
+        "parry": 0,
+        "defense": 10,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 0,
+        "block": 0
+},
     "Mark of Fordring" : {
     strength: 0,
     stamina: 0,
