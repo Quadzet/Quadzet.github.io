@@ -36,7 +36,7 @@ class Actor {
                 if (aura.percArmorMod != 1) percArmorMod *= (1 + aura.percArmorMod/100);
             }
         });
-        return this.armor * percArmorMod;
+        return Math.max(0, this.armor * percArmorMod);
     }
 
     getAP() {
