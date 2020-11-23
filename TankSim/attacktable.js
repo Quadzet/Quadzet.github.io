@@ -17,11 +17,22 @@ function getGlanceMod(wepSkill) {
 }
 
 function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
-    let missChance = 0
-    if (defSkill - atkSkill <= 10) missChance = Math.max(0, 5 + (defSkill - atkSkill)*0.1 - hit);
-    else missChance = Math.max(0, 5 + (defSkill - atkSkill)*0.2 - Math.max(0, hit + 1));
-    if (dualWield) missChance = 20 + missChance * 0.8;
-    return missChance;
+    let baseMissChance = 0;
+    if (defSkill - atkSkill <= 10) {
+        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.1)
+        if(dualWield) {
+            return Math.max(0, baseMissChance*0.8 + 20 - hit)
+        } else {
+            return Math.max(0, baseMissChance - hit)
+        }
+    } else {
+        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.2)
+        if(dualWield) {
+            return Math.max(0, baseMissChance*0.8 + 20 - Math.max(0, hit + 1))
+        } else {
+            return Math.max(0, baseMissChance - Math.max(0, hit + 1))
+        }
+    }
 }
 
 // Tank hitting the boss

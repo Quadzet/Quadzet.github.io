@@ -574,8 +574,9 @@ self.addEventListener('message', function(e) {
         constructor(input) {
             super(input);
         }
+        // Only swings remove stacks, even if parried/dodged/missed.
         handleEvent(owner, event, events) {
-            if (event.type == "damage" && ["Bloodthirst", "MH Swing", "OH Swing", "Revenge", "Heroic Strike"].includes(event.ability) && ["hit", "crit", "block"].includes(event.hit)) {
+            if (event.type == "damage" && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.ability)) {
                 if (this.stacks > 0) {
                     events.push({
                         "type": "buff lost",

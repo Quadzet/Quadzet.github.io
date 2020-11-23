@@ -2014,6 +2014,22 @@ let capes = {
     skill: 0,
     skilltype: 'none'
 },
+    "Elementium Threaded Cloak": {
+    "crit": 0,
+    "hit": 0,
+    "strength": 0,
+    "stamina": 13,
+    "agility": 0,
+    "attackpower": 0,
+    "dodge": 2,
+    "parry": 0,
+    "defense": 0,
+    "armor": 169,
+    "skill": 0,
+    "skilltype": 0,
+    "blockvalue": 0,
+    "block": 0
+},
     "Eskhandar's Pelt": {
     strength: 0,
     stamina: 20,
@@ -7523,6 +7539,7 @@ let enchants = {
        "stamina": 0,
        "agility": 0,
        "crit": 1,
+       "hit": 0,
        "attackpower": 26,
        "dodge": 0,
        "block": 0,
