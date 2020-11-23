@@ -465,13 +465,13 @@ function updateStats()
     armor += document.getElementById("armorelixir").checked ? 450 : 0;
     armor += mark ? Math.floor(384.75) : 0;
 
-    let staminaMultiplier = (document.getElementById("dmstamina").checked ? 1.15 : 1)*(document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
-    let strengthMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
-    let agilityMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
-
-    extrastamina *= staminaMultiplier;
-    extrastrength *= strengthMultiplier;
-    extraagility *= agilityMultiplier;
+    extrastamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
+    extrastamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    extraagility *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    extrastrength *= document.getElementById("zandalar").checked ? 1.15 : 1;
+    extrastamina *= document.getElementById("kings").checked ? 1.1 : 1;
+    extraagility *= document.getElementById("kings").checked ? 1.1 : 1;
+    extrastrength *= document.getElementById("kings").checked ? 1.1 : 1;
 
     extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
@@ -571,11 +571,6 @@ function updateStats()
 
             twoPieceDreadnaught: _twoPieceDreadnaught,
             fivePieceWrath: _fivePieceWrath,
-
-            staminaMultiplier: staminaMultiplier,
-            strengthMultiplier: strengthMultiplier,
-            agilityMultiplier: agilityMultiplier,
-
         }),
 
         bossStats: new StaticStats({
@@ -645,9 +640,5 @@ class StaticStats {
         this.twoPieceDreadnaught = stats.twoPieceDreadnaught;
         this.fivePieceWrath = stats.fivePieceWrath;
         this.threatenchant = stats.threatenchant;
-
-        this.staminaMultiplier = stats.staminaMultiplier;
-        this.strengthMultiplier = stats.strengthMultiplier;
-        this.agilityMultiplier = stats.agilityMultiplier;
     }
 }

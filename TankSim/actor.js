@@ -22,11 +22,6 @@ class Actor {
 
         this.rageGained = 0 // remove?
         this.rageSpent = 0
-
-        this.staminaMultiplier = stats.staminaMultiplier;
-        this.strengthMultiplier = stats.strengthMultiplier;
-        this.agilityMultiplier = stats.agilityMultiplier;
-
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -49,7 +44,7 @@ class Actor {
         this.auras.forEach(aura => {
             if (aura.duration > 0) {
                 if (aura.strMod > 0) {
-                    AP += aura.strMod * 2 * this.strengthMultiplier;
+                    AP += aura.strMod * 2; // TODO: Kings, Hakkar buff, AP buffs etc 
                 }
                 if (aura.APMod > 0) {
                     if(!aura.scalingStacks) AP += aura.APMod;
