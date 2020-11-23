@@ -4684,7 +4684,7 @@ let trinkets = {
     "Diamond Flask": {
        "crit": 0,
        "hit": 0,
-       "strength": 75,
+       "strength": 0,
        "stamina": 0,
        "agility": 0,
        "attackpower": 0,
