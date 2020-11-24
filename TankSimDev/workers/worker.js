@@ -1269,6 +1269,7 @@ self.addEventListener('message', function(e) {
     }
 
     function performAction(events, ms, attacker, defender) {
+        attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events));
         attacker.abilities.forEach(ability => {
             if (ability.isUsable(attacker)) {
                 let abilityEvent = ability.use(attacker, defender);
@@ -1297,7 +1298,6 @@ self.addEventListener('message', function(e) {
                 ability.currentCooldown = ability.currentCooldown - globals._timeStep*(1+attacker.hastePerc/100);
             else ability.currentCooldown = ability.currentCooldown - globals._timeStep;
         });
-        attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events));
     
         attacker.GCD = attacker.GCD - globals._timeStep;
     }
