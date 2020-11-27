@@ -72,7 +72,21 @@ let _debuffDelay = 0;
 */
 
 let weaponlists = {
-    "Shields": `<option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>`,
+    "Shields": `
+    <option value="Aegis of the Blood God">Aegis of the Blood God</option>
+    <option value="Blessed Qiraji Bulwark">Blessed Qiraji Bulwark</option>
+    <option value="Buru's Skull Fragment">Buru's Skull Fragment</option>
+    <option value="Draconian Deflector">Draconian Deflector</option>
+    <option value="Drillborer Disk">Drillborer Disk</option>
+    <option value="Earthen Guard">Earthen Guard</option>
+    <option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>
+    <option value="Grand Marshal's Aegis">Grand Marshal's Aegis</option>
+    <option value="High Warlord's Shield Wall">High Warlord's Shield Wall</option>
+    <option value="Stygian Buckler">Stygian Buckler</option>
+    <option value="The Face of Death">The Face of Death</option>
+    <option value="The Immovable Object">The Immovable Object</option>
+    <option value="The Plague Bearer">The Plague Bearer</option>`,
+    
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
     <option value="Annihilator">Annihilator</option>
     <option value="Axe of the Deep Woods">Axe of the Deep Woods</option>
