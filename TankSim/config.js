@@ -72,6 +72,7 @@ let _debuffDelay = 0;
 */
 
 let weaponlists = {
+    "Shields": `<option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>`,
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
     <option value="Annihilator">Annihilator</option>
     <option value="Axe of the Deep Woods">Axe of the Deep Woods</option>
@@ -191,9 +192,9 @@ function updateMHWeaponList(doUpdateStats)
 function updateOHWeaponList(doUpdateStats)
 {
     let ohselect = document.getElementById("offhand")
-    let weapontype = document.getElementById("ohweptypelist").value
+    let ohtype = document.getElementById("ohweptypelist").value
 
-    ohselect.innerHTML = weaponlists[weapontype]
+    ohselect.innerHTML = weaponlists[ohtype]
     if(doUpdateStats) updateStats();
 }
 
@@ -217,6 +218,7 @@ function updateStats()
     _wcb = document.querySelector("#wcb").checked
     _dmf = document.querySelector("#dmf").checked
     let _goa = document.getElementById("goa").checked
+    let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true
 
     // Talents 
     let deflection = Number(document.getElementById("deflection").value)
@@ -266,37 +268,71 @@ function updateStats()
     let mhwepenchant = document.querySelector("#mhwepenchant").value
     let ohwepenchant = document.querySelector("#ohwepenchant").value
 
-    let gear = [
-        races[race],
-        heads[head],
-        necks[neck],
-        shoulders[shoulder],
-        capes[cape],
-        chests[chest],
-        wrists[wrist],
-        hands[hand],
-        waists[waist],
-        legs[leg],
-        feet[boots],
-        rings[ringone],
-        rings[ringtwo],
-        trinkets[trinketone],
-        trinkets[trinkettwo],
-        rangedweps[ranged],
-        weapons[mainhand],
-        weapons[offhand],
-        enchants[headenchant],
-        enchants[shoulderenchant],
-        enchants[backenchant],
-        enchants[chestenchant],
-        enchants[wristenchant],
-        enchants[handenchant],
-        enchants[legenchant],
-        enchants[feetenchant],
-        enchants[mhwepenchant],
-        enchants[ohwepenchant],
-    ]
-
+    let gear;
+    if (_dualWield) {
+        gear = [
+            races[race],
+            heads[head],
+            necks[neck],
+            shoulders[shoulder],
+            capes[cape],
+            chests[chest],
+            wrists[wrist],
+            hands[hand],
+            waists[waist],
+            legs[leg],
+            feet[boots],
+            rings[ringone],
+            rings[ringtwo],
+            trinkets[trinketone],
+            trinkets[trinkettwo],
+            rangedweps[ranged],
+            weapons[mainhand],
+            weapons[offhand],
+            enchants[headenchant],
+            enchants[shoulderenchant],
+            enchants[backenchant],
+            enchants[chestenchant],
+            enchants[wristenchant],
+            enchants[handenchant],
+            enchants[legenchant],
+            enchants[feetenchant],
+            enchants[mhwepenchant],
+            enchants[ohwepenchant],
+        ]
+    }
+    else {
+        gear = [
+            races[race],
+            heads[head],
+            necks[neck],
+            shoulders[shoulder],
+            capes[cape],
+            chests[chest],
+            wrists[wrist],
+            hands[hand],
+            waists[waist],
+            legs[leg],
+            feet[boots],
+            rings[ringone],
+            rings[ringtwo],
+            trinkets[trinketone],
+            trinkets[trinkettwo],
+            rangedweps[ranged],
+            weapons[mainhand],
+            shields[offhand],
+            enchants[headenchant],
+            enchants[shoulderenchant],
+            enchants[backenchant],
+            enchants[chestenchant],
+            enchants[wristenchant],
+            enchants[handenchant],
+            enchants[legenchant],
+            enchants[feetenchant],
+            enchants[mhwepenchant],
+            enchants[ohwepenchant],
+        ]        
+    }
     let strength = 0;
     let stamina = 0;
     let agility = 0;
@@ -315,10 +351,14 @@ function updateStats()
     let mhmin = weapons[mainhand].min;
     let mhmax = weapons[mainhand].max;
     let mhswing = weapons[mainhand].swingtimer*1000;
-    let ohmin = weapons[offhand].min;
-    let ohmax = weapons[offhand].max;
-    let ohswing = weapons[offhand].swingtimer*1000;
-
+    let ohmin = 0;
+    let ohmax = 0;
+    let ohswing = 0;
+    if (_dualWield) {
+        ohmin = weapons[offhand].min;
+        ohmax = weapons[offhand].max;
+        ohswing = weapons[offhand].swingtimer*1000;
+    }
     gear.forEach(item => {
         strength += item.strength;
         stamina += item.stamina;
@@ -335,7 +375,7 @@ function updateStats()
     })
 
     let mhwepskill = 300;
-    let ohwepskill = 300;
+    let ohwepskill = _dualWield ? 300 : 0;
     let mhweapontype = document.getElementById("mhweptypelist").value
     let ohweapontype = document.getElementById("ohweptypelist").value
 
@@ -362,10 +402,12 @@ function updateStats()
     mhmax += mhstone == "Dense" ? 8 : 0;
 
     let ohstone = document.getElementById("ohstone").value
-    crit += ohstone == "Elemental" ? 2 : 0;
-    attackpower += ohstone == "Consecrated" ? 100 : 0;
-    ohmin += ohstone == "Dense" ? 8 : 0;
-    ohmax += ohstone == "Dense" ? 8 : 0;
+    if (_dualWield) {
+        crit += ohstone == "Elemental" ? 2 : 0;
+        attackpower += ohstone == "Consecrated" ? 100 : 0;
+        ohmin += ohstone == "Dense" ? 8 : 0;
+        ohmax += ohstone == "Dense" ? 8 : 0;
+    }
 
     strength += Number(document.getElementById("strbuff").value)
     agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
@@ -540,16 +582,18 @@ function updateStats()
             type: "tank",
             level: 60,
 
+            dualWield: _dualWield,
+
             MHMin: mhmin,
             MHMax: mhmax,
             MHSwing: mhswing,
 
-            OHMin: ohmin,
-            OHMax: ohmax,
-            OHSwing: ohswing,
+            OHMin: _dualWield ? ohmin : 0,
+            OHMax: _dualWield ? ohmax : 0,
+            OHSwing: _dualWield ? ohswing : 0,
 
             MHWepSkill: mhwepskill,
-            OHWepSkill: ohwepskill,
+            OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: _dmf ? 0.99 : 0.9, // Defensive Stance + dmf
             hastePerc: _wcb ? 15 : 0, 
             AP: strength*2 + attackpower,
@@ -559,8 +603,8 @@ function updateStats()
             
             parry: parry + 5, // TODO talents, defense, check formula
             dodge: agility/20 + dodge, // TODO: talents, defense
-            block: 0, // TODO: add shield funcitonality...
-            blockValue: 0,
+            block: block + 5, // TODO talents, defense, check formula
+            blockValue: blockvalue,
             defense: 300 + defense, // TODO: talents
             baseArmor: agility*2 + armor, // TODO: talents
             baseHealth: stamina*10, // TODO: basehealth
@@ -613,6 +657,8 @@ class StaticStats {
     constructor(stats) {
         this.type = stats.type;
         this.level = stats.level;
+
+        this.dualWield = stats.dualWield;
 
         this.MHMin = stats.MHMin;
         this.MHMax = stats.MHMax;
