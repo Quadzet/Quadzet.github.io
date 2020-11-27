@@ -154,7 +154,7 @@ self.addEventListener('message', function(e) {
             else {
                 let damage = this.weaponSwingRoll(attacker) + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-                damageEvent = rollAttack(attacker, defender, damage, false, true);
+                damageEvent = rollAttack(attacker, defender, damage, false, attacker.stats.dualWield);
                 
                 damageEvent.threat = 0;
                 damageEvent.threat = this.threatCalculator(damageEvent, attacker);
@@ -1272,23 +1272,25 @@ self.addEventListener('message', function(e) {
         attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events));
         attacker.abilities.forEach(ability => {
             if (ability.isUsable(attacker)) {
-                let abilityEvent = ability.use(attacker, defender);
-    
-                // TODO: Move these into Ability.use()
-                abilityEvent.timestamp = ms;
-                abilityEvent.target = defender.name;
-                abilityEvent.source = attacker.name;
+                if (!(["OH Swing"].includes(ability.name)) || (["OH Swing"].includes(ability.name) && attacker.stats.dualWield)) {
+                    let abilityEvent = ability.use(attacker, defender);
+        
+                    // TODO: Move these into Ability.use()
+                    abilityEvent.timestamp = ms;
+                    abilityEvent.target = defender.name;
+                    abilityEvent.source = attacker.name;
 
-                events.push(abilityEvent);
-                ability.currentCooldown = ability.baseCooldown;
-                if (ability.onGCD) attacker.GCD = 1500;
+                    events.push(abilityEvent);
+                    ability.currentCooldown = ability.baseCooldown;
+                    if (ability.onGCD) attacker.GCD = 1500;
 
-                // Update Actor Auras if the event applies to the Aura
-                attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
-                defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
-                attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
-                
-                if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
+                    // Update Actor Auras if the event applies to the Aura
+                    attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
+                    defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
+                    attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
+                    
+                    if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
+                }
             }
         })
     
