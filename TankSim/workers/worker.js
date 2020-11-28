@@ -1318,7 +1318,7 @@ self.addEventListener('message', function(e) {
     }
     playerAbilities.push(new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false))
 
-    let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
+    let bossAbilities = [new MHSwing("Auto Attack", globals._config.bossStats.MHSwing, 0, false)];
 
     let TankAuras = [...defaultTankAuras]
     let BossAuras = [...defaultBossAuras]

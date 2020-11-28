@@ -6,3 +6,4 @@
  - Fixed bug where Anticipation/Toughness/Deflection did not actually affect player stats.
  - Added a Changelog.
  - The readme now includes a brief explanation of the ability priority system.
+ - Boss Swing Timer now actually updates boss swing timer.
