@@ -94,6 +94,7 @@ function saveInput()
     localStorage.setItem("deflection", document.getElementById("deflection").value)
     localStorage.setItem("cruelty", document.getElementById("cruelty").value)
     localStorage.setItem("anticipation", document.getElementById("anticipation").value)
+    localStorage.setItem("shieldspec", document.getElementById("shieldspec").value)
     localStorage.setItem("toughness", document.getElementById("toughness").value)
     localStorage.setItem("impHS", document.querySelector("#impHS").value) 
     localStorage.setItem("impSA", document.querySelector("#impSA").value) 
@@ -209,12 +210,13 @@ function loadInput()
     document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
     document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
     document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
+    document.getElementById("shieldspec").value = localStorage.getItem("shieldspec") ? localStorage.getItem("shieldspec") : 5;
     document.getElementById("toughness").value = localStorage.getItem("toughness") ? localStorage.getItem("toughness") : 3;
     document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 3; 
     document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
     document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
-    document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 5; 
+    document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 4; 
     
     // Other Bonuses
     document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
