@@ -1272,25 +1272,23 @@ self.addEventListener('message', function(e) {
         attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events));
         attacker.abilities.forEach(ability => {
             if (ability.isUsable(attacker)) {
-                if (!(["OH Swing"].includes(ability.name)) || (["OH Swing"].includes(ability.name) && attacker.stats.dualWield)) {
-                    let abilityEvent = ability.use(attacker, defender);
-        
-                    // TODO: Move these into Ability.use()
-                    abilityEvent.timestamp = ms;
-                    abilityEvent.target = defender.name;
-                    abilityEvent.source = attacker.name;
+                let abilityEvent = ability.use(attacker, defender);
+    
+                // TODO: Move these into Ability.use()
+                abilityEvent.timestamp = ms;
+                abilityEvent.target = defender.name;
+                abilityEvent.source = attacker.name;
 
-                    events.push(abilityEvent);
-                    ability.currentCooldown = ability.baseCooldown;
-                    if (ability.onGCD) attacker.GCD = 1500;
+                events.push(abilityEvent);
+                ability.currentCooldown = ability.baseCooldown;
+                if (ability.onGCD) attacker.GCD = 1500;
 
-                    // Update Actor Auras if the event applies to the Aura
-                    attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
-                    defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
-                    attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
-                    
-                    if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
-                }
+                // Update Actor Auras if the event applies to the Aura
+                attacker.auras.forEach(aura => aura.handleEvent(attacker, abilityEvent, events));
+                defender.auras.forEach(aura => aura.handleEvent(defender, abilityEvent, events));
+                attacker.procs.forEach(proc => proc.handleEvent(attacker, defender, abilityEvent, events));
+                
+                if (abilityEvent.type == "damage" && abilityEvent.hit == "parry") defender.addParryHaste();
             }
         })
     
@@ -1314,9 +1312,12 @@ self.addEventListener('message', function(e) {
         new Revenge("Revenge", 5000, 5, true, 273, 2.25),
         new HeroicStrike("Heroic Strike", 0, 15 - globals._impHS, false, 175),
         new SunderArmor("Sunder Armor", 0, 15 - globals._impSA, true, 260),
-        new OHSwing("OH Swing", globals._config.tankStats.OHSwing, 0, false),
-        new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false),
     ];
+    if(globals._config.tankStats.dualWield) {
+        playerAbilities.push(new OHSwing("OH Swing", globals._config.tankStats.OHSwing, 0, false))
+    }
+    playerAbilities.push(new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false))
+
     let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
 
     let TankAuras = [...defaultTankAuras]
