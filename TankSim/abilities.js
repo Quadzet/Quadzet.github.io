@@ -100,7 +100,7 @@ class SunderArmor extends Ability {
         return damageEvent;
     }
     isUsable(actor) {
-        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost + (actor.stats.dualWield ? 10 : 0));
+        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost + (actor.stats.dualWield ? 10 : 15));
     }
 }
 
