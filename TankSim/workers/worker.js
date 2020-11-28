@@ -154,7 +154,7 @@ self.addEventListener('message', function(e) {
             else {
                 let damage = this.weaponSwingRoll(attacker) + defender.additivePhysBonus;
                 damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-                damageEvent = rollAttack(attacker, defender, damage, false, true);
+                damageEvent = rollAttack(attacker, defender, damage, false, attacker.stats.dualWield);
                 
                 damageEvent.threat = 0;
                 damageEvent.threat = this.threatCalculator(damageEvent, attacker);
@@ -1312,9 +1312,12 @@ self.addEventListener('message', function(e) {
         new Revenge("Revenge", 5000, 5, true, 273, 2.25),
         new HeroicStrike("Heroic Strike", 0, 15 - globals._impHS, false, 175),
         new SunderArmor("Sunder Armor", 0, 15 - globals._impSA, true, 260),
-        new OHSwing("OH Swing", globals._config.tankStats.OHSwing, 0, false),
-        new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false),
     ];
+    if(globals._config.tankStats.dualWield) {
+        playerAbilities.push(new OHSwing("OH Swing", globals._config.tankStats.OHSwing, 0, false))
+    }
+    playerAbilities.push(new MHSwing("MH Swing", globals._config.tankStats.MHSwing, 0, false))
+
     let bossAbilities = [new MHSwing("Auto Attack", 2000, 0, false)];
 
     let TankAuras = [...defaultTankAuras]

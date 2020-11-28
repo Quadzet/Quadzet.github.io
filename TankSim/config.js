@@ -72,6 +72,21 @@ let _debuffDelay = 0;
 */
 
 let weaponlists = {
+    "Shields": `
+    <option value="Aegis of the Blood God">Aegis of the Blood God</option>
+    <option value="Blessed Qiraji Bulwark">Blessed Qiraji Bulwark</option>
+    <option value="Buru's Skull Fragment">Buru's Skull Fragment</option>
+    <option value="Draconian Deflector">Draconian Deflector</option>
+    <option value="Drillborer Disk">Drillborer Disk</option>
+    <option value="Earthen Guard">Earthen Guard</option>
+    <option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>
+    <option value="Grand Marshal's Aegis">Grand Marshal's Aegis</option>
+    <option value="High Warlord's Shield Wall">High Warlord's Shield Wall</option>
+    <option value="Stygian Buckler">Stygian Buckler</option>
+    <option value="The Face of Death">The Face of Death</option>
+    <option value="The Immovable Object">The Immovable Object</option>
+    <option value="The Plague Bearer">The Plague Bearer</option>`,
+    
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
     <option value="Annihilator">Annihilator</option>
     <option value="Axe of the Deep Woods">Axe of the Deep Woods</option>
@@ -191,9 +206,9 @@ function updateMHWeaponList(doUpdateStats)
 function updateOHWeaponList(doUpdateStats)
 {
     let ohselect = document.getElementById("offhand")
-    let weapontype = document.getElementById("ohweptypelist").value
+    let ohtype = document.getElementById("ohweptypelist").value
 
-    ohselect.innerHTML = weaponlists[weapontype]
+    ohselect.innerHTML = weaponlists[ohtype]
     if(doUpdateStats) updateStats();
 }
 
@@ -217,12 +232,14 @@ function updateStats()
     _wcb = document.querySelector("#wcb").checked
     _dmf = document.querySelector("#dmf").checked
     let _goa = document.getElementById("goa").checked
+    let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true
 
     // Talents 
     let deflection = Number(document.getElementById("deflection").value)
     let cruelty = Number(document.getElementById("cruelty").value)
     let anticipation = Number(document.getElementById("anticipation").value)
     let toughness = Number(document.getElementById("toughness").value)
+    let shieldspec = Number(document.getElementById("shieldspec").value)
     _impHS = Number(document.getElementById("impHS").value) 
     _impSA = Number(document.getElementById("impSA").value) 
     _defiance = Number(document.getElementById("defiance").value) 
@@ -266,37 +283,71 @@ function updateStats()
     let mhwepenchant = document.querySelector("#mhwepenchant").value
     let ohwepenchant = document.querySelector("#ohwepenchant").value
 
-    let gear = [
-        races[race],
-        heads[head],
-        necks[neck],
-        shoulders[shoulder],
-        capes[cape],
-        chests[chest],
-        wrists[wrist],
-        hands[hand],
-        waists[waist],
-        legs[leg],
-        feet[boots],
-        rings[ringone],
-        rings[ringtwo],
-        trinkets[trinketone],
-        trinkets[trinkettwo],
-        rangedweps[ranged],
-        weapons[mainhand],
-        weapons[offhand],
-        enchants[headenchant],
-        enchants[shoulderenchant],
-        enchants[backenchant],
-        enchants[chestenchant],
-        enchants[wristenchant],
-        enchants[handenchant],
-        enchants[legenchant],
-        enchants[feetenchant],
-        enchants[mhwepenchant],
-        enchants[ohwepenchant],
-    ]
-
+    let gear;
+    if (_dualWield) {
+        gear = [
+            races[race],
+            heads[head],
+            necks[neck],
+            shoulders[shoulder],
+            capes[cape],
+            chests[chest],
+            wrists[wrist],
+            hands[hand],
+            waists[waist],
+            legs[leg],
+            feet[boots],
+            rings[ringone],
+            rings[ringtwo],
+            trinkets[trinketone],
+            trinkets[trinkettwo],
+            rangedweps[ranged],
+            weapons[mainhand],
+            weapons[offhand],
+            enchants[headenchant],
+            enchants[shoulderenchant],
+            enchants[backenchant],
+            enchants[chestenchant],
+            enchants[wristenchant],
+            enchants[handenchant],
+            enchants[legenchant],
+            enchants[feetenchant],
+            enchants[mhwepenchant],
+            enchants[ohwepenchant],
+        ]
+    }
+    else {
+        gear = [
+            races[race],
+            heads[head],
+            necks[neck],
+            shoulders[shoulder],
+            capes[cape],
+            chests[chest],
+            wrists[wrist],
+            hands[hand],
+            waists[waist],
+            legs[leg],
+            feet[boots],
+            rings[ringone],
+            rings[ringtwo],
+            trinkets[trinketone],
+            trinkets[trinkettwo],
+            rangedweps[ranged],
+            weapons[mainhand],
+            shields[offhand],
+            enchants[headenchant],
+            enchants[shoulderenchant],
+            enchants[backenchant],
+            enchants[chestenchant],
+            enchants[wristenchant],
+            enchants[handenchant],
+            enchants[legenchant],
+            enchants[feetenchant],
+            enchants[mhwepenchant],
+            enchants[ohwepenchant],
+        ]        
+    }
     let strength = 0;
     let stamina = 0;
     let agility = 0;
@@ -315,10 +366,14 @@ function updateStats()
     let mhmin = weapons[mainhand].min;
     let mhmax = weapons[mainhand].max;
     let mhswing = weapons[mainhand].swingtimer*1000;
-    let ohmin = weapons[offhand].min;
-    let ohmax = weapons[offhand].max;
-    let ohswing = weapons[offhand].swingtimer*1000;
-
+    let ohmin = 0;
+    let ohmax = 0;
+    let ohswing = 0;
+    if (_dualWield) {
+        ohmin = weapons[offhand].min;
+        ohmax = weapons[offhand].max;
+        ohswing = weapons[offhand].swingtimer*1000;
+    }
     gear.forEach(item => {
         strength += item.strength;
         stamina += item.stamina;
@@ -335,7 +390,7 @@ function updateStats()
     })
 
     let mhwepskill = 300;
-    let ohwepskill = 300;
+    let ohwepskill = _dualWield ? 300 : 0;
     let mhweapontype = document.getElementById("mhweptypelist").value
     let ohweapontype = document.getElementById("ohweptypelist").value
 
@@ -362,10 +417,12 @@ function updateStats()
     mhmax += mhstone == "Dense" ? 8 : 0;
 
     let ohstone = document.getElementById("ohstone").value
-    crit += ohstone == "Elemental" ? 2 : 0;
-    attackpower += ohstone == "Consecrated" ? 100 : 0;
-    ohmin += ohstone == "Dense" ? 8 : 0;
-    ohmax += ohstone == "Dense" ? 8 : 0;
+    if (_dualWield) {
+        crit += ohstone == "Elemental" ? 2 : 0;
+        attackpower += ohstone == "Consecrated" ? 100 : 0;
+        ohmin += ohstone == "Dense" ? 8 : 0;
+        ohmax += ohstone == "Dense" ? 8 : 0;
+    }
 
     strength += Number(document.getElementById("strbuff").value)
     agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
@@ -427,18 +484,20 @@ function updateStats()
     _windfuryAP = document.getElementById("impweptotems").checked ? 410 : 315;
     
     // Stat deltas input by user
-    let extrastrength = Number(document.getElementById("playerextrastrength").value);
-    let extrastamina = Number(document.getElementById("playerextrastamina").value);
-    let extraagility = Number(document.getElementById("playerextraagility").value);
-    let extrahit = Number(document.getElementById("playerextrahit").value);
-    let extracrit = Number(document.getElementById("playerextracrit").value);
+    let extrastrength    = Number(document.getElementById("playerextrastrength").value);
+    let extrastamina     = Number(document.getElementById("playerextrastamina").value);
+    let extraagility     = Number(document.getElementById("playerextraagility").value);
+    let extrahit         = Number(document.getElementById("playerextrahit").value);
+    let extracrit        = Number(document.getElementById("playerextracrit").value);
     let extraattackpower = Number(document.getElementById("playerextraattackpower").value);
-    let extraarmor = Number(document.getElementById("playerextraarmor").value);
-    let extraparry = Number(document.getElementById("playerextraparry").value);
-    let extradodge = Number(document.getElementById("playerextradodge").value);
-    let extradefense = Number(document.getElementById("playerextradefense").value);
-    let extramhskill = Number(document.getElementById("playerextramhskill").value);
-    let extraohskill = Number(document.getElementById("playerextraohskill").value);
+    let extraarmor       = Number(document.getElementById("playerextraarmor").value);
+    let extrablock       = Number(document.getElementById("playerextrablock").value);
+    let extrablockvalue  = Number(document.getElementById("playerextrablockvalue").value);
+    let extraparry       = Number(document.getElementById("playerextraparry").value);
+    let extradodge       = Number(document.getElementById("playerextradodge").value);
+    let extradefense     = Number(document.getElementById("playerextradefense").value);
+    let extramhskill     = Number(document.getElementById("playerextramhskill").value);
+    let extraohskill     = Number(document.getElementById("playerextraohskill").value);
 
     // Set bonuses
     if(mainhand == "Dal'Rend's Sacred Charge" && offhand == "Dal'Rend's Tribal Guardian") attackpower += 50;
@@ -446,7 +505,6 @@ function updateStats()
         mhwepskill += 6
         ohwepskill += 6
     }
-
 
 
     // Multiplicative buffs last, except for armor
@@ -480,21 +538,33 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
+    crit = crit + cruelty + agility/20 + (mhwepskill-300)*0.04
+
+    parry += 5 + deflection + defense*0.04
+    dodge += agility/20 + defense*0.04
+    block += shieldspec + 5 + defense*0.04
+    blockvalue += strength/20
+
+    block = _dualWield ? 0 : block
+    blockvalue = _dualWield ? 0 : blockvalue
+
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
     document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)} `;
     document.getElementById("playeragility").innerHTML = `${Math.round(agility)} `;
     document.getElementById("playerhit").innerHTML = `${hit} `;
-    document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*10)/10} `;
+    document.getElementById("playercrit").innerHTML = `${Math.round(crit*10)/10} `;
     document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)} `;
     document.getElementById("playerarmor").innerHTML = `${Math.round(armor)} `;
-    document.getElementById("playerparry").innerHTML = `${Math.round((parry + 5 + deflection + defense*0.04)*100)/100} `;
-    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge + agility/20 + defense*0.04)*100)/100} `;
+    document.getElementById("playerblock").innerHTML = `${Math.round((block)*100)/100} `;
+    document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)} `;
+    document.getElementById("playerparry").innerHTML = `${Math.round((parry)*100)/100} `;
+    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge)*100)/100} `;
     document.getElementById("playerdefense").innerHTML = `${defense + 300} `;
     document.getElementById("playermhskill").innerHTML = `${mhwepskill} `;
     document.getElementById("playerohskill").innerHTML = `${ohwepskill} `;
 
-    // Add stat deltas to stats, note str/ap interaaction not accounted for.
+    // Add stat deltas to stats, note str -> ap/blockvalue interaction not accounted for.
     strength += extrastrength;
     stamina += extrastamina;
     agility += extraagility;
@@ -505,6 +575,8 @@ function updateStats()
     parry += extraparry;
     dodge += extradodge;
     defense += extradefense;
+    block += extrablock;
+    block += extrablockvalue;
     mhwepskill += extramhskill;
     ohwepskill += extraohskill;
 
@@ -540,6 +612,8 @@ function updateStats()
             type: "tank",
             level: 60,
 
+            dualWield: _dualWield,
+
             MHMin: mhmin,
             MHMax: mhmax,
             MHSwing: mhswing,
@@ -549,21 +623,21 @@ function updateStats()
             OHSwing: ohswing,
 
             MHWepSkill: mhwepskill,
-            OHWepSkill: ohwepskill,
+            OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: _dmf ? 0.99 : 0.9, // Defensive Stance + dmf
             hastePerc: _wcb ? 15 : 0, 
-            AP: strength*2 + attackpower,
-            crit: agility/20 + crit, // TODO: add wepskill
+            AP: attackpower + strength*2,
+            crit: crit,
             spellcrit: spellcrit,
             hit: hit,
             
-            parry: parry + 5, // TODO talents, defense, check formula
-            dodge: agility/20 + dodge, // TODO: talents, defense
-            block: 0, // TODO: add shield funcitonality...
-            blockValue: 0,
-            defense: 300 + defense, // TODO: talents
-            baseArmor: agility*2 + armor, // TODO: talents
-            baseHealth: stamina*10, // TODO: basehealth
+            parry: parry,
+            dodge: dodge,
+            block: block,
+            blockValue: blockvalue,
+            defense: 300 + defense,
+            baseArmor: armor,
+            baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
 
             threatMod: 1.3 * (1 + 0.03*_defiance) * (threatenchant ? 1.02 : 1),
             critMod: 2 + _impale*0.1,
@@ -613,6 +687,8 @@ class StaticStats {
     constructor(stats) {
         this.type = stats.type;
         this.level = stats.level;
+
+        this.dualWield = stats.dualWield;
 
         this.MHMin = stats.MHMin;
         this.MHMax = stats.MHMax;

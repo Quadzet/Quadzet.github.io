@@ -100,7 +100,7 @@ class SunderArmor extends Ability {
         return damageEvent;
     }
     isUsable(actor) {
-        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > 35);
+        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost + (actor.stats.dualWield ? 10 : 0));
     }
 }
 
@@ -114,6 +114,6 @@ class HeroicStrike extends Ability {
         };
     }
     isUsable(actor) {
-        return (actor.isHeroicStrikeQueued == false && actor.rage > this.rageCost);
+        return (actor.isHeroicStrikeQueued == false && actor.rage > this.rageCost + (actor.stats.dualWield ? 0 : 60));
     }
 }
