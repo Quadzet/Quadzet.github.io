@@ -9,19 +9,19 @@ The goal is for the calculations to be as accurate as possible and to not draw c
 The majority of the calculations and formulas are based on information found in the Fight Club discord, and also notably from https://github.com/magey/classic-warrior/wiki as well as to a lesser extent my own testing. At some point I would want to document all of it, for now its documentation is within the code itself.
 
 ### Rotation
-At this time, the simulation follows a set pre-defined priority system that's been calibrated by hand to yield as high tps as possible. Of course in reality it would depend on gear and buffs.
+At this time, the simulation follows a set pre-defined priority system that's been calibrated by hand to yield as high threat per second as possible. Of course in reality it would depend on gear and buffs.
 
-# Dual Wielding
+##### Dual Wielding
 1. Bloodthirst if rage above cost.
-2. Revenge if available rage above cost.
+2. Revenge if available and rage above cost.
 3. Sunder Armor if rage above cost + 15.
-o Queue Heroic Strike if rage above cost.
+ -  Queue Heroic Strike if rage above cost.
 
-# Mainhand + Shield
+##### Mainhand + Shield
 1. Bloodthirst if rage above cost.
-2. Revenge if available rage above cost.
+2. Revenge if available and rage above cost.
 3. Sunder Armor if rage above cost + 10.
-o Queue Heroic Strike if rage above cost + 60.
+ - Queue Heroic Strike if rage above cost + 60.
 
 ### Contact
 If you have questions or suggestions you can find me on Discord, Quadzet#4824.
