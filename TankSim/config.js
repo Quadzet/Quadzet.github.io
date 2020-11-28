@@ -195,6 +195,16 @@ let weaponlists = {
     <option value="Vis'kag the Bloodletter">Vis'kag the Bloodletter</option>`,
 }
 
+let ohenchantlist = {
+    weapon: `<option value="None">None</option>
+        <option value="Agility">Agility</option>
+        <option value="Crusader">Crusader</option>
+        <option value="Strength">Strength</option>`,
+
+    shield: `<option value="None">None</option>
+        <option value="Greater Stamina">Greater Stamina</option>`,
+}
+
 function updateMHWeaponList(doUpdateStats)
 {
     let mhselect = document.getElementById("mainhand")
@@ -209,6 +219,16 @@ function updateOHWeaponList(doUpdateStats)
     let ohtype = document.getElementById("ohweptypelist").value
 
     ohselect.innerHTML = weaponlists[ohtype]
+    
+    let ohenchantselect = document.getElementById("ohwepenchant")
+    let index = ohenchantselect.selectedIndex
+    if(ohtype == "Shields") {
+        ohenchantselect.innerHTML = ohenchantlist.shield
+    } else {
+        ohenchantselect.innerHTML = ohenchantlist.weapon
+    }
+    if(index < ohenchantselect.length) ohenchantselect.selectedIndex = index
+
     if(doUpdateStats) updateStats();
 }
 
