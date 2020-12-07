@@ -1570,7 +1570,7 @@ let shoulders = {
     armor: 650,
     parry: 0,
     dodge: 1,
-    defense: 0,
+    defense: 9,
     block: 0,
     blockvalue: 0,
 
