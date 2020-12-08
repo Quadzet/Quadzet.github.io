@@ -4820,7 +4820,23 @@ let trinkets = {
        "armor": 0,
        "blockvalue": 0,
        "block": 0
-    }
+    },
+    "Styleen's Impending Scarab": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 0,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 13,
+        "armor": 0,
+        "skill": 0,
+        "skilltype": 0,
+        "blockvalue": 24,
+        "block": 5
+    },
 }
 
 let rangedweps = {
