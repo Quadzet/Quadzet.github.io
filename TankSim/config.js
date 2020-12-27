@@ -488,10 +488,12 @@ function updateStats()
     ohwepskill += extraohskill;
 
     
-    let config = {
+    let globals = {
         tankStats: {
             type: "tank",
             level: 60,
+
+            dualWield: _dualWield,
 
             MHMin: mhmin,
             MHMax: mhmax,
@@ -573,7 +575,6 @@ function updateStats()
                 windfury: document.querySelector("#windfury").checked,
                 wcb: _wcb,
                 dmf: document.querySelector("#dmf").checked,
-                dualWield: _dualWield,
                 crusaderMH: mhwepenchant == "Crusader",
                 crusaderOH: ohwepenchant == "Crusader",
                 windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
@@ -619,4 +620,5 @@ function updateStats()
             debuffDelay: Number(document.querySelector("#debuffdelay").value)*1000,
         },
     }
+    return globals;
 }

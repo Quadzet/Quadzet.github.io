@@ -290,7 +290,7 @@ async function main() {
     saveInput();
     // Fetch and set all user input settings
     //fetchSettings()
-    updateStats();
+    const globals = updateStats();
     
     document.getElementById("errorContainer").innerHTML = ""
     if(Number(document.getElementById("fightLength").value) > 120){
@@ -315,66 +315,19 @@ async function main() {
     document.querySelector("#barContainer").style.display = `block`;
 
     let numWorkers = window.navigator.hardwareConcurrency;
-    let remainderIterations = _iterations - Math.floor(_iterations/numWorkers)*numWorkers
+    let remainderIterations = globals.config.iterations - Math.floor(globals.config.iterations/numWorkers)*numWorkers
     let numWorkersDone = 0;
     let progressPerc = 0;
     for (var i = 0; i < numWorkers; i++) {
         var worker = new Worker('./workers/worker.js');
-        let iterations = i == 0 ? Math.floor(_iterations/numWorkers) + remainderIterations : Math.floor(_iterations/numWorkers);
+        let iterations = i == 0 ? Math.floor(globals.config.iterations/numWorkers) + remainderIterations : Math.floor(globals.config.iterations/numWorkers);
         if (iterations <= 0) {
             numWorkersDone++;
             continue;
         }
         worker.postMessage({
-            globals: {
-                _simDuration: _simDuration,
-                _iterations: iterations,
-                _timeStep: _timeStep,
-                _snapshotLen: _snapshotLen,
-                _config: _config,
-                _breakpointValue: _breakpointValue,
-                _breakpointTime: _breakpointTime,
-                
-                _startRage: _startRage,
-                _deathwish: _deathwish,
-                _crusaderMH: _crusaderMH,
-                _crusaderOH: _crusaderOH,
-                _windfury: _windfury,
-                _windfuryAP: _windfuryAP,
-                _wcb: _wcb,
-                _dmf: _dmf,
-                _mrp: _mrp,
-                
-                _thunderfuryMH: _thunderfuryMH,
-                _thunderfuryOH: _thunderfuryOH,
-                _edMH: _edMH,
-                _edOH: _edOH,
-                _qsMH: _qsMH,
-                _perdsMH: _perdsMH,
-                _perdsOH: _perdsOH,
-                _dbMH: _dbMH,
-                _dbOH: _dbOH,
-                _eskMH: _eskMH,
-                _msaMH: _msaMH,
-                _msaOH: _msaOH,
-
-                _impHS: _impHS,
-                _impSA: _impSA,
-                _defiance: _defiance,
-                _dwspec: _dwspec,
-
-                _kots: _kots,
-                _diamondflask: _diamondflask,
-                _earthstrike: _earthstrike,
-                _slayerscrest: _slayerscrest,
-                _jomgabbar: _jomgabbar,
-                _lgg: _lgg,
-                _hoj: _hoj,
-
-                _berserking: _berserking,
-
-                _landedHits: _landedHits,
-            },
+            globals: globals,
+            iterations: iterations,
         })
         worker.addEventListener('error', function(e)  {
             console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
@@ -410,9 +363,9 @@ async function main() {
     function postResults() {
 
         let end = Date.now()
-        console.log(`Boss swingtimer: ${(_simDuration * _iterations)/bossSwings}`)
+        console.log(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
         // Some console logging...
-        let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
+        let ret = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights with timestep ${globals.config.timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
         console.log(`TPS: ${Math.round(average(tps)*100)/100}`);
         console.log(`DPS: ${Math.round(average(dps)*100)/100}`);
@@ -423,7 +376,7 @@ async function main() {
         console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
 
         for(let result in results) {
-            results[`${result}`] = [...Array(_iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
+            results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
         }
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         sortedResults.sort((a,b) => average(b[1]) - average(a[1]))
@@ -438,7 +391,7 @@ async function main() {
         <tr><th>Statistics</th></tr>
         <tr><td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td></tr>
         <tr><td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td></tr>
-        <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td></tr>
+        <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/globals.config.iterations*10000)/100}%)</td></tr>
         </table>`
 
         let generalTable = 
@@ -452,12 +405,12 @@ async function main() {
         `
 
         for(let ability in uptimes) {
-            uptimes[`${ability}`] = [...Array(_iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
+            uptimes[`${ability}`] = [...Array(globals.config.iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
         }
         let sortedUptimes = Object.keys(uptimes).map(key => [key, uptimes[key]])
         sortedUptimes.sort((a,b) => average(b[1]) - average(a[1]))
         for (let i in sortedUptimes) {
-            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(_iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
+            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(globals.config.iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
             generalTable = generalTable.concat(`<tr><td>${sortedUptimes[i][0]} uptime:</td><td>${Math.round(average(sortedUptimes[i][1])*100)/100}%</td></tr>`)
         }
         generalTable = generalTable.concat(`</table>`)
@@ -468,7 +421,7 @@ async function main() {
         document.getElementById("abilitytps").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
 
-        var x = linspace(0, _simDuration, _simDuration*1000/_snapshotLen + 1);
+        var x = linspace(0, globals.config.simDuration, globals.config.simDuration*1000/globals.config.snapshotLen + 1);
 
         let lineShape = document.querySelector("#lineSelect").options[document.querySelector("#lineSelect").selectedIndex].value
 

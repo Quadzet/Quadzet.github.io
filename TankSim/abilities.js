@@ -46,6 +46,65 @@ class Ability {
     }
 }
 
+class MHSwing extends Ability {
+    use(attacker, defender) {
+        let damageEvent = {};
+        // Heroic Strike
+        if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - attacker.stats.talents.impHS)) {
+            let damage = this.weaponSwingRoll(attacker) + 157 + defender.additivePhysBonus;
+            damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+            damageEvent = rollAttack(attacker, defender, damage, true);
+            this.staticThreat = 175;
+            damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+            this.staticThreat = 0;
+            damageEvent.ability = "Heroic Strike";
+            // Remove rage
+            updateRage(attacker, damageEvent.hit, (15 - attacker.stats.talents.impHS));
+        }
+        // White Swing
+        else {
+            let damage = this.weaponSwingRoll(attacker) + defender.additivePhysBonus;
+            damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+            damageEvent = rollAttack(attacker, defender, damage, false, attacker.stats.dualWield);
+            
+            damageEvent.threat = 0;
+            damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+            damageEvent.ability = "MH Swing";
+            
+            // Add rage
+            if (damageEvent.hit == "miss") return damageEvent;
+            else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
+            else {
+                attacker.addRage(damageEvent.damage*7.5/230.6, true);
+                defender.addRage(damageEvent.damage*2.5/230.6, true);
+            }
+        }
+        
+        attacker.isHeroicStrikeQueued = false;
+        return damageEvent;
+    }
+}
+
+class OHSwing extends Ability {
+
+    use(attacker, defender) {
+        let damage = Math.random()*(attacker.stats.OHMax - attacker.stats.OHMin) + attacker.stats.OHMin + attacker.getAP()*attacker.stats.OHSwing/(14*1000); // swing timer is in ms
+        damage = damage*(0.5 + 0.025*attacker.stats.talents.dwspec) +  defender.additivePhysBonus;
+        damage *=(1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+        let damageEvent = rollAttack(attacker, defender, damage, false, !attacker.isHeroicStrikeQueued, true);
+        damageEvent.threat = 0;
+        damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+        damageEvent.ability = this.name;
+        // Add rage
+        if (damageEvent.hit == "miss") return damageEvent;
+        else if (["dodge", "parry"].includes(damageEvent.hit)) attacker.addRage(0.75*damage*7.5/230.6, true); // 'refund' 75% of the rage gain
+        else {
+            attacker.addRage(damageEvent.damage*7.5/230.6, true);
+            defender.addRage(damageEvent.damage*2.5/230.6);
+        }
+        return damageEvent;
+    }
+}
 class Bloodthirst extends Ability {
     use(attacker, defender) {
         let damage = 0.45*attacker.getAP() + defender.additivePhysBonus;
