@@ -1,6 +1,7 @@
 "use strict";
 class Actor {
     constructor(name, target, abilities, stats, auras, procs) {
+        this.stats = stats
         this.name = name
         this.target = target
         this.abilities = abilities
@@ -10,7 +11,6 @@ class Actor {
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.defense = stats.defense
-        this.stats = stats
         this.GCD = 0
         this.rage = stats.startRage
         this.isHeroicStrikeQueued = false
