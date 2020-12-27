@@ -359,6 +359,8 @@ function updateStats()
     extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
     extrahp += document.getElementById("titans").checked ? 1200 : 0;
     extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
+    extrahp += legenchant == "Libram of Constitution" ? 100 : 0;
+    extrahp += headenchant == "Libram of Constitution" ? 100 : 0;
     let _wcb = document.querySelector("#wcb").checked;
     extrahp += _wcb ? 300 : 0;
 
