@@ -104,6 +104,7 @@ function saveInput()
     
     // Other Bonuses
     localStorage.setItem("twoPieceDreadnaught", document.querySelector("#twoPieceDreadnaught").checked)
+    localStorage.setItem("threePieceConqueror", document.getElementById("threePieceConqueror").checked)
     localStorage.setItem("fivePieceWrath", document.querySelector("#fivePieceWrath").checked)
     localStorage.setItem("berserking", document.querySelector("#berserking").checked)
     
@@ -153,6 +154,13 @@ function saveInput()
     localStorage.setItem("swingTimer", document.querySelector("#swingTimer").value)
     localStorage.setItem("bossarmor", document.querySelector("#bossarmor").value)
     localStorage.setItem("debuffdelay", document.querySelector("#debuffdelay").value)
+
+    localStorage.setItem("curseofrecklessness", document.querySelector("#curseofrecklessness").checked)
+    localStorage.setItem("faeriefire", document.querySelector("#faeriefire").checked)
+    localStorage.setItem("debuffdelay", document.querySelector("#debuffdelay").value)
+    localStorage.setItem("iea", document.querySelector("#iea").checked)
+    localStorage.setItem("bshouttargets", document.querySelector("#bshouttargets").value)
+    localStorage.setItem("ieadelay", document.querySelector("#ieadelay").value)
 
     // Calc Settings
     localStorage.setItem("iterations", document.querySelector("#iterations").value)
@@ -220,6 +228,7 @@ function loadInput()
     
     // Other Bonuses
     document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
+    document.querySelector("#threePieceConqueror").checked = localStorage.getItem("threePieceConqueror") == "true" ? true : false;
     document.querySelector("#fivePieceWrath").checked = localStorage.getItem("fivePieceWrath") == "true" ? true : false;
     document.querySelector("#berserking").checked = localStorage.getItem("berserking") == "true" ? true : false;
 
@@ -269,6 +278,12 @@ function loadInput()
     document.querySelector("#swingTimer").value = localStorage.getItem("swingTimer") ? localStorage.getItem("swingTimer") : 2;
     document.querySelector("#bossarmor").value = localStorage.getItem("bossarmor") ? localStorage.getItem("bossarmor") : 3731;
     document.querySelector("#debuffdelay").value = localStorage.getItem("debuffdelay") ? localStorage.getItem("debuffdelay") : 0;
+    document.querySelector("#curseofrecklessness").checked = localStorage.getItem("curseofrecklessness") == "false" ? false : true;
+    document.querySelector("#faeriefire").checked = localStorage.getItem("faeriefire") == "false" ? false : true;
+    document.querySelector("#debuffdelay").value = localStorage.getItem("debuffdelay") ? localStorage.getItem("debuffdelay") : 0;
+    document.querySelector("#iea").checked = localStorage.getItem("iea") == "true" ? true : false;
+    document.querySelector("#bshouttargets").value = localStorage.getItem("bshouttargets") ? localStorage.getItem("bshouttargets") : 5;
+    document.querySelector("#ieadelay").value = localStorage.getItem("ieadelay") ? localStorage.getItem("ieadelay") : 10;
 
     // Calc Settings
     document.querySelector("#iterations").value = localStorage.getItem("iterations") ? localStorage.getItem("iterations") : 10000;

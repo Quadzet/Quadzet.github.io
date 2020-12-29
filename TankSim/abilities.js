@@ -41,8 +41,8 @@ class Ability {
         console.log(`Internal Error: Use function not implemented for ability ${this.name}!`);
     }
 
-    isUsable(actor) {
-        return this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage >= this.rageCost;
+    isUsable(attacker, defender) {
+        return this.currentCooldown <= 0 && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage >= this.rageCost;
     }
 }
 
@@ -134,11 +134,11 @@ class Revenge extends Ability {
         return damageEvent;
     }
 
-    isUsable(actor) {
-        let offCD = (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost);
+    isUsable(attacker, defender) {
+        let offCD = (this.currentCooldown <= 0 && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost);
         if (!offCD) return false;
         var defStateActive = false;
-        actor.auras.forEach(aura => {
+        attacker.auras.forEach(aura => {
             if (aura.name == "Defensive State" && aura.duration > 0)
                 defStateActive = true; 
         })
@@ -158,8 +158,8 @@ class SunderArmor extends Ability {
         updateRage(attacker, damageEvent.hit, this.rageCost);
         return damageEvent;
     }
-    isUsable(actor) {
-        return (this.currentCooldown <= 0 && (actor.GCD <= 0 || this.onGCD == false) && actor.rage > this.rageCost + (actor.stats.dualWield ? 10 : 15));
+    isUsable(attacker, defender) {
+        return (!defender.IEA && this.currentCooldown <= 0 && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
     }
 }
 
@@ -172,7 +172,30 @@ class HeroicStrike extends Ability {
                 name: this.name,
         };
     }
-    isUsable(actor) {
-        return (actor.isHeroicStrikeQueued == false && actor.rage > this.rageCost + (actor.stats.dualWield ? 0 : 60));
+    isUsable(attacker, defender) {
+        return (attacker.isHeroicStrikeQueued == false && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 0 : 60));
     }
+}
+
+class BattleShout extends Ability {
+    isUsable(attacker, defender) {
+        return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
+    }
+
+    threatCalculator(damageEvent, attacker) {
+        return attacker.stats.bshouttargets * 60 * attacker.stats.threatMod; // Base threat = 60
+    }
+
+    use(attacker, defender) {
+        let spellCastEvent = {
+            type: "spell cast",
+            name: this.name,
+            ability: this.name,
+            threat: this.threatCalculator({}, attacker),
+        }
+        // Remove rage
+        updateRage(attacker, "hit", this.rageCost);
+        return spellCastEvent;
+    }
+
 }

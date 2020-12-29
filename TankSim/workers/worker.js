@@ -2,12 +2,12 @@ self.addEventListener('message', function(e) {
     let globals = e.data.globals;
     let iterations = e.data.iterations;
 
-    importScripts('../abilities.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js');
+    importScripts('../abilities.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
 
     function performAction(events, ms, attacker, defender) {
         attacker.auras.forEach(aura => aura.handleGameTick(ms, attacker, events, globals.config));
         attacker.abilities.forEach(ability => {
-            if (ability.isUsable(attacker)) {
+            if (ability.isUsable(attacker, defender)) {
                 let abilityEvent = ability.use(attacker, defender);
     
                 // TODO: Move these into Ability.use()
@@ -50,6 +50,9 @@ self.addEventListener('message', function(e) {
     if(globals.tankStats.dualWield) {
         playerAbilities.push(new OHSwing("OH Swing", globals.tankStats.OHSwing, 0, false))
     }
+    if(globals.config.IEA) {
+        playerAbilities.push(new BattleShout("Battle Shout", 0, globals.tankStats.bonuses.threePieceConqueror ? 6.5 : 10, true))
+    }
     playerAbilities.push(new MHSwing("MH Swing", globals.tankStats.MHSwing, 0, false))
 
     let bossAbilities = [new MHSwing("Auto Attack", globals.bossStats.MHSwing, 0, false)];
@@ -89,17 +92,26 @@ self.addEventListener('message', function(e) {
         let damage = 0;
         let dmgTaken = 0;
         let debuffsApplied = false;
+        let ieaApplied = false;
         while(ms <= globals.config.simDuration*1000) {
             // Set armor debuffs...
-            if (ms >= globals.config.debuffDelay && !debuffsApplied) {
+            if(globals.config.IEA && !ieaApplied && ms >= globals.config.ieadelay) {
+                Boss.auras.forEach(aura => {
+                    if(aura.name == "Improved Expose Armor") aura.handleEvent(Boss, { "type": "damage", "ability": "Improved Expose Armor", "hit": "hit", "timestamp": ms}, events, globals.config);
+                })
+                ieaApplied = true;
+            }
+            if (!debuffsApplied && ms >= globals.config.debuffDelay) {
                 Boss.auras.forEach(aura => {
                     if (aura.name == "Sunder Armor") {
                         for (let _j in range(5)) { 
                             aura.handleEvent(Boss, { "type": "damage", "ability": "Sunder Armor", "hit": "hit", "timestamp": ms}, events, globals.config);
                         }
                     }
-                    if (aura.name == "Faerie Fire") aura.handleEvent(Boss, { "type": "damage", "ability": "Faerie Fire", "hit": "hit", "timestamp": ms}, events, globals.config);
-                    if (aura.name == "Curse of Recklessness") aura.handleEvent(Boss, { "type": "damage", "ability": "Curse of Recklessness", "hit": "hit", "timestamp": ms}, events, globals.config);
+                    if(globals.config.faerieFire)
+                        if (aura.name == "Faerie Fire") aura.handleEvent(Boss, { "type": "damage", "ability": "Faerie Fire", "hit": "hit", "timestamp": ms}, events, globals.config);
+                    if(globals.config.CoR)
+                        if (aura.name == "Curse of Recklessness") aura.handleEvent(Boss, { "type": "damage", "ability": "Curse of Recklessness", "hit": "hit", "timestamp": ms}, events, globals.config);
                 });
                 debuffsApplied = true;
             }
@@ -149,7 +161,6 @@ self.addEventListener('message', function(e) {
 
         for (let ability in Tank.uptimes) {
             if(!uptimes[`${ability}`]) uptimes[`${ability}`] = []
-            //console.log(`${ability}: ${Tank.uptimes[`${ability}`]}`)
             uptimes[`${ability}`].push(Tank.uptimes[`${ability}`]/(globals.config.simDuration*10)) // divide by 1000 due to ms, multiply by 100 due to decimal to percentage => divide by 10.
         }
 

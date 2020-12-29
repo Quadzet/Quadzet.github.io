@@ -524,7 +524,10 @@ function updateStats()
             
             threatMod: 1.3 * (1 + 0.03*defiance) * (document.getElementById("handenchant").value == "Threat" ? 1.02 : 1),
             critMod: 2 + impale*0.1,
+
             startRage: _startRage,
+            bshouttargets: Number(document.getElementById("bshouttargets").value),
+
 
             staminaMultiplier: staminaMultiplier,
             strengthMultiplier: strengthMultiplier,
@@ -568,6 +571,7 @@ function updateStats()
 
             bonuses: {
                 twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
+                threePieceConqueror: document.getElementById("threePieceConqueror").checked,
                 fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
                 threatenchant: document.getElementById("handenchant").value == "Threat",
                 berserking: document.getElementById("berserking").checked,
@@ -619,7 +623,12 @@ function updateStats()
             snapshotLen: 400, // By god given
             breakpointValue:  Number(document.querySelector("#TBPvalue").value),
             breakpointTime: Math.round(Number(document.querySelector("#TBPtime").value)*1000/25)*25,
+
+            CoR: document.querySelector("#curseofrecklessness").checked,
+            IEA: document.querySelector("#iea").checked,
+            faerieFire: document.querySelector("#faeriefire").checked,
             debuffDelay: Number(document.querySelector("#debuffdelay").value)*1000,
+            ieadelay: Number(document.querySelector("#ieadelay").value)*1000,
         },
     }
     return globals;

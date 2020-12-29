@@ -117,6 +117,35 @@ class CurseOfRecklessness extends Aura {
     }
 }
 
+class IEA extends Aura {
+    handleEvent(owner, event, events, config) {
+        if (event.type == "damage" && event.ability == "Improved Expose Armor" && event.hit == "hit") {
+            this.duration = this.maxDuration;
+            events.push({
+                type: "buff gained",
+                timestamp: event.timestamp, 
+                name: this.name,
+                stacks: this.stacks,
+                target: this.target,
+                source: this.source,
+                });
+            // Remove sunder armor and set the variable to ensure that no further sunders are applied
+            owner.IEA = true;
+            owner.auras.forEach(aura => {
+                if(aura.name == "Sunder Armor") {
+                    aura.stacks = 0;
+                    aura.duration = 0;
+                }
+            });
+        }
+    }
+
+    // Never let this expire
+    handleGameTick(ms, owner, events, config) {
+        return; 
+    }
+}
+
 class Flurry extends Aura {
     constructor(input) {
         super(input);
@@ -580,22 +609,6 @@ new SunderArmorDebuff({
         target: "Boss",
         source: "Tank",
         }),
-new FaerieFire({
-        name: "Faerie Fire",
-        maxDuration: 30000,
-        armorMod: -505,
-
-        target: "Boss",
-        source: "Tank",
-        }),
-new CurseOfRecklessness({
-        name: "Curse of Recklessness",
-        maxDuration: 30000,
-        armorMod: -640,
-
-        target: "Boss",
-        source: "Tank",
-        }),
 ]
 
 
@@ -814,5 +827,37 @@ if(globals.tankStats.trinkets.lgg) {
         source: "Tank",
     }));
 }  
+
+// Boss debuffs
+    if(globals.config.faerieFire) {
+        bossAuras.push(new FaerieFire({
+            name: "Faerie Fire",
+            maxDuration: 30000,
+            armorMod: -505,
+
+            target: "Boss",
+            source: "Other",
+            }));
+        }
+    if(globals.config.CoR) {
+        bossAuras.push(new CurseOfRecklessness({
+            name: "Curse of Recklessness",
+            maxDuration: 30000,
+            armorMod: -640,
+
+            target: "Boss",
+            source: "Other",
+            }));
+        }
+    if(globals.config.IEA) {
+        bossAuras.push(new IEA({
+            name: "Improved Expose Armor",
+            maxDuration: 30000,
+            armorMod: -2550,
+        
+            target: "Boss",
+            source: "Other",
+            }));
+        }
 
 }
