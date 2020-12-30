@@ -485,7 +485,7 @@ function updateStats()
     dodge += extradodge;
     defense += extradefense;
     block += extrablock;
-    block += extrablockvalue;
+    blockvalue += extrablockvalue;
     mhwepskill += extramhskill;
     ohwepskill += extraohskill;
 
