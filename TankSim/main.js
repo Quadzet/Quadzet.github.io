@@ -91,6 +91,9 @@ function saveInput()
     localStorage.setItem("dmf", document.querySelector("#dmf").checked)
 
     // Talents 
+    localStorage.setItem("deathwish", document.getElementById("deathwish").checked);
+    localStorage.setItem("bloodthirst", document.getElementById("bloodthirst").checked);
+    localStorage.setItem("shieldslam", document.getElementById("shieldslam").checked);
     localStorage.setItem("deflection", document.getElementById("deflection").value)
     localStorage.setItem("cruelty", document.getElementById("cruelty").value)
     localStorage.setItem("anticipation", document.getElementById("anticipation").value)
@@ -209,12 +212,14 @@ function loadInput()
     document.querySelector("#ohwepenchant").selectedIndex = localStorage.getItem("ohwepenchant") ? localStorage.getItem("ohwepenchant") : 1;
 
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
-    document.querySelector("#deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
     document.querySelector("#windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
     document.querySelector("#wcb").checked = localStorage.getItem("wcb") == "true" ? true : false;
     document.querySelector("#dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
 
     // Talents 
+    document.getElementById("deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
+    document.getElementById("bloodthirst").checked = localStorage.getItem("bloodthirst") == "false" ? false : true;
+    document.getElementById("shieldslam").checked = localStorage.getItem("shieldslam") == "true" ? true : false;
     document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
     document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
     document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
