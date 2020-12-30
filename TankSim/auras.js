@@ -569,26 +569,6 @@ class LifegivingGem extends Aura {
 
 
 const defaultTankAuras = [
-    new Flurry({
-            name: "Flurry",
-            maxDuration: 12000,
-            maxStacks: 3,
-            hastePerc: 30,
-
-            trackUptime: true,
-            target: "Tank",
-            source: "Tank",
-            }),
-    new Enrage({
-            name: "Enrage",
-            maxDuration: 12000,
-            maxStacks: 12,
-            damageMod: 1.25,
-
-            trackUptime: true,
-            target: "Tank",
-            source: "Tank",
-            }),
     new DefensiveState({
             name: "Defensive State",
             maxDuration: 6000,
@@ -614,7 +594,33 @@ new SunderArmorDebuff({
 
 function addOptionalAuras(tankAuras, bossAuras, globals) {
 
-if(globals.tankStats.bonuses.deathwish) {
+if(globals.tankStats.talents.flurry > 0) {
+    tankAuras.push(new Flurry({
+        name: "Flurry",
+        maxDuration: 12000,
+        maxStacks: 3,
+        hastePerc: 5 + 5*globals.tankStats.talents.flurry,
+
+        trackUptime: true,
+        target: "Tank",
+        source: "Tank",
+        }));
+}
+
+if(globals.tankStats.talents.enrage > 0) {
+    tankAuras.push(new Enrage({
+        name: "Enrage",
+        maxDuration: 12000,
+        maxStacks: 12,
+        damageMod: 1 + 0.05*globals.tankStats.talents.enrage,
+
+        trackUptime: true,
+        target: "Tank",
+        source: "Tank",
+        }));
+}
+
+if(globals.tankStats.talents.deathwish) {
     tankAuras.push(new PrePullAura({
         name: "Death Wish",
         maxDuration: 28500, // uses a gcd

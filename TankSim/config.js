@@ -508,6 +508,7 @@ function updateStats()
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: document.querySelector("#dmf").checked ? 0.99 : 0.9, // Defensive Stance + dmf
+            physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
             hastePerc: _wcb ? 15 : 0, 
             AP: attackpower + strength*2,
             crit: crit,
@@ -528,12 +529,16 @@ function updateStats()
             startRage: _startRage,
             bshouttargets: Number(document.getElementById("bshouttargets").value),
 
-
             staminaMultiplier: staminaMultiplier,
             strengthMultiplier: strengthMultiplier,
             agilityMultiplier: agilityMultiplier,
 
             talents: {
+                deathwish: document.getElementById("deathwish").checked,
+                bloodthirst: document.getElementById("bloodthirst").checked,
+                shieldslam: document.getElementById("shieldslam").checked,
+                flurry: Number(document.getElementById("flurry").value),
+                enrage: Number(document.getElementById("enrage").value),
                 deflection: deflection,
                 cruelty: cruelty,
                 anticipation: anticipation,
@@ -577,7 +582,6 @@ function updateStats()
                 berserking: document.getElementById("berserking").checked,
                 goa: document.getElementById("goa").checked,
 
-                deathwish: document.querySelector("#deathwish").checked,
                 windfury: document.querySelector("#windfury").checked,
                 wcb: _wcb,
                 dmf: document.querySelector("#dmf").checked,
@@ -599,6 +603,7 @@ function updateStats()
             
             MHWepSkill: 315,
             damageMod: 0.9, // Defensive Stance
+            physDmgMod: 1,
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,

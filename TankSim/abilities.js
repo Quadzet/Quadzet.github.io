@@ -178,14 +178,10 @@ class HeroicStrike extends Ability {
 }
 
 class BattleShout extends Ability {
-    isUsable(attacker, defender) {
-        return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
-    }
-
     threatCalculator(damageEvent, attacker) {
         return attacker.stats.bshouttargets * 60 * attacker.stats.threatMod; // Base threat = 60
     }
-
+    
     use(attacker, defender) {
         let spellCastEvent = {
             type: "spell cast",
@@ -197,5 +193,23 @@ class BattleShout extends Ability {
         updateRage(attacker, "hit", this.rageCost);
         return spellCastEvent;
     }
-
+    isUsable(attacker, defender) {
+        return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
+    }
 }
+
+class ShieldSlam extends Ability {
+    use(attacker, defender) {
+        let damage = 350 + attacker.getBlockValue();
+        damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
+        let damageEvent = rollAttack(attacker, defender, damage, true, false, false, true);
+        damageEvent.threat = 0;
+        damageEvent.threat = this.threatCalculator(damageEvent, attacker);
+        damageEvent.ability = this.name;
+
+        // Remove rage
+        updateRage(attacker, damageEvent.hit, this.rageCost)
+        return damageEvent;
+    }
+}
+

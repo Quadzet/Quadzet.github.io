@@ -64,6 +64,22 @@ class Actor {
         return AP;
     }
 
+    getBlockValue() {
+        let blockValue = this.stats.blockValue;
+        this.auras.forEach(aura => {
+            if(aura.duration > 0) {
+                if(aura.blockValue > 0) {
+                    blockValue += aura.blockValue;
+                }
+                if(aura.strMod > 0) {
+                    blockValue += aura.strMod/20;
+                }
+            }
+        })
+        return blockValue;
+    }
+
+    // Physical dmg mod
     getDamageMod() {
         let damageMod = this.damageMod
         this.auras.forEach(aura => {
@@ -75,6 +91,7 @@ class Actor {
                 }
             }
         });
+        damageMod *= this.stats.physDmgMod;
         return damageMod;
     }
 

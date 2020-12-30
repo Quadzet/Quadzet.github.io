@@ -41,12 +41,16 @@ self.addEventListener('message', function(e) {
     const range = (length) =>
         Array.from({ length }, (_, i) => i)
 
-    let playerAbilities = [
-        new Bloodthirst("Bloodthirst", 6000, 30, true),
-        new Revenge("Revenge", 5000, 5, true, 273, 2.25),
-        new HeroicStrike("Heroic Strike", 0, 15 - globals.tankStats.talents.impHS, false, 175),
-        new SunderArmor("Sunder Armor", 0, 15 - globals.tankStats.talents.impSA, true, 260),
-    ];
+    let playerAbilities = [];
+    if(globals.tankStats.talents.shieldslam && !globals.tankStats.dualWield)
+        playerAbilities.push(new ShieldSlam("Shield Slam", 6000, 20, true, 254));
+    else if (globals.tankStats.talents.bloodthirst)
+        playerAbilities.push(new Bloodthirst("Bloodthirst", 6000, 30, true));
+
+    playerAbilities.push(new Revenge("Revenge", 5000, 5, true, 273, 2.25))
+    playerAbilities.push(new HeroicStrike("Heroic Strike", 0, 15 - globals.tankStats.talents.impHS, false, 175))
+    playerAbilities.push(new SunderArmor("Sunder Armor", 0, 15 - globals.tankStats.talents.impSA, true, 260))
+
     if(globals.tankStats.dualWield) {
         playerAbilities.push(new OHSwing("OH Swing", globals.tankStats.OHSwing, 0, false))
     }
