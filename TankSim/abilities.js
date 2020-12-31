@@ -1,7 +1,7 @@
 "use strict";
 
 function updateRage(attacker, hit, rageCost) {
-    if (attacker.stats.fivePieceWrath && Math.random() < 0.25) rageCost = Math.max(rageCost - 5, 0) // 0.25 instead of 0.2 to account for parry/dodge streaks not consuming the buff
+    if (attacker.stats.bonuses.fivePieceWrath && Math.random() < 0.25) rageCost = Math.max(rageCost - 5, 0) // 0.25 instead of 0.2 to account for parry/dodge streaks not consuming the buff
     if (["dodge", "parry", "miss"].includes(hit)) attacker.addRage(-0.2*rageCost, true); // Default ability refund 80%
     else attacker.addRage(-rageCost, true);
 }
@@ -123,7 +123,7 @@ class Bloodthirst extends Ability {
 class Revenge extends Ability {
     use(attacker, defender) {
         let damage = Math.random()*18 + 81 + defender.additivePhysBonus; // Rank6: 81-99 dmg
-        damage += attacker.stats.twoPieceDreadnaught ? 75 : 0;
+        damage += attacker.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
         damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
         let damageEvent = rollAttack(attacker, defender, damage, true, false, false, true);
         damageEvent.threat = 0;
