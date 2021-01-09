@@ -439,6 +439,8 @@ function updateStats()
     extrastamina *= staminaMultiplier;
     extrastrength *= strengthMultiplier;
     extraagility *= agilityMultiplier;
+    console.log(`${extraagility}, ${agilityMultiplier}`)
+    console.log(`${extrastrength}, ${strengthMultiplier}`)
 
     extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
@@ -478,14 +480,14 @@ function updateStats()
     stamina += extrastamina;
     agility += extraagility;
     hit += extrahit;
-    crit += extracrit;
+    crit += extracrit + extraagility/20;
     attackpower += extraattackpower;
-    armor += extraarmor;
+    armor += extraarmor + extraagility;
     parry += extraparry;
-    dodge += extradodge;
+    dodge += extradodge + extraagility/20;
     defense += extradefense;
     block += extrablock;
-    blockvalue += extrablockvalue;
+    blockvalue += extrablockvalue + extrastrength;
     mhwepskill += extramhskill;
     ohwepskill += extraohskill;
 
