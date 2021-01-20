@@ -4264,8 +4264,8 @@ let rings = {
        "crit": 0,
        "hit": 0,
        "strength": 0,
-       "stamina": 22,
-       "agility": 23,
+       "stamina": 0,
+       "agility": 34,
        "attackpower": 0,
        "dodge": 0,
        "parry": 0,
@@ -4848,6 +4848,20 @@ let trinkets = {
        "armor": 0,
        "blockvalue": 0,
        "block": 0
+    },
+    "Mark of the Champion": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 150,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "blockvalue": 0,
+        "block": 0
     },
     "Rune of the Guard Captain": {
        "crit": 0,
