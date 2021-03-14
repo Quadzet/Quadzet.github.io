@@ -91,9 +91,13 @@ function saveInput()
     localStorage.setItem("dmf", document.querySelector("#dmf").checked)
 
     // Talents 
+    localStorage.setItem("deathwish", document.getElementById("deathwish").checked);
+    localStorage.setItem("bloodthirst", document.getElementById("bloodthirst").checked);
+    localStorage.setItem("shieldslam", document.getElementById("shieldslam").checked);
     localStorage.setItem("deflection", document.getElementById("deflection").value)
     localStorage.setItem("cruelty", document.getElementById("cruelty").value)
     localStorage.setItem("anticipation", document.getElementById("anticipation").value)
+    localStorage.setItem("shieldspec", document.getElementById("shieldspec").value)
     localStorage.setItem("toughness", document.getElementById("toughness").value)
     localStorage.setItem("impHS", document.querySelector("#impHS").value) 
     localStorage.setItem("impSA", document.querySelector("#impSA").value) 
@@ -103,6 +107,7 @@ function saveInput()
     
     // Other Bonuses
     localStorage.setItem("twoPieceDreadnaught", document.querySelector("#twoPieceDreadnaught").checked)
+    localStorage.setItem("threePieceConqueror", document.getElementById("threePieceConqueror").checked)
     localStorage.setItem("fivePieceWrath", document.querySelector("#fivePieceWrath").checked)
     localStorage.setItem("berserking", document.querySelector("#berserking").checked)
     
@@ -153,6 +158,13 @@ function saveInput()
     localStorage.setItem("bossarmor", document.querySelector("#bossarmor").value)
     localStorage.setItem("debuffdelay", document.querySelector("#debuffdelay").value)
 
+    localStorage.setItem("curseofrecklessness", document.querySelector("#curseofrecklessness").checked)
+    localStorage.setItem("faeriefire", document.querySelector("#faeriefire").checked)
+    localStorage.setItem("debuffdelay", document.querySelector("#debuffdelay").value)
+    localStorage.setItem("iea", document.querySelector("#iea").checked)
+    localStorage.setItem("bshouttargets", document.querySelector("#bshouttargets").value)
+    localStorage.setItem("ieadelay", document.querySelector("#ieadelay").value)
+
     // Calc Settings
     localStorage.setItem("iterations", document.querySelector("#iterations").value)
     localStorage.setItem("fightLength", document.querySelector("#fightLength").value)
@@ -200,24 +212,28 @@ function loadInput()
     document.querySelector("#ohwepenchant").selectedIndex = localStorage.getItem("ohwepenchant") ? localStorage.getItem("ohwepenchant") : 1;
 
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
-    document.querySelector("#deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
     document.querySelector("#windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
     document.querySelector("#wcb").checked = localStorage.getItem("wcb") == "true" ? true : false;
     document.querySelector("#dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
 
     // Talents 
+    document.getElementById("deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
+    document.getElementById("bloodthirst").checked = localStorage.getItem("bloodthirst") == "false" ? false : true;
+    document.getElementById("shieldslam").checked = localStorage.getItem("shieldslam") == "true" ? true : false;
     document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
     document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
     document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
+    document.getElementById("shieldspec").value = localStorage.getItem("shieldspec") ? localStorage.getItem("shieldspec") : 5;
     document.getElementById("toughness").value = localStorage.getItem("toughness") ? localStorage.getItem("toughness") : 3;
     document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 3; 
     document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
     document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
-    document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 5; 
+    document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 4; 
     
     // Other Bonuses
     document.querySelector("#twoPieceDreadnaught").checked = localStorage.getItem("twoPieceDreadnaught") == "true" ? true : false;
+    document.querySelector("#threePieceConqueror").checked = localStorage.getItem("threePieceConqueror") == "true" ? true : false;
     document.querySelector("#fivePieceWrath").checked = localStorage.getItem("fivePieceWrath") == "true" ? true : false;
     document.querySelector("#berserking").checked = localStorage.getItem("berserking") == "true" ? true : false;
 
@@ -267,6 +283,12 @@ function loadInput()
     document.querySelector("#swingTimer").value = localStorage.getItem("swingTimer") ? localStorage.getItem("swingTimer") : 2;
     document.querySelector("#bossarmor").value = localStorage.getItem("bossarmor") ? localStorage.getItem("bossarmor") : 3731;
     document.querySelector("#debuffdelay").value = localStorage.getItem("debuffdelay") ? localStorage.getItem("debuffdelay") : 0;
+    document.querySelector("#curseofrecklessness").checked = localStorage.getItem("curseofrecklessness") == "false" ? false : true;
+    document.querySelector("#faeriefire").checked = localStorage.getItem("faeriefire") == "false" ? false : true;
+    document.querySelector("#debuffdelay").value = localStorage.getItem("debuffdelay") ? localStorage.getItem("debuffdelay") : 0;
+    document.querySelector("#iea").checked = localStorage.getItem("iea") == "true" ? true : false;
+    document.querySelector("#bshouttargets").value = localStorage.getItem("bshouttargets") ? localStorage.getItem("bshouttargets") : 5;
+    document.querySelector("#ieadelay").value = localStorage.getItem("ieadelay") ? localStorage.getItem("ieadelay") : 10;
 
     // Calc Settings
     document.querySelector("#iterations").value = localStorage.getItem("iterations") ? localStorage.getItem("iterations") : 10000;
@@ -288,7 +310,7 @@ async function main() {
     saveInput();
     // Fetch and set all user input settings
     //fetchSettings()
-    updateStats();
+    const globals = updateStats();
     
     document.getElementById("errorContainer").innerHTML = ""
     if(Number(document.getElementById("fightLength").value) > 120){
@@ -313,66 +335,19 @@ async function main() {
     document.querySelector("#barContainer").style.display = `block`;
 
     let numWorkers = window.navigator.hardwareConcurrency;
-    let remainderIterations = _iterations - Math.floor(_iterations/numWorkers)*numWorkers
+    let remainderIterations = globals.config.iterations - Math.floor(globals.config.iterations/numWorkers)*numWorkers
     let numWorkersDone = 0;
     let progressPerc = 0;
     for (var i = 0; i < numWorkers; i++) {
         var worker = new Worker('./workers/worker.js');
-        let iterations = i == 0 ? Math.floor(_iterations/numWorkers) + remainderIterations : Math.floor(_iterations/numWorkers);
+        let iterations = i == 0 ? Math.floor(globals.config.iterations/numWorkers) + remainderIterations : Math.floor(globals.config.iterations/numWorkers);
         if (iterations <= 0) {
             numWorkersDone++;
             continue;
         }
         worker.postMessage({
-            globals: {
-                _simDuration: _simDuration,
-                _iterations: iterations,
-                _timeStep: _timeStep,
-                _snapshotLen: _snapshotLen,
-                _config: _config,
-                _breakpointValue: _breakpointValue,
-                _breakpointTime: _breakpointTime,
-                
-                _startRage: _startRage,
-                _deathwish: _deathwish,
-                _crusaderMH: _crusaderMH,
-                _crusaderOH: _crusaderOH,
-                _windfury: _windfury,
-                _windfuryAP: _windfuryAP,
-                _wcb: _wcb,
-                _dmf: _dmf,
-                _mrp: _mrp,
-                
-                _thunderfuryMH: _thunderfuryMH,
-                _thunderfuryOH: _thunderfuryOH,
-                _edMH: _edMH,
-                _edOH: _edOH,
-                _qsMH: _qsMH,
-                _perdsMH: _perdsMH,
-                _perdsOH: _perdsOH,
-                _dbMH: _dbMH,
-                _dbOH: _dbOH,
-                _eskMH: _eskMH,
-                _msaMH: _msaMH,
-                _msaOH: _msaOH,
-
-                _impHS: _impHS,
-                _impSA: _impSA,
-                _defiance: _defiance,
-                _dwspec: _dwspec,
-
-                _kots: _kots,
-                _diamondflask: _diamondflask,
-                _earthstrike: _earthstrike,
-                _slayerscrest: _slayerscrest,
-                _jomgabbar: _jomgabbar,
-                _lgg: _lgg,
-                _hoj: _hoj,
-
-                _berserking: _berserking,
-
-                _landedHits: _landedHits,
-            },
+            globals: globals,
+            iterations: iterations,
         })
         worker.addEventListener('error', function(e)  {
             console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
@@ -408,9 +383,9 @@ async function main() {
     function postResults() {
 
         let end = Date.now()
-        console.log(`Boss swingtimer: ${(_simDuration * _iterations)/bossSwings}`)
+        console.log(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
         // Some console logging...
-        let ret = `Calculated ${_iterations} iterations of ${_simDuration}s. fights with timestep ${_timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
+        let ret = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights with timestep ${globals.config.timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         console.log(ret);
         console.log(`TPS: ${Math.round(average(tps)*100)/100}`);
         console.log(`DPS: ${Math.round(average(dps)*100)/100}`);
@@ -421,7 +396,7 @@ async function main() {
         console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
 
         for(let result in results) {
-            results[`${result}`] = [...Array(_iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
+            results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
         }
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         sortedResults.sort((a,b) => average(b[1]) - average(a[1]))
@@ -436,7 +411,7 @@ async function main() {
         <tr><th>Statistics</th></tr>
         <tr><td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td></tr>
         <tr><td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td></tr>
-        <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/_iterations*10000)/100}%)</td></tr>
+        <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/globals.config.iterations*10000)/100}%)</td></tr>
         </table>`
 
         let generalTable = 
@@ -450,12 +425,12 @@ async function main() {
         `
 
         for(let ability in uptimes) {
-            uptimes[`${ability}`] = [...Array(_iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
+            uptimes[`${ability}`] = [...Array(globals.config.iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
         }
         let sortedUptimes = Object.keys(uptimes).map(key => [key, uptimes[key]])
         sortedUptimes.sort((a,b) => average(b[1]) - average(a[1]))
         for (let i in sortedUptimes) {
-            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(_iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
+            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(globals.config.iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
             generalTable = generalTable.concat(`<tr><td>${sortedUptimes[i][0]} uptime:</td><td>${Math.round(average(sortedUptimes[i][1])*100)/100}%</td></tr>`)
         }
         generalTable = generalTable.concat(`</table>`)
@@ -466,7 +441,7 @@ async function main() {
         document.getElementById("abilitytps").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
 
-        var x = linspace(0, _simDuration, _simDuration*1000/_snapshotLen + 1);
+        var x = linspace(0, globals.config.simDuration, globals.config.simDuration*1000/globals.config.snapshotLen + 1);
 
         let lineShape = document.querySelector("#lineSelect").options[document.querySelector("#lineSelect").selectedIndex].value
 

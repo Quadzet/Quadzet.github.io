@@ -1,6 +1,7 @@
 "use strict";
 class Actor {
     constructor(name, target, abilities, stats, auras, procs) {
+        this.stats = stats
         this.name = name
         this.target = target
         this.abilities = abilities
@@ -10,23 +11,25 @@ class Actor {
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.defense = stats.defense
-        this.stats = stats
         this.GCD = 0
         this.rage = stats.startRage
-        this.isHeroicStrikeQueued = false
 
         this.auras = auras
         this.procs = procs
-
+        
         this.uptimes = {}
-
+        
         this.rageGained = 0 // remove?
         this.rageSpent = 0
-
+        
         this.staminaMultiplier = stats.staminaMultiplier;
         this.strengthMultiplier = stats.strengthMultiplier;
         this.agilityMultiplier = stats.agilityMultiplier;
 
+        // Special stuff
+        this.IEA = false
+        this.isHeroicStrikeQueued = false
+        
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -41,6 +44,7 @@ class Actor {
                 if (aura.percArmorMod != 1) percArmorMod *= (1 + aura.percArmorMod/100);
             }
         });
+        //if(this.name == "Boss") console.log(this.armor)
         return Math.max(0, this.armor * percArmorMod);
     }
 
@@ -60,6 +64,22 @@ class Actor {
         return AP;
     }
 
+    getBlockValue() {
+        let blockValue = this.stats.blockValue;
+        this.auras.forEach(aura => {
+            if(aura.duration > 0) {
+                if(aura.blockValue > 0) {
+                    blockValue += aura.blockValue;
+                }
+                if(aura.strMod > 0) {
+                    blockValue += aura.strMod/20;
+                }
+            }
+        })
+        return blockValue;
+    }
+
+    // Physical dmg mod
     getDamageMod() {
         let damageMod = this.damageMod
         this.auras.forEach(aura => {
@@ -71,6 +91,7 @@ class Actor {
                 }
             }
         });
+        damageMod *= this.stats.physDmgMod;
         return damageMod;
     }
 
@@ -99,6 +120,7 @@ class Actor {
         this.GCD = 0
         this.rage = this.stats.startRage
         this.isHeroicStrikeQueued = false
+        this.IEA = false
         this.damageMod = this.stats.damageMod
         this.hastePerc = this.stats.hastePerc
         this.defense = this.stats.defense

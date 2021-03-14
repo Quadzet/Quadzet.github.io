@@ -1,68 +1,5 @@
 "use strict";
 
-// GLOBALS 
-const _landedHits = ["hit", "crit", "block", "crit block", "glance"];
-const _timeStep = 25; // Timestep used for each fight
-
-// Calc Settings
-let _simDuration = 12; // Fight duration in seconds
-let _iterations = 10000; // Number of fights simulated
-let _snapshotLen = 400;
-let _config = {}; // tank and boss settings
-let _breakpointValue = 0;
-let _breakpointTime = 0;
-//let _firstBatch = 0;
-
-// Tank Settings
-let _startRage = 0;
-let _deathwish = true;
-let _crusaderMH = true;
-let _crusaderOH = false;
-let _windfury = false;
-let _windfuryAP = 315;
-let _wcb = false;
-let _dmf = false;
-let _mrp = false;
-
-// Weapons
-let _thunderfuryMH = true;
-let _thunderfuryOH = false;
-let _edMH = false;
-let _edOH = false;
-let _qsMH = false;
-let _perdsMH = false;
-let _perdsOH = false;
-let _dbMH = false;
-let _dbOH = false;
-let _eskMH = false;
-let _msaMH = false;
-let _msaOH = false;
-
-// Talents
-let _impHS = 3;
-let _impSA = 0;
-let _defiance = 5;
-let _impale = 0;
-let _dwspec = 5;
-
-// Trinkets
-let _kots = false;
-let _diamondflask = false;
-let _earthstrike = false;
-let _slayerscrest = false;
-let _jomgabbar = false;
-let _lgg = false; 
-let _hoj = false;
-
-// Other Bonuses
-let _twoPieceDreadnaught = false;
-let _fivePieceWrath = false;
-let _berserking = false;
-
-// Fight config
-let _debuffDelay = 0;
-
-
 /*  TODOS 
 <option value="Felstriker">Felstriker</option>
 <option value="Arlokk's Grasp">Arlokk's Grasp</option>
@@ -72,6 +9,21 @@ let _debuffDelay = 0;
 */
 
 let weaponlists = {
+    "Shields": `
+    <option value="Aegis of the Blood God">Aegis of the Blood God</option>
+    <option value="Blessed Qiraji Bulwark">Blessed Qiraji Bulwark</option>
+    <option value="Buru's Skull Fragment">Buru's Skull Fragment</option>
+    <option value="Draconian Deflector">Draconian Deflector</option>
+    <option value="Drillborer Disk">Drillborer Disk</option>
+    <option value="Earthen Guard">Earthen Guard</option>
+    <option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>
+    <option value="Grand Marshal's Aegis">Grand Marshal's Aegis</option>
+    <option value="High Warlord's Shield Wall">High Warlord's Shield Wall</option>
+    <option value="Stygian Buckler">Stygian Buckler</option>
+    <option value="The Face of Death">The Face of Death</option>
+    <option value="The Immovable Object">The Immovable Object</option>
+    <option value="The Plague Bearer">The Plague Bearer</option>`,
+    
     "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
     <option value="Annihilator">Annihilator</option>
     <option value="Axe of the Deep Woods">Axe of the Deep Woods</option>
@@ -180,6 +132,16 @@ let weaponlists = {
     <option value="Vis'kag the Bloodletter">Vis'kag the Bloodletter</option>`,
 }
 
+let ohenchantlist = {
+    weapon: `<option value="None">None</option>
+        <option value="Agility">Agility</option>
+        <option value="Crusader">Crusader</option>
+        <option value="Strength">Strength</option>`,
+
+    shield: `<option value="None">None</option>
+        <option value="Greater Stamina">Greater Stamina</option>`,
+}
+
 function updateMHWeaponList(doUpdateStats)
 {
     let mhselect = document.getElementById("mainhand")
@@ -191,51 +153,26 @@ function updateMHWeaponList(doUpdateStats)
 function updateOHWeaponList(doUpdateStats)
 {
     let ohselect = document.getElementById("offhand")
-    let weapontype = document.getElementById("ohweptypelist").value
+    let ohtype = document.getElementById("ohweptypelist").value
 
-    ohselect.innerHTML = weaponlists[weapontype]
+    ohselect.innerHTML = weaponlists[ohtype]
+    
+    let ohenchantselect = document.getElementById("ohwepenchant")
+    let index = ohenchantselect.selectedIndex
+    if(ohtype == "Shields") {
+        ohenchantselect.innerHTML = ohenchantlist.shield
+    } else {
+        ohenchantselect.innerHTML = ohenchantlist.weapon
+    }
+    if(index < ohenchantselect.length) ohenchantselect.selectedIndex = index
+
     if(doUpdateStats) updateStats();
 }
 
 
 function updateStats()
 {
-    // Boss Settings
-    _debuffDelay = Number(document.querySelector("#debuffdelay").value)
-
-    // Calc Settings
-    _iterations = Number(document.querySelector("#iterations").value)
-    _simDuration = Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10
-    _breakpointValue = Number(document.querySelector("#TBPvalue").value)
-    _breakpointTime = Number(document.querySelector("#TBPtime").value)
-    _breakpointTime = Math.round(_breakpointTime*1000/_timeStep)*_timeStep;
-
-    // Tank Settings
-    _startRage = Number(document.querySelector("#startRage").value)
-    _deathwish = document.querySelector("#deathwish").checked
-    _windfury = document.querySelector("#windfury").checked
-    _wcb = document.querySelector("#wcb").checked
-    _dmf = document.querySelector("#dmf").checked
-    let _goa = document.getElementById("goa").checked
-
-    // Talents 
-    let deflection = Number(document.getElementById("deflection").value)
-    let cruelty = Number(document.getElementById("cruelty").value)
-    let anticipation = Number(document.getElementById("anticipation").value)
-    let toughness = Number(document.getElementById("toughness").value)
-    _impHS = Number(document.getElementById("impHS").value) 
-    _impSA = Number(document.getElementById("impSA").value) 
-    _defiance = Number(document.getElementById("defiance").value) 
-    _impale = Number(document.getElementById("impale").value) 
-    _dwspec = Number(document.getElementById("dwspec").value) 
-
-    // Other Bonuses
-    _twoPieceDreadnaught = document.querySelector("#twoPieceDreadnaught").checked
-    _fivePieceWrath = document.querySelector("#fivePieceWrath").checked
-    let threatenchant = document.getElementById("handenchant").value == "Threat";
-    _berserking = document.getElementById("berserking").checked
-
-
+    // Gear
     let race = document.querySelector("#race").value
     let head = document.querySelector("#head").value
     let neck = document.querySelector("#neck").value
@@ -255,6 +192,7 @@ function updateStats()
     let mainhand = document.querySelector("#mainhand").value
     let offhand = document.querySelector("#offhand").value
 
+    // Enchants
     let headenchant = document.querySelector("#headenchant").value
     let shoulderenchant = document.querySelector("#shoulderenchant").value
     let backenchant = document.querySelector("#backenchant").value
@@ -265,6 +203,18 @@ function updateStats()
     let feetenchant = document.querySelector("#feetenchant").value
     let mhwepenchant = document.querySelector("#mhwepenchant").value
     let ohwepenchant = document.querySelector("#ohwepenchant").value
+
+    // Talents
+    let deflection = Number(document.getElementById("deflection").value);
+    let cruelty = Number(document.getElementById("cruelty").value);
+    let anticipation = Number(document.getElementById("anticipation").value);
+    let toughness = Number(document.getElementById("toughness").value);
+    let shieldspec = Number(document.getElementById("shieldspec").value);
+    let impHS = Number(document.getElementById("impHS").value);
+    let impSA = Number(document.getElementById("impSA").value);
+    let defiance = Number(document.getElementById("defiance").value);
+    let impale = Number(document.getElementById("impale").value);
+    let dwspec = Number(document.getElementById("dwspec").value);
 
     let gear = [
         races[race],
@@ -284,7 +234,6 @@ function updateStats()
         trinkets[trinkettwo],
         rangedweps[ranged],
         weapons[mainhand],
-        weapons[offhand],
         enchants[headenchant],
         enchants[shoulderenchant],
         enchants[backenchant],
@@ -295,7 +244,13 @@ function updateStats()
         enchants[feetenchant],
         enchants[mhwepenchant],
         enchants[ohwepenchant],
-    ]
+    ];
+    let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true;
+    if (_dualWield) {
+        gear.push(weapons[offhand])
+    } else {
+        gear.push(shields[offhand])
+    }
 
     let strength = 0;
     let stamina = 0;
@@ -315,10 +270,14 @@ function updateStats()
     let mhmin = weapons[mainhand].min;
     let mhmax = weapons[mainhand].max;
     let mhswing = weapons[mainhand].swingtimer*1000;
-    let ohmin = weapons[offhand].min;
-    let ohmax = weapons[offhand].max;
-    let ohswing = weapons[offhand].swingtimer*1000;
-
+    let ohmin = 0;
+    let ohmax = 0;
+    let ohswing = 0;
+    if (_dualWield) {
+        ohmin = weapons[offhand].min;
+        ohmax = weapons[offhand].max;
+        ohswing = weapons[offhand].swingtimer*1000;
+    }
     gear.forEach(item => {
         strength += item.strength;
         stamina += item.stamina;
@@ -335,7 +294,7 @@ function updateStats()
     })
 
     let mhwepskill = 300;
-    let ohwepskill = 300;
+    let ohwepskill = _dualWield ? 300 : 0;
     let mhweapontype = document.getElementById("mhweptypelist").value
     let ohweapontype = document.getElementById("ohweptypelist").value
 
@@ -352,6 +311,7 @@ function updateStats()
                 ohwepskill += item.skill;
         }
     })
+
     armor *= (1+0.02*toughness); // Only applies to armor from gear
     armor *= document.getElementById("imploh").checked ? 1.3 : 1;
     // Buffs
@@ -362,10 +322,12 @@ function updateStats()
     mhmax += mhstone == "Dense" ? 8 : 0;
 
     let ohstone = document.getElementById("ohstone").value
-    crit += ohstone == "Elemental" ? 2 : 0;
-    attackpower += ohstone == "Consecrated" ? 100 : 0;
-    ohmin += ohstone == "Dense" ? 8 : 0;
-    ohmax += ohstone == "Dense" ? 8 : 0;
+    if (_dualWield) {
+        crit += ohstone == "Elemental" ? 2 : 0;
+        attackpower += ohstone == "Consecrated" ? 100 : 0;
+        ohmin += ohstone == "Dense" ? 8 : 0;
+        ohmax += ohstone == "Dense" ? 8 : 0;
+    }
 
     strength += Number(document.getElementById("strbuff").value)
     agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
@@ -387,6 +349,8 @@ function updateStats()
     
     stamina += Number(document.getElementById("alcohol").value);
 
+    let _startRage = Number(document.querySelector("#startRage").value);
+    let _mrp = false;
     if(document.getElementById("potion").value == "Mighty Rage") {
         _startRage = Math.min(100, _startRage + 45 + Math.random()*30);
         _mrp = true;
@@ -395,6 +359,9 @@ function updateStats()
     extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
     extrahp += document.getElementById("titans").checked ? 1200 : 0;
     extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
+    extrahp += legenchant == "Libram of Constitution" ? 100 : 0;
+    extrahp += headenchant == "Libram of Constitution" ? 100 : 0;
+    let _wcb = document.querySelector("#wcb").checked;
     extrahp += _wcb ? 300 : 0;
 
     crit += document.getElementById("pack").checked ? 3 : 0;
@@ -424,21 +391,22 @@ function updateStats()
 
     strength += document.getElementById("strofearth").checked ? 77 : 0;
     agility += document.getElementById("graceofair").checked ? 77 : 0;
-    _windfuryAP = document.getElementById("impweptotems").checked ? 410 : 315;
-    
+
     // Stat deltas input by user
-    let extrastrength = Number(document.getElementById("playerextrastrength").value);
-    let extrastamina = Number(document.getElementById("playerextrastamina").value);
-    let extraagility = Number(document.getElementById("playerextraagility").value);
-    let extrahit = Number(document.getElementById("playerextrahit").value);
-    let extracrit = Number(document.getElementById("playerextracrit").value);
+    let extrastrength    = Number(document.getElementById("playerextrastrength").value);
+    let extrastamina     = Number(document.getElementById("playerextrastamina").value);
+    let extraagility     = Number(document.getElementById("playerextraagility").value);
+    let extrahit         = Number(document.getElementById("playerextrahit").value);
+    let extracrit        = Number(document.getElementById("playerextracrit").value);
     let extraattackpower = Number(document.getElementById("playerextraattackpower").value);
-    let extraarmor = Number(document.getElementById("playerextraarmor").value);
-    let extraparry = Number(document.getElementById("playerextraparry").value);
-    let extradodge = Number(document.getElementById("playerextradodge").value);
-    let extradefense = Number(document.getElementById("playerextradefense").value);
-    let extramhskill = Number(document.getElementById("playerextramhskill").value);
-    let extraohskill = Number(document.getElementById("playerextraohskill").value);
+    let extraarmor       = Number(document.getElementById("playerextraarmor").value);
+    let extrablock       = Number(document.getElementById("playerextrablock").value);
+    let extrablockvalue  = Number(document.getElementById("playerextrablockvalue").value);
+    let extraparry       = Number(document.getElementById("playerextraparry").value);
+    let extradodge       = Number(document.getElementById("playerextradodge").value);
+    let extradefense     = Number(document.getElementById("playerextradefense").value);
+    let extramhskill     = Number(document.getElementById("playerextramhskill").value);
+    let extraohskill     = Number(document.getElementById("playerextraohskill").value);
 
     // Set bonuses
     if(mainhand == "Dal'Rend's Sacred Charge" && offhand == "Dal'Rend's Tribal Guardian") attackpower += 50;
@@ -446,7 +414,6 @@ function updateStats()
         mhwepskill += 6
         ohwepskill += 6
     }
-
 
 
     // Multiplicative buffs last, except for armor
@@ -472,6 +439,8 @@ function updateStats()
     extrastamina *= staminaMultiplier;
     extrastrength *= strengthMultiplier;
     extraagility *= agilityMultiplier;
+    console.log(`${extraagility}, ${agilityMultiplier}`)
+    console.log(`${extrastrength}, ${strengthMultiplier}`)
 
     extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
@@ -480,174 +449,194 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
+    crit = crit + cruelty + agility/20 + (mhwepskill-300)*0.04
+
+    parry += 5 + deflection + defense*0.04
+    dodge += agility/20 + defense*0.04
+    block += shieldspec + 5 + defense*0.04
+    blockvalue += strength/20
+
+    block = _dualWield ? 0 : block
+    blockvalue = _dualWield ? 0 : blockvalue
+
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
     document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)} `;
     document.getElementById("playeragility").innerHTML = `${Math.round(agility)} `;
     document.getElementById("playerhit").innerHTML = `${hit} `;
-    document.getElementById("playercrit").innerHTML = `${Math.round((crit + cruelty + agility/20 + (mhwepskill-300)*0.04)*10)/10} `;
+    document.getElementById("playercrit").innerHTML = `${Math.round(crit*10)/10} `;
     document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)} `;
     document.getElementById("playerarmor").innerHTML = `${Math.round(armor)} `;
-    document.getElementById("playerparry").innerHTML = `${Math.round((parry + 5 + deflection + defense*0.04)*100)/100} `;
-    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge + agility/20 + defense*0.04)*100)/100} `;
+    document.getElementById("playerblock").innerHTML = `${Math.round((block)*100)/100} `;
+    document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)} `;
+    document.getElementById("playerparry").innerHTML = `${Math.round((parry)*100)/100} `;
+    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge)*100)/100} `;
     document.getElementById("playerdefense").innerHTML = `${defense + 300} `;
     document.getElementById("playermhskill").innerHTML = `${mhwepskill} `;
     document.getElementById("playerohskill").innerHTML = `${ohwepskill} `;
 
-    // Add stat deltas to stats, note str/ap interaaction not accounted for.
+    // Add stat deltas to stats, note str -> ap/blockvalue interaction not accounted for.
     strength += extrastrength;
     stamina += extrastamina;
     agility += extraagility;
     hit += extrahit;
-    crit += extracrit;
+    crit += extracrit + extraagility/20;
     attackpower += extraattackpower;
-    armor += extraarmor;
+    armor += extraarmor + extraagility;
     parry += extraparry;
-    dodge += extradodge;
+    dodge += extradodge + extraagility/20;
     defense += extradefense;
+    block += extrablock;
+    blockvalue += extrablockvalue + extrastrength;
     mhwepskill += extramhskill;
     ohwepskill += extraohskill;
 
-    // Tank Settings
-    _crusaderMH = mhwepenchant == "Crusader";
-    _crusaderOH = ohwepenchant == "Crusader";
-
-    // Weapons
-    _thunderfuryMH = mainhand == "Thunderfury";
-    _thunderfuryOH = offhand == "Thunderfury";
-    _edMH = mainhand == "Empyrean Demolisher";
-    _edOH = offhand == "Empyrean Demolisher";
-    _qsMH = mainhand == "Quel'Serrar";
-    _perdsMH = mainhand == "Perdition's Blade";
-    _perdsOH = offhand == "Perdition's Blade";
-    _dbMH = mainhand == "Deathbringer";
-    _dbOH = offhand == "Deathbringer";
-    _eskMH = mainhand == "Eskhandar's Right Claw";
-    _msaMH = mainhand == "Misplaced Servo Arm";
-    _msaOH = offhand == "Misplaced Servo Arm";
-
-    // Trinkets
-    _kots = (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider")
-    _earthstrike = (trinketone == "Earthstrike") || (trinkettwo == "Earthstrike")
-    _diamondflask = (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask")
-    _jomgabbar = (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar")
-    _slayerscrest = (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest")
-    _hoj = (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice")
-
-
-    _config = {
-        tankStats: new StaticStats({
+    
+    let globals = {
+        tankStats: {
             type: "tank",
             level: 60,
+
+            dualWield: _dualWield,
 
             MHMin: mhmin,
             MHMax: mhmax,
             MHSwing: mhswing,
-
+            
             OHMin: ohmin,
             OHMax: ohmax,
             OHSwing: ohswing,
-
+            
             MHWepSkill: mhwepskill,
-            OHWepSkill: ohwepskill,
-            damageMod: _dmf ? 0.99 : 0.9, // Defensive Stance + dmf
+            OHWepSkill: _dualWield ? ohwepskill : 0,
+            damageMod: document.querySelector("#dmf").checked ? 0.99 : 0.9, // Defensive Stance + dmf
+            physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
             hastePerc: _wcb ? 15 : 0, 
-            AP: strength*2 + attackpower,
-            crit: agility/20 + crit, // TODO: add wepskill
+            AP: attackpower + strength*2,
+            crit: crit,
             spellcrit: spellcrit,
             hit: hit,
             
-            parry: parry + 5, // TODO talents, defense, check formula
-            dodge: agility/20 + dodge, // TODO: talents, defense
-            block: 0, // TODO: add shield funcitonality...
-            blockValue: 0,
-            defense: 300 + defense, // TODO: talents
-            baseArmor: agility*2 + armor, // TODO: talents
-            baseHealth: stamina*10, // TODO: basehealth
+            parry: parry,
+            dodge: dodge,
+            block: block,
+            blockValue: blockvalue,
+            defense: 300 + defense,
+            baseArmor: armor,
+            baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
+            
+            threatMod: 1.3 * (1 + 0.03*defiance) * (document.getElementById("handenchant").value == "Threat" ? 1.02 : 1),
+            critMod: 2 + impale*0.1,
 
-            threatMod: 1.3 * (1 + 0.03*_defiance) * (threatenchant ? 1.02 : 1),
-            critMod: 2 + _impale*0.1,
             startRage: _startRage,
-
-            twoPieceDreadnaught: _twoPieceDreadnaught,
-            fivePieceWrath: _fivePieceWrath,
+            bshouttargets: Number(document.getElementById("bshouttargets").value),
 
             staminaMultiplier: staminaMultiplier,
             strengthMultiplier: strengthMultiplier,
             agilityMultiplier: agilityMultiplier,
 
-        }),
+            talents: {
+                deathwish: document.getElementById("deathwish").checked,
+                bloodthirst: document.getElementById("bloodthirst").checked,
+                shieldslam: document.getElementById("shieldslam").checked,
+                flurry: Number(document.getElementById("flurry").value),
+                enrage: Number(document.getElementById("enrage").value),
+                deflection: deflection,
+                cruelty: cruelty,
+                anticipation: anticipation,
+                toughness: toughness,
+                shieldspec: shieldspec,
+                impHS: impHS,
+                impSA: impSA,
+                defiance: defiance,
+                impale: impale,
+                dwspec: dwspec,
+            },
+            weapons: {
+                thunderfuryMH: mainhand == "Thunderfury",
+                thunderfuryOH: offhand == "Thunderfury",
+                edMH: mainhand == "Empyrean Demolisher",
+                edOH: offhand == "Empyrean Demolisher",
+                qsMH: mainhand == "Quel'Serrar",
+                perdsMH: mainhand == "Perdition's Blade",
+                perdsOH: offhand == "Perdition's Blade",
+                dbMH: mainhand == "Deathbringer",
+                dbOH: offhand == "Deathbringer",
+                eskMH: mainhand == "Eskhandar's Right Claw",
+                msaMH: mainhand == "Misplaced Servo Arm",
+                msaOH: offhand == "Misplaced Servo Arm",
+            },
 
-        bossStats: new StaticStats({
+            trinkets: {
+                kots: (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider"),
+                earthstrike: (trinketone == "Earthstrike") || (trinkettwo == "Earthstrike"),
+                diamondflask: (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask"),
+                jomgabbar: (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar"),
+                slayerscrest: (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest"),
+                hoj: (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice"),
+            },
+
+            bonuses: {
+                twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
+                threePieceConqueror: document.getElementById("threePieceConqueror").checked,
+                fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
+                threatenchant: document.getElementById("handenchant").value == "Threat",
+                berserking: document.getElementById("berserking").checked,
+                goa: document.getElementById("goa").checked,
+
+                windfury: document.querySelector("#windfury").checked,
+                wcb: _wcb,
+                dmf: document.querySelector("#dmf").checked,
+                crusaderMH: mhwepenchant == "Crusader",
+                crusaderOH: ohwepenchant == "Crusader",
+                windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
+                mrp: _mrp,
+            }
+            
+        },
+        
+        bossStats: {
             type: "boss",
             level: 63,
-
+            
             MHMin: Number(document.querySelector("#swingMin").value),
             MHMax: Number(document.querySelector("#swingMax").value),
             MHSwing: Number(document.querySelector("#swingTimer").value)*1000,
-
+            
             MHWepSkill: 315,
             damageMod: 0.9, // Defensive Stance
+            physDmgMod: 1,
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,
             blockValue: 47,
-
+            
             parry: 12.5, // 14%  with skilldiff
             dodge: 5,    // 6.5% with skilldiff
             block: 5,
             defense: 315,
             baseArmor: Number(document.querySelector("#bossarmor").value),
-
+            
             critMod: 2,
             threatMod: 0,
             startRage: 0,
-        }),
-        debuffDelay: _debuffDelay*1000, // seconds -> ms
-        goa: _goa,
+        },
+        // Calc Settings and other globals
+        config: {
+            landedHits: ["hit", "crit", "block", "crit block", "glance"],
+            timeStep: 25, // Timestep used for each fight
+            simDuration: Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10, // Fight duration in seconds
+            iterations:  Number(document.querySelector("#iterations").value), // Number of fights simulated
+            snapshotLen: 400, // By god given
+            breakpointValue:  Number(document.querySelector("#TBPvalue").value),
+            breakpointTime: Math.round(Number(document.querySelector("#TBPtime").value)*1000/25)*25,
+
+            CoR: document.querySelector("#curseofrecklessness").checked,
+            IEA: document.querySelector("#iea").checked,
+            faerieFire: document.querySelector("#faeriefire").checked,
+            debuffDelay: Number(document.querySelector("#debuffdelay").value)*1000,
+            ieadelay: Number(document.querySelector("#ieadelay").value)*1000,
+        },
     }
-}
-
-
-class StaticStats {
-    constructor(stats) {
-        this.type = stats.type;
-        this.level = stats.level;
-
-        this.MHMin = stats.MHMin;
-        this.MHMax = stats.MHMax;
-        this.MHSwing = stats.MHSwing;
-        this.OHMin = stats.OHMin;
-        this.OHMax = stats.OHMax;
-        this.OHSwing = stats.OHSwing;
-
-        this.MHWepSkill = stats.MHWepSkill;
-        this.OHWepSkill = stats.OHWepSkill;
-        this.damageMod = stats.damageMod;
-        this.hastePerc = stats.hastePerc;
-        this.crit = stats.crit;
-        this.spellcrit = stats.spellcrit;
-        this.AP = stats.AP;
-        this.blockValue = stats.blockValue;
-        this.hit = stats.hit;
-
-        this.parry = stats.parry;
-        this.dodge = stats.dodge;
-        this.block = stats.block;
-        this.defense = stats.defense;
-        this.baseArmor = stats.baseArmor;
-        this.baseHealth = stats.baseHealth;
-
-        this.critMod = stats.critMod;
-        this.threatMod = stats.threatMod;
-        this.startRage = stats.startRage;
-
-        this.twoPieceDreadnaught = stats.twoPieceDreadnaught;
-        this.fivePieceWrath = stats.fivePieceWrath;
-        this.threatenchant = stats.threatenchant;
-
-        this.staminaMultiplier = stats.staminaMultiplier;
-        this.strengthMultiplier = stats.strengthMultiplier;
-        this.agilityMultiplier = stats.agilityMultiplier;
-    }
+    return globals;
 }

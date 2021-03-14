@@ -1570,7 +1570,7 @@ let shoulders = {
     armor: 650,
     parry: 0,
     dodge: 1,
-    defense: 0,
+    defense: 9,
     block: 0,
     blockvalue: 0,
 
@@ -1957,6 +1957,25 @@ let capes = {
     skill: 0,
     skilltype: 'none'
 },
+   "Cryptfiend Silk Cloak": {
+      strength: 0,
+      stamina: 14,
+      agility: 0,
+  
+      hit: 1,
+      crit: 0,
+      attackpower: 0,
+  
+      armor: 203,
+      parry: 0,
+      dodge: 1,
+      defense: 7,
+      block: 0,
+      blockvalue: 0,
+  
+      skill: 0,
+      skilltype: 'none'
+  },
     "Dragon's Blood Cape": {
     strength: 9,
     stamina: 22,
@@ -4158,6 +4177,25 @@ let rings = {
         "blockvalue": 0,
         "block": 0
     },
+    "Angelista's Touch": {
+      strength: 11,
+      stamina: 17,
+      agility: 0,
+   
+      hit: 0,
+      crit: 0,
+      attackpower: 0,
+   
+      armor: 0,
+      parry: 0,
+      dodge: 1,
+      defense: 6,
+      block: 0,
+      blockvalue: 0,
+   
+      skill: 0,
+      skilltype: 'none'
+   },
     "Archimtiros' Ring of Reckoning": {
        "crit": 0,
        "hit": 0,
@@ -4226,8 +4264,8 @@ let rings = {
        "crit": 0,
        "hit": 0,
        "strength": 0,
-       "stamina": 22,
-       "agility": 23,
+       "stamina": 0,
+       "agility": 34,
        "attackpower": 0,
        "dodge": 0,
        "parry": 0,
@@ -4591,37 +4629,37 @@ let rings = {
        "block": 0
     },
     "Signet Ring of the Bronze Dragonflight (Agi)": {
-       "crit": 0,
-       "hit": 1,
-       "strength": 0,
-       "stamina": 13,
-       "agility": 24,
-       "attackpower": 0,
-       "dodge": 0,
-       "parry": 0,
-       "defense": 0,
-       "armor": 0,
-       "skill": 0,
-       "skilltype": 0,
-       "blockvalue": 0,
-       "block": 0
-    },
-    "Signet Ring of the Bronze Dragonflight (Str)": {
       "crit": 0,
-      "hit": 0,
-      "strength": 13,
-      "stamina": 24,
-      "agility": 0,
+      "hit": 1,
+      "strength": 0,
+      "stamina": 13,
+      "agility": 24,
       "attackpower": 0,
       "dodge": 0,
       "parry": 0,
-      "defense": 7,
+      "defense": 0,
       "armor": 0,
       "skill": 0,
       "skilltype": 0,
       "blockvalue": 0,
       "block": 0
    },
+   "Signet Ring of the Bronze Dragonflight (Str)": {
+     "crit": 0,
+     "hit": 0,
+     "strength": 13,
+     "stamina": 24,
+     "agility": 0,
+     "attackpower": 0,
+     "dodge": 0,
+     "parry": 0,
+     "defense": 7,
+     "armor": 0,
+     "skill": 0,
+     "skilltype": 0,
+     "blockvalue": 0,
+     "block": 0
+  },
     "Tarnished Elven Ring": {
        "crit": 0,
        "hit": 1,
@@ -4811,6 +4849,20 @@ let trinkets = {
        "blockvalue": 0,
        "block": 0
     },
+    "Mark of the Champion": {
+        "crit": 0,
+        "hit": 0,
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "attackpower": 150,
+        "dodge": 0,
+        "parry": 0,
+        "defense": 0,
+        "armor": 0,
+        "blockvalue": 0,
+        "block": 0
+    },
     "Rune of the Guard Captain": {
        "crit": 0,
        "hit": 1,
@@ -4869,6 +4921,22 @@ let trinkets = {
       "blockvalue": 0,
       "block": 0
     },
+    "Styleen's Impending Scarab": {
+      "crit": 0,
+      "hit": 0,
+      "strength": 0,
+      "stamina": 0,
+      "agility": 0,
+      "attackpower": 0,
+      "dodge": 0,
+      "parry": 0,
+      "defense": 13,
+      "armor": 0,
+      "skill": 0,
+      "skilltype": 0,
+      "blockvalue": 24,
+      "block": 5
+  },
     "Vigilance Charm": {
       "crit": 0,
       "hit": 0,
@@ -5449,6 +5517,191 @@ let rangedweps = {
        "block": 0
     }
  }
+
+let shields = {
+    "Aegis of the Blood God": {
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 7,
+        "armor": 2575,
+        "blockvalue": 77,
+        "block": 2
+    },
+    "Blessed Qiraji Bulwark": {
+        "strength": 0,
+        "stamina": 20,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 8,
+        "armor": 2964,
+        "blockvalue": 70,
+        "block": 3
+    },
+    "Buru's Skull Fragment": {
+        "strength": 11,
+        "stamina": 20,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 6,
+        "armor": 2575,
+        "blockvalue": 47,
+        "block": 0
+    },
+    "Draconian Deflector": {
+        "strength": 0,
+        "stamina": 7,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 10,
+        "armor": 2153,
+        "blockvalue": 40,
+        "block": 0
+    },
+    "Drillborer Disk": {
+        "strength": 0,
+        "stamina": 10,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 2539,
+        "blockvalue": 69,
+        "block": 2
+    },
+    "Earthen Guard": {
+        "strength": 0,
+        "stamina": 19,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 7,
+        "armor": 2468,
+        "blockvalue": 56,
+        "block": 0
+    },
+    "Elementium Reinforced Bulwark": {
+        "strength": 0,
+        "stamina": 23,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 7,
+        "armor": 2893,
+        "blockvalue": 73,
+        "block": 0
+    },
+    "Grand Marshal's Aegis": {
+        "strength": 10,
+        "stamina": 23,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 2929,
+        "blockvalue": 55,
+        "block": 0
+    },
+    "High Warlord's Shield Wall": {
+        "strength": 10,
+        "stamina": 23,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 2929,
+        "blockvalue": 55,
+        "block": 0
+    },
+    "Stygian Buckler": {
+        "strength": 0,
+        "stamina": 0,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 3106,
+        "blockvalue": 59,
+        "block": 0
+    },
+    "The Face of Death": {
+        "strength": 0,
+        "stamina": 21,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 3494,
+        "blockvalue": 87,
+        "block": 3
+    },
+    "The Immovable Object": {
+        "strength": 0,
+        "stamina": 15,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 0,
+        "armor": 2468,
+        "blockvalue": 71,
+        "block": 0
+    },
+    "The Plague Bearer": {
+        "strength": 0,
+        "stamina": 21,
+        "agility": 0,
+        "hit": 0,
+        "crit": 0,
+        "attackpower": 0,
+        "parry": 0,
+        "dodge": 0,
+        "defense": 9,
+        "armor": 3106,
+        "blockvalue": 59,
+        "block": 0
+    }
+}
 
 let weapons = {
     "Ancient Hakkari Manslayer": {
@@ -7528,6 +7781,20 @@ let enchants = {
        "armor": 0,
        "parry": 0
     },
+    "Libram of Protection (+1% Dodge)": {
+      "strength": 0,
+      "stamina": 0,
+      "agility": 0,
+      "crit": 0,
+      "hit": 0,
+      "attackpower": 0,
+      "dodge": 1,
+      "block": 0,
+      "blockvalue": 0,
+      "defense": 0,
+      "armor": 0,
+      "parry": 0
+   },
     "Libram of Rapidity": {
        "strength": 0,
        "stamina": 0,
@@ -7584,20 +7851,6 @@ let enchants = {
        "armor": 0,
        "parry": 0
     },
-    "Libram of Protection (+1% Dodge)": {
-      "strength": 0,
-      "stamina": 0,
-      "agility": 0,
-      "crit": 0,
-      "hit": 0,
-      "attackpower": 0,
-      "dodge": 1,
-      "block": 0,
-      "blockvalue": 0,
-      "defense": 0,
-      "armor": 0,
-      "parry": 0
-   },
     "Major Health": {
        "strength": 0,
        "stamina": 0,
