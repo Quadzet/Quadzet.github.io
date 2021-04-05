@@ -403,15 +403,14 @@ async function main() {
         let end = Date.now()
         //console.log(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
         // Some console logging...
-        let ret = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
-        console.log(ret);
+        /*console.log(ret);
         console.log(`Example fight:`)
         exampleEvents.forEach( e => console.log(formatEvent(e)))
         console.log(`TPS: ${Math.round(average(tps)*100)/100}`);
         console.log(`DPS: ${Math.round(average(dps)*100)/100}`);
         console.log(`DTPS: ${Math.round(average(dtps)*100)/100}`);
         for (let ability in results)
-            console.log(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);
+            console.log(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);*/
         //console.log(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
         //console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
 
@@ -459,8 +458,13 @@ async function main() {
         document.getElementById("abilitytps").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
 
+        let timelineHeaderDOM = document.querySelector("#timeline>div")
+        timelineHeaderDOM.innerHTML = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights using ${numWorkers} threads in ${(end-start)/1000} seconds.`
+        timelineHeaderDOM.innerHTML += "</br>"
+        timelineHeaderDOM.innerHTML += "Example fight:"
+        timelineHeaderDOM.innerHTML += "</br>"
+
         let timelineDOM = document.querySelector("#timeline>pre>code")
-        timelineDOM.innerHTML = ""
         exampleEvents.forEach( e => {
             timelineDOM.innerHTML += formatEvent(e)
             timelineDOM.innerHTML += "</br>"
