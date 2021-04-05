@@ -604,6 +604,7 @@ async function main() {
         document.querySelector("#barContainer").style.display = `none`;
         document.querySelector("#plotContainer").style.display = `block`;
         document.querySelector("#resultContainer").style.display = `block`;
+        document.querySelector("#timeline").style.display = `block`;
     }
 }
 
