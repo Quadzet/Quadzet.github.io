@@ -459,6 +459,15 @@ async function main() {
         document.getElementById("abilitytps").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
 
+        let timelineDOM = document.querySelector("#timeline>pre>code")
+        timelineDOM.innerHTML = ""
+        exampleEvents.forEach( e => {
+            timelineDOM.innerHTML += formatEvent(e)
+            timelineDOM.innerHTML += "</br>"
+        })
+
+
+
         /*
         var x = linspace(0, globals.config.simDuration, globals.config.simDuration*1000/globals.config.snapshotLen + 1);
 

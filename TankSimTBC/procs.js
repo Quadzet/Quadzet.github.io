@@ -9,31 +9,34 @@ class Proc {
 
     }
 
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events) {
         return;
     }
 
 }
 
 class ThunderfuryMH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    handleEvent(source, target, event, eventList) {
+        if (event.type == "damage" && !["OH Swing", "Shield Slam"].includes(event.name) && Globals.config.landedHits.includes(event.hit)) {
+            let owner = Actors[source]
             let rng = Math.random()
             if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
                 rng = Math.random(); // Two-roll
-                let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
-                let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                let critMod = rng < owner.stats.spellcrit/100 ? 1.5 : 1;
+                let damage = this.damage*owner.damageMod*critMod; // don't count enrage, use default 0.9 only
                 let procEvent = {
-                    "type": "damage",
-                    "ability": this.name,
-                    "hit": "hit",
-                    "timestamp": event.timestamp,
-                    "damage": damage, 
-                    "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
+                    type: "damage",
+                    name: this.name,
+                    source: source,
+                    target: target,
+                    hit: "hit",
+                    timestamp: event.timestamp,
+                    amount: damage, 
+                    threat: (126 + damage*0.5)*owner.threatMod,
                 }
-                events.push(procEvent);
+                eventList.push(procEvent);
                 // Ensure that the target the get debuff applied
-                target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
+                // target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
             }
         }
     }

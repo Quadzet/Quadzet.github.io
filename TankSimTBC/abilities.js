@@ -49,8 +49,6 @@ class Ability {
         
         source.handleEvent(damageEvent, eventList, futureEvents)
         target.handleEvent(damageEvent, eventList, futureEvents)
-
-
     }
 
 
@@ -182,11 +180,7 @@ class Devastate extends Ability {
             target.applyAura(timestamp, "Sunder Armor", source.name, eventList, futureEvents, false)
 
         source.onGCD = true
-        source.handleEvent(damageEvent, eventList, futureEvents)
-        target.handleEvent(damageEvent, eventList, futureEvents)
-
         updateRage(source, damageEvent.hit, this.rageCost)
-
         let futureEvent = {
             type: "GCD",
             source: source.name,
@@ -194,6 +188,8 @@ class Devastate extends Ability {
         }
         registerFutureEvent(futureEvent, futureEvents)
 
+        source.handleEvent(damageEvent, eventList, futureEvents)
+        target.handleEvent(damageEvent, eventList, futureEvents)
     }
 }
 
@@ -237,13 +233,6 @@ class ShieldBlock extends Ability {
         source.applyAura(timestamp, "Shield Block", source.name, eventList, futureEvents)
 
         updateRage(source, 'hit', this.rageCost)
-
-        let futureEvent = {
-            type: "GCD",
-            source: source.name,
-            timestamp: timestamp + 1500
-        }
-        registerFutureEvent(futureEvent, futureEvents)
     }
 }
 

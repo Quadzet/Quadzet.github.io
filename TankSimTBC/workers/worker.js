@@ -6,15 +6,16 @@ self.addEventListener('message', function(e) {
     let globals = e.data.globals;
     let iterations = e.data.iterations;
 
-    importScripts('../rotation.js', '../abilities.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
+    importScripts('../globals.js', '../rotation.js', '../abilities.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
 
     //let TankAuras = [...defaultTankAuras]
     //let BossAuras = [...defaultBossAuras]
     //addOptionalAuras(TankAuras, BossAuras, globals); // Adds crusader/thunderfury etc auras to tank/boss if they are set in config.
 
-    //let TankProcs = getTankProcs(globals);
-    //let BossProcs = getBossProcs(globals);
+    let TankProcs = getTankProcs(globals);
+    let BossProcs = getBossProcs(globals);
 
+    Globals.config = globals.config
 
 
     function handleEvent(event, eventList, futureEvents)
@@ -52,8 +53,8 @@ self.addEventListener('message', function(e) {
 
     
     Actors = {
-        "Tank": new Actor("Tank", globals.tankStats, TankAbilities),
-        "Boss": new Actor("Boss", globals.bossStats, BossAbilities),
+        "Tank": new Actor("Tank", globals.tankStats, TankAbilities, TankProcs),
+        "Boss": new Actor("Boss", globals.bossStats, BossAbilities, BossProcs),
     }
     
     exampleList = []

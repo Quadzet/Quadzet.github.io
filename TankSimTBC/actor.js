@@ -3,7 +3,7 @@
 
 // TODO: create Boss and Tank subclasses
 class Actor {
-    constructor(name, stats, abilities) {
+    constructor(name, stats, abilities, procs) {
         this.name = name
         this.stats = stats
         this.swingTimer = 2000 // remove
@@ -24,7 +24,7 @@ class Actor {
 
         this.buffs = {}
         this.debuffs = {}
-        //this.procs = procs
+        this.procs = procs
         
         this.uptimes = {}
         
@@ -44,14 +44,14 @@ class Actor {
     handleEvent(event, eventList, futureEvents) {
 
         // TODO: The boss obviously does not need Revenge logic
-        if(event.type == "damage") {
+        if(event.type == "damage" && this.name == "Tank") {
 
             // We might have just gotten rage to perform an action
-            if(event.source == "Tank" && this.name == "Tank" && event.name == "MH Swing")
+            if(event.source == "Tank" && event.name == "MH Swing")
                 performAction(event.timestamp, this, eventList, futureEvents)
 
-            // We gained Defensive state, meaning itäs possible we can use revenge straight away
-            if(event.target == this.name && this.name == "Tank" && ["block", "parry", "dodge"].includes(event.hit)) {
+            // We gained Defensive state, meaning it's possible we can use revenge straight away
+            if(event.target == this.name && ["block", "parry", "dodge"].includes(event.hit)) {
                 this.applyAura(event.timestamp, "Defensive State", event.source, eventList, futureEvents)
                 performAction(event.timestamp, this, eventList, futureEvents)
             }
@@ -62,24 +62,31 @@ class Actor {
             }
 
             //  Remove stacks of Shield Block after blocking
-            if(event.target == "Tank" && event.hit == "block" && this.name == "Tank") {
+            if(event.target == "Tank" && event.hit == "block") {
                 if(this.buffs["Shield Block"]) {
                     this.buffs["Shield Block"].removeStack(event.timestamp, this, eventList, futureEvents)
                 }
             }
 
-            // Parry haste
-            if(event.target == this.name && event.hit == "parry") {
-                futureEvents.forEach(e => {
-                    if(e.type == "swingTimer" && e.source == this.name)
-                        e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+            // Procs
+            if(event.source == "Tank") {
+                this.procs.forEach(proc => {
+                    proc.handleEvent(event.source, event.target, event, eventList)
                 })
-                sortDescending(futureEvents)
             }
 
         // An ability came off cooldown, check if we should use it
         } else if(event.type == "cooldownFinish" && !this.onGCD) {
             performAction(event.timestamp, this, eventList, futureEvents)
+        }
+
+        // Parry haste
+        if(event.type == "damage" && event.target == this.name && event.hit == "parry") {
+            futureEvents.forEach(e => {
+                if(e.type == "swingTimer" && e.source == this.name)
+                    e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+            })
+            sortDescending(futureEvents)
         }
 
         // Placeholder for if we just got rage to be able to take an action
