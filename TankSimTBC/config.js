@@ -416,7 +416,7 @@ function updateStats()
     let globals = {
         tankStats: {
             type: "tank",
-            level: 60,
+            level: 70,
 
             MHMin: mhmin,
             MHMax: mhmax,
@@ -510,7 +510,7 @@ function updateStats()
         
         bossStats: {
             type: "boss",
-            level: 63,
+            level: 73,
             
             MHMin: Number(document.querySelector("#swingMin").value),
             MHMax: Number(document.querySelector("#swingMax").value),
