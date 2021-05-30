@@ -20,7 +20,7 @@ function getParryHastedSwing(current, base) {
 
 // TODO: VERIFY ARMOR FORMULA
 function armorReduction(atkLvl, armor) {
-    return armor/(armor + 400 + 85*(atkLvl + 4.5*(atkLvl - 59)));
+    return armor/(armor - 22167.5 + atkLvl*467.5);
 }
 
 // Tank hitting the boss
