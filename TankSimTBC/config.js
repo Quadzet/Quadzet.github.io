@@ -196,6 +196,7 @@ function updateStats()
     let extrastrength    = Number(document.getElementById("playerextrastrength").value);
     let extraagility     = Number(document.getElementById("playerextraagility").value);
     let extrahit         = Number(document.getElementById("playerextrahit").value);
+    let extraexpertise   = Number(document.getElementById("playerextraexpertise").value);
     let extracrit        = Number(document.getElementById("playerextracrit").value);
     let extraattackpower = Number(document.getElementById("playerextraattackpower").value);
     let extraarmor       = Number(document.getElementById("playerextraarmor").value);
@@ -205,6 +206,9 @@ function updateStats()
     let extradodge       = Number(document.getElementById("playerextradodge").value);
     let extradefense     = Number(document.getElementById("playerextradefense").value);
     let extraresilience  = Number(document.getElementById("playerextraresilience").value);
+    let extraMHmin       = Number(document.getElementById("playerextrawepmin").value);
+    let extraMHmax       = Number(document.getElementById("playerextrawepmax").value);
+
 
     // Talents
     let deflection = 0; //Number(document.getElementById("deflection").value);
@@ -401,15 +405,19 @@ function updateStats()
 
 
     hit += extrahit;
+    expertise += extraexpertise;
     crit += extracrit + extraagility*agilitymultiplier/33 + agility*(agilitymultiplier - 1)/33;
     attackpower += extraattackpower + 2*extrastrength*strengthmultiplier + 2*strength*(strengthmultiplier - 1);
     armor += extraarmor + extraagility*agilitymultiplier + agility*(agilitymultiplier - 1);
-    parry += extraparry;
-    dodge += extradodge + extraagility*agilitymultiplier/30 + agility*(agilitymultiplier - 1)/30;
+    parry += extraparry + extradefense*0.04;
+    dodge += extradodge + extradefense*0.04 + extraagility*agilitymultiplier/30 + agility*(agilitymultiplier - 1)/30;
     defense += extradefense;
     resilience += extraresilience;
     block += extrablock;
     blockvalue += extrablockvalue + extrastrength*strengthmultiplier/20 + strength*(strengthmultiplier - 1)/20;
+    mhmin += extraMHmin;
+    mhmax += extraMHmax;
+
 
     attackpower *= document.getElementById("unleashedrage").checked ? 1.1 : 1;
     
