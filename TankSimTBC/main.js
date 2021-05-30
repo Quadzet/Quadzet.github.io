@@ -73,6 +73,12 @@ function saveInput()
     localStorage.setItem("startRage", document.querySelector("#startRage").value)
     localStorage.setItem("windfury", document.querySelector("#windfury").checked)
 
+    localStorage.setItem("TF", document.getElementById("TF").checked)
+
+    // Consumes
+    localStorage.setItem("fortification", document.getElementById("fortification").checked)
+    localStorage.setItem("ironshield", document.getElementById("ironshield").checked)
+
     // Talents 
     localStorage.setItem("impHS", document.getElementById("impHS").value)
     localStorage.setItem("impSA", document.getElementById("impSA").value)
@@ -87,6 +93,16 @@ function saveInput()
     localStorage.setItem("inspiration", document.getElementById("inspiration").checked);
     localStorage.setItem("devo", document.getElementById("devo").checked);
     localStorage.setItem("imploh", document.getElementById("imploh").checked);
+
+    localStorage.setItem("bloodlust", document.getElementById("bloodlust").checked);
+    localStorage.setItem("sealofcrusader", document.getElementById("sealofcrusader").checked);
+    localStorage.setItem("unleashedrage", document.getElementById("unleashedrage").checked);
+    localStorage.setItem("sanctityaura", document.getElementById("sanctityaura").checked);
+    localStorage.setItem("heroicpresence", document.getElementById("heroicpresence").checked);
+    localStorage.setItem("impfaeriefire", document.getElementById("impfaeriefire").checked);
+    localStorage.setItem("bloodfrenzy", document.getElementById("bloodfrenzy").checked);
+    localStorage.setItem("drums", document.getElementById("drums").value);
+    localStorage.setItem("ferociousinspiration", document.getElementById("ferociousinspiration").value);
 
     localStorage.setItem("bshout", document.getElementById("bshout").checked);
     localStorage.setItem("pack", document.getElementById("pack").checked);
@@ -117,39 +133,45 @@ function saveInput()
 function loadInput()
 {
     // Tank Stats
-    document.getElementById("playerstrength").value = localStorage.getItem("playerstrength") ? localStorage.getItem("playerstrength") : 0;
-    document.getElementById("playeragility").value = localStorage.getItem("playeragility") ? localStorage.getItem("playeragility") : 0;
-    document.getElementById("playerhit").value = localStorage.getItem("playerhit") ? localStorage.getItem("playerhit") : 0;
-    document.getElementById("playerexpertise").value = localStorage.getItem("playerexpertise") ? localStorage.getItem("playerexpertise") : 0;
-    document.getElementById("playercrit").value = localStorage.getItem("playercrit") ? localStorage.getItem("playercrit") : 0;
-    document.getElementById("playerattackpower").value = localStorage.getItem("playerattackpower") ? localStorage.getItem("playerattackpower") : 0;
-    document.getElementById("playerarmor").value = localStorage.getItem("playerarmor") ? localStorage.getItem("playerarmor") : 0;
-    document.getElementById("playerdefense").value = localStorage.getItem("playerdefense") ? localStorage.getItem("playerdefense") : 0;
-    document.getElementById("playerresilience").value = localStorage.getItem("playerresilience") ? localStorage.getItem("playerresilience") : 0;
-    document.getElementById("playerdodge").value = localStorage.getItem("playerdodge") ? localStorage.getItem("playerdodge") : 0;
-    document.getElementById("playerparry").value = localStorage.getItem("playerparry") ? localStorage.getItem("playerparry") : 0;
-    document.getElementById("playerblock").value = localStorage.getItem("playerblock") ? localStorage.getItem("playerblock") : 0;
-    document.getElementById("playerblockvalue").value = localStorage.getItem("playerblockvalue") ? localStorage.getItem("playerblockvalue") : 0;
-    document.getElementById("playerwepmin").value = localStorage.getItem("playerwepmin") ? localStorage.getItem("playerwepmin") : 0;
-    document.getElementById("playerwepmax").value = localStorage.getItem("playerwepmax") ? localStorage.getItem("playerwepmax") : 0;
-    document.getElementById("playerswing").value = localStorage.getItem("playerswing") ? localStorage.getItem("playerswing") : 0;
+    document.getElementById("playerstrength").value = localStorage.getItem("playerstrength") ? localStorage.getItem("playerstrength") : 200;
+    document.getElementById("playeragility").value = localStorage.getItem("playeragility") ? localStorage.getItem("playeragility") : 200;
+    document.getElementById("playerhit").value = localStorage.getItem("playerhit") ? localStorage.getItem("playerhit") : 9;
+    document.getElementById("playerexpertise").value = localStorage.getItem("playerexpertise") ? localStorage.getItem("playerexpertise") : 6;
+    document.getElementById("playercrit").value = localStorage.getItem("playercrit") ? localStorage.getItem("playercrit") : 15;
+    document.getElementById("playerattackpower").value = localStorage.getItem("playerattackpower") ? localStorage.getItem("playerattackpower") : 1200;
+    document.getElementById("playerarmor").value = localStorage.getItem("playerarmor") ? localStorage.getItem("playerarmor") : 14000;
+    document.getElementById("playerdefense").value = localStorage.getItem("playerdefense") ? localStorage.getItem("playerdefense") : 490;
+    document.getElementById("playerresilience").value = localStorage.getItem("playerresilience") ? localStorage.getItem("playerresilience") : 34;
+    document.getElementById("playerdodge").value = localStorage.getItem("playerdodge") ? localStorage.getItem("playerdodge") : 18;
+    document.getElementById("playerparry").value = localStorage.getItem("playerparry") ? localStorage.getItem("playerparry") : 12;
+    document.getElementById("playerblock").value = localStorage.getItem("playerblock") ? localStorage.getItem("playerblock") : 11;
+    document.getElementById("playerblockvalue").value = localStorage.getItem("playerblockvalue") ? localStorage.getItem("playerblockvalue") : 240;
+    document.getElementById("playerwepmin").value = localStorage.getItem("playerwepmin") ? localStorage.getItem("playerwepmin") : 120;
+    document.getElementById("playerwepmax").value = localStorage.getItem("playerwepmax") ? localStorage.getItem("playerwepmax") : 140;
+    document.getElementById("playerswing").value = localStorage.getItem("playerswing") ? localStorage.getItem("playerswing") : 1.7;
 
     document.querySelector("#startRage").value = localStorage.getItem("startRage") ? localStorage.getItem("startRage") : 70;
     document.querySelector("#windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
+
+    document.getElementById("TF").checked = localStorage.getItem("TF") == "true" ? true : false;
+
+    // Consumes
+    document.getElementById("fortification").checked = localStorage.getItem("fortification") == "true" ? true : false;
+    document.getElementById("ironshield").checked = localStorage.getItem("ironshield") == "true" ? true : false;
 
     // Talents 
     //document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
     //document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
     //document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
     //document.getElementById("toughness").value = localStorage.getItem("toughness") ? localStorage.getItem("toughness") : 3;
-    document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 3; 
-    document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 3; 
-    document.getElementById("focusedrage").value = localStorage.getItem("focusedrage") ? localStorage.getItem("focusedrage") : 3;
-    document.getElementById("1hspec").value = localStorage.getItem("1hspec") ? localStorage.getItem("1hspec") : 5;
-    document.getElementById("vitality").value = localStorage.getItem("vitality") ? localStorage.getItem("vitality") : 5;
-    document.getElementById("shieldspec").value = localStorage.getItem("shieldspec") ? localStorage.getItem("shieldspec") : 5;
-    document.getElementById("shieldmastery").value = localStorage.getItem("shieldmastery") ? localStorage.getItem("shieldmastery") : 3;
-    document.getElementById("AM").value = localStorage.getItem("AM") ? localStorage.getItem("AM") : 1;
+    document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 0; 
+    document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
+    document.getElementById("focusedrage").value = localStorage.getItem("focusedrage") ? localStorage.getItem("focusedrage") : 0;
+    document.getElementById("1hspec").value = localStorage.getItem("1hspec") ? localStorage.getItem("1hspec") : 0;
+    document.getElementById("vitality").value = localStorage.getItem("vitality") ? localStorage.getItem("vitality") : 0;
+    document.getElementById("shieldspec").value = localStorage.getItem("shieldspec") ? localStorage.getItem("shieldspec") : 0;
+    document.getElementById("shieldmastery").value = localStorage.getItem("shieldmastery") ? localStorage.getItem("shieldmastery") : 0;
+    document.getElementById("AM").value = localStorage.getItem("AM") ? localStorage.getItem("AM") : 0;
     //document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
 
     // Buffs
@@ -168,13 +190,24 @@ function loadInput()
     document.getElementById("graceofair").checked = localStorage.getItem("graceofair") == "true" ? true : false;
     document.getElementById("impweptotems").checked = localStorage.getItem("impweptotems") == "true" ? true : false;
 
+    document.getElementById("sealofcrusader").checked = localStorage.getItem("sealofcrusader") == "true" ? true : false;
+    document.getElementById("bloodlust").checked = localStorage.getItem("bloodlust") == "true" ? true : false;
+    document.getElementById("unleashedrage").checked = localStorage.getItem("unleashedrage") == "true" ? true : false;
+    document.getElementById("sanctityaura").checked = localStorage.getItem("sanctityaura") == "true" ? true : false;
+    document.getElementById("heroicpresence").checked = localStorage.getItem("heroicpresence") == "true" ? true : false;
+    document.getElementById("impfaeriefire").checked = localStorage.getItem("impfaeriefire") == "true" ? true : false;
+    document.getElementById("bloodfrenzy").checked = localStorage.getItem("bloodfrenzy") == "true" ? true : false;
+
+    document.getElementById("drums").value = localStorage.getItem("drums") ? localStorage.getItem("drums") : 0;
+    document.getElementById("ferociousinspiration").value = localStorage.getItem("ferociousinspiration") ? localStorage.getItem("ferociousinspiration") : 0;
+
     // Boss Settings
     document.querySelector("#swingMin").value = localStorage.getItem("swingMin") ? localStorage.getItem("swingMin") : 4000;
     document.querySelector("#swingMax").value = localStorage.getItem("swingMax") ? localStorage.getItem("swingMax") : 4000;
     document.querySelector("#swingTimer").value = localStorage.getItem("swingTimer") ? localStorage.getItem("swingTimer") : 2;
     document.querySelector("#bossarmor").value = localStorage.getItem("bossarmor") ? localStorage.getItem("bossarmor") : 3731;
-    document.querySelector("#curseofrecklessness").checked = localStorage.getItem("curseofrecklessness") == "false" ? false : true;
-    document.querySelector("#faeriefire").checked = localStorage.getItem("faeriefire") == "false" ? false : true;
+    document.querySelector("#curseofrecklessness").checked = localStorage.getItem("curseofrecklessness") == "true" ? true : false;
+    document.querySelector("#faeriefire").checked = localStorage.getItem("faeriefire") == "true" ? true : false;
     document.querySelector("#iea").checked = localStorage.getItem("iea") == "true" ? true : false;
 
     // Calc Settings
