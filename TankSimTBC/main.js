@@ -382,6 +382,7 @@ async function main() {
         timelineHeaderDOM.innerHTML += "</br>"
 
         let timelineDOM = document.querySelector("#timeline>pre>code")
+        timelineDOM.innerHTML = ""
         exampleEvents.forEach( e => {
             timelineDOM.innerHTML += formatEvent(e)
             timelineDOM.innerHTML += "</br>"
