@@ -138,8 +138,8 @@ class Aura {
 
     expire(timestamp, eventList, futureEvents) {
         // Add all modifiers here, remember scalingstacks
-        Actors[this.owner].armor -= this.armorMod * this.scalingStacks ? this.stacks : 1 
-        Actors[this.owner].block -= this.blockMod * this.scalingStacks ? this.stacks : 1 
+        Actors[this.owner].armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
+        Actors[this.owner].block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
         this.stacks = 0
         delete Actors[this.owner].buffs[this.name]
         eventList.push({
