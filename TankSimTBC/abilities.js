@@ -88,7 +88,7 @@ class Autoattack extends Ability {
 
     use(timestamp, source, target, eventList, futureEvents) {
         let damageEvent = {}
-        if(source.isHeroicStrikeQueued) {
+        if(!source.windfury && source.isHeroicStrikeQueued && source.rage >= (15 - source.stats.talents.impHS - source.stats.talents.focusedrage)) {
             this.staticThreat = 175
             let damage = this.weaponSwingRoll(source) + target.additivePhysBonus + 157
             damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
@@ -100,9 +100,8 @@ class Autoattack extends Ability {
             eventList.push(damageEvent)
 
             this.staticThreat = 0
-            source.isHeroicStrikeQueued = false
 
-            updateRage(source, damageEvent.hit, (15 - source.stats.talents.impHS))
+            updateRage(source, damageEvent.hit, (15 - source.stats.talents.impHS - source.stats.talents.focusedrage))
 
         } else {
             let damage = this.weaponSwingRoll(source) + target.additivePhysBonus
@@ -116,13 +115,18 @@ class Autoattack extends Ability {
             eventList.push(damageEvent)
 
             // Add rage
+            let rageBonus = source.stats.MHSwing*2.5/1000
+            if(damageEvent.hit == "crit")
+                rageBonus *=2
+
             if (damageEvent.hit == "miss") {}
-            else if (["dodge", "parry"].includes(damageEvent.hit)) source.addRage(0.75*damage*7.5/230.6, true) // 'refund' 75% of the rage gain
+            else if (["dodge", "parry"].includes(damageEvent.hit)) source.addRage(0.75*(damage*7.5/274.7 + rageBonus)/2, true) // 'refund' 75% of the rage gain
             else {
-                source.addRage(damageEvent.amount*7.5/230.6, true)
-                target.addRage(damageEvent.amount*2.5/230.6, true)
+                source.addRage((damageEvent.amount*7.5/274.7 + rageBonus)/2, true)
+                target.addRage(damageEvent.amount*2.5/274.7, true)
             }
         }
+        source.isHeroicStrikeQueued = false
         let futureEvent = {
             type: "swingTimer",
             source: source.name,
@@ -150,6 +154,9 @@ class ShieldSlam extends Ability {
         let damageEvent = rollAttack(source, target, damage, true, false, false, true)
 
         this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+    }
+    isUsable(timestamp, source) {
+        return this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && (source.rage >= this.rageCost - source.stats.talents.focusedrage)
     }
 }
 
@@ -180,7 +187,7 @@ class Devastate extends Ability {
             target.applyAura(timestamp, "Sunder Armor", source.name, eventList, futureEvents, false)
 
         source.onGCD = true
-        updateRage(source, damageEvent.hit, this.rageCost)
+        updateRage(source, damageEvent.hit, this.rageCost - source.stats.talents.focusedrage - source.stats.talents.impSA)
         let futureEvent = {
             type: "GCD",
             source: source.name,
@@ -190,6 +197,9 @@ class Devastate extends Ability {
 
         source.handleEvent(damageEvent, eventList, futureEvents)
         target.handleEvent(damageEvent, eventList, futureEvents)
+    }
+    isUsable(timestamp, source) {
+        return this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && (source.rage >= this.rageCost - source.stats.talents.focusedrage - source.stats.talents.impSA)
     }
 }
 
@@ -202,7 +212,7 @@ class Revenge extends Ability {
         let defensiveState = false
         if(source.buffs["Defensive State"])
             defensiveState = true
-        return defensiveState && this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && source.rage >= this.rageCost
+        return defensiveState && this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && (source.rage >= this.rageCost - source.stats.talents.focusedrage)
     }
     use(timestamp, source, target, eventList, futureEvents) {
         let damage = Math.random()*18 + 81 + target.additivePhysBonus // Rank6: 81-99 dmg

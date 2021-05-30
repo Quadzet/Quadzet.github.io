@@ -9,14 +9,14 @@ class Proc {
 
     }
 
-    handleEvent(source, target, event, events) {
+    handleEvent(source, target, event, events, futureEvents) {
         return;
     }
 
 }
 
 class ThunderfuryMH extends Proc {
-    handleEvent(source, target, event, eventList) {
+    handleEvent(source, target, event, eventList, futureEvents) {
         if (event.type == "damage" && !["OH Swing", "Shield Slam"].includes(event.name) && Globals.config.landedHits.includes(event.hit)) {
             let owner = Actors[source]
             let rng = Math.random()
@@ -43,7 +43,7 @@ class ThunderfuryMH extends Proc {
 }
 
 class ThunderfuryOH extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config,futureEvents) {
         if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
@@ -67,7 +67,7 @@ class ThunderfuryOH extends Proc {
 }
 
 class PerdsMH extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist [CITATION NEEDED] for the proc rate
@@ -89,7 +89,7 @@ class PerdsMH extends Proc {
 }
 
 class PerdsOH extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist 
@@ -111,7 +111,7 @@ class PerdsOH extends Proc {
 }
 
 class DeathbringerMH extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist
@@ -133,7 +133,7 @@ class DeathbringerMH extends Proc {
 }
 
 class DeathbringerOH extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist 
@@ -155,7 +155,7 @@ class DeathbringerOH extends Proc {
 }
 
 class MSA extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.0933*0.83) { // 0.83 derives from 17% chance to resist
@@ -177,7 +177,7 @@ class MSA extends Proc {
 }
 
 class GiftofArthasProc extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         let rng = Math.random();
         if (event.type == "damage" && event.source == "Boss") {
             if (rng < 0.3*0.83) { // 17% chance to resist
@@ -201,39 +201,44 @@ class WindfuryProc extends Proc {
     constructor(input) {
         super(input)
     }
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    handleEvent(source, target, event, eventList, futureEvents) {
+        if (event.type == "damage" && ["MH Swing", "Heroic Strike", "Cleave"].includes(event.name) && Globals.config.landedHits.includes(event.hit)) {
             let rng = Math.random()
-            if (rng < 0.2) {
+            // Don't proc off of itself
+            if (Actors[source].windfury == true) {
+                Actors[source].windfury = false   
+                return
+            }
+            if (rng < 1.2) {
                 let procEvent = {
                     "type": "extra attack",
-                    "source": event.ability,
-                    "ability": this.name,
+                    "source": source,
+                    "name": this.name,
                     "timestamp": event.timestamp,
                 }
-                events.push(procEvent);
+                eventList.push(procEvent);
 
                 // Ensure that the Windfury buff gets applied and that it resets MH swing timer
-                source.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
-                source.abilities.forEach(ability => {
-                    if (ability.name == "MH Swing") {
-                        events.push(ability.use(source, target))
-                    }
+                Actors[source].windfury = true
+                futureEvents.forEach(e => {
+                    if(e.type == "swingTimer" && e.source == source)
+                        e.timestamp = event.timestamp
                 })
+                sortDescending(futureEvents)
             }
         }
     }
 }
 
 class HoJProc extends Proc {
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, config, futureEvents) {
         if (event.type == "damage" && event.ability != "Sunder Armor" && config.landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.02) {
                 let procEvent = {
                     "type": "extra attack",
                     "source": event.ability,
-                    "ability": this.name,
+                    "name": this.name,
                     "timestamp": event.timestamp,
                 }
                 events.push(procEvent);

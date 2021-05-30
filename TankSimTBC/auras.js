@@ -168,7 +168,7 @@ class SunderArmorAura extends Aura {
             maxDuration: 30000,
             maxStacks: 5,
             scalingStacks: true,
-            armorMod: -450,
+            armorMod: 0//-520, Apply full stacks at pull instead
         })
     }
 }

@@ -17,6 +17,10 @@ class Actor {
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.defense = stats.defense
+        this.resilience = stats.resilience
+        this.crit = stats.crit
+        this.hit = stats.hit
+        this.crit = stats.crit
         this.block = stats.block
         this.GCD = 0
         this.onGCD = false
@@ -38,6 +42,7 @@ class Actor {
         // Special stuff
         this.IEA = false
         this.isHeroicStrikeQueued = false
+        this.windfury = false
 
     }
     
@@ -46,6 +51,12 @@ class Actor {
         // TODO: The boss obviously does not need Revenge logic
         if(event.type == "damage" && this.name == "Tank") {
 
+            // Procs
+            if(event.source == "Tank") {
+                this.procs.forEach(proc => {
+                    proc.handleEvent(event.source, event.target, event, eventList, futureEvents)
+                })
+            }
             // We might have just gotten rage to perform an action
             if(event.source == "Tank" && event.name == "MH Swing")
                 performAction(event.timestamp, this, eventList, futureEvents)
@@ -66,13 +77,6 @@ class Actor {
                 if(this.buffs["Shield Block"]) {
                     this.buffs["Shield Block"].removeStack(event.timestamp, this, eventList, futureEvents)
                 }
-            }
-
-            // Procs
-            if(event.source == "Tank") {
-                this.procs.forEach(proc => {
-                    proc.handleEvent(event.source, event.target, event, eventList)
-                })
             }
 
         // An ability came off cooldown, check if we should use it
@@ -130,12 +134,14 @@ class Actor {
 
     // *** old *** 
     getArmor() {
-        let percArmorMod = 1;
-        return Math.max(0, this.armor * percArmorMod);
+        return Math.max(0, this.armor);
     }
 
     getAP() {
         let AP = this.stats.AP;
+        if (this.windfury) {
+            AP += this.stats.bonuses.windfuryAP
+        }
         return AP;
     }
 

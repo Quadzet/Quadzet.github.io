@@ -18,6 +18,8 @@ function formatEvent(event) {
         output += `${event.owner}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} is refreshed by ${event.source}.`
     } else if(event["type"] == "spellCast") {
         output += `${event["source"]} casts ${event["name"]}.`
+    } else if(event["type"] == "extra attack") {
+        output += `${event["source"]} gains an extra attack from ${event["name"]}!`
 
     }
     return output

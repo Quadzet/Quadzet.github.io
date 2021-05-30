@@ -1,5 +1,6 @@
 "use strict";
 
+// TODO: verify parry haste for TBC
 // https://github.com/magey/classic-warrior/wiki/Parry-haste
 function getParryHastedSwingEnd(start, end, current) {
     let remaining = 1 - (current-start)/(end-start)
@@ -11,50 +12,25 @@ function getParryHastedSwingEnd(start, end, current) {
         return end
 }
 
-
-
 function getParryHastedSwing(current, base) {
     if (current/base > 0.6) return current/1.4;
     else if (current/base > 0.2) return current/(1 + current/base - 0.2);
     else return current;
 }
+
+// TODO: VERIFY ARMOR FORMULA
 function armorReduction(atkLvl, armor) {
-    return armor/(armor + 400 + (atkLvl*85));
-}
-
-// Lvl 60 Player hitting lvl 63 Boss
-function getGlanceMod(wepSkill) {
-    return Math.min(0.95, 0.65 + (wepSkill-300)*0.04);
-}
-
-function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
-    let baseMissChance = 0;
-    if (defSkill - atkSkill <= 10) {
-        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.1)
-        if(dualWield) {
-            return Math.max(0, baseMissChance*0.8 + 20 - hit)
-        } else {
-            return Math.max(0, baseMissChance - hit)
-        }
-    } else {
-        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.2)
-        if(dualWield) {
-            return Math.max(0, baseMissChance*0.8 + 20 - Math.max(0, hit + 1))
-        } else {
-            return Math.max(0, baseMissChance - Math.max(0, hit + 1))
-        }
-    }
+    return armor/(armor + 400 + 85*(atkLvl + 4.5*(atkLvl - 59)));
 }
 
 // Tank hitting the boss
 function twoRollTankBossTable(attacker, defender, damage) {
-    let wepSkill = attacker.stats.MHWepSkill;
-    let miss = getPlayerMissChance(wepSkill, defender.defense, attacker.stats.hit, false);
-    let parry = 14;
-    let dodge = defender.stats.dodge - 0.1 * (wepSkill - defender.defense);
+    let miss = Math.min(8, Math.max(0, 9 - attacker.hit))
+    let parry = Math.max(0, 14 - attacker.stats.expertise*0.25);
+    let dodge = Math.max(0, 6.5 - attacker.stats.expertise*0.25);
     let blockValue = defender.getBlockValue();
-    let block = Math.min(5, 5 + (defender.defense - wepSkill) * 0.1);
-    let crit = attacker.stats.crit - 0.04 * (wepSkill - 300) - 4.8;
+    let block = 5;
+    let crit = Math.max(0, attacker.crit - 4.8);
     let rng = 100*Math.random();
     let type = "";
     let damageEvent = {}
@@ -96,16 +72,14 @@ function twoRollTankBossTable(attacker, defender, damage) {
 
 // Tank hitting the boss
 function rollTankBossTable(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false) {
-    let wepSkill = attacker.stats.MHWepSkill;
-    if (OHSwing) wepSkill = attacker.stats.OHWepSkill;
-    let miss = getPlayerMissChance(wepSkill, defender.defense, attacker.stats.hit, dualWieldMiss);
-    let parry = 14;
-    let dodge = defender.stats.dodge - 0.1 * (wepSkill - defender.defense);
+    let miss = Math.min(8, Math.max(0, 9 - attacker.hit))
+    let parry = Math.max(0, 14 - attacker.stats.expertise*0.25);
+    let dodge = Math.max(0, 6.5 - attacker.stats.expertise*0.25);
     let blockValue = defender.getBlockValue();
-    let block = Math.min(5, 5 + (defender.defense - wepSkill) * 0.1);
-    let crit = attacker.stats.crit - 0.04 * (wepSkill - 300) - 4.8;
-    let glance = 40;
-    let glanceMod = getGlanceMod(wepSkill);
+    let block = 5;
+    let crit = Math.max(0, attacker.crit - 4.8);
+    let glance = 24;
+    let glanceMod = 0.75;
 
     let rng = 100*Math.random()
     let type = ""
@@ -147,14 +121,13 @@ function rollTankBossTable(attacker, defender, damage, yellow = false, dualWield
 
 // Boss hitting the tank
 function rollBossTankTable(attacker, defender, damage, yellow = false) {
-    let wepSkill = attacker.stats.MHWepSkill;
-    let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense));
-    let parry = defender.stats.parry - 0.04 * (wepSkill - defender.defense);
-    let dodge = defender.stats.dodge - 0.04 * (wepSkill - defender.defense);
+    let miss = Math.max(0, 5 + 0.04 * (defender.defense - 390));
+    let parry = defender.stats.parry - 0.6;
+    let dodge = defender.stats.dodge - 0.6;
     let blockValue = defender.getBlockValue();
-    let block = Math.max(0, defender.getBlock() + (wepSkill - defender.defense) * 0.04);
-    let crit  = Math.max(0, attacker.stats.crit + 0.04 * (wepSkill - defender.defense));
-    let crush = (wepSkill - Math.min(300, defender.defense)) * 2 - 15;
+    let block = Math.max(0, defender.getBlock() - 0.6);
+    let crit  = Math.max(0, 5 - 0.04 * (defender.defense - 390) - 0.025 * defender.resilience);
+    let crush = (390 - Math.min(375, defender.defense)) * 2 - 15;
 
 //    console.log(`miss: ${miss}   parry: ${parry}   dodge: ${dodge}   block: ${block}   crit: ${crit}   crush: ${crush}`)
 
@@ -200,8 +173,8 @@ function rollDpsBossTable(stats, damage, yellow = false) {
     return;
 }
 
-function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false, meleeSpell = false) {
+function rollAttack(attacker, defender, damage, yellow = false, meleeSpell = false) {
     if (meleeSpell == true) return twoRollTankBossTable(attacker, defender, damage);
-    else if (attacker.stats.type == "tank" && defender.stats.type == "boss") return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
+    else if (attacker.stats.type == "tank" && defender.stats.type == "boss") return rollTankBossTable(attacker, defender, damage, yellow);
     else if (attacker.stats.type == "boss" && defender.stats.type == "tank") return rollBossTankTable(attacker, defender, damage, yellow);
 }
