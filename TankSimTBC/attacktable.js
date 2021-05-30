@@ -127,7 +127,7 @@ function rollBossTankTable(attacker, defender, damage, yellow = false) {
     let blockValue = defender.getBlockValue();
     let block = Math.max(0, defender.getBlock() - 0.6);
     let crit  = Math.max(0, 5 - 0.04 * (defender.defense - 365) - 0.025 * defender.resilience);
-    let crush = (390 - Math.min(375, defender.defense)) * 2 - 15;
+    let crush = (365 - Math.min(350, defender.defense)) * 2 - 15;
 
 //    console.log(`miss: ${miss}   parry: ${parry}   dodge: ${dodge}   block: ${block}   crit: ${crit}   crush: ${crush}`)
 
