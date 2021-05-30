@@ -134,6 +134,8 @@ class Actor {
 
     // *** old *** 
     getArmor() {
+        if(this.name == "Tank" && this.armor < 10)
+            console.log(this.armor)
         return Math.max(0, this.armor);
     }
 
@@ -178,7 +180,20 @@ class Actor {
         this.additivePhysBonus = 0
         this.rageGained = 0
         this.rageSpent = 0
+        this.armor = this.stats.baseArmor
         this.uptimes = {}
+
+        this.threatMod = this.stats.threatMod
+        this.resilience = this.stats.resilience
+        this.hit = this.stats.hit
+        this.crit = this.stats.crit
+        this.block = this.stats.block
+        this.GCD = 0
+
+        this.IEA = false
+        this.isHeroicStrikeQueued = false
+        this.windfury = false
+
     }
 
 
