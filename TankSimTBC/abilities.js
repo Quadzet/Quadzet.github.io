@@ -89,8 +89,8 @@ class Autoattack extends Ability {
     use(timestamp, source, target, eventList, futureEvents) {
         let damageEvent = {}
         if(!source.windfury && source.isHeroicStrikeQueued && source.rage >= (15 - source.stats.talents.impHS - source.stats.talents.focusedrage)) {
-            this.staticThreat = 175
-            let damage = this.weaponSwingRoll(source) + target.additivePhysBonus + 157
+            this.staticThreat = 194
+            let damage = this.weaponSwingRoll(source) + target.additivePhysBonus + 176
             damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
             damageEvent = rollAttack(source, target, damage, true)
 
@@ -144,7 +144,7 @@ class Autoattack extends Ability {
 
 class ShieldSlam extends Ability {
     constructor() {
-        super("Shield Slam", 6000, 20, true, 254, 1)
+        super("Shield Slam", 6000, 20, true, 305, 1)
     }
 
     use(timestamp, source, target, eventList, futureEvents) {
@@ -175,15 +175,17 @@ class Devastate extends Ability {
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
         let damageEvent = rollAttack(source, target, damage, true, false, false, true)
         let threat = 0
-        if(!["miss", "parry", "dodge"].includes(damageEvent.hit))
-            threat = (damageEvent.amount + stacks == 5 ? 0 : 261)*source.stats.threatMod
+        if(!["miss", "parry", "dodge"].includes(damageEvent.hit) && !Globals.config.IEA)
+            threat = (damageEvent.amount + 100 + ((stacks == 5) ? 0 : 305.1))*source.stats.threatMod
+        else
+            (damageEvent.amount + 100)*source.stats.threatMod
         damageEvent.threat = threat
         damageEvent.name = this.name
         damageEvent.timestamp = timestamp
 
         eventList.push(damageEvent)
 
-        if(!["miss", "parry", "dodge"].includes(damageEvent.hit))
+        if(!["miss", "parry", "dodge"].includes(damageEvent.hit) && !Globals.config.IEA)
             target.applyAura(timestamp, "Sunder Armor", source.name, eventList, futureEvents, false)
 
         source.onGCD = true
@@ -205,7 +207,7 @@ class Devastate extends Ability {
 
 class Revenge extends Ability {
     constructor() {
-        super("Revenge", 5000, 5, true, 270, 2.25)
+        super("Revenge", 5000, 5, true, 200, 1)
     }
 
     isUsable(timestamp, source) {
@@ -215,8 +217,7 @@ class Revenge extends Ability {
         return defensiveState && this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && (source.rage >= this.rageCost - source.stats.talents.focusedrage)
     }
     use(timestamp, source, target, eventList, futureEvents) {
-        let damage = Math.random()*18 + 81 + target.additivePhysBonus // Rank6: 81-99 dmg
-        damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0
+        let damage = Math.random()*75 + 343 + target.additivePhysBonus // Rank6: 81-99 dmg
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
         let damageEvent = rollAttack(source, target, damage, true, false, false, true)
 

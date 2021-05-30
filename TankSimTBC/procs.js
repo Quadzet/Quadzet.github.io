@@ -32,7 +32,7 @@ class ThunderfuryMH extends Proc {
                     hit: "hit",
                     timestamp: event.timestamp,
                     amount: damage, 
-                    threat: (126 + damage*0.5)*owner.threatMod,
+                    threat: (63 + damage*0.5)*owner.threatMod,
                 }
                 eventList.push(procEvent);
                 // Ensure that the target the get debuff applied
