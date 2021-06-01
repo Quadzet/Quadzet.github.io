@@ -175,10 +175,11 @@ class Devastate extends Ability {
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
         let damageEvent = rollAttack(source, target, damage, true, false, false, true)
         let threat = 0
-        if(!["miss", "parry", "dodge"].includes(damageEvent.hit) && !Globals.config.IEA)
-            threat = (damageEvent.amount + 100 + ((stacks == 5) ? 0 : 305.1))*source.stats.threatMod
-        else
-            (damageEvent.amount + 100)*source.stats.threatMod
+        if(!["miss", "parry", "dodge"].includes(damageEvent.hit))
+            threat = (damageEvent.amount + 100)*source.stats.threatMod
+            if(!Globals.config.IEA && stacks < 5)
+                threat += 301.5*source.stats.threatMod
+
         damageEvent.threat = threat
         damageEvent.name = this.name
         damageEvent.timestamp = timestamp
