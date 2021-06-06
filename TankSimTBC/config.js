@@ -545,6 +545,7 @@ function updateStats()
         },
         // Calc Settings and other globals
         config: {
+            playerNormSwing: document.querySelector("#dagger").checked ? 1700 : 2400,
             landedHits: ["hit", "crit", "block", "crit block", "glance"],
             //timeStep: 25, // Timestep used for each fight
             simDuration: Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10, // Fight duration in seconds

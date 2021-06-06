@@ -171,7 +171,7 @@ class Devastate extends Ability {
         if(target.debuffs["Sunder Armor"])
             stacks = target.debuffs["Sunder Armor"].stacks
 
-        let damage = 0.5 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.MHSwing/(14*1000)) + stacks * 35
+        let damage = 0.5 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*Globals.config.playerNormSwing/(14*1000)) + stacks * 35
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
         let damageEvent = rollAttack(source, target, damage, true, false, false, true)
         let threat = 0
