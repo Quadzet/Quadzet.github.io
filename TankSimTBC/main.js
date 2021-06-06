@@ -74,6 +74,7 @@ function saveInput()
     localStorage.setItem("windfury", document.querySelector("#windfury").checked)
 
     localStorage.setItem("TF", document.getElementById("TF").checked)
+    localStorage.setItem("dagger", document.getElementById("dagger").checked)
 
     // Consumes
     localStorage.setItem("fortification", document.getElementById("fortification").checked)
@@ -154,6 +155,7 @@ function loadInput()
     document.querySelector("#windfury").checked = localStorage.getItem("windfury") == "true" ? true : false;
 
     document.getElementById("TF").checked = localStorage.getItem("TF") == "true" ? true : false;
+    document.getElementById("dagger").checked = localStorage.getItem("dagger") == "true" ? true : false;
 
     // Consumes
     document.getElementById("fortification").checked = localStorage.getItem("fortification") == "true" ? true : false;
