@@ -209,7 +209,7 @@ class WindfuryProc extends Proc {
                 Actors[source].windfury = false   
                 return
             }
-            if (rng < 1.2) {
+            if (rng < 0.2) {
                 let procEvent = {
                     "type": "extra attack",
                     "source": source,
