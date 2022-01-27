@@ -377,6 +377,44 @@ class QuelMH extends Aura {
     }
 }
 
+class FelstrikerMH extends Aura {
+    handleEvent(owner, event, events, config) {
+        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: event.timestamp,
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
+                    });
+            }
+        }
+    }
+}
+
+class FelstrikerOH extends Aura {
+    handleEvent(owner, event, events, config) {
+        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
+                this.duration = this.maxDuration;
+                events.push({
+                    type: "buff gained",
+                    timestamp: event.timestamp,
+                    name: this.name,
+                    stacks: this.stacks,
+                    source: this.source,
+                    target: this.target,
+                    });
+            }
+        }
+    }
+}
+
 class ThunderfuryDebuff extends Aura {
     constructor(input) {
         super(input);
@@ -757,6 +795,30 @@ if(globals.tankStats.weapons.qsMH) {
         maxDuration: 10000,
         armorMod: 300,
         defenseMod: 13,
+        trackUptime: true,
+
+        target: "Tank",
+        source: "Tank",
+    }))
+}
+
+if(globals.tankStats.weapons.fsMH) {
+    tankAuras.push(new FelstrikerMH({
+        name: "Felstriker MH",
+        maxDuration: 300,
+        critMod: 100,
+        trackUptime: true,
+
+        target: "Tank",
+        source: "Tank",
+    }))
+}
+
+if(globals.tankStats.weapons.fsOH) {
+    tankAuras.push(new FelstrikerOH({
+        name: "Felstriker OH",
+        maxDuration: 300,
+        critMod: 100,
         trackUptime: true,
 
         target: "Tank",

@@ -56,6 +56,7 @@ let weaponlists = {
     <option value="Dragonfang Blade">Dragonfang Blade</option>
     <option value="Emerald Dragonfang">Emerald Dragonfang</option>
     <option value="Fang of the Faceless">Fang of the Faceless</option>
+    <option value="Felstriker">Felstriker</option>
     <option value="Finkle's Skinner">Finkle's Skinner</option>
     <option value="Glacial Blade">Glacial Blade</option>
     <option value="Gutgore Ripper">Gutgore Ripper</option>
@@ -565,6 +566,8 @@ function updateStats()
                 eskMH: mainhand == "Eskhandar's Right Claw",
                 msaMH: mainhand == "Misplaced Servo Arm",
                 msaOH: offhand == "Misplaced Servo Arm",
+				fsMH : mainhand == "Felstriker" ,
+				fsOH : offhand == "Felstriker",
             },
 
             trinkets: {
