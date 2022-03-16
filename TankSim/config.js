@@ -407,6 +407,7 @@ function updateStats()
     let extradefense     = Number(document.getElementById("playerextradefense").value);
     let extramhskill     = Number(document.getElementById("playerextramhskill").value);
     let extraohskill     = Number(document.getElementById("playerextraohskill").value);
+    let extrahaste       = Number(document.getElementById("playerextrahaste").value);
 
     // Set bonuses
     if(mainhand == "Dal'Rend's Sacred Charge" && offhand == "Dal'Rend's Tribal Guardian") attackpower += 50;
@@ -459,6 +460,9 @@ function updateStats()
     block = _dualWield ? 0 : block
     blockvalue = _dualWield ? 0 : blockvalue
 
+    let hastePerc = extrahaste + (document.getElementById("headenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("legenchant").value == "Libram of Rapidity" ? 1 : 0) + ( document.getElementById("handenchant").value == "Minor Haste" ? 1 : 0);
+        hastePerc += _wcb ? 15 : 0;
+
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
     document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)} `;
@@ -474,6 +478,7 @@ function updateStats()
     document.getElementById("playerdefense").innerHTML = `${defense + 300} `;
     document.getElementById("playermhskill").innerHTML = `${mhwepskill} `;
     document.getElementById("playerohskill").innerHTML = `${ohwepskill} `;
+    document.getElementById("playerhaste").innerHTML = `${hastePerc} `;
 
     // Add stat deltas to stats, note str -> ap/blockvalue interaction not accounted for.
     strength += extrastrength;
@@ -511,7 +516,7 @@ function updateStats()
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: document.querySelector("#dmf").checked ? 0.99 : 0.9, // Defensive Stance + dmf
             physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
-            hastePerc: _wcb ? 15 : 0, 
+            hastePerc: hastePerc, 
             AP: attackpower + strength*2,
             crit: crit,
             spellcrit: spellcrit,
