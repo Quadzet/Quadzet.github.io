@@ -511,7 +511,7 @@ function updateStats()
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: document.querySelector("#dmf").checked ? 0.99 : 0.9, // Defensive Stance + dmf
             physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
-            hastePerc: _wcb ? 15 : 0, 
+            hastePerc: _wcb ? 15 : 0 + (document.getElementById("headenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("legenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("handenchant").value == "Minor Haste" ? 1 : 0),
             AP: attackpower + strength*2,
             crit: crit,
             spellcrit: spellcrit,
