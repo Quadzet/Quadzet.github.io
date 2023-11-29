@@ -1,0 +1,13 @@
+ - attacktable
+ - abilities (ranks?)
+ - runes
+ - enemy target stats..
+ - gear
+ - enchants
+
+
+ - scalea parry etc korrekt med level, eller sätt bosslevel = level + 3 alltid?
+
+
+start "C:\Program Files\BraveSoftware\Brave-Browser\Application\Brave.exe" --allow-file-access-from-files
+file:///E:/Code/PullSimIO/TankSimSoD/index.html
