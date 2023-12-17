@@ -9,137 +9,32 @@
 */
 
 let weaponlists = {
-    "Shields": `
-    <option value="Aegis of the Blood God">Aegis of the Blood God</option>
-    <option value="Blessed Qiraji Bulwark">Blessed Qiraji Bulwark</option>
-    <option value="Buru's Skull Fragment">Buru's Skull Fragment</option>
-    <option value="Draconian Deflector">Draconian Deflector</option>
-    <option value="Drillborer Disk">Drillborer Disk</option>
-    <option value="Earthen Guard">Earthen Guard</option>
-    <option value="Elementium Reinforced Bulwark">Elementium Reinforced Bulwark</option>
-    <option value="Grand Marshal's Aegis">Grand Marshal's Aegis</option>
-    <option value="High Warlord's Shield Wall">High Warlord's Shield Wall</option>
-    <option value="Stygian Buckler">Stygian Buckler</option>
-    <option value="The Face of Death">The Face of Death</option>
-    <option value="The Immovable Object">The Immovable Object</option>
-    <option value="The Plague Bearer">The Plague Bearer</option>`,
+    "Shields": `<option value="None">None</option>
+    <option value="Commander's Crest">Commander's Crest</option>`,
     
-    "Axes": `<option value="Ancient Hakkari Manslayer">Ancient Hakkari Manslayer</option>
-    <option value="Annihilator">Annihilator</option>
-    <option value="Axe of the Deep Woods">Axe of the Deep Woods</option>
-    <option value="Blessed Qiraji War Axe">Blessed Qiraji War Axe</option>
-    <option value="Bone Slicing Hatchet">Bone Slicing Hatchet</option>
-    <option value="Crul'Shorukh, Edge of Chaos">Crul'Shorukh, Edge of Chaos</option>
-    <option value="Dark Iron Destroyer">Dark Iron Destroyer</option>
-    <option value="Deathbringer">Deathbringer</option>
-    <option value="Doom's Edge">Doom's Edge</option>
-    <option value="Flurry Axe">Flurry Axe</option>
-    <option value="Frostbite">Frostbite</option>
-    <option value="Hatchet of Sundered Bone">Hatchet of Sundered Bone</option>
-    <option value="Iceblade Hacker">Iceblade Hacker</option>
-    <option value="R14 Axe">R14 Axe</option>
-    <option value="Rivenspike">Rivenspike</option>
-    <option value="Serathil">Serathil</option>
-    <option value="Sickle of Unyielding Strength">Sickle of Unyielding Strength</option>
-    <option value="Soulrender">Soulrender</option>
-    <option value="Zulian Hacker of Strength">Zulian Hacker of Strength</option>
-    <option value="Zulian Hacker of the Tiger">Zulian Hacker of the Tiger</option>`,
+    "Axes": `
+    `,
 
-    "Daggers": `<option value="Alcor's Sunrazor">Alcor's Sunrazor</option>
-    <option value="Black Amnesty">Black Amnesty</option>
-    <option value="Blessed Qiraji Pugio">Blessed Qiraji Pugio</option>
-    <option value="Bonescraper">Bonescraper</option>
-    <option value="Core Hound Tooth">Core Hound Tooth</option>
-    <option value="Darrowspike">Darrowspike</option>
-    <option value="Death's Sting">Death's Sting</option>
-    <option value="Distracting Dagger">Distracting Dagger</option>
-    <option value="Dragonfang Blade">Dragonfang Blade</option>
-    <option value="Emerald Dragonfang">Emerald Dragonfang</option>
-    <option value="Fang of the Faceless">Fang of the Faceless</option>
-    <option value="Finkle's Skinner">Finkle's Skinner</option>
-    <option value="Glacial Blade">Glacial Blade</option>
-    <option value="Gutgore Ripper">Gutgore Ripper</option>
-    <option value="Harbinger of Doom">Harbinger of Doom</option>
-    <option value="Heartseeker">Heartseeker</option>
-    <option value="R14 Dagger">R14 Dagger</option>
-    <option value="Kingsfall">Kingsfall</option>
-    <option value="Maexxna's Fang">Maexxna's Fang</option>
-    <option value="Perdition's Blade">Perdition's Blade</option>
-    <option value="Qiraji Sacrificial Dagger">Qiraji Sacrificial Dagger</option>
-    <option value="Scarlet Kris">Scarlet Kris</option>
-    <option value="Scout's Blade">Scout's Blade</option>
-    <option value="Shadowsong's Sorrow">Shadowsong's Sorrow</option>
-    <option value="The Lobotomizer">The Lobotomizer</option>
-    <option value="The Thunderwood Poker">The Thunderwood Poker</option>`,
+    "Daggers": `
+    `,
 
     "Fists": `
-    <option value="Claw of the Black Drake">Claw of the Black Drake</option>
-    <option value="Claw of the Frost Wyrm">Claw of the Frost Wyrm</option>
-    <option value="Eskhandar's Right Claw">Eskhandar's Right Claw</option>
-    <option value="R14 Claw">R14 Claw</option>
-    <option value="Lefty's Brass Knuckle">Lefty's Brass Knuckle</option>
-    <option value="Silithid Claw">Silithid Claw</option>
-    <option value="Willey's Back Scratcher">Willey's Back Scratcher</option>`,
+    `,
 
-    "Maces": `<option value="Anubisath Warhammer">Anubisath Warhammer</option>
-    <option value="Blessed Qiraji War Hammer">Blessed Qiraji War Hammer</option>
-    <option value="Ebon Hand">Ebon Hand</option>
-    <option value="Empyrean Demolisher">Empyrean Demolisher</option>
-    <option value="Ironfoe">Ironfoe</option>
-    <option value="Hammer of Bestial Fury">Hammer of Bestial Fury</option>
-    <option value="R14 Hammer">R14 Hammer</option>
-    <option value="Mass of McGowan">Mass of McGowan</option>
-    <option value="Misplaced Servo Arm">Misplaced Servo Arm</option>
-    <option value="Persuader">Persuader</option>
-    <option value="Sand Polished Hammer">Sand Polished Hammer</option>
-    <option value="Sceptre of Smiting">Sceptre of Smiting</option>
-    <option value="Spineshatter">Spineshatter</option>
-    <option value="Stormstrike Hammer">Stormstrike Hammer</option>
-    <option value="The Castigator">The Castigator</option>
-    <option value="Timeworn Mace">Timeworn Mace</option>`,
+    "Maces": `
+    `,
 
-    "Swords": `<option value="Ancient Qiraji Ripper">Ancient Qiraji Ripper</option>
-    <option value="Blackguard">Blackguard</option>
-    <option value="Bloodlord's Defender">Bloodlord's Defender</option>
-    <option value="Brutality Blade">Brutality Blade</option>
-    <option value="Cho'Rush's Blade">Cho'Rush's Blade</option>
-    <option value="Chromatically Tempered Sword">Chromatically Tempered Sword</option>
-    <option value="Cold Forged Blade">Cold Forged Blade</option>
-    <option value="Dal'Rend's Sacred Charge">Dal'Rend's Sacred Charge</option>
-    <option value="Dal'Rend's Tribal Guardian">Dal'Rend's Tribal Guardian</option>
-    <option value="Dark Iron Reaver">Dark Iron Reaver</option>
-    <option value="Fiery Retributor">Fiery Retributor</option>
-    <option value="Gressil, Dawn of Ruin">Gressil, Dawn of Ruin</option>
-    <option value="Iblis, Blade of the Fallen Seraph">Iblis, Blade of the Fallen Seraph</option>
-    <option value="Krol Blade">Krol Blade</option>
-    <option value="Lord General's Sword">Lord General's Sword</option>
-    <option value="Maladath">Maladath</option>
-    <option value="Mirah's song">Mirah's song</option>
-    <option value="Nightmare Blade">Nightmare Blade</option>
-    <option value="Quel'Serrar">Quel'Serrar</option>
-    <option value="R14 Longsword">R14 Longsword</option>
-    <option value="R14 Swift Blade">R14 Swift Blade</option>
-    <option value="Ravencrest's Legacy">Ravencrest's Legacy</option>
-    <option value="Ravenholdt Slicer">Ravenholdt Slicer</option>
-    <option value="Skullforge Reaver">Skullforge Reaver</option>
-    <option value="Sword of Zeal">Sword of Zeal</option>
-    <option value="Zulian Slicer">Zulian Slicer</option>
-    <option value="The Hungering Cold">The Hungering Cold</option>
-    <option value="Thunderfury">Thunderfury</option>
-    <option value="Warblade of the Hakkari (MH)">Warblade of the Hakkari (MH)</option>
-    <option value="Warblade of the Hakkari (OH)">Warblade of the Hakkari (OH)</option>
-    <option value="Widow's Remorse">Widow's Remorse</option>
-    <option value="Vis'kag the Bloodletter">Vis'kag the Bloodletter</option>`,
+    "Swords": `<option value="None">None</option>
+    <option value="Legionnaire's Sword">Legionnaire's Sword</option>`,
 }
 
 let ohenchantlist = {
     weapon: `<option value="None">None</option>
-        <option value="Agility">Agility</option>
-        <option value="Crusader">Crusader</option>
-        <option value="Strength">Strength</option>`,
+    `,
 
     shield: `<option value="None">None</option>
-        <option value="Greater Stamina">Greater Stamina</option>`,
+    <option value="Minor Stamina">Minor Stamina</option>
+    `,
 }
 
 function updateMHWeaponList(doUpdateStats)
@@ -169,6 +64,45 @@ function updateOHWeaponList(doUpdateStats)
     if(doUpdateStats) updateStats();
 }
 
+function getFFArmor(level) {
+  if (level < 18) return 0;
+  else if (level < 30) return 175;
+  else if (level < 42) return 285;
+  else if (level < 54) return 395;
+  else return 505;
+}
+function getCoRArmor(level) {
+  if (level < 14) return 0;
+  else if (level < 28) return 140;
+  else if (level < 42) return 290;
+  else if (level < 56) return 465;
+  else return 640;
+}
+function getHomunArmor(level) {
+  return 1025; // TODO: other levels I guess lol
+}
+
+// Note: Only with 2/2 imp expose
+function getIEAArmor(level) {
+  if (level < 14) return 0;
+  else if (level < 26) return 600;
+  else if (level < 36) return 1087.5;
+  else if (level < 46) return 1575;
+  else if (level < 56) return 2062.5;
+  else return 2550;
+}
+
+function getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, armor) {
+  armor = armor ? armor : 0;
+  if (bossLevel == 27) armor = 1108;
+  if (CoR) armor -= getCoRArmor(level);
+  if (faerieFire) armor -= getFFArmor(level);
+  if (IEA && homunculi) armor -= Math.max(getHomunArmor(level), getIEAArmor(level));
+  else if (IEA) armor -= getIEAArmor(level);
+  else if (homunculi) armor -= getHomunArmor(level);
+  armor = Math.max(0, armor);
+  return armor;
+}
 
 function updateStats()
 {
@@ -266,7 +200,7 @@ function updateStats()
     let defense = Math.round(anticipation*2);
     let block = 0;
     let blockvalue = 0;
-    let extrahp = 1509; // Base hp for all races
+    let extrahp = 94; // Base hp for all races
 
     let mhmin = weapons[mainhand].min;
     let mhmax = weapons[mainhand].max;
@@ -294,8 +228,8 @@ function updateStats()
         blockvalue += item.blockvalue;
     })
 
-    let mhwepskill = 300;
-    let ohwepskill = _dualWield ? 300 : 0;
+    let mhwepskill = level * 5;
+    let ohwepskill = _dualWield ? level * 5 : 0;
     let mhweapontype = document.getElementById("mhweptypelist").value
     let ohweapontype = document.getElementById("ohweptypelist").value
 
@@ -369,14 +303,14 @@ function updateStats()
     attackpower += document.getElementById("trueshot").checked ? 100 : 0;
 
     let mark = document.getElementById("mark").checked; // Assumed to be improved
-    stamina += mark ? 16 : 0;
-    agility += mark ? 16 : 0;
-    strength += mark ? 16 : 0;
-    attackpower += document.getElementById("might").checked ? 222 : 0; // Assumed improved
-    attackpower += document.getElementById("bshout").checked ? 290 : 0; // Assumed improved
+    stamina += mark ? 4 : 0; // Imp mark of the wild affects these?
+    agility += mark ? 4 : 0;
+    strength += mark ? 4 : 0;
+    attackpower += document.getElementById("might").checked ? 66 : 0; // Assumed improved
+    attackpower += document.getElementById("bshout").checked ? 60 : 0; 
 
-    stamina += document.getElementById("fortitude").checked ? 70 : 0; // Assumed improved
-    stamina += document.getElementById("bloodpact").checked ? 42 : 0;
+    stamina += document.getElementById("fortitude").checked ? 26 : 0; // Assumed improved
+    stamina += document.getElementById("bloodpact").checked ? 9 : 0;
     
     attackpower += document.getElementById("dragonslayer").checked ? 140 : 0;
     crit += document.getElementById("dragonslayer").checked ? 5 : 0;
@@ -390,8 +324,8 @@ function updateStats()
     spellcrit += document.getElementById("dmspell").checked ? 3 : 0;
     spellcrit += document.getElementById("songflower").checked ? 5 : 0;
 
-    strength += document.getElementById("strofearth").checked ? 77 : 0;
-    agility += document.getElementById("graceofair").checked ? 77 : 0;
+    strength += document.getElementById("strofearth").checked ? 20 : 0;
+    agility += document.getElementById("graceofair").checked ? 20 : 0;
 
     // Stat deltas input by user
     let extrastrength    = Number(document.getElementById("playerextrastrength").value);
@@ -432,7 +366,7 @@ function updateStats()
     armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
     armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
     armor += document.getElementById("armorelixir").checked ? 450 : 0;
-    armor += mark ? Math.floor(384.75) : 0;
+    armor += mark ? Math.floor(141.75) : 0;
 
     let staminaMultiplier = (document.getElementById("dmstamina").checked ? 1.15 : 1)*(document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
     let strengthMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
@@ -441,8 +375,6 @@ function updateStats()
     extrastamina *= staminaMultiplier;
     extrastrength *= strengthMultiplier;
     extraagility *= agilityMultiplier;
-    console.log(`${extraagility}, ${agilityMultiplier}`)
-    console.log(`${extrastrength}, ${strengthMultiplier}`)
 
     extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
@@ -451,10 +383,10 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
-    crit = crit + cruelty + agility/20 + (mhwepskill-300)*0.04
+    crit = crit + cruelty + agility/9 + (mhwepskill-(level * 5))*0.04
 
     parry += 5 + deflection + defense*0.04
-    dodge += agility/20 + defense*0.04
+    dodge += agility/9 + defense*0.04
     block += shieldspec + 5 + defense*0.04
     blockvalue += strength/20
 
@@ -476,7 +408,7 @@ function updateStats()
     document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)} `;
     document.getElementById("playerparry").innerHTML = `${Math.round((parry)*100)/100} `;
     document.getElementById("playerdodge").innerHTML = `${Math.round((dodge)*100)/100} `;
-    document.getElementById("playerdefense").innerHTML = `${defense + 300} `;
+    document.getElementById("playerdefense").innerHTML = `${defense + level * 5} `;
     document.getElementById("playermhskill").innerHTML = `${mhwepskill} `;
     document.getElementById("playerohskill").innerHTML = `${ohwepskill} `;
     document.getElementById("playerhaste").innerHTML = `${hastePerc} `;
@@ -493,17 +425,25 @@ function updateStats()
     dodge += extradodge + extraagility/20;
     defense += extradefense;
     block += extrablock;
-    blockvalue += extrablockvalue + extrastrength;
+    blockvalue += extrablockvalue + extrastrength/20;
     mhwepskill += extramhskill;
     ohwepskill += extraohskill;
 
-    
+    let bossLevel = Number(document.querySelector("#level").value) + Number(document.querySelector("#bossLevel").value)
+    let CoR = document.querySelector("#curseofrecklessness").checked;
+    let IEA = document.querySelector("#iea").checked;
+    let faerieFire = document.querySelector("#faeriefire").checked;
+    let homunculi = document.querySelector("#homunculi").checked;
+    let bossArmor = Number(document.querySelector("#bossarmor").value);
+    bossArmor = getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, bossArmor);
+
     let globals = {
         tankStats: {
             type: "tank",
-            level: 60,
+            level: Number(document.querySelector("#level").value),
 
             dualWield: _dualWield,
+            playerNormSwing: document.querySelector("#mhweptypelist") == "Daggers" ? 1700: 2400,
 
             MHMin: mhmin,
             MHMax: mhmax,
@@ -527,7 +467,7 @@ function updateStats()
             dodge: dodge,
             block: block,
             blockValue: blockvalue,
-            defense: 300 + defense,
+            defense: level * 5 + defense,
             baseArmor: armor,
             baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
             
@@ -535,7 +475,6 @@ function updateStats()
             critMod: 2 + impale*0.1,
 
             startRage: _startRage,
-            bshouttargets: Number(document.getElementById("bshouttargets").value),
 
             staminaMultiplier: staminaMultiplier,
             strengthMultiplier: strengthMultiplier,
@@ -547,6 +486,7 @@ function updateStats()
                 shieldslam: document.getElementById("shieldslam").checked,
                 flurry: Number(document.getElementById("flurry").value),
                 enrage: Number(document.getElementById("enrage").value),
+                deepWounds: Number(document.getElementById("deepWounds").value),
                 deflection: deflection,
                 cruelty: cruelty,
                 anticipation: anticipation,
@@ -597,31 +537,42 @@ function updateStats()
                 crusaderOH: ohwepenchant == "Crusader",
                 windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
                 mrp: _mrp,
+            },
+
+            runes: {
+              devastate: document.getElementById("devastate").checked,
+              endlessRage: document.getElementById("endlessRage").checked,
+              // quickStrike: document.getElementById("quickStrike").checked,
+              consumedByRage: document.getElementById("consumedByRage").checked,
+              furiousThunder: document.getElementById("furiousThunder").checked,
+              flagellation: document.getElementById("flagellation").checked,
+              ragingBlow: document.getElementById("ragingBlow").checked,
+              bloodFrenzy: document.getElementById("bloodFrenzy").checked,
             }
             
         },
         
         bossStats: {
             type: "boss",
-            level: document.querySelector("#level").value,
+            level: bossLevel, 
             
             MHMin: Number(document.querySelector("#swingMin").value),
             MHMax: Number(document.querySelector("#swingMax").value),
             MHSwing: Number(document.querySelector("#swingTimer").value)*1000,
             
-            MHWepSkill: 315,
+            MHWepSkill: level * 5 + 15, // TODO: Boss level
             damageMod: 0.9, // Defensive Stance
             physDmgMod: 1,
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,
-            blockValue: 47,
+            blockValue: Math.min(0, bossLevel - 15), // Not confirmed, seems to more or less match at lvl 27 and 63.
             
-            parry: 12.5, // 14%  with skilldiff
-            dodge: 5,    // 6.5% with skilldiff
+            parry: 5,
+            dodge: 5,
             block: 5,
-            defense: 315,
-            baseArmor: Number(document.querySelector("#bossarmor").value),
+            defense: level * 5 + 15,
+            baseArmor: bossArmor, 
             
             critMod: 2,
             threatMod: 0,
@@ -630,18 +581,9 @@ function updateStats()
         // Calc Settings and other globals
         config: {
             landedHits: ["hit", "crit", "block", "crit block", "glance"],
-            timeStep: 25, // Timestep used for each fight
             simDuration: Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10, // Fight duration in seconds
             iterations:  Number(document.querySelector("#iterations").value), // Number of fights simulated
-            snapshotLen: 400, // By god given
-            breakpointValue:  Number(document.querySelector("#TBPvalue").value),
-            breakpointTime: Math.round(Number(document.querySelector("#TBPtime").value)*1000/25)*25,
 
-            CoR: document.querySelector("#curseofrecklessness").checked,
-            IEA: document.querySelector("#iea").checked,
-            faerieFire: document.querySelector("#faeriefire").checked,
-            debuffDelay: Number(document.querySelector("#debuffdelay").value)*1000,
-            ieadelay: Number(document.querySelector("#ieadelay").value)*1000,
         },
     }
     return globals;

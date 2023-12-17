@@ -256,6 +256,29 @@ class HoJProc extends Proc {
     }
 }
 
+class BloodFrenzyProc extends Proc {
+    handleEvent(source, target, event, events, config) {
+        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+            let rng = Math.random()
+            if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
+                rng = Math.random(); // Two-roll
+                let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
+                let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
+                let procEvent = {
+                    "type": "damage",
+                    "ability": this.name,
+                    "hit": "hit",
+                    "timestamp": event.timestamp,
+                    "damage": damage, 
+                    "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
+                }
+                events.push(procEvent);
+                // Ensure that the target the get debuff applied
+                target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
+            }
+        }
+    }
+}
 
 function getTankProcs(globals) {
     let ret = []

@@ -1,21 +1,29 @@
 "use strict";
 class Actor {
-    constructor(name, target, abilities, stats, auras, procs) {
-        this.stats = stats
+    // constructor(name, target, abilities, stats, procs) {
+    constructor(name, stats, abilities, procs) {
         this.name = name
-        this.target = target
+        this.stats = stats
         this.abilities = abilities
+
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
-        this.additivePhysBonus = 0; // Gift of Arthas
+        this.additivePhysBonus = 0; // eg Gift of Arthas
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.defense = stats.defense
+        this.crit = stats.crit
+        this.hit = stats.hit
+        this.block = stats.block
         this.GCD = 0
+        this.onGCD = false
         this.rage = stats.startRage
 
-        this.auras = auras
+        if (this.name == "Tank") this.auras = TankAuras(stats);
+        else if (this.name == "Boss") this.auras = BossAuras();
         this.procs = procs
+        // this.buffs = 
+        // this.debuffs = {}
         
         this.uptimes = {}
         
@@ -29,7 +37,153 @@ class Actor {
         // Special stuff
         this.IEA = false
         this.isHeroicStrikeQueued = false
-        
+        this.windfury = false
+    }
+
+    handleEvent(event, eventList, futureEvents) {
+        // Auras
+        this.auras.forEach(aura => {
+          aura.handleEvent(event, this, this.target, eventList, futureEvents);
+        })
+
+        if(event.type == "damage" && this.name == "Tank") {
+
+            // Procs
+            if(event.source == "Tank") {
+                this.procs.forEach(proc => {
+                    proc.handleEvent(event.source, event.target, event, eventList, futureEvents)
+                })
+            }
+            // We might have just gotten rage to perform an action
+            if(event.source == "Tank" && event.name == "MH Swing")
+                performAction(event.timestamp, this, this.target, eventList, futureEvents)
+
+        // An ability came off cooldown, check if we should use it
+        } else if(event.type == "cooldownFinish" && !this.onGCD) {
+          performAction(event.timestamp, this, this.target, eventList, futureEvents)
+        } else if (event.type == "rage" && this.name == "Tank") {
+          this.addRage(event.amount);
+          // log_message("Tank gains " + event.amount.toFixed(2) + " rage from " + event.name + ". It now has " + this.rage.toFixed(2) + " rage.")
+        }
+
+        // Parry haste
+        if(event.type == "damage" && event.target == this.name && event.hit == "parry") {
+            futureEvents.forEach(e => {
+                if(e.type == "swingTimer" && e.source == this.name)
+                    e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+            })
+            sortDescending(futureEvents)
+        }
+
+        // Placeholder for if we just got rage to be able to take an action
+        if(!this.onGCD) {
+            performAction(event.timestamp, this, this.target, eventList, futureEvents)
+        }
+    }
+
+    // applyAura(timestamp, name, source, eventList, futureEvents, isBuff = true) {
+    //     if(isBuff) {
+    //         if(this.buffs[name]) {
+    //             this.buffs[name].refresh(timestamp, this.name, eventList, futureEvents)
+    //         }
+    //         else {
+    //             let buff = Buffs[name]
+    //             buff.apply(timestamp, this.name, source, eventList, futureEvents)
+    //         }
+    //     }
+    //     else {
+    //         if(this.debuffs[name]) {
+    //             this.debuffs[name].refresh(timestamp, this.name, eventList, futureEvents)
+    //         }
+    //         else {
+    //             let debuff = Debuffs[name]
+    //             debuff.apply(timestamp, this.name, source, eventList, futureEvents)
+    //         }
+    //     }
+    // }
+
+
+
+    addRage(rage, add=false) {
+        this.rage = Math.max(0, Math.min(100, this.rage + rage))
+    }
+
+    getSwingTimer() {
+        return this.stats.MHSwing/(1+this.hastePerc/100)
+    }
+
+    // *** old *** 
+    getArmor() {
+        // if(this.name == "Tank" && this.armor < 10)
+        //     console.log(this.armor)
+        return Math.max(0, this.armor);
+    }
+
+    getAP() {
+        let AP = this.stats.AP;
+        if (this.windfury) {
+            AP += this.stats.bonuses.windfuryAP
+        }
+        return AP;
+    }
+
+    getBlockValue() {
+        let blockValue = this.stats.blockValue;
+        return blockValue;
+    }
+
+    getBlock() {
+        return this.block
+    }
+
+    // Physical dmg mod
+    getDamageMod() {
+        let damageMod = this.damageMod
+        damageMod *= this.stats.physDmgMod;
+        return damageMod;
+    }
+
+
+    reset() {
+        for(let ability in this.abilities) {
+            this.abilities[`${ability}`].cooldownReady = 0
+        }
+        this.auras.forEach(aura => {
+          aura.duration = 0;
+          aura.stacks = 0;
+        })
+        this.buffs = {}
+        this.debuffs = {}
+        this.onGCD = false
+        this.rage = this.stats.startRage
+        this.isHeroicStrikeQueued = false
+        this.IEA = false
+        this.damageMod = this.stats.damageMod
+        this.hastePerc = this.stats.hastePerc
+        this.defense = this.stats.defense
+        this.additivePhysBonus = 0
+        this.rageGained = 0
+        this.rageSpent = 0
+        this.armor = this.stats.baseArmor
+        this.uptimes = {}
+
+        this.threatMod = this.stats.threatMod
+        this.resilience = this.stats.resilience
+        this.hit = this.stats.hit
+        this.crit = this.stats.crit
+        this.block = this.stats.block
+        this.GCD = 0
+
+        this.IEA = false
+        this.isHeroicStrikeQueued = false
+        this.windfury = false
+
+    }
+
+
+
+
+      /*  
     }
     getArmor() {
         this.armor = this.stats.baseArmor
@@ -129,5 +283,5 @@ class Actor {
         this.rageSpent = 0
         this.uptimes = {}
     }
-
+*/
 }

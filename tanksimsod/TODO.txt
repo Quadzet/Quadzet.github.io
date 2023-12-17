@@ -1,12 +1,38 @@
- - attacktable
- - abilities (ranks?)
- - runes
- - enemy target stats..
- - gear
- - enchants
+ - Lägg till Runes (Furious Thunder)
+    - TODO: Deep wounds + blood frenzy, blood frenzy ska vara en proc
+ - Lägg til rank till alla events
+ - Fixa raid buffs/debuffs (kolla guybrush) thunderclap/hmounculi atsp, windfury
+ - Talents (rend, deep wounds, enrage, flurry, deathwish...)
+ - Fixa Boss stats (default armor, swing etc, level, block value)
+ - Fixa Rotation
+ - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället
+    - Bug med CbR, flera applications verkar lägga till fler dmgMods, löses av ovan punkt
+ - Gear (endgame att skriva en converter från guybrushformat till quadzetformat?)
+ - Gör en generell damage-funktion som applicerar dmgMod, armor, additive dmg etc
+ - eventList.push() ska ske på ETT ställe, just nu är det all over the place
+    - Alla handleEvents returnerar en lista på nya events som läggs till till futureEvents i worker.js.handleEvent()?
 
 
- - scalea parry etc korrekt med level, eller sätt bosslevel = level + 3 alltid?
+ - Presentera samtliga resultat (uptimes, STDs, TMI..?)
+ - devastate ska inte dubbelprocca procs (dmg + SA application dvs)
+ - Rage formula map blizzard change...
+ - Result table like 
+    ability 1   TPS     DPS
+    ...
+    Total       TPS     DPS     DTPS?
+    (for uptimes etc as well)
+ - utöka gear/enchants till de relevanta tillgängliga
+ - parry haste jämfört med tbc
+ - atp stat delta funkar inte (negativt)
+ - debuff/buff ranks (sunder armor t.ex., olika armor per rank)
+ - APL
+
+
+Minor:
+ - HS queuing hit bug could be made a buff
+ - Bloodrage rage gain threat och self dmg
+ - CoR ökar inte attackpower för boss
+
 
 
 start "C:\Program Files\BraveSoftware\Brave-Browser\Application\Brave.exe" --allow-file-access-from-files

@@ -8,9 +8,11 @@ class Aura {
 
         if (!input.damage) this.damage = 0; else this.damage = input.damage;
 
-        if (!input.duration) this.duration = 0;
+        if (!input.duration) this.duration = 0; else this.duration = input.duration;
         if (!input.maxDuration) this.maxDuration = 0; else this.maxDuration = input.maxDuration;
-        if (!input.stacks) this.stacks = 0;
+
+        if (!input.stacks) this.stacks = 0; else this.stacks = input.stacks;
+        if (!input.startStacks) this.startStacks = 1; else this.startStacks = input.startStacks;
         if (!input.maxStacks) this.maxStacks = -1; else this.maxStacks = input.maxStacks;
         if (!input.scalingStacks) this.scalingStacks = false; else this.scalingStacks = input.scalingStacks;
 
@@ -22,848 +24,432 @@ class Aura {
         if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
         if (!input.defenseMod) this.defenseMod = 0; else this.defenseMod = input.defenseMod; // additive
+        if (!input.blockMod) this.blockMod = 0; else this.blockMod = input.blockMod; // additive
     }
 
-    handleGameTick(ms, owner, events, config) {
-        if (this.duration <= 0) return;
-        this.duration = this.duration - config.timeStep;
-        if(this.trackUptime) {
-            if(!owner.uptimes[`${this.name}`]) owner.uptimes[`${this.name}`] = 0;
-            owner.uptimes[`${this.name}`] += config.timeStep;
+    apply(timestamp, owner, source, eventList, futureEvents) {
+        // owner.auras[this.name] = this
+
+        if (this.duration > 0) {
+          this.refresh(timestamp, owner, eventList, futureEvents);
+          return;
         }
-        if (this.duration <= 0) {
-            events.push({
-            "type": "buff lost",
-            "timestamp": ms,
-            "name": this.name,
-            "stacks": this.stacks,
-            "source": this.source,
-            "target": this.target,
+
+        if(this.maxStacks > 0)
+            this.stacks = this.startStacks;
+        this.duration = this.maxDuration;
+
+        // this.owner = owner
+        this.source = source
+
+        // Add all modifiers here
+        owner.armor += this.armorMod
+        owner.block += this.blockMod
+        owner.damageMod *= this.damageMod
+
+        let applyEvent = { 
+            type: "auraApply",
+            name: this.name,
+            owner: owner.name,
+            source: this.source,
+            stacks: this.stacks,
+            auraType: this.type,
+            timestamp: timestamp,
+        }
+        eventList.push(applyEvent);
+
+        // Remove and update any coming auraExpires from this aura
+        let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name && e.owner == owner.name)})
+        if(index >= 0)
+            futureEvents.splice(index, 1);
+        let futureEvent = {
+            type: "auraExpire",
+            name: this.name,
+            owner: owner.name,
+            source: this.source,
+            stacks: this.stacks,
+            auraType: this.type,
+            timestamp: timestamp + this.maxDuration,
+        }
+        registerFutureEvent(futureEvent, futureEvents)
+        owner.handleEvent(applyEvent, eventList, futureEvents);
+    }
+
+    refresh(timestamp, owner, eventList, futureEvents) {
+      if(this.stacks < this.maxStacks) {
+          eventList.push({
+              type: "auraExpire",
+              name: this.name,
+              owner: owner.name,
+              source: this.source,
+              stacks: this.stacks,
+              auraType: this.type,
+              timestamp: timestamp,
+          })
+          // Either add one stack, such as for sunder, or set to max stacks, such as for flurry/consumed by rage
+          this.stacks = Math.min(Math.max(this.stacks + 1, this.startStacks), this.maxStacks);
+          eventList.push({
+              type: "auraApply",
+              name: this.name,
+              owner: owner.name,
+              source: this.source,
+              stacks: this.stacks,
+              auraType: this.type,
+              timestamp: timestamp,
+          })
+          // Add all modifiers here
+          if(this.scalingStacks) {
+              owner.armor += this.armorMod
+              owner.block += this.blockMod
+              owner.damageMod *= this.damageMod
+          }
+        }
+        else {
+          eventList.push({
+                type: "auraRefresh",
+                name: this.name,
+                owner: owner.name,
+                source: this.source,
+                stacks: this.stacks,
+                auraType: this.type,
+                timestamp: timestamp,
             })
-            if (this.hastePerc > 0) owner.hastePerc -= this.hastePerc;
-            if (this.defenseMod > 0) owner.defense -= this.defenseMod;
         }
+        futureEvents.forEach(e => {
+            if(e.type == "auraExpire" && e.name == this.name)
+                e.timestamp = timestamp + this.maxDuration
+        })
+        sortDescending(futureEvents)
     }
 
-    handleEvent(owner, event, events, config) {
-        return;
-    }
-}
-
-class SunderArmorDebuff extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "Sunder Armor" && ["hit", "block"].includes(event.hit)) {
-            this.stacks = Math.min(5, this.stacks + 1);
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
+    removeStack(timestamp, owner, eventList, futureEvents) {
+        if (this.duration == 0)
+          return;
+        if(this.stacks == 1)
+            this.expire(timestamp, owner, eventList, futureEvents, true)
+        else {
+            eventList.push({
+                type: "auraExpire",
                 name: this.name,
-                stacks: this.stacks,
-                target: this.target,
+                owner: owner.name,
                 source: this.source,
-                });
-        }
-    }
-}
-
-class FaerieFire extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "Faerie Fire" && event.hit == "hit") {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
                 stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
-    }
-    // Never let this expire
-    handleGameTick(ms, owner, events, config) {
-        return;
-    }
-}
-
-class CurseOfRecklessness extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "Curse of Recklessness" && event.hit == "hit") {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
-    }
-
-    // Never let this expire
-    handleGameTick(ms, owner, events, config) {
-        return; 
-    }
-}
-
-class IEA extends Aura {
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "Improved Expose Armor" && event.hit == "hit") {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-            // Remove sunder armor and set the variable to ensure that no further sunders are applied
-            owner.IEA = true;
-            owner.auras.forEach(aura => {
-                if(aura.name == "Sunder Armor") {
-                    aura.stacks = 0;
-                    aura.duration = 0;
-                }
-            });
-        }
-    }
-
-    // Never let this expire
-    handleGameTick(ms, owner, events, config) {
-        return; 
-    }
-}
-
-class Flurry extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    // Only swings remove stacks, even if parried/dodged/missed.
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.ability)) {
-            if (this.stacks > 0) {
-                events.push({
-                    "type": "buff lost",
-                    "timestamp": event["timestamp"],
-                    "name": this.name,
-                    "stacks": this.stacks,
-                    "source": this.source,
-                    "target": this.target,
-                    });
-                if (this.stacks == 1) {
-                    this.duration = 0;
-                    owner.hastePerc -= this.hastePerc;
-                }
+                auraType: this.type,
+                timestamp: timestamp,
+            })
+            this.stacks -= 1
+            if(this.scalingStacks) {
+                owner.armor -= this.armorMod
+                owner.block -= this.blockMod
+                owner.damageMod /= this.damageMod
             }
-            this.stacks = Math.max(0, this.stacks - 1);
         }
+    }
 
-        if (event.type == "damage" && 
-            ["Bloodthirst", "MH Swing", "OH Swing", "Revenge", "Heroic Strike"].includes(event.ability) &&
-            (event.hit == "crit" || event.hit == 'crit block')) {
+    expire(timestamp, owner, eventList, futureEvents, addEvent) {
+        // Add all modifiers here, remember scalingstacks
+        if (this.duration == 0)
+          return;
+        owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
+        owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
+        owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
+        this.stacks = 0
+        this.duration = 0;
+        delete owner.buffs[this.name]
+        if (addEvent)
+          eventList.push({
+            type: "auraExpire",
+            name: this.name,
+            owner: owner.name,
+            source: this.source,
+            stacks: this.stacks,
+            auraType: this.type,
+            timestamp: timestamp,
+          })
+        let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name)})
+        if(index >= 0)
+            futureEvents.splice(index, 1)
+    }
 
-            // If gaining the buff (not just refreshing), update the owner hastePerc
-            if (this.duration <= 0 || this.stacks == 0) owner.hastePerc += this.hastePerc;
-            this.stacks = this.maxStacks;
-            this.duration = this.maxDuraton;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+      // log_message("Error: handleEvent not implemented for aura " + this.name + ".");
     }
 }
 
-class Enrage extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && ["Bloodthirst", "MH Swing", "OH Swing", "Revenge", "Heroic Strike"].includes(event.ability)) {
-            if (this.stacks > 0) {
-                events.push({
-                    "type": "buff lost",
-                    "timestamp": event["timestamp"],
-                    "name": this.name,
-                    "stacks": this.stacks,
-                    "source": this.source,
-                    "target": this.target,
-                    });
-            }
-            this.stacks = Math.max(0, this.stacks - 1);
-            if (this.stacks == 0) this.duration = 0;
-        }
 
-        if (event.type == "damage" && event.hit == "crit" && event.target == "Tank") {
-            this.stacks = this.maxStacks;
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
+class SunderArmorAura extends Aura {
+    constructor() {
+        super({
+            type: "debuff",
+            name: "Sunder Armor",
+
+            maxDuration: 30000,
+            maxStacks: 5,
+            scalingStacks: true,
+            armorMod: 0//-520, Apply full stacks at pull instead
+        })
     }
 }
+
 
 class DefensiveState extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        // Might be that Defensive State is only removed when it expires but it makes no difference in practice
-        if (event.type == "damage" && event.ability == "Revenge") {
-            this.duration = 0;
-            events.push({
-                type: "buff lost",
-                timestamp: event.timestamp,
-                name: this.name,
-                stacks: this.stacks,
-                source: this.source,
-                target: this.target,
-                });
-        }
-
-        if (event.type == "damage" &&  ["parry", "dodge", "block"].includes(event.hit) && event.target == "Tank") {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
-    }
-}
-
-class CrusaderMH extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.MHSwing/(60*1000)) { 
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-
-class CrusaderOH extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.OHSwing/(60*1000)) { 
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-
-class DemolisherMH extends Aura {
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-
-class DemolisherOH extends Aura {
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.OHSwing/(60*1000)) { 
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-
-class EskhandarMH extends Aura {
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.MHSwing/(60*1000)) { // swing*ppm/(60*1000)
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-class QuelMH extends Aura {
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < owner.stats.MHSwing*2/(60*1000)) { // swing*ppm/(60*1000)
-                if (this.duration <= 0) owner.defense += this.defenseMod;
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: event.timestamp,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-        }
-    }
-}
-
-class ThunderfuryDebuff extends Aura {
-    constructor(input) {
-        super(input);
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "damage" && event.ability == "Thunderfury" && config.landedHits.includes(event.hit)) {
-
-            if (this.duration <= 0) owner.hastePerc += this.hastePerc;
-            this.duration = this.maxDuraton;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
-    }
-}
-
-class GiftofArthas extends Aura {
-
-    handleGameTick(ms, owner, events, config) {
-        if (this.duration <= 0) return;
-        this.duration = this.duration - config.timeStep;
-        if (this.duration <= 0) {
-            events.push({
-            "type": "buff lost",
-            "timestamp": ms,
-            "name": this.name,
-            "stacks": this.stacks,
-            "source": this.source,
-            "target": this.target,
-            })
-            owner.additivePhysBonus -= 8;
-        }
-    }
-
-    handleEvent(owner, event, events, config) {
-        if (event.type == "proc" && event.ability == "Gift of Arthas") {
-            if ( this.duration <= 0 ) owner.additivePhysBonus += 8;
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-            })
-        }
-    }
-}
-
-class WindfuryBuff extends Aura {
-    constructor(input) {
-        super(input)
-    }
-    handleEvent(owner, event, events, config) {
-        if (event.type == "extra attack" && event.ability == "Windfury") {
-            this.duration = this.maxDuration;
-            let stacks = 2;
-            if (["MH Swing", "Heroic Strike"].includes(event.source)) stacks = 1; // MH Swing removes a stack itself.
-            this.stacks = stacks
-            events.push({
-                type: "buff gained",
-                timestamp: event.timestamp, 
-                name: this.name,
-                stacks: stacks,
-                target: this.target,
-                source: this.source,
-                });
-        }
-        if (event.type == "damage" && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.ability)) {
-            if (this.stacks > 0) {
-                events.push({
-                    type: "buff lost",
-                    timestamp: event["timestamp"],
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                    });
-            }
-            this.stacks = Math.max(0, this.stacks - 1);
-            if (this.stacks == 0) this.duration = Math.min(this.duration, 400); // Buff remains for one batch after its last stack is removed
-        }
-    }
-}
-
-class PrePullAura extends Aura {
-    handleGameTick(ms, owner, events, config) {
-        // Use at pull
-        if(ms == 0) {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: ms, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-            owner.hastePerc += this.hastePerc;
-            return;
-        }
-        if (this.duration <= 0) return;
-        this.duration = this.duration - config.timeStep;
-        if (this.duration <= 0) {
-            events.push({
-            "type": "buff lost",
-            "timestamp": ms,
-            "name": this.name,
-            "stacks": this.stacks,
-            "source": this.source,
-            "target": this.target,
-            })
-            if (this.hastePerc > 0) owner.hastePerc -= this.hastePerc;
-        }
-
-    }
-}
-
-class JomGabbar extends Aura {
-    handleGameTick(ms, owner, events, config) {
-        // Use at pull
-        if(ms == 0) {
-            this.duration = this.maxDuration;
-            events.push({
-                type: "buff gained",
-                timestamp: ms, 
-                name: this.name,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-            this.stacks = 1;
-            return;
-        }
-        this.duration -= config.timeStep;
-        if(this.duration <= 0) {
-            if(this.stacks >= 10) {
-                events.push({
-                    type: "buff lost",
-                    timestamp: ms,
-                    name: this.name,
-                    stacks: this.stacks,
-                    source: this.source,
-                    target: this.target,
-                });
-                this.stacks = 0;
-            } else {
-                this.stacks += 1;
-                this.duration = this.maxDuration;
-                events.push({
-                    type: "buff gained",
-                    timestamp: ms, 
-                    name: this.name,
-                    stacks: this.stacks,
-                    target: this.target,
-                    source: this.source,
-                    });
-            }
-        }
-    }
-}
-
-class LifegivingGem extends Aura {
-    handleGameTick(ms, owner, events, config) {
-        // Use at pull
-        if(ms == 0) {
-            this.duration = this.maxDuration;
-            let threat = owner.stats.baseHealth * 0.15 * 0.5;
-            events.push({
-                type: "buff gained",
-                timestamp: ms, 
-                name: this.name,
-                threat: threat,
-                stacks: this.stacks,
-                target: this.target,
-                source: this.source,
-                });
-            this.stacks = 1;
-            return;
-        }
-    }
-}
-
-
-
-const defaultTankAuras = [
-    new DefensiveState({
+    constructor() {
+        super({
+            type: "buff",
             name: "Defensive State",
+
+            maxDuration: 5000,
+        })
+    }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+      
+      // Add aura after a dodge/block/parry
+      if(event.type == "damage" && event.target == owner.name && ["block", "parry", "dodge"].includes(event.hit)) {
+          this.apply(event.timestamp, owner, event.source, eventList, futureEvents)
+      }
+      
+      // Expire after casting Revenge 
+      if(event.source == this.name && event.name == "Revenge") {
+          this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      }
+
+      if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      }
+
+    }
+}
+
+class ShieldBlockAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Shield Block",
+
             maxDuration: 6000,
 
-            target: "Tank",
-            source: "Tank",
-    }),
-]
-
-const defaultBossAuras = [
-new SunderArmorDebuff({
-        name: "Sunder Armor",
-        maxDuration: 30000,
-        maxStacks: 5,
-        armorMod: -450,
-        scalingStacks: true,
-
-        target: "Boss",
-        source: "Tank",
-        }),
-]
-
-
-function addOptionalAuras(tankAuras, bossAuras, globals) {
-
-if(globals.tankStats.talents.flurry > 0) {
-    tankAuras.push(new Flurry({
-        name: "Flurry",
-        maxDuration: 12000,
-        maxStacks: 3,
-        hastePerc: 5 + 5*globals.tankStats.talents.flurry,
-
-        trackUptime: true,
-        target: "Tank",
-        source: "Tank",
-        }));
-}
-
-if(globals.tankStats.talents.enrage > 0) {
-    tankAuras.push(new Enrage({
-        name: "Enrage",
-        maxDuration: 12000,
-        maxStacks: 12,
-        damageMod: 1 + 0.05*globals.tankStats.talents.enrage,
-
-        trackUptime: true,
-        target: "Tank",
-        source: "Tank",
-        }));
-}
-
-if(globals.tankStats.talents.deathwish) {
-    tankAuras.push(new PrePullAura({
-        name: "Death Wish",
-        maxDuration: 28500, // uses a gcd
-        damageMod: 1.2,
-        percArmorMod: -20,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.bonuses.mrp) {
-    tankAuras.push(new PrePullAura({
-        name: "Mighty Rage Potion",
-        maxDuration: 20000,
-        strMod: 60,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.bonuses.crusaderMH) {
-    tankAuras.push(new CrusaderMH({
-            name: "Crusader MH",
-            maxDuration: 15000,
-
-            strMod: 100,
-
-            trackUptime: true,
-            target: "Tank",
-            source: "Tank",
-    }));
-}
-
-if(globals.tankStats.bonuses.crusaderOH) {
-    tankAuras.push(new CrusaderOH({
-            name: "Crusader OH",
-            maxDuration: 15000,
-
-            strMod: 100,
-
-            trackUptime: true,
-            target: "Tank",
-            source: "Tank",
-    }));
-}
-
-if(globals.tankStats.weapons.thunderfuryMH || globals.tankStats.weapons.thunderfuryOH) {
-    bossAuras.push(new ThunderfuryDebuff({
-            name: "Thunderfury",
-            maxDuration: 12000,
-
-            hastePerc: -20,
-
-            target: "Boss",
-            source: "Tank",
-    }));
-}
-
-if(globals.tankStats.bonuses.windfury) {
-    tankAuras.push(new WindfuryBuff({
-            name: "Windfury", 
-            maxDuration: 1500,
+            blockMod: 75,
             maxStacks: 2,
-            APMod: globals.tankStats.bonuses.windfuryAP,
+            startStacks: 2,
+        })
+    }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+      
+      // Add aura after Shield Block has been cast
+      if (event.type == "spellCast" && event.name == this.name) {
+        this.apply(event.timestamp, owner, event.source, eventList, futureEvents);
+      }
 
-            target: "Tank",
-            source: "Tank",
-    }));
+      //  Remove a stack after blocking
+      else if(event.type == "damage" && event.target == "Tank" && event.hit == "block") {
+        this.removeStack(event.timestamp, owner, eventList, futureEvents)
+      } 
+
+      else if(event.type == "auraExpire") {
+        this.expire(event.timestamp, owner, eventList, futureEvents, true);
+      }
+    }
 }
 
-if(globals.tankStats.bonuses.goa) {
-    bossAuras.push(new GiftofArthas({
-        name: "Gift of Arthas",
-        maxDuration: 180000,
+class FlagellationAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Flagellation",
+    
+      maxDuration: 12000,
 
-        target: "Boss",
-        source: "Tank",
-    }))
+      damageMod: 1.25,
+    })
+  }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+    
+    // Apply the aura after activating either bers rage or bloodrage
+    if (event.type == "auraApply" && ["Berserker Rage", "Bloodrage"].includes(event.name)) {
+      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+    }
+
+  }
 }
 
-if(globals.tankStats.bonuses._berserking) {
-    tankAuras.push(new PrePullAura({
-        name: "Berserking",
-        maxDuration: 10000,
-        hastePerc: 10, // Assuming only 10%, anything else would be kinda weird
+class ConsumedByRageAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Consumed by Rage",
+    
+      maxDuration: 12000,
 
+      damageMod: 1.25,
+      maxStacks: 12,
+      startStacks: 12,
 
-        target: "Tank",
-        source: "Tank",
-    }))
+    })
+  }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+    
+    // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
+    if (event.type == "rage" && owner.rage > 80 && owner.rage - event.amount < 80) {
+      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+    }
+
+    //  Remove a stack after successfully hitting a target
+    if(event.type == "damage" && event.source == "Tank" && (event.name == "MH Swing" || event.name == "OH Swing" || event.name == "Heroic Strike")) {
+      this.removeStack(event.timestamp, owner, eventList, futureEvents)
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+    }
+
+  }
 }
 
-if(globals.tankStats.weapons.edMH) {
-    tankAuras.push(new DemolisherMH({
-        name: "Empyrean Demolisher MH",
-        maxDuration: 10000,
-        hastePerc: 20,
-        trackUptime: true,
+class BloodrageAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Bloodrage",
+    
+      maxDuration: 12000,
+    })
+  }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+    
+    // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
+    if (event.type == "spellCast" && event.name == "Bloodrage") {
+      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      for (let i = 0; i < 10; i++) {
+        registerFutureEvent(
+        {
+          timestamp: event.timestamp + i*1000,
+          type: "rage",
+          source: owner.name,
+          name: this.name,
 
-        target: "Tank",
-        source: "Tank",
-    }))
-}
-
-if(globals.tankStats.weapons.edOH) {
-    tankAuras.push(new DemolisherOH({
-        name: "Empyrean Demolisher OH",
-        maxDuration: 10000,
-        hastePerc: 20,
-        trackUptime: true,
-
-        target: "Tank",
-        source: "Tank",
-    }))
-}
-
-if(globals.tankStats.weapons.eskMH) {
-    tankAuras.push(new EskhandarMH({
-        name: "Eskhandar's Right Claw",
-        maxDuration: 5000,
-        hastePerc: 30,
-        trackUptime: true,
-
-        target: "Tank",
-        source: "Tank",
-    }))
-}
-
-if(globals.tankStats.weapons.qsMH) {
-    tankAuras.push(new QuelMH({
-        name: "Quel'Serrar",
-        maxDuration: 10000,
-        armorMod: 300,
-        defenseMod: 13,
-        trackUptime: true,
-
-        target: "Tank",
-        source: "Tank",
-    }))
-}
-
-// TRINKETS
-if(globals.tankStats.trinkets.kots) {
-    tankAuras.push(new PrePullAura({
-        name: "Kiss of the Spider",
-        maxDuration: 15000,
-        hastePerc: 20,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.trinkets.diamondflask) {
-    tankAuras.push(new PrePullAura({
-        name: "Diamond Flask",
-        maxDuration: 60000,
-        strMod: 75,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.trinkets.earthstrike) {
-    tankAuras.push(new PrePullAura({
-        name: "Earthstrike",
-        maxDuration: 20000,
-        APMod: 280,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.trinkets.slayerscrest) {
-    tankAuras.push(new PrePullAura({
-        name: "Slayer's Crest",
-        maxDuration: 20000,
-        APMod: 260,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.trinkets.jomgabbar) {
-    tankAuras.push(new JomGabbar({
-        name: "Jom Gabbar",
-        maxDuration: 2000,
-        APMod: 65,
-
-        scalingStacks: true,
-        stacks: 1,
-
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}
-
-if(globals.tankStats.trinkets.lgg) {
-    tankAuras.push(new LifegivingGem({
-        name: "Lifegiving Gem",
-        maxDuration: 20000,
-
-        target: "Tank",
-        source: "Tank",
-    }));
-}  
-
-// Boss debuffs
-    if(globals.config.faerieFire) {
-        bossAuras.push(new FaerieFire({
-            name: "Faerie Fire",
-            maxDuration: 30000,
-            armorMod: -505,
-
-            target: "Boss",
-            source: "Other",
-            }));
+          amount: 1,
         }
-    if(globals.config.CoR) {
-        bossAuras.push(new CurseOfRecklessness({
-            name: "Curse of Recklessness",
-            maxDuration: 30000,
-            armorMod: -640,
+        , futureEvents);
+      }
+    }
 
-            target: "Boss",
-            source: "Other",
-            }));
-        }
-    if(globals.config.IEA) {
-        bossAuras.push(new IEA({
-            name: "Improved Expose Armor",
-            maxDuration: 30000,
-            armorMod: -2550,
-        
-            target: "Boss",
-            source: "Other",
-            }));
-        }
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+    }
 
+  }
+}
+
+class RendAura extends Aura {
+  constructor() {
+    super({
+      type: "debuff",
+      name: "Rend",
+    
+      maxDuration: 9000,
+    })
+  }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+    
+    if (event.type == "damage" && event.name == "Rend (Rank 3)" && event.hit == "hit") {
+
+      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+    }
+  }
+
+}
+
+class DeepWoundsAura extends Aura {
+  constructor() {
+    super({
+      type: "debuff",
+      name: "Deep Wounds",
+    
+      maxDuration: 12000,
+    })
+  }
+    handleEvent(event, owner, source, eventList, futureEvents) {
+    
+    if (event.type == "damage" && event.hit == "crit") {
+
+      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      // Remove all current DW ticks in the futureEvents
+      // Add the new additional dmg to the DW pool
+      // Generate new ticks with 1/3 the total dmg
+      // Note double dipping dmg mods
+      let totalDmg = source.stats.talents.deepWounds * 0.2 * source.getDamageMod() * source.getDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
+      while (true) {
+        let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == this.name)})
+        if(index >= 0) {
+          totalDmg += futureEvents[index].amount;
+          futureEvents.splice(index, 1)
+        }
+        else 
+          break;
+      }
+      for (let i = 0; i < 4; i++) {
+        registerFutureEvent(
+        {
+            timestamp: event.timestamp + (i+1)*3000,
+            type: "damage",
+            source: source.name,
+            target: event.target,
+            name: this.name,
+            hit: "hit",
+            threat: totalDmg*source.stats.threatMod/4,
+
+            amount: totalDmg/4,
+        }
+        , futureEvents);
+      }
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+    }
+  }
+}
+
+
+// Globals
+let Debuffs = {
+    "Sunder Armor": new SunderArmorAura(),
+}
+
+let Buffs = {
+    "Defensive State": new DefensiveState(),
+    "Shield Block": new ShieldBlockAura(),
+    "Consumed by Rage": new ConsumedByRageAura(),
+    "Bloodrage": new BloodrageAura(),
+}
+
+function TankAuras(stats) {
+  let ret = [
+    new DefensiveState(),
+    new ShieldBlockAura(),
+    new BloodrageAura(),
+  ]
+  if (stats.runes.consumedByRage)
+    ret.push(new ConsumedByRageAura());
+  if (stats.runes.flagellation)
+    ret.push(new FlagellationAura());
+  return ret;
+}
+
+function BossAuras() {
+
+  let ret = [
+    new SunderArmorAura(),
+    new RendAura(),
+    new DeepWoundsAura(),
+  ]
+  return ret;
 }
