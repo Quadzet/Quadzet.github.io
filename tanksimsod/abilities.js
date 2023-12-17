@@ -202,7 +202,7 @@ class Autoattack extends Ability {
               let rank = this.rank(attacker.stats.level);
               return ((dmg_event.amount * this.threatModifier(rank)) +  this.staticThreat(rank)) * attacker.stats.threatMod;
             } else {
-              return dmg_event.amount;
+              return dmg_event.amount * attacker.stats.threatMod;
             }
         }
         else return 0;
@@ -386,8 +386,8 @@ class ShieldBlock extends Ability {
 }
 
 class SunderArmor extends Ability {
-  constructor() {
-    super("Sunder Armor", 0, 15, true)
+  constructor(impSA) {
+    super("Sunder Armor", 0, 15-impSA, true)
   }
     use(timestamp, source, target, eventList, futureEvents) {
         let damage = 0;
@@ -556,8 +556,8 @@ class ShieldSlam extends Ability {
 }
 
 class Devastate extends Ability {
-    constructor() {
-        super("Devastate", 0, 15, true)
+    constructor(impSA) {
+        super("Devastate", 0, 15-impSA, true)
     }
 
     use(timestamp, source, target, eventList, futureEvents) {
@@ -612,7 +612,7 @@ class RagingBlow extends Ability {
     isUsable(timestamp, source) {
         let isEnraged = false;
         source.auras.forEach(aura => {
-          if (["Berserker Rage", "Bloodrage", "Enrage"].includes(aura.name) && aura.duration > 0)
+          if (["Berserker Rage", "Bloodrage", "Enrage", "Consumed by Rage"].includes(aura.name) && aura.duration > 0)
             isEnraged = true;
         })
         return this.cooldownReady <= timestamp && isEnraged && (!source.onGCD || !this.onGCD) && source.rage >= this.rageCost;
@@ -699,9 +699,9 @@ function TankAbilities(tankStats) {
   if (tankStats.runes.ragingBlow)
     abilities["Raging Blow"] = new RagingBlow();
   if (tankStats.runes.devastate)
-    abilities["Devastate"] = new Devastate();
+    abilities["Devastate"] = new Devastate(tankStats.talents.impSA);
   else
-    abilities["Sunder Armor"] = new SunderArmor();
+    abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
   // TODO: OH swing
   return abilities;
 }

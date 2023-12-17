@@ -1,9 +1,8 @@
  - Lägg till Runes (Furious Thunder)
  - Lägg til rank till alla events, fixa alla "Rend (Rank 3)"
- - Fixa raid buffs/debuffs (kolla guybrush) thunderclap/hmounculi atsp, windfury
-    - Wild Strikes (infinite wild strikes loops)
-    - stoneskin 
- - Talents (rend, enrage, flurry, deathwish..., imp SA)
+ - Fixa raid buffs/debuffs
+    - stoneskin, atsp debuffs, thorns
+ - Talents (rend, enrage, flurry, deathwish...)
  - Fixa Boss stats (default armor, swing etc, level, block value)
  - Fixa Rotation
  - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället

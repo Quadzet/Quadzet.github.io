@@ -431,25 +431,27 @@ let Buffs = {
     "Bloodrage": new BloodrageAura(),
 }
 
-function TankAuras(stats) {
+function TankAuras(globals) {
   let ret = [
     new DefensiveState(),
     new ShieldBlockAura(),
     new BloodrageAura(),
   ]
-  if (stats.runes.consumedByRage)
+  if (globals.tankStats.runes.consumedByRage)
     ret.push(new ConsumedByRageAura());
-  if (stats.runes.flagellation)
+  if (globals.tankStats.runes.flagellation)
     ret.push(new FlagellationAura());
   return ret;
 }
 
-function BossAuras() {
+function BossAuras(globals) {
 
   let ret = [
     new SunderArmorAura(),
     new RendAura(),
-    new DeepWoundsAura(),
   ]
+  if (globals.tankStats.talents.deepWounds > 0) {
+    ret.push(new DeepWoundsAura)
+  }
   return ret;
 }

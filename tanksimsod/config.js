@@ -227,7 +227,7 @@ function updateStats()
     let impSA = Number(document.getElementById("impSA").value);
     let defiance = Number(document.getElementById("defiance").value);
     let impale = Number(document.getElementById("impale").value);
-    let dwspec = Number(document.getElementById("dwspec").value);
+    // let dwspec = Number(document.getElementById("dwspec").value);
 
     let gear = [
         races[race],
@@ -560,7 +560,7 @@ function updateStats()
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: damageMod,
-            physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
+            physDmgMod: 1,// + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
             additivePhysBonus: 0, 
             hastePerc: hastePerc, 
             AP: attackpower + strength*2,
@@ -586,10 +586,10 @@ function updateStats()
             agilityMultiplier: agilityMultiplier,
 
             talents: {
-                deathwish: document.getElementById("deathwish").checked,
-                bloodthirst: document.getElementById("bloodthirst").checked,
-                shieldslam: document.getElementById("shieldslam").checked,
-                flurry: Number(document.getElementById("flurry").value),
+                // deathwish: document.getElementById("deathwish").checked,
+                // bloodthirst: document.getElementById("bloodthirst").checked,
+                // shieldslam: document.getElementById("shieldslam").checked,
+                // flurry: Number(document.getElementById("flurry").value),
                 enrage: Number(document.getElementById("enrage").value),
                 deepWounds: Number(document.getElementById("deepWounds").value),
                 deflection: deflection,
@@ -601,7 +601,7 @@ function updateStats()
                 impSA: impSA,
                 defiance: defiance,
                 impale: impale,
-                dwspec: dwspec,
+                // dwspec: dwspec,
             },
             weapons: {
                 thunderfuryMH: mainhand == "Thunderfury",

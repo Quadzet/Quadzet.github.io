@@ -1,7 +1,7 @@
 "use strict";
 class Actor {
     // constructor(name, target, abilities, stats, procs) {
-    constructor(name, stats, abilities, procs) {
+    constructor(name, stats, abilities, procs, auras) {
         this.name = name
         this.stats = stats
         this.abilities = abilities
@@ -19,9 +19,8 @@ class Actor {
         this.onGCD = false
         this.rage = stats.startRage
 
-        if (this.name == "Tank") this.auras = TankAuras(stats);
-        else if (this.name == "Boss") this.auras = BossAuras();
         this.procs = procs
+        this.auras = auras
         // this.buffs = 
         // this.debuffs = {}
         

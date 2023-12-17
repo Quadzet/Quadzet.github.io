@@ -11,12 +11,12 @@ function performAction(timestamp, source, target, eventList, futureEvents) {
             else if(source.abilities["Revenge"].isUsable(timestamp, source)) {
                 source.abilities["Revenge"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
+            if(source.abilities["Raging Blow"] && source.abilities["Raging Blow"].isUsable(timestamp, source)) {
+                source.abilities["Raging Blow"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
+            }
             else if(source.abilities["Devastate"] && source.abilities["Devastate"].isUsable(timestamp, source)) {
               if(source.rage > 85)
                 source.abilities["Devastate"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
-            }
-            if(source.abilities["Raging Blow"] && source.abilities["Raging Blow"].isUsable(timestamp, source)) {
-                source.abilities["Raging Blow"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
             else if(source.abilities["Sunder Armor"] && source.abilities["Sunder Armor"].isUsable(timestamp, source)) {
               if(source.rage > 85)

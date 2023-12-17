@@ -86,15 +86,15 @@ function saveInput()
     localStorage.setItem("ohwepenchant", document.querySelector("#ohwepenchant").selectedIndex)
 
     localStorage.setItem("startRage", document.querySelector("#startRage").value)
-    localStorage.setItem("deathwish", document.querySelector("#deathwish").checked)
+    // localStorage.setItem("deathwish", document.querySelector("#deathwish").checked)
     // localStorage.setItem("windfury", document.querySelector("#windfury").checked)
     localStorage.setItem("wcb", document.querySelector("#wcb").checked)
     localStorage.setItem("dmf", document.querySelector("#dmf").checked)
 
     // Talents 
-    localStorage.setItem("deathwish", document.getElementById("deathwish").checked);
-    localStorage.setItem("bloodthirst", document.getElementById("bloodthirst").checked);
-    localStorage.setItem("shieldslam", document.getElementById("shieldslam").checked);
+    // localStorage.setItem("deathwish", document.getElementById("deathwish").checked);
+    // localStorage.setItem("bloodthirst", document.getElementById("bloodthirst").checked);
+    // localStorage.setItem("shieldslam", document.getElementById("shieldslam").checked);
     localStorage.setItem("deflection", document.getElementById("deflection").value)
     localStorage.setItem("cruelty", document.getElementById("cruelty").value)
     localStorage.setItem("anticipation", document.getElementById("anticipation").value)
@@ -104,7 +104,7 @@ function saveInput()
     localStorage.setItem("impSA", document.querySelector("#impSA").value) 
     localStorage.setItem("impale", document.querySelector("#impale").value) 
     localStorage.setItem("defiance", document.querySelector("#defiance").value) 
-    localStorage.setItem("dwspec", document.querySelector("#dwspec").value) 
+    // localStorage.setItem("dwspec", document.querySelector("#dwspec").value) 
     localStorage.setItem("enrage", document.querySelector("#enrage").value) 
     localStorage.setItem("deepWounds", document.querySelector("#deepWounds").value) 
     
@@ -233,9 +233,9 @@ function loadInput()
     document.querySelector("#dmf").checked = localStorage.getItem("dmf") == "true" ? true : false;
 
     // Talents 
-    document.getElementById("deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
-    document.getElementById("bloodthirst").checked = localStorage.getItem("bloodthirst") == "false" ? false : true;
-    document.getElementById("shieldslam").checked = localStorage.getItem("shieldslam") == "true" ? true : false;
+    // document.getElementById("deathwish").checked = localStorage.getItem("deathwish") == "false" ? false : true;
+    // document.getElementById("bloodthirst").checked = localStorage.getItem("bloodthirst") == "false" ? false : true;
+    // document.getElementById("shieldslam").checked = localStorage.getItem("shieldslam") == "true" ? true : false;
     document.getElementById("deflection").value = localStorage.getItem("deflection") ? localStorage.getItem("deflection") : 0;
     document.getElementById("cruelty").value = localStorage.getItem("cruelty") ? localStorage.getItem("cruelty") : 5;
     document.getElementById("anticipation").value = localStorage.getItem("anticipation") ? localStorage.getItem("anticipation") : 0;
@@ -245,7 +245,7 @@ function loadInput()
     document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
     document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
-    document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 0; 
+    // document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 0; 
     document.querySelector("#enrage").value = localStorage.getItem("enrage") ? localStorage.getItem("enrage") : 0; 
     document.querySelector("#deepWounds").value = localStorage.getItem("deepWounds") ? localStorage.getItem("deepWounds") : 0; 
     
@@ -429,15 +429,34 @@ async function main() {
         console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
         */
 
+        let iterations = globals.config.iterations;
+        // Pad the vector in case there were fight iterations where an ability was not used at all (is this really needed?)
         for(let result in results) {
             results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
         }
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
-        sortedResults.sort((a,b) => average(b[1]) - average(a[1]))
+        // Sort the abilities based on their average tps
+        sortedResults.sort((a,b) => {
+          let btps = b[1].reduce((a, b) => a += b.tps, 0);
+          let atps = a[1].reduce((a, b) => a += b.tps, 0);
+          return btps- atps;
+          // average(b[1].tps) - average(a[1].tps)
+          // return
+        })
 
-        let resultTable = `<table><tr><th>Ability TPS</th></tr>`;
+        let resultTable = `<table><tr><th>Ability</th><th>TPS</th><th>DPS</th><th>Casts</th><th>Hits</th></tr>`;
         for (let i in sortedResults) {
-            resultTable = resultTable.concat(`<tr><td>${sortedResults[i][0]}:</td><td>${Math.round(average(sortedResults[i][1])*100)/100}</td></tr>`)
+          let result = {tps: 0, dps: 0, casts: 0, hits: 0};
+          if (sortedResults[i]) {
+            result = sortedResults[i][1].reduce((accumulator, element) => {
+              accumulator.tps += element.tps;
+              accumulator.dps += element.dps;
+              accumulator.casts += element.casts;
+              accumulator.hits += element.hits
+              return accumulator;
+            }, { tps: 0, dps: 0, hits: 0, casts: 0 });
+          }
+          resultTable = resultTable.concat(`<tr><td>${sortedResults[i][0]}:</td><td>${Math.round(result.tps/iterations*100)/100}</td><td>${Math.round(result.dps/iterations*100)/100}</td><td>${Math.round(result.casts/iterations*100)/100}</td><td>${Math.round(result.hits/iterations*100)/100}</td></tr>`)
         }
         resultTable = resultTable.concat(`</table>`)
         let statsTable = 
