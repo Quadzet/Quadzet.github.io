@@ -104,6 +104,84 @@ function getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, armor) 
   return armor;
 }
 
+function getDevoArmor(level) {
+  if (level < 10) return 55;
+  else if (level < 20) return 160;
+  else if (level < 30) return 275;
+  else if (level < 40) return 390;
+  else if (level < 50) return 505;
+  else if (level < 60) return 620;
+  else return 735;
+}
+
+function getMOTWArmor(level) {
+  if (level < 10) return 25;
+  else if (level < 20) return 65;
+  else if (level < 30) return 105;
+  else if (level < 40) return 150;
+  else if (level < 50) return 195;
+  else if (level < 60) return 240;
+  else return 285;
+}
+
+function getMOTWStats(level) {
+  if (level < 10) return 0;
+  else if (level < 20) return 2;
+  else if (level < 30) return 4;
+  else if (level < 40) return 6;
+  else if (level < 50) return 8;
+  else if (level < 60) return 10;
+  else return 12;
+}
+
+function getMightAP(level) {
+  if (level < 4) return 0;
+  else if (level < 12) return 20;
+  else if (level < 22) return 35;
+  else if (level < 32) return 55;
+  else if (level < 42) return 85;
+  else if (level < 52) return 115;
+  else if (level < 60) return 155;
+  else return 185;
+}
+
+function getBShoutAP(level) {
+  if (level < 12) return 20;
+  else if (level < 22) return 40;
+  else if (level < 32) return 60;
+  else if (level < 42) return 94;
+  else if (level < 52) return 139;
+  else if (level < 60) return 193;
+  else return 232;
+}
+
+function getFortStam(level) {
+  if (level < 12) return 3;
+  else if (level < 24) return 8;
+  else if (level < 36) return 20;
+  else if (level < 48) return 32;
+  else if (level < 60) return 43;
+  else return 54;
+}
+
+function getPactStam(level) {
+  if (level < 4) return 0;
+  else if (level < 14) return 3;
+  else if (level < 26) return 9;
+  else if (level < 38) return 19;
+  else if (level < 50) return 30;
+  else return 42;
+}
+
+function getEarthStr(level) {
+  if (level < 10) return 0;
+  else if (level < 24) return 10;
+  else if (level < 38) return 20;
+  else if (level < 52) return 36;
+  else if (level < 60) return 61;
+  else return 77;
+}
+
 function updateStats()
 {
     // Gear
@@ -253,20 +331,27 @@ function updateStats()
     let mhstone = document.getElementById("mhstone").value
     crit += mhstone == "Elemental" ? 2 : 0;
     attackpower += mhstone == "Consecrated" ? 100 : 0;
-    mhmin += mhstone == "Dense" ? 8 : 0;
-    mhmax += mhstone == "Dense" ? 8 : 0;
+    mhmin += mhstone == "Coarse Sharpening Stone" ? 3 : 0;
+    mhmax += mhstone == "Coarse Sharpening Stone" ? 3 : 0;
+    mhmin += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
+    mhmax += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
+    hit += mhstone == "BFD Sharpening Stone" ? 2 : 0;
 
     let ohstone = document.getElementById("ohstone").value
     if (_dualWield) {
         crit += ohstone == "Elemental" ? 2 : 0;
         attackpower += ohstone == "Consecrated" ? 100 : 0;
-        ohmin += ohstone == "Dense" ? 8 : 0;
-        ohmax += ohstone == "Dense" ? 8 : 0;
+        ohmin += ohstone == "Coarse Sharpening Stone" ? 3 : 0;
+        ohmax += ohstone == "Coarse Sharpening Stone" ? 3 : 0;
+        ohmin += document.getElementById("ohwepenchant") == "Lesser Striking" ? 2 : 0;
+        ohmax += document.getElementById("ohwepenchant") == "Lesser Striking" ? 2 : 0;
+        hit += ohstone == "BFD Sharpening Stone" ? 2 : 0;
     }
 
     strength += Number(document.getElementById("strbuff").value)
-    agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
-    agility += document.getElementById("agibuff").value == "Elixir of Greater Agility" ? 25 : 0;
+    agility += Number(document.getElementById("agibuff").value)
+    // agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
+    // agility += document.getElementById("agibuff").value == "Elixir of Greater Agility" ? 25 : 0;
     crit += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 2 : 0;
     attackpower += Number(document.getElementById("apbuff").value)
 
@@ -276,6 +361,7 @@ function updateStats()
     stamina += statbuff == "Spirit of Zanza" ? 50 : 0;
 
     let foodbuff = document.getElementById("foodbuff").value
+    stamina += foodbuff == "Heavy Crocolisk Stew" ? 8 : 0;
     strength += foodbuff == "Smoked Desert Dumplings" ? 25 : 0;
     strength += foodbuff == "Blessed Sunfruit" ? 10 : 0;
     agility += foodbuff == "Grilled Squid" ? 10 : 0;
@@ -291,27 +377,43 @@ function updateStats()
         _mrp = true;
     }
 
-    extrahp += document.getElementById("hpelixir").checked ? 120 : 0;
-    extrahp += document.getElementById("titans").checked ? 1200 : 0;
+    extrahp += document.getElementById("hpelixir").checked ? 27 : 0;
+    // extrahp += document.getElementById("titans").checked ? 1200 : 0;
     extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
     extrahp += legenchant == "Libram of Constitution" ? 100 : 0;
     extrahp += headenchant == "Libram of Constitution" ? 100 : 0;
     let _wcb = document.querySelector("#wcb").checked;
     extrahp += _wcb ? 300 : 0;
 
-    crit += document.getElementById("pack").checked ? 3 : 0;
-    attackpower += document.getElementById("trueshot").checked ? 100 : 0;
+    // crit += document.getElementById("pack").checked ? 3 : 0;
+    // attackpower += document.getElementById("trueshot").checked ? 100 : 0;
 
     let mark = document.getElementById("mark").checked; // Assumed to be improved
-    stamina += mark ? 4 : 0; // Imp mark of the wild affects these?
-    agility += mark ? 4 : 0;
-    strength += mark ? 4 : 0;
-    attackpower += document.getElementById("might").checked ? 66 : 0; // Assumed improved
-    attackpower += document.getElementById("bshout").checked ? 60 : 0; 
+    let impMOTW = true; // TODO
+    // Should we floor..?
+    stamina += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0; 
+    agility += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
+    strength += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
+    let impMight = true; // TODO
+    attackpower += document.getElementById("might").checked ? Math.floor(getMightAP(level) * (impMight ? 1.2 : 1)): 0;
+    let impBShout = true; // TODO
+    attackpower += document.getElementById("bshout").checked ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0; 
+    // TODO: Exclusive with Might
+    agility += document.getElementById("hornOfLord").checked ? 6 : 0;
+    strength += document.getElementById("hornOfLord").checked ? 6 : 0;
 
-    stamina += document.getElementById("fortitude").checked ? 26 : 0; // Assumed improved
-    stamina += document.getElementById("bloodpact").checked ? 9 : 0;
-    
+    let bleedBonus = document.getElementById("mangle").checked ? 1.3 : 1;
+
+    let impFort = true; // TODO
+    stamina += document.getElementById("fortitude").checked ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
+    let impImp = true; // TODO
+    stamina += document.getElementById("bloodpact").checked ? Math.floor(getPactStam(level) * (impImp ? 1.3 : 1)) : 0;
+   
+    let damageMod = 0.9; // Def stance
+    damageMod *= document.querySelector("#dmf").checked ? 1.1 : 1; 
+    damageMod *= document.querySelector("#ashenvaleCry").checked ? 1.05 : 1; 
+    crit += document.getElementById("boonOfTheBlackfathom").checked ? 2 : 0;
+    attackpower += document.getElementById("boonOfTheBlackfathom").checked ? 20 : 0;
     attackpower += document.getElementById("dragonslayer").checked ? 140 : 0;
     crit += document.getElementById("dragonslayer").checked ? 5 : 0;
     attackpower += document.getElementById("dmAP").checked ? 200 : 0;
@@ -324,8 +426,9 @@ function updateStats()
     spellcrit += document.getElementById("dmspell").checked ? 3 : 0;
     spellcrit += document.getElementById("songflower").checked ? 5 : 0;
 
-    strength += document.getElementById("strofearth").checked ? 20 : 0;
-    agility += document.getElementById("graceofair").checked ? 20 : 0;
+    let enhTotems = true; // TODO
+    strength += document.getElementById("strofearth").checked ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
+    // agility += document.getElementById("graceofair").checked ? 20 : 0;
 
     // Stat deltas input by user
     let extrastrength    = Number(document.getElementById("playerextrastrength").value);
@@ -364,9 +467,10 @@ function updateStats()
     armor += agility*2;
     armor *= document.getElementById("inspiration").checked ? 1.25 : 1;
     armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
-    armor += document.getElementById("devo").checked ? Math.floor(918.75) : 0; // Assumed improved
-    armor += document.getElementById("armorelixir").checked ? 450 : 0;
-    armor += mark ? Math.floor(141.75) : 0;
+    let impDevo = true; // TODO
+    armor += document.getElementById("devo").checked ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
+    armor += document.getElementById("armorelixir").checked ? 150 : 0;
+    armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
 
     let staminaMultiplier = (document.getElementById("dmstamina").checked ? 1.15 : 1)*(document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
     let strengthMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
@@ -455,8 +559,9 @@ function updateStats()
             
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
-            damageMod: document.querySelector("#dmf").checked ? 0.99 : 0.9, // Defensive Stance + dmf
+            damageMod: damageMod,
             physDmgMod: 1 + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
+            additivePhysBonus: 0, 
             hastePerc: hastePerc, 
             AP: attackpower + strength*2,
             crit: crit,
@@ -523,19 +628,20 @@ function updateStats()
             },
 
             bonuses: {
-                twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
-                threePieceConqueror: document.getElementById("threePieceConqueror").checked,
-                fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
+                // twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
+                // threePieceConqueror: document.getElementById("threePieceConqueror").checked,
+                // fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
                 threatenchant: document.getElementById("handenchant").value == "Threat",
-                berserking: document.getElementById("berserking").checked,
-                goa: document.getElementById("goa").checked,
+                // berserking: document.getElementById("berserking").checked,
+                // goa: document.getElementById("goa").checked,
 
-                windfury: document.querySelector("#windfury").checked,
+                // windfury: document.querySelector("#windfury").checked,
+                wildStrikes: document.querySelector("#wildStrikes").checked,
                 wcb: _wcb,
                 dmf: document.querySelector("#dmf").checked,
                 crusaderMH: mhwepenchant == "Crusader",
                 crusaderOH: ohwepenchant == "Crusader",
-                windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
+                // windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
                 mrp: _mrp,
             },
 
@@ -563,6 +669,8 @@ function updateStats()
             MHWepSkill: level * 5 + 15, // TODO: Boss level
             damageMod: 0.9, // Defensive Stance
             physDmgMod: 1,
+            bleedBonus: bleedBonus,
+            additivePhysBonus: document.getElementById("CoV").checked ? 2 : 0,
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,

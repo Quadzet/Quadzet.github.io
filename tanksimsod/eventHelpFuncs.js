@@ -32,6 +32,17 @@ function getAmount(event, ability, type) {
     else return 0;
 }
 
+function statRound(val) {
+  let floor_val = Math.floor(val);
+  let remainder = val - floor_val;
+  let rng = Math.random();
+  if (rng < remainder) {
+    return floor_val + 1;
+  } else {
+    return floor_val;
+  }
+}
+
 function sortDescending(futureEvents) {
     futureEvents.sort( (a,b) => b.timestamp - a.timestamp )
 }

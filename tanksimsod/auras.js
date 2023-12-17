@@ -385,7 +385,7 @@ class DeepWoundsAura extends Aura {
       // Add the new additional dmg to the DW pool
       // Generate new ticks with 1/3 the total dmg
       // Note double dipping dmg mods
-      let totalDmg = source.stats.talents.deepWounds * 0.2 * source.getDamageMod() * source.getDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
+      let totalDmg = owner.stats.bleedBonus * source.stats.talents.deepWounds * 0.2 * source.getDamageMod() * source.getDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
       while (true) {
         let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == this.name)})
         if(index >= 0) {

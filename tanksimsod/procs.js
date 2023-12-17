@@ -2,22 +2,28 @@
 
 class Proc {
 
-    constructor(input) {
-
-        if (!input.name) this.name = "unknown"; else this.name = input.name;
-        if (!input.damage) this.damage = 0; else this.damage = input.damage;
+    constructor(name) {
+        this.name = name;
+        // if (!input.name) this.name = "unknown"; else this.name = input.name;
+        // if (!input.damage) this.damage = 0; else this.damage = input.damage;
 
     }
 
-    handleEvent(source, target, event, events, config) {
+    handleEvent(source, target, event, events, futureEvents) {
+        log_message("No event handler specified for proc " + this.name + ".");
         return;
+    }
+    reset() {
+
     }
 
 }
 
+let landedHits = ["hit", "crit", "block", "crit block", "glance"];
+
 class ThunderfuryMH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    handleEvent(source, target, event, events, futureEvents) {
+        if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
                 rng = Math.random(); // Two-roll
@@ -40,8 +46,10 @@ class ThunderfuryMH extends Proc {
 }
 
 class ThunderfuryOH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
                 rng = Math.random(); // Two-roll
@@ -64,8 +72,10 @@ class ThunderfuryOH extends Proc {
 }
 
 class PerdsMH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist [CITATION NEEDED] for the proc rate
                 rng = Math.random(); // Two-roll
@@ -86,8 +96,10 @@ class PerdsMH extends Proc {
 }
 
 class PerdsOH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.039*0.83) { // 0.83 derives from 17% chance to resist 
                 rng = Math.random(); // Two-roll
@@ -108,8 +120,10 @@ class PerdsOH extends Proc {
 }
 
 class DeathbringerMH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist
                 rng = Math.random(); // Two-roll
@@ -130,8 +144,10 @@ class DeathbringerMH extends Proc {
 }
 
 class DeathbringerOH extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability == "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.04*0.83) { // 0.83 derives from 17% chance to resist 
                 rng = Math.random(); // Two-roll
@@ -152,8 +168,10 @@ class DeathbringerOH extends Proc {
 }
 
 class MSA extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.0933*0.83) { // 0.83 derives from 17% chance to resist
                 rng = Math.random(); // Two-roll
@@ -174,7 +192,9 @@ class MSA extends Proc {
 }
 
 class GiftofArthasProc extends Proc {
-    handleEvent(source, target, event, events, config) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
         let rng = Math.random();
         if (event.type == "damage" && event.source == "Boss") {
             if (rng < 0.3*0.83) { // 17% chance to resist
@@ -198,8 +218,10 @@ class WindfuryProc extends Proc {
     constructor(input) {
         super(input)
     }
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.2) {
                 let procEvent = {
@@ -222,9 +244,41 @@ class WindfuryProc extends Proc {
     }
 }
 
+class WildStrikesProc extends Proc {
+    constructor() {
+        super("Wild Strikes");
+        this.ICDTimer = 0;
+    }
+    
+    handleEvent(source, target, event, events, futureEvents) {
+        // TODO: make damage event flag "direct/dot/etc" and make this only proc from direct dmg, note ranks might not work?
+        if (event.type == "damage" && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate", "Sunder Armor", "Heroic Strike"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
+            let rng = Math.random()
+            if (rng < 0.2) {
+                let procEvent = {
+                    "type": "extra attack",
+                    "source": event.source,
+                    "name": this.name,
+                    "timestamp": event.timestamp,
+                }
+                this.ICDTimer = event.timestamp + 1500;
+                events.push(procEvent);
+                let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == source.name)})
+                if(index >= 0)
+                    futureEvents.splice(index, 1)
+                source.abilities["MH Swing"].use(event.timestamp, source, target, events, futureEvents);
+            }
+        }
+    }
+    reset() {
+      this.ICDTimer = 0;
+    }
+}
 class HoJProc extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "Sunder Armor" && config.landedHits.includes(event.hit)) {
+    
+    handleEvent(source, target, event, events, futureEvents) {
+
+        if (event.type == "damage" && event.ability != "Sunder Armor" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.02) {
                 let procEvent = {
@@ -257,27 +311,23 @@ class HoJProc extends Proc {
 }
 
 class BloodFrenzyProc extends Proc {
-    handleEvent(source, target, event, events, config) {
-        if (event.type == "damage" && event.ability != "OH Swing" && config.landedHits.includes(event.hit)) {
-            let rng = Math.random()
-            if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
-                rng = Math.random(); // Two-roll
-                let critMod = rng < source.stats.spellcrit/100 ? 1.5 : 1;
-                let damage = this.damage*source.damageMod*critMod; // don't count enrage, use default 0.9 only
-                let procEvent = {
-                    "type": "damage",
-                    "ability": this.name,
-                    "hit": "hit",
-                    "timestamp": event.timestamp,
-                    "damage": damage, 
-                    "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
-                }
-                events.push(procEvent);
-                // Ensure that the target the get debuff applied
-                target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
-            }
-        }
+  constructor() {
+    super("Blood Frenzy");
+  }
+  handleEvent(source, target, event, events, futureEvents) {
+    if (event.type == "damage" && ["Rend (Rank 3)", "Rend", "Deep Wounds"].includes(event.name) && event.amount > 0) {
+      let procEvent = {
+          type: "rage",
+          name: this.name,
+          source: source.name,
+
+          timestamp: event.timestamp,
+          amount: 3, 
+          threat: 3 * 5,
+      }
+      registerFutureEvent(procEvent, futureEvents);
     }
+  }
 }
 
 function getTankProcs(globals) {
@@ -297,6 +347,12 @@ function getTankProcs(globals) {
                 name: "Thunderfury",
                 damage: 300,
             })
+        )
+    }
+
+    if(globals.tankStats.bonuses.wildStrikes) {
+        ret.push(
+            new WildStrikesProc()
         )
     }
 
@@ -368,6 +424,12 @@ function getTankProcs(globals) {
                 name: "Misplaced Servo Arm OH",
                 damage: 125,
             })
+        )
+    }
+    
+    if(globals.tankStats.runes.bloodFrenzy) {
+        ret.push(
+            new BloodFrenzyProc()
         )
     }
     return ret;

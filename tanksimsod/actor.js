@@ -8,7 +8,7 @@ class Actor {
 
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
-        this.additivePhysBonus = 0; // eg Gift of Arthas
+        this.additivePhysBonus = stats.additivePhysBonus
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
         this.defense = stats.defense
@@ -46,14 +46,14 @@ class Actor {
           aura.handleEvent(event, this, this.target, eventList, futureEvents);
         })
 
+        // Procs
+        if(event.source == "Tank" && this.name == "Tank") {
+          this.procs.forEach(proc => {
+            proc.handleEvent(this, this.target, event, eventList, futureEvents)
+          })
+        }
         if(event.type == "damage" && this.name == "Tank") {
 
-            // Procs
-            if(event.source == "Tank") {
-                this.procs.forEach(proc => {
-                    proc.handleEvent(event.source, event.target, event, eventList, futureEvents)
-                })
-            }
             // We might have just gotten rage to perform an action
             if(event.source == "Tank" && event.name == "MH Swing")
                 performAction(event.timestamp, this, this.target, eventList, futureEvents)
@@ -64,6 +64,8 @@ class Actor {
         } else if (event.type == "rage" && this.name == "Tank") {
           this.addRage(event.amount);
           // log_message("Tank gains " + event.amount.toFixed(2) + " rage from " + event.name + ". It now has " + this.rage.toFixed(2) + " rage.")
+        // } else if (event.type == "extra attack") {
+
         }
 
         // Parry haste
@@ -152,6 +154,7 @@ class Actor {
           aura.duration = 0;
           aura.stacks = 0;
         })
+        this.procs.forEach(proc => proc.reset())
         this.buffs = {}
         this.debuffs = {}
         this.onGCD = false
@@ -161,7 +164,7 @@ class Actor {
         this.damageMod = this.stats.damageMod
         this.hastePerc = this.stats.hastePerc
         this.defense = this.stats.defense
-        this.additivePhysBonus = 0
+        this.additivePhysBonus = this.stats.additivePhysBonus 
         this.rageGained = 0
         this.rageSpent = 0
         this.armor = this.stats.baseArmor

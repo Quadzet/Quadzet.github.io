@@ -631,6 +631,7 @@ class Rend extends Ability {
         this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
 
         for (let i = 0; i < this.duration(this.rank(source.stats.level))/3000; i++) { 
+          let dotDamage = statRound(this.damage(damageEvent.rank) * target.stats.bleedBonus);
           let dotEvent = 
           {
             timestamp: damageEvent.timestamp + (i+1)*3000,
@@ -639,25 +640,12 @@ class Rend extends Ability {
             target: damageEvent.target,
             name: this.name,
             hit: damageEvent.hit,
-            threat: this.damage(damageEvent.rank),
+            threat: dotDamage * source.stats.threatMod,
 
-            amount: this.damage(damageEvent.rank),
+            amount: dotDamage,
           }
           dotEvent.threat = this.threatCalculator(dotEvent, source);
           registerFutureEvent(dotEvent, futureEvents);
-          // TODO: Blood Frenzy could (should?) be a proc instead
-          if (source.stats.runes.bloodFrenzy) {
-            registerFutureEvent(
-            {
-              timestamp: timestamp + (i+1)*3000,
-              type: "rage",
-              source: source.name,
-              name: "Blood Frenzy",
-
-              amount: 3,
-            }
-            , futureEvents);
-          }
         }
       }
     rank(level) {

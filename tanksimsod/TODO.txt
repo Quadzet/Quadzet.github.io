@@ -1,8 +1,9 @@
  - Lägg till Runes (Furious Thunder)
-    - TODO: Deep wounds + blood frenzy, blood frenzy ska vara en proc
- - Lägg til rank till alla events
+ - Lägg til rank till alla events, fixa alla "Rend (Rank 3)"
  - Fixa raid buffs/debuffs (kolla guybrush) thunderclap/hmounculi atsp, windfury
- - Talents (rend, deep wounds, enrage, flurry, deathwish...)
+    - Wild Strikes (infinite wild strikes loops)
+    - stoneskin 
+ - Talents (rend, enrage, flurry, deathwish..., imp SA)
  - Fixa Boss stats (default armor, swing etc, level, block value)
  - Fixa Rotation
  - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället
@@ -11,6 +12,7 @@
  - Gör en generell damage-funktion som applicerar dmgMod, armor, additive dmg etc
  - eventList.push() ska ske på ETT ställe, just nu är det all over the place
     - Alla handleEvents returnerar en lista på nya events som läggs till till futureEvents i worker.js.handleEvent()?
+ - Implementera rage potions
 
 
  - Presentera samtliga resultat (uptimes, STDs, TMI..?)
@@ -32,6 +34,9 @@ Minor:
  - HS queuing hit bug could be made a buff
  - Bloodrage rage gain threat och self dmg
  - CoR ökar inte attackpower för boss
+ - Hit AURA suppression, just nu är det bara flat hit reduction? Koll så det stämmer iaf
+ - Horn of Lord är exlusive med Might
+ - Shield spec rage gains
 
 
 
