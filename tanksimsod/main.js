@@ -49,6 +49,78 @@ async function updateProgressbar(progressPerc) {
     await sleep(0);
 }
 
+function showItemDropdown() {
+    const dropdown = document.getElementById('dropdown-content');
+    dropdown.style.display = 'block';
+}
+
+function hideItemDropdown() {
+    const dropdown = document.getElementById('dropdown-content');
+    dropdown.style.display = 'none';
+}
+
+function selectChest(id) {
+  if (id != 0) {
+    const slot = document.getElementById("chest-slot");
+    slot.innerHTML = `<a id=${id} href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+    // data-wowhead="item=${id}"
+    slot.addEventListener('click', function(event) {
+      event.preventDefault();
+      selectChest(id);
+    })
+
+    const chestSlotImg = document.getElementById('chest-slot-img');
+    chestSlotImg.style.display = 'none';
+  } else {
+    const slot = document.getElementById("chest-slot");
+    slot.innerHTML = ``;
+
+    const chestSlotImg = document.getElementById('chest-slot-img');
+    chestSlotImg.style.display = 'block';
+  }
+  // Find the stats of the id
+  // UpdateStats() with 
+  window.$WowheadPower.refreshLinks();
+}
+
+function createLinks() {
+    const ids = [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870];
+    const dropdownContent = document.getElementById('dropdown-content');
+
+    // Clear any existing content
+    dropdownContent.innerHTML = '';
+
+    // Add an Unequip option
+    const unequip = document.createElement('a');
+    unequip.href = '#';
+    unequip.id = '0';
+    var span = document.createElement('span');
+    var spanText = document.createTextNode('Unequip');
+    span.appendChild(spanText);
+    unequip.appendChild(span);
+    unequip.addEventListener('click', function(event) {
+      event.preventDefault();
+      selectChest('0');
+      hideItemDropdown();
+    });
+    dropdownContent.appendChild(unequip);
+
+    // Create a link for each id in the array
+    ids.forEach(id => {
+        const link = document.createElement('a');
+        link.href = `https://www.wowhead.com/classic/item=${id}`;
+        link.id = `${id}`
+        
+        link.addEventListener('click', function(event) {
+          event.preventDefault();
+          selectChest(id);
+          hideItemDropdown();
+        })
+        dropdownContent.appendChild(link);
+    });
+    window.$WowheadPower.refreshLinks();
+}
+
 function saveInput()
 {
     // Tank Settings
@@ -332,6 +404,7 @@ function loadInput()
 
 function onLoadPage()
 {
+    createLinks();
     loadInput();
     updateStats();
 }
