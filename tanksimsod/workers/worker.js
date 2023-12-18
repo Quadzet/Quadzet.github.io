@@ -66,8 +66,8 @@ self.addEventListener('message', function(e) {
         tps: [],
         dps: [],
         dtps: [],
-        breakdown: {
-        }
+        tpsBreakdown: {},
+        casts: {},
     }
     // *** MAIN LOOP *** 
     for(let i in range(iterations)) {
@@ -91,25 +91,31 @@ self.addEventListener('message', function(e) {
 
         eventList.forEach(event => {
             if (event) {
-                if (event.source == "Boss" && event.type == "damage") {
-                    if (event.amount) damageTaken += event.amount
-                    //if (event.ability == "MH Swing") bossSwings += 1
-                } else if(event.type == "damage") {
-                    if (event.threat) threat += event.threat
-                    if (event.amount) damage += event.amount
-                    if (event.name) {
-                        if(!results.breakdown[`${event.name}`]) results.breakdown[`${event.name}`] = []
+                
+                if (event.source == "Boss") {
+                    if (event.amount && event.type == "damage") damageTaken += event.amount
+                } else if ("threat" in event) { 
+                    threat += event.threat
+                    if (event.type == "damage") {
+                      if (event.amount) damage += event.amount
+                    }
+                    if (event.threat != 0 || event.type == "damage") { // Don't allow non-damage events with zero threat
+                      if (event.name) {
+                        if(!results.tpsBreakdown[`${event.name}`]) results.tpsBreakdown[`${event.name}`] = []
+                        if (!results.tpsBreakdown[`${event.name}`][i]) results.tpsBreakdown[`${event.name}`][i] = {tps: 0, dps: 0, hits: 0, casts: 0};
 
-                        if (!results.breakdown[`${event.name}`][i]) results.breakdown[`${event.name}`][i] = {tps: 0, dps: 0, hits: 0, casts: 0};
-                        else {
-                          results.breakdown[`${event.name}`][i].tps += event.threat/globals.config.simDuration;
-                          results.breakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
-                          results.breakdown[`${event.name}`][i].casts += 1;
-                          results.breakdown[`${event.name}`][i].hits += ["miss", "dodge", "parry"].includes(event.hit) ? 0 : 1;//event.hit == "hit" ? 1 : 0;//
-                        }
-                        // else results.breakdown[`${event.name}`][i] = event.threat/globals.config.simDuration
+                        results.tpsBreakdown[`${event.name}`][i].tps += event.threat/globals.config.simDuration;
+                        if (event.amount && event.type == "damage")
+                          results.tpsBreakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
+                        results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
+                        if (event.hit)
+                          results.tpsBreakdown[`${event.name}`][i].hits += ["miss", "dodge", "parry"].includes(event.hit) ? 0 : 1;//event.hit == "hit" ? 1 : 0;//
+                      }
                     }
                 }
+              if (event.name == "Rend") {
+                let x = 15;
+              }
             }
         });
         results.tps.push(threat/globals.config.simDuration)

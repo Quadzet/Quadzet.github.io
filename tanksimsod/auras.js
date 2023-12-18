@@ -332,6 +332,7 @@ class BloodrageAura extends Aura {
           name: this.name,
 
           amount: 1,
+          threat: 5, // TODO: threat even when rage-capped..
         }
         , futureEvents);
       }
@@ -350,7 +351,7 @@ class RendAura extends Aura {
       type: "debuff",
       name: "Rend",
     
-      maxDuration: 9000,
+      maxDuration: 15000,
     })
   }
     handleEvent(event, owner, source, eventList, futureEvents) {
@@ -365,6 +366,14 @@ class RendAura extends Aura {
     }
   }
 
+  duration(rank) {
+    if (rank == 1) return 9000;
+    if (rank == 2) return 12000;
+    if (rank == 3) return 15000;
+    if (rank == 4) return 18000;
+    else if (rank < 8) return 21000;
+    else log_message("Invalid rank of " + this.name + ": " + rank);
+  }
 }
 
 class DeepWoundsAura extends Aura {

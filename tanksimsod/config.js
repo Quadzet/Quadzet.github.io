@@ -225,6 +225,7 @@ function updateStats()
     let shieldspec = Number(document.getElementById("shieldspec").value);
     let impHS = Number(document.getElementById("impHS").value);
     let impSA = Number(document.getElementById("impSA").value);
+    let impRend = Number(document.getElementById("impRend").value);
     let defiance = Number(document.getElementById("defiance").value);
     let impale = Number(document.getElementById("impale").value);
     // let dwspec = Number(document.getElementById("dwspec").value);
@@ -599,6 +600,7 @@ function updateStats()
                 shieldspec: shieldspec,
                 impHS: impHS,
                 impSA: impSA,
+                impRend: impRend,
                 defiance: defiance,
                 impale: impale,
                 // dwspec: dwspec,

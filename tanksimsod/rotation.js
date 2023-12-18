@@ -3,26 +3,18 @@
 
 function performAction(timestamp, source, target, eventList, futureEvents) {
     if(source.name == "Tank") {
-        // Tank GCD action priority list
+        // Tank GCD action priority list, TODO: Make this smarter, don't have to check the other onGCD if we have jus tused an ability
         if(!source.onGCD) {
             if(source.abilities["Shield Slam"].isUsable(timestamp, source)) {
                 source.abilities["Shield Slam"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
-            else if(source.abilities["Revenge"].isUsable(timestamp, source)) {
+            if(source.abilities["Revenge"].isUsable(timestamp, source)) {
                 source.abilities["Revenge"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
             if(source.abilities["Raging Blow"] && source.abilities["Raging Blow"].isUsable(timestamp, source)) {
                 source.abilities["Raging Blow"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
-            else if(source.abilities["Devastate"] && source.abilities["Devastate"].isUsable(timestamp, source)) {
-              if(source.rage > 85)
-                source.abilities["Devastate"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
-            }
-            else if(source.abilities["Sunder Armor"] && source.abilities["Sunder Armor"].isUsable(timestamp, source)) {
-              if(source.rage > 85)
-                source.abilities["Sunder Armor"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
-            }
-            else if(source.stats.runes.bloodFrenzy && source.abilities["Rend"] && source.abilities["Rend"].isUsable(timestamp, source)) {
+            if(source.stats.runes.bloodFrenzy && source.abilities["Rend"] && source.abilities["Rend"].isUsable(timestamp, source)) {
               let rendActive = false;
               // TODO: Ineffective
               target.auras.forEach(aura => {
@@ -31,6 +23,14 @@ function performAction(timestamp, source, target, eventList, futureEvents) {
               })
               if(source.rage > 75 && !rendActive)
                 source.abilities["Rend"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
+            }
+            if(source.abilities["Devastate"] && source.abilities["Devastate"].isUsable(timestamp, source)) {
+              if(source.rage > 85)
+                source.abilities["Devastate"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
+            }
+            if(source.abilities["Sunder Armor"] && source.abilities["Sunder Armor"].isUsable(timestamp, source)) {
+              if(source.rage > 85)
+                source.abilities["Sunder Armor"].use(timestamp, source, Actors["Boss"], eventList, futureEvents);
             }
         }
 

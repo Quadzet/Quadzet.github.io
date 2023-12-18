@@ -102,6 +102,7 @@ function saveInput()
     localStorage.setItem("toughness", document.getElementById("toughness").value)
     localStorage.setItem("impHS", document.querySelector("#impHS").value) 
     localStorage.setItem("impSA", document.querySelector("#impSA").value) 
+    localStorage.setItem("impRend", document.querySelector("#impRend").value) 
     localStorage.setItem("impale", document.querySelector("#impale").value) 
     localStorage.setItem("defiance", document.querySelector("#defiance").value) 
     // localStorage.setItem("dwspec", document.querySelector("#dwspec").value) 
@@ -243,6 +244,7 @@ function loadInput()
     document.getElementById("toughness").value = localStorage.getItem("toughness") ? localStorage.getItem("toughness") : 3;
     document.querySelector("#impHS").value = localStorage.getItem("impHS") ? localStorage.getItem("impHS") : 3; 
     document.querySelector("#impSA").value = localStorage.getItem("impSA") ? localStorage.getItem("impSA") : 0; 
+    document.querySelector("#impRend").value = localStorage.getItem("impRend") ? localStorage.getItem("impRend") : 0; 
     document.querySelector("#impale").value = localStorage.getItem("impale") ? localStorage.getItem("impale") : 0; 
     document.querySelector("#defiance").value = localStorage.getItem("defiance") ? localStorage.getItem("defiance") : 5; 
     // document.querySelector("#dwspec").value = localStorage.getItem("dwspec") ? localStorage.getItem("dwspec") : 0; 
@@ -388,9 +390,9 @@ async function main() {
                 progressPerc += e.data.progressPerc / numWorkers;
                 updateProgressbar(progressPerc);
             } else {
-                for (let ability in e.data.results.breakdown) {
+                for (let ability in e.data.results.tpsBreakdown) {
                     if(!results[`${ability}`]) results[`${ability}`] = [];
-                    results[`${ability}`] = results[`${ability}`].concat(e.data.results.breakdown[`${ability}`]);
+                    results[`${ability}`] = results[`${ability}`].concat(e.data.results.tpsBreakdown[`${ability}`]);
                 }
                 // for (let ability in e.data.uptimes) {
                 //     if(!uptimes[`${ability}`]) uptimes[`${ability}`] = [];
@@ -432,7 +434,7 @@ async function main() {
         let iterations = globals.config.iterations;
         // Pad the vector in case there were fight iterations where an ability was not used at all (is this really needed?)
         for(let result in results) {
-            results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => 0).concat(results[`${result}`])
+            results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => { return { tps: 0, dps: 0, hits: 0, casts: 0 }}).concat(results[`${result}`])
         }
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         // Sort the abilities based on their average tps
@@ -445,6 +447,8 @@ async function main() {
         })
 
         let resultTable = `<table><tr><th>Ability</th><th>TPS</th><th>DPS</th><th>Casts</th><th>Hits</th></tr>`;
+        let totalTps = 0;
+        let totalDps = 0;
         for (let i in sortedResults) {
           let result = {tps: 0, dps: 0, casts: 0, hits: 0};
           if (sortedResults[i]) {
@@ -457,7 +461,10 @@ async function main() {
             }, { tps: 0, dps: 0, hits: 0, casts: 0 });
           }
           resultTable = resultTable.concat(`<tr><td>${sortedResults[i][0]}:</td><td>${Math.round(result.tps/iterations*100)/100}</td><td>${Math.round(result.dps/iterations*100)/100}</td><td>${Math.round(result.casts/iterations*100)/100}</td><td>${Math.round(result.hits/iterations*100)/100}</td></tr>`)
+          totalTps += result.tps;
+          totalDps += result.dps;
         }
+        resultTable = resultTable.concat(`<tr><td>Total:</td><td>${Math.round(totalTps/iterations*100)/100}</td><td>${Math.round(totalDps/iterations*100)/100}</td></tr>`)
         resultTable = resultTable.concat(`</table>`)
         let statsTable = 
         `<table>

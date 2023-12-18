@@ -3,7 +3,6 @@
  - Fixa raid buffs/debuffs
     - stoneskin, atsp debuffs, thorns
  - Talents (rend, enrage, flurry, deathwish...)
- - Fixa Boss stats (default armor, swing etc, level, block value)
  - Fixa Rotation
  - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället
     - Bug med CbR, flera applications verkar lägga till fler dmgMods, löses av ovan punkt
@@ -12,30 +11,26 @@
  - eventList.push() ska ske på ETT ställe, just nu är det all over the place
     - Alla handleEvents returnerar en lista på nya events som läggs till till futureEvents i worker.js.handleEvent()?
  - Implementera rage potions
+ - fixa casts/rage gains/uptimes result table
 
 
  - Presentera samtliga resultat (uptimes, STDs, TMI..?)
  - devastate ska inte dubbelprocca procs (dmg + SA application dvs)
  - Rage formula map blizzard change...
- - Result table like 
-    ability 1   TPS     DPS
-    ...
-    Total       TPS     DPS     DTPS?
-    (for uptimes etc as well)
- - utöka gear/enchants till de relevanta tillgängliga
  - parry haste jämfört med tbc
  - atp stat delta funkar inte (negativt)
- - debuff/buff ranks (sunder armor t.ex., olika armor per rank)
  - APL
 
 
 Minor:
  - HS queuing hit bug could be made a buff
- - Bloodrage rage gain threat och self dmg
  - CoR ökar inte attackpower för boss
  - Hit AURA suppression, just nu är det bara flat hit reduction? Koll så det stämmer iaf
  - Horn of Lord är exlusive med Might
  - Shield spec rage gains
+ - HS unqueuear inte om man missar?
+ - Rage gain threat räknar med overcapping
+ - Rend hit table... Hur funkar block
 
 
 

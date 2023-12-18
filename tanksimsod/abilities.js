@@ -626,12 +626,16 @@ class Rend extends Ability {
     use(timestamp, source, target, eventList, futureEvents) {
         let damage = 0;
         let damageEvent = rollAttack(source, target, damage, true);
-        if (damageEvent.hit == "crit") damageEvent.hit = "hit";  // TODO this can't crit...
+        if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
         damageEvent.rank = this.rank(source.stats.level);
         this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
 
         for (let i = 0; i < this.duration(this.rank(source.stats.level))/3000; i++) { 
-          let dotDamage = statRound(this.damage(damageEvent.rank) * target.stats.bleedBonus);
+
+          let impRendMult = 1;
+          if (source.stats.talents.impRend)
+            impRendMult += 0.05 + 0.1 * source.stats.talents.impRend;
+          let dotDamage = statRound(this.damage(damageEvent.rank) * target.stats.bleedBonus * impRendMult);
           let dotEvent = 
           {
             timestamp: damageEvent.timestamp + (i+1)*3000,
@@ -639,7 +643,7 @@ class Rend extends Ability {
             source: damageEvent.source,
             target: damageEvent.target,
             name: this.name,
-            hit: damageEvent.hit,
+            hit: "hit", 
             threat: dotDamage * source.stats.threatMod,
 
             amount: dotDamage,
