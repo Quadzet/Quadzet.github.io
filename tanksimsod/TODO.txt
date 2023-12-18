@@ -2,7 +2,7 @@
  - Lägg til rank till alla events, fixa alla "Rend (Rank 3)"
  - Fixa raid buffs/debuffs
     - stoneskin, atsp debuffs, thorns
- - Talents (rend, enrage, flurry, deathwish...)
+ - Talents (enrage, flurry, deathwish...)
  - Fixa Rotation
  - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället
     - Bug med CbR, flera applications verkar lägga till fler dmgMods, löses av ovan punkt
@@ -31,6 +31,7 @@ Minor:
  - HS unqueuear inte om man missar?
  - Rage gain threat räknar med overcapping
  - Rend hit table... Hur funkar block
+ - Deep Wounds double dipping måste kolla om dmgMod dels vid crit, dels vid dot tick.
 
 
 
