@@ -49,49 +49,82 @@ async function updateProgressbar(progressPerc) {
     await sleep(0);
 }
 
-function showItemDropdown() {
-    const dropdown = document.getElementById('dropdown-content');
+
+function addEventListeners() {
+    const slots = ["chest-slot", "head-slot", "legs-slot"];
+    slots.forEach(slot => {
+      const element = document.getElementById(slot);
+      element.addEventListener('click', function(event) {
+        event.preventDefault();
+        // var id = element.getAttribute('itemId');
+
+        // selectItem(id, slot);
+      })
+    });
+
+    document.body.addEventListener('click', function(event) {
+        // Check if the clicked element is not part of the dropdown
+        if (!event.target.closest('.custom-dropdown')) {
+            slots.forEach(slot => {
+              hideItemDropdown(slot);
+            });
+        }
+    });
+
+
+}
+
+
+function showItemDropdown(slot) {
+    const dropdown = document.getElementById(slot + '-dropdown-content');
+    const dropdowns = document.getElementsByClassName('dropdown-content')
+    // Hide any already opened dropdown
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns.item(i).style.display = 'none';
+    }
     dropdown.style.display = 'block';
 }
 
-function hideItemDropdown() {
-    const dropdown = document.getElementById('dropdown-content');
+function hideItemDropdown(slot) {
+    const dropdown = document.getElementById(slot + '-dropdown-content');
     dropdown.style.display = 'none';
 }
 
-function selectChest(id) {
+function selectItem(id, slot) {
   if (id != 0) {
-    const slot = document.getElementById("chest-slot");
-    slot.innerHTML = `<a id=${id} href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
-    // data-wowhead="item=${id}"
-    slot.addEventListener('click', function(event) {
-      event.preventDefault();
-      selectChest(id);
-    })
+    const element = document.getElementById(slot);
+    element.innerHTML = `<a itemId=${id} href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
 
-    const chestSlotImg = document.getElementById('chest-slot-img');
-    chestSlotImg.style.display = 'none';
+    const slotImg = document.getElementById(slot + '-img');
+    slotImg.style.display = 'none';
   } else {
-    const slot = document.getElementById("chest-slot");
-    slot.innerHTML = ``;
+    const element = document.getElementById(slot);
+    element.innerHTML = ``;
 
-    const chestSlotImg = document.getElementById('chest-slot-img');
-    chestSlotImg.style.display = 'block';
+    const slotImg = document.getElementById(slot + '-img');
+    slotImg.style.display = 'block';
   }
   // Find the stats of the id
   // UpdateStats() with 
-  window.$WowheadPower.refreshLinks();
+  window.$WowheadPower.refreshLinks(); // Needed?
 }
 
 function createLinks() {
-    const ids = [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870];
-    const dropdownContent = document.getElementById('dropdown-content');
+  const slots = ["chest-slot", "head-slot", "legs-slot"];
+  // TODO: mode this to a data file
+  const ids = {
+    'chest-slot': [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
+    'head-slot': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
+    'legs-slot': [209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
+  };
+  slots.forEach(slot => {
+    var dropdownContent = document.getElementById(slot + '-dropdown-content');
 
     // Clear any existing content
     dropdownContent.innerHTML = '';
 
     // Add an Unequip option
-    const unequip = document.createElement('a');
+    var unequip = document.createElement('a');
     unequip.href = '#';
     unequip.id = '0';
     var span = document.createElement('span');
@@ -100,25 +133,26 @@ function createLinks() {
     unequip.appendChild(span);
     unequip.addEventListener('click', function(event) {
       event.preventDefault();
-      selectChest('0');
-      hideItemDropdown();
+      selectItem('0', slot);
+      hideItemDropdown(slot);
     });
     dropdownContent.appendChild(unequip);
 
     // Create a link for each id in the array
-    ids.forEach(id => {
+    ids[slot].forEach(id => {
         const link = document.createElement('a');
         link.href = `https://www.wowhead.com/classic/item=${id}`;
         link.id = `${id}`
         
         link.addEventListener('click', function(event) {
           event.preventDefault();
-          selectChest(id);
-          hideItemDropdown();
+          selectItem(id, slot);
+          hideItemDropdown(slot);
         })
         dropdownContent.appendChild(link);
     });
-    window.$WowheadPower.refreshLinks();
+  }); 
+  window.$WowheadPower.refreshLinks();
 }
 
 function saveInput()
@@ -405,6 +439,7 @@ function loadInput()
 function onLoadPage()
 {
     createLinks();
+    addEventListeners();
     loadInput();
     updateStats();
 }
