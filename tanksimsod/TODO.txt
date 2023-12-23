@@ -1,28 +1,29 @@
+ - Gear 
+    - Fixa ikonstorlek vs unequipped
+    - enchants - först som tidagare med bättre layout, sedan a la 60u/wowsims
+    - Spara current gear, först som tidigare med "Default", sedan med namngivna + resten av settings
  - Lägg till Runes (Furious Thunder)
- - Lägg til rank till alla events, fixa alla "Rend (Rank 3)"
+ - Lägg till rank till alla events, fixa alla "Rend (Rank 3)"
  - Fixa raid buffs/debuffs
     - stoneskin, atsp debuffs, thorns
  - Talents (enrage, flurry, deathwish...)
  - Fixa Rotation
  - Auras borde inte modifiera Actors stats, det borde komma från Actor.get_stat() istället
     - Bug med CbR, flera applications verkar lägga till fler dmgMods, löses av ovan punkt
- - Gear (endgame att skriva en converter från guybrushformat till quadzetformat?)
  - Gör en generell damage-funktion som applicerar dmgMod, armor, additive dmg etc
  - eventList.push() ska ske på ETT ställe, just nu är det all over the place
     - Alla handleEvents returnerar en lista på nya events som läggs till till futureEvents i worker.js.handleEvent()?
  - Implementera rage potions
  - fixa casts/rage gains/uptimes result table
 
-
  - Presentera samtliga resultat (uptimes, STDs, TMI..?)
  - devastate ska inte dubbelprocca procs (dmg + SA application dvs)
- - Rage formula map blizzard change...
- - parry haste jämfört med tbc
  - atp stat delta funkar inte (negativt)
  - APL
 
 
 Minor:
+ - Rage formula map blizzard change...
  - HS queuing hit bug could be made a buff
  - CoR ökar inte attackpower för boss
  - Hit AURA suppression, just nu är det bara flat hit reduction? Koll så det stämmer iaf

@@ -53,25 +53,25 @@ async function updateProgressbar(progressPerc) {
 }
 
 // TODO: move this to a data file
-const ITEM_SLOTS = ['head-slot', 'hands-slot', 'neck-slot', 'waist-slot', 'shoulders-slot', 'legs-slot', 'back-slot', 'feet-slot', 'chest-slot', 'wrists-slot', 'finger1-slot', 'finger2-slot', 'trinket1-slot', 'trinket2-slot', 'mainhand-slot', 'offhand-slot', 'ranged-slot'];
+const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
-  'head-slot': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
-  'hands-slot': [211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
-  'neck-slot': [209817, 20444, 209673, 209825, 209422],
-  'waist-slot': [211457, 209421, 6719, 6468, 7107, 211466, 4249, 3429, 14567, 14755, 4707],
-  'shoulders-slot': [209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
-  'legs-slot': [209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
-  'back-slot': [2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
-  'feet-slot': [211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
-  'chest-slot': [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
-  'wrists-slot': [211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
-  'finger1-slot': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
-  'finger2-slot': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
-  'trinket1-slot': [21568, 211451, 211449, 211420, 18854],
-  'trinket2-slot': [21568, 211451, 211449, 211420, 18854],
-  'mainhand-slot': [212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
-  'offhand-slot': [211460, 6223, 13079, 7002, 6320, 209424, 13245, 12997, 4064, 6676, 15891, 5443, 3656],
-  'ranged-slot': [209830, 209688, 3021, 209563],
+  'head': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
+  'hands': [211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
+  'neck': [209817, 20444, 209673, 209825, 209422],
+  'waist': [211457, 209421, 6719, 6468, 7107, 211466, 4249, 3429, 14567, 14755, 4707],
+  'shoulders': [209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
+  'legs': [209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
+  'back': [2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
+  'feet': [211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
+  'chest': [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
+  'wrists': [211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
+  'finger1': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
+  'finger2': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
+  'trinket1': [21568, 211451, 211449, 211420, 18854],
+  'trinket2': [21568, 211451, 211449, 211420, 18854],
+  'mainhand': [212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
+  'offhand': [211460, 6223, 13079, 7002, 6320, 209424, 13245, 12997, 4064, 6676, 15891, 5443, 3656],
+  'ranged': [209830, 209688, 3021, 209563],
 };
 var ITEMS = {};
 
@@ -318,7 +318,7 @@ async function loadItemData() {
 
 function addEventListeners() {
     ITEM_SLOTS.forEach(slot => {
-      const element = document.getElementById(slot);
+      const element = document.getElementById(slot + '-slot');
       element.addEventListener('click', function(event) {
         event.preventDefault();
         // var id = element.getAttribute('itemId');
@@ -341,7 +341,7 @@ function addEventListeners() {
 
 
 function showItemDropdown(slot) {
-    const dropdown = document.getElementById(slot + '-dropdown-content');
+    const dropdown = document.getElementById(slot + '-slot-dropdown-content');
     const dropdowns = document.getElementsByClassName('dropdown-content')
     // Hide any already opened dropdown
     for (let i = 0; i < dropdowns.length; i++) {
@@ -351,24 +351,24 @@ function showItemDropdown(slot) {
 }
 
 function hideItemDropdown(slot) {
-    const dropdown = document.getElementById(slot + '-dropdown-content');
+    const dropdown = document.getElementById(slot + '-slot-dropdown-content');
     dropdown.style.display = 'none';
 }
 
 function selectItem(id, slot) {
   if (id != 0) {
-    const element = document.getElementById(slot);
+    const element = document.getElementById(slot + '-slot');
     element.setAttribute('itemid', `${id}`)
     element.innerHTML = `<a href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
 
-    const slotImg = document.getElementById(slot + '-img');
+    const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'none';
   } else {
-    const element = document.getElementById(slot);
+    const element = document.getElementById(slot + '-slot');
     element.setAttribute('itemid', `${id}`)
     element.innerHTML = ``;
 
-    const slotImg = document.getElementById(slot + '-img');
+    const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'block';
   }
   // Find the stats of the id
@@ -378,7 +378,7 @@ function selectItem(id, slot) {
 
 function createLinks() {
   ITEM_SLOTS.forEach(slot => {
-    var dropdownContent = document.getElementById(slot + '-dropdown-content');
+    var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
 
     // Clear any existing content
     dropdownContent.innerHTML = '';

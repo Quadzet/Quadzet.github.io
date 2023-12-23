@@ -202,7 +202,7 @@ function updateStats()
       blockvalue: 0,
     };
     ITEM_SLOTS.forEach(slot => {
-      let element = document.getElementById(`${slot}`)
+      let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
       if (itemID && itemID != 0) {
         let itemStats = ITEMS[`${itemID}`];
@@ -320,7 +320,7 @@ function updateStats()
     let mhweapontype = "";
     let ohweapontype = "";
     ITEM_SLOTS.forEach(slot => {
-      let element = document.getElementById(`${slot}`)
+      let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
       if (itemID && itemID != 0) {
         let itemStats = ITEMS[`${itemID}`];
@@ -330,10 +330,10 @@ function updateStats()
           if(itemStats.skilltype.includes(mhweapontype))
             ohwepskill += itemStats.skill;
         }
-        if (slot == 'mainhand-slot') {
+        if (slot == 'mainhand') {
           mainhand = itemStats;
         }
-        if (slot == 'offhand-slot') {
+        if (slot == 'offhand') {
           offhand = itemStats;
         }
       }
