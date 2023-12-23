@@ -184,26 +184,60 @@ function getEarthStr(level) {
 
 function updateStats()
 {
-    // Gear
     let level = document.querySelector("#level").value
+    // Gear
+    let stats = {
+      armor: 0,
+      agility: 0,
+      strength: 0,
+      stamina: 0,
+
+      crit: 0,
+      hit: 0,
+
+      defense: 0,
+      parry: 0,
+      dodge: 0,
+      block: 0,
+      blockvalue: 0,
+    };
+    ITEM_SLOTS.forEach(slot => {
+      let element = document.getElementById(`${slot}`)
+      let itemID = element.getAttribute('itemid');
+      if (itemID && itemID != 0) {
+        let itemStats = ITEMS[`${itemID}`];
+
+        stats.armor      += itemStats.armor;
+        stats.agility    += itemStats.agility;
+        stats.strength   += itemStats.strength;
+        stats.stamina    += itemStats.stamina;
+        stats.crit       += itemStats.crit;
+        stats.hit        += itemStats.hit;
+        stats.defense    += itemStats.defense;
+        stats.parry      += itemStats.parry;
+        stats.dodge      += itemStats.dodge;
+        stats.block      += itemStats.block;
+        stats.blockvalue += itemStats.blockvalue;
+      }
+    });
     let race = document.querySelector("#race").value
-    let head = document.querySelector("#head").value
-    let neck = document.querySelector("#neck").value
-    let shoulder = document.querySelector("#shoulder").value
-    let cape = document.querySelector("#cape").value
-    let chest = document.querySelector("#chest").value
-    let wrist = document.querySelector("#wrist").value
-    let hand = document.querySelector("#hands").value
-    let waist = document.querySelector("#waist").value
-    let leg = document.querySelector("#legs").value
-    let boots = document.querySelector("#feet").value
-    let ringone = document.querySelector("#ringone").value
-    let ringtwo = document.querySelector("#ringtwo").value
-    let trinketone = document.querySelector("#trinketone").value
-    let trinkettwo = document.querySelector("#trinkettwo").value
-    let ranged = document.querySelector("#ranged").value
-    let mainhand = document.querySelector("#mainhand").value
-    let offhand = document.querySelector("#offhand").value
+    // let head = document.querySelector("#head").value
+    // let neck = document.querySelector("#neck").value
+    // let shoulder = document.querySelector("#shoulder").value
+    // let cape = document.querySelector("#cape").value
+    // let chest = document.querySelector("#chest").value
+    // let wrist = document.querySelector("#wrist").value
+    // let hand = document.querySelector("#hands").value
+    // let waist = document.querySelector("#waist").value
+    // let leg = document.querySelector("#legs").value
+    // let boots = document.querySelector("#feet").value
+    // let ringone = document.querySelector("#ringone").value
+    // let ringtwo = document.querySelector("#ringtwo").value
+    // let trinketone = document.querySelector("#trinketone").value
+    // let trinkettwo = document.querySelector("#trinkettwo").value
+    // let ranged = document.querySelector("#ranged").value
+    // let mainhand = document.querySelector("#mainhand").value
+    // let offhand = document.querySelector("#offhand").value
 
     // Enchants
     let headenchant = document.querySelector("#headenchant").value
@@ -232,22 +266,22 @@ function updateStats()
 
     let gear = [
         races[race],
-        heads[head],
-        necks[neck],
-        shoulders[shoulder],
-        capes[cape],
-        chests[chest],
-        wrists[wrist],
-        hands[hand],
-        waists[waist],
-        legs[leg],
-        feet[boots],
-        rings[ringone],
-        rings[ringtwo],
-        trinkets[trinketone],
-        trinkets[trinkettwo],
-        rangedweps[ranged],
-        weapons[mainhand],
+        // heads[head],
+        // necks[neck],
+        // shoulders[shoulder],
+        // capes[cape],
+        // chests[chest],
+        // wrists[wrist],
+        // hands[hand],
+        // waists[waist],
+        // legs[leg],
+        // feet[boots],
+        // rings[ringone],
+        // rings[ringtwo],
+        // trinkets[trinketone],
+        // trinkets[trinkettwo],
+        // rangedweps[ranged],
+        // weapons[mainhand],
         enchants[headenchant],
         enchants[shoulderenchant],
         enchants[backenchant],
@@ -259,12 +293,12 @@ function updateStats()
         enchants[mhwepenchant],
         enchants[ohwepenchant],
     ];
-    let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true;
-    if (_dualWield) {
-        gear.push(weapons[offhand])
-    } else {
-        gear.push(shields[offhand])
-    }
+    // let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true;
+    // if (_dualWield) {
+    //     gear.push(weapons[offhand])
+    // } else {
+    //     gear.push(shields[offhand])
+    // }
 
     let strength = 0;
     let stamina = 0;
@@ -281,16 +315,43 @@ function updateStats()
     let blockvalue = 0;
     let extrahp = 94; // Base hp for all races
 
-    let mhmin = weapons[mainhand].min;
-    let mhmax = weapons[mainhand].max;
-    let mhswing = weapons[mainhand].swingtimer*1000;
+    let mainhand = {};
+    let offhand = {};
+    let mhweapontype = "";
+    let ohweapontype = "";
+    ITEM_SLOTS.forEach(slot => {
+      let element = document.getElementById(`${slot}`)
+      let itemID = element.getAttribute('itemid');
+      if (itemID && itemID != 0) {
+        let itemStats = ITEMS[`${itemID}`];
+        if (itemStats) {
+          if(itemStats.skilltype.includes(mhweapontype))
+            mhwepskill += itemStats.skill;
+          if(itemStats.skilltype.includes(mhweapontype))
+            ohwepskill += itemStats.skill;
+        }
+        if (slot == 'mainhand-slot') {
+          mainhand = itemStats;
+        }
+        if (slot == 'offhand-slot') {
+          offhand = itemStats;
+        }
+      }
+    });
+    let _dualWield = offhand && offhand.type != 'Shield';
+
+    let mhmin = mainhand.mindmg;
+    let mhmax = mainhand.maxdmg;
+    let mhswing = mainhand.swingtimer;
     let ohmin = 0;
     let ohmax = 0;
     let ohswing = 0;
+
+
     if (_dualWield) {
-        ohmin = weapons[offhand].min;
-        ohmax = weapons[offhand].max;
-        ohswing = weapons[offhand].swingtimer*1000;
+        ohmin = offhand.mindmg;
+        ohmax = offhand.maxdmg;
+        ohswing = offhand.swingtimer;
     }
     gear.forEach(item => {
         strength += item.strength;
@@ -307,24 +368,37 @@ function updateStats()
         blockvalue += item.blockvalue;
     })
 
+    armor      += stats.armor;
+    agility    += stats.agility;
+    strength   += stats.strength;
+    stamina    += stats.stamina;
+    crit       += stats.crit;
+    hit        += stats.hit;
+    defense    += stats.defense;
+    parry      += stats.parry;
+    dodge      += stats.dodge;
+    block      += stats.block;
+    blockvalue += stats.blockvalue;
+
+
     let mhwepskill = level * 5;
     let ohwepskill = _dualWield ? level * 5 : 0;
-    let mhweapontype = document.getElementById("mhweptypelist").value
-    let ohweapontype = document.getElementById("ohweptypelist").value
 
-    gear.forEach(item => {
-        if(item.skilltype && item.skilltype != 'none') {
-            if(item.skilltype.includes(mhweapontype))
-                mhwepskill += item.skill;
-        }
-    })
 
-    gear.forEach(item => {
-        if(item.skilltype && item.skilltype != 'none') {
-            if(item.skilltype.includes(ohweapontype))
-                ohwepskill += item.skill;
-        }
-    })
+
+    // gear.forEach(item => {
+    //     if(item.skilltype && item.skilltype != 'none') {
+    //         if(item.skilltype.includes(mhweapontype))
+    //             mhwepskill += item.skill;
+    //     }
+    // })
+
+    // gear.forEach(item => {
+    //     if(item.skilltype && item.skilltype != 'none') {
+    //         if(item.skilltype.includes(ohweapontype))
+    //             ohwepskill += item.skill;
+    //     }
+    // })
 
     armor *= (1+0.02*toughness); // Only applies to armor from gear
     armor *= document.getElementById("imploh").checked ? 1.3 : 1;
@@ -501,22 +575,22 @@ function updateStats()
     let hastePerc = extrahaste + (document.getElementById("headenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("legenchant").value == "Libram of Rapidity" ? 1 : 0) + ( document.getElementById("handenchant").value == "Minor Haste" ? 1 : 0);
         hastePerc += _wcb ? 15 : 0;
 
-    document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}              `;
-    document.getElementById("playerstrength").innerHTML = `${Math.round(strength)} `;
-    document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)} `;
-    document.getElementById("playeragility").innerHTML = `${Math.round(agility)} `;
-    document.getElementById("playerhit").innerHTML = `${hit} `;
-    document.getElementById("playercrit").innerHTML = `${Math.round(crit*10)/10} `;
-    document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)} `;
-    document.getElementById("playerarmor").innerHTML = `${Math.round(armor)} `;
-    document.getElementById("playerblock").innerHTML = `${Math.round((block)*100)/100} `;
-    document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)} `;
-    document.getElementById("playerparry").innerHTML = `${Math.round((parry)*100)/100} `;
-    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge)*100)/100} `;
-    document.getElementById("playerdefense").innerHTML = `${defense + level * 5} `;
-    document.getElementById("playermhskill").innerHTML = `${mhwepskill} `;
-    document.getElementById("playerohskill").innerHTML = `${ohwepskill} `;
-    document.getElementById("playerhaste").innerHTML = `${hastePerc} `;
+    document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
+    document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
+    document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)}`;
+    document.getElementById("playeragility").innerHTML = `${Math.round(agility)}`;
+    document.getElementById("playerhit").innerHTML = `${hit}`;
+    document.getElementById("playercrit").innerHTML = `${Math.round(crit*10)/10}`;
+    document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength*2)}`;
+    document.getElementById("playerarmor").innerHTML = `${Math.round(armor)}`;
+    document.getElementById("playerblock").innerHTML = `${Math.round((block)*100)/100}`;
+    document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)}`;
+    document.getElementById("playerparry").innerHTML = `${Math.round((parry)*100)/100}`;
+    document.getElementById("playerdodge").innerHTML = `${Math.round((dodge)*100)/100}`;
+    document.getElementById("playerdefense").innerHTML = `${defense + level * 5}`;
+    document.getElementById("playermhskill").innerHTML = `${mhwepskill}`;
+    document.getElementById("playerohskill").innerHTML = `${ohwepskill}`;
+    document.getElementById("playerhaste").innerHTML = `${hastePerc}`;
 
     // Add stat deltas to stats, note str -> ap/blockvalue interaction not accounted for.
     strength += extrastrength;
@@ -620,14 +694,14 @@ function updateStats()
                 msaOH: offhand == "Misplaced Servo Arm",
             },
 
-            trinkets: {
-                kots: (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider"),
-                earthstrike: (trinketone == "Earthstrike") || (trinkettwo == "Earthstrike"),
-                diamondflask: (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask"),
-                jomgabbar: (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar"),
-                slayerscrest: (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest"),
-                hoj: (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice"),
-            },
+            // trinkets: {
+            //     kots: (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider"),
+            //     earthstrike: (trinketone == "Earthstrike") || (trinkettwo == "Earthstrike"),
+            //     diamondflask: (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask"),
+            //     jomgabbar: (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar"),
+            //     slayerscrest: (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest"),
+            //     hoj: (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice"),
+            // },
 
             bonuses: {
                 // twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,

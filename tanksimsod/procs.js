@@ -364,13 +364,13 @@ function getTankProcs(globals) {
         )
     }
 
-    if(globals.tankStats.trinkets.hoj) {
-        ret.push(
-            new HoJProc({
-                name: "Hand of Justice", 
-            })
-        )
-    }
+    // if(globals.tankStats.trinkets.hoj) {
+    //     ret.push(
+    //         new HoJProc({
+    //             name: "Hand of Justice", 
+    //         })
+    //     )
+    // }
 
     if(globals.tankStats.weapons.perdsMH) {
         ret.push(
