@@ -1,3 +1,9 @@
+.gear-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+
 /* Style for the custom dropdown */
 .custom-dropdown {
     position: relative;

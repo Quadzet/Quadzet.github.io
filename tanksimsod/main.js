@@ -1,4 +1,7 @@
 "use strict";
+
+// import * as papa from "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js";
+
 function sleep(ms) { return new Promise((r) => 
     setTimeout(r, ms)); }
 
@@ -49,10 +52,272 @@ async function updateProgressbar(progressPerc) {
     await sleep(0);
 }
 
+// TODO: move this to a data file
+const ITEM_SLOTS = ['head-slot', 'hands-slot', 'neck-slot', 'waist-slot', 'shoulders-slot', 'legs-slot', 'back-slot', 'feet-slot', 'chest-slot', 'wrists-slot', 'finger1-slot', 'finger2-slot', 'trinket1-slot', 'trinket2-slot', 'mainhand-slot', 'offhand-slot', 'ranged-slot'];
+const ITEM_IDS = {
+  'head-slot': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
+  'hands-slot': [211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
+  'neck-slot': [209817, 20444, 209673, 209825, 209422],
+  'waist-slot': [211457, 209421, 6719, 6468, 7107, 211466, 4249, 3429, 14567, 14755, 4707],
+  'shoulders-slot': [209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
+  'legs-slot': [209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
+  'back-slot': [2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
+  'feet-slot': [211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
+  'chest-slot': [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
+  'wrists-slot': [211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
+  'finger1-slot': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
+  'finger2-slot': [12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
+  'trinket1-slot': [21568, 211451, 211449, 211420, 18854],
+  'trinket2-slot': [21568, 211451, 211449, 211420, 18854],
+  'mainhand-slot': [212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
+  'offhand-slot': [211460, 6223, 13079, 7002, 6320, 209424, 13245, 12997, 4064, 6676, 15891, 5443, 3656],
+  'ranged-slot': [209830, 209688, 3021, 209563],
+};
+var ITEMS = {};
+
+async function fetchTable(tableName) {
+  let parsedData = [];
+  try {
+    const response = await fetch('./data/' + tableName + '.csv');
+    const csvData = await response.text();
+
+    // Parse the CSV content
+    parsedData = await new Promise((resolve, reject) => {
+      Papa.parse(csvData, {
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+          resolve(results.data);
+        },
+        error: function(error) {
+          reject(error);
+        }
+      });
+    });
+
+    // log_message('Parsed CSV results:', parsedData);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+  return parsedData;
+}
+
+function getRow(table, id) {
+  for(let r of table) if (r.ID == id) return r;
+}
+
+function getRows(table, column, id) {
+  let result = [];
+  for(let r of table) if (r[column] == id) result.push(r);
+  return result;
+}
+
+function getStat(obj, type) {
+  let stat = 0;
+  if (obj["StatModifier_bonusStat_0"] == type) stat += parseInt(obj["StatModifier_bonusAmount_0"]);
+  if (obj["StatModifier_bonusStat_1"] == type) stat += parseInt(obj["StatModifier_bonusAmount_1"]);
+  if (obj["StatModifier_bonusStat_2"] == type) stat += parseInt(obj["StatModifier_bonusAmount_2"]);
+  if (obj["StatModifier_bonusStat_3"] == type) stat += parseInt(obj["StatModifier_bonusAmount_3"]);
+  if (obj["StatModifier_bonusStat_4"] == type) stat += parseInt(obj["StatModifier_bonusAmount_4"]);
+  if (obj["StatModifier_bonusStat_5"] == type) stat += parseInt(obj["StatModifier_bonusAmount_5"]);
+  if (obj["StatModifier_bonusStat_6"] == type) stat += parseInt(obj["StatModifier_bonusAmount_6"]);
+  if (obj["StatModifier_bonusStat_7"] == type) stat += parseInt(obj["StatModifier_bonusAmount_7"]);
+  if (obj["StatModifier_bonusStat_8"] == type) stat += parseInt(obj["StatModifier_bonusAmount_8"]);
+  if (obj["StatModifier_bonusStat_9"] == type) stat += parseInt(obj["StatModifier_bonusAmount_9"]);
+  return stat;
+}
+
+var getSlot = function(id) {
+  switch(id) {
+    case 1: return "head";
+    case 2: return "neck";
+    case 3: return "shoulder";
+    case 5: return "chest";
+    case 6: return "waist";
+    case 7: return "legs";
+    case 8: return "feet";
+    case 9: return "wrist";
+    case 10: return "hands";
+    case 11: return "finger";
+    case 12: return "trinket";
+    case 13: return "onehand";
+    case 14: return "offhand";
+    case 15: return "ranged";
+    case 16: return "back";
+    case 17: return "twohand";
+    case 20: return "chest";
+    case 21: return "mainhand";
+    case 22: return "offhand";
+    case 26: return "ranged";
+  }
+}
+
+function getType(cl, subcl) {
+  if (cl == 4) {
+    switch(subcl) {
+      case 0: return "Miscellaneous";
+      case 1: return "Cloth";
+      case 2: return "Leather";
+      case 3: return "Mail";
+      case 4: return "Plate";
+      case 6: return "Shield";
+    }
+  }
+  if (cl == 2) {
+    switch(subcl) {
+      case 0: return "Axe";
+      case 1: return "Axe";
+      case 2: return "Bows";
+      case 3: return "Guns";
+      case 4: return "Mace";
+      case 5: return "Mace";
+      case 6: return "Polearm";
+      case 7: return "Sword";
+      case 8: return "Sword";
+      case 10: return "Staff";
+      case 13: return "Fist";
+      case 14: return "Miscellaneous";
+      case 15: return "Dagger";
+      case 18: return "Crossbow";
+      case 20: return "Fishing Pole";
+    }
+  }
+}
+
+async function loadItemData() {
+  // const ids = [2244, 19351, 22422, 22418, 14551, 18805, 210794]; // Test data
+  const ids = [].concat(...Object.values(ITEM_IDS));
+  
+  var Items = {};
+  const itemDataCSV = await fetchTable('Item');
+  const itemSparseDataCSV = await fetchTable('ItemSparse');
+  const itemEffectData = await fetchTable('ItemEffect');
+  const spellEffectData = await fetchTable('SpellEffect');
+
+  // Transform into a JSON object
+  const itemSparseData = itemSparseDataCSV.reduce((result, row) => {
+    let obj = { ...row };
+    result[row.ID] = obj;
+    return result;
+  }, {});
+  const itemData = itemDataCSV.reduce((result, row) => {
+    let obj = { ...row };
+    result[row.ID] = obj;
+    return result;
+  }, {});
+
+  for (let id of ids) {
+    let obj = {
+      name: "",
+      slot: "",
+      type: "",
+      ilvl: 0,
+
+      armor: 0,
+      agility: 0,
+      strength: 0,
+      stamina: 0,
+
+      crit: 0,
+      hit: 0,
+
+      mindmg: 0,
+      maxdmg: 0,
+      swingtimer: 0,
+
+      defense: 0,
+      parry: 0,
+      dodge: 0,
+      block: 0,
+      blockvalue: 0,
+
+      skill: 0,
+      skilltype: [],
+    };
+    let item = itemData[`${id}`];
+    let itemSparse = itemSparseData[`${id}`];
+    let missing = false;
+    if (id == 21568) {
+      let debug = true;
+    }
+    if (!item) {
+      missing = true;
+      log_message("Missing item data for ID " + id + ".");
+    } 
+    if (!itemSparse) {
+      missing = true;
+      log_message("Missing itemSparse data for ID " + id + ".");
+    }
+    if (missing)
+      continue;
+
+    obj.type = getType(item.ClassID, item.SubclassID);
+    obj.slot = getSlot(item.InventoryType); // Not needed atm, but useful if I ever merge the item ID arrays
+    obj.armor = parseInt(itemSparse.Resistances_0) ? itemSparse.Resistances_0 : 0;
+
+    obj.strength = getStat(itemSparse, 4);
+    obj.agility = getStat(itemSparse, 3);
+    obj.stamina = getStat(itemSparse, 7);
+
+    obj.ilvl = itemSparse.ItemLevel; // Might be good for sorting
+    obj.name = itemSparse.Display_lang;
+    if (parseInt(itemSparse.ItemDelay)) obj.swingtimer = parseInt(itemSparse.ItemDelay);
+    if (parseInt(itemSparse.MinDamage_0)) obj.mindmg = parseInt(itemSparse.MinDamage_0);
+    if (parseInt(itemSparse.MaxDamage_0)) obj.maxdmg = parseInt(itemSparse.MaxDamage_0);
+    if (parseInt(itemSparse.MinDamage_1)) obj.mindmg += parseInt(itemSparse.MinDamage_1);
+    if (parseInt(itemSparse.MaxDamage_1)) obj.maxdmg += parseInt(itemSparse.MaxDamage_1);
+
+    let spells = getRows(itemEffectData, 'ParentItemID', item.ID);
+    if (spells.length) {
+      spells.forEach((spell, index) => {
+
+        let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
+
+        if (spell.TriggerType == "1") { // Only care about on_equip
+          effects.forEach(e => {
+            // Effect == 6 means apply_aura
+            if (e.Effect == 6 && e.EffectAura == 99)
+              obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 102 && e.EffectMiscValue_0 & 32)
+              obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 54)
+              obj.hit = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 52)
+              obj.crit = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 49)
+              obj.dodge = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 47)
+              obj.parry = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 51)
+              obj.block = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 158)
+              obj.blockvalue = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 == 95)
+              obj.defense = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 != 95 && e.EffectMiscValue_0 != 226 && e.EffectMiscValue_0 != 393 && e.EffectMiscValue_0 != 45 && e.EffectMiscValue_0 != 46) {
+              obj.skill = parseInt(e.EffectBasePoints) + 1;
+              // TODO: Staff, Mace, enabling multiple skilltypes if more items than edgies has it
+              if (item.ID == 14551) obj.skilltype = ["Axe", "Dagger", "Sword"];
+              else if (e.EffectMiscValue_0 == 44) obj.skilltype = ["Axe"];
+              else if (e.EffectMiscValue_0 == 173) obj.skilltype = ["Dagger"];
+              else if (e.EffectMiscValue_0 == 43) obj.skilltype = ["Sword"];
+              else delete obj.skilltype;
+            }
+          });
+        }
+      }
+    )}
+
+    // TODO: Procs, of the tiger etc, striking
+
+    Items[`${id}`] = obj;
+  }
+  // log_message('Items:', Items);
+  ITEMS = Items;
+}
 
 function addEventListeners() {
-    const slots = ["chest-slot", "head-slot", "legs-slot"];
-    slots.forEach(slot => {
+    ITEM_SLOTS.forEach(slot => {
       const element = document.getElementById(slot);
       element.addEventListener('click', function(event) {
         event.preventDefault();
@@ -65,7 +330,7 @@ function addEventListeners() {
     document.body.addEventListener('click', function(event) {
         // Check if the clicked element is not part of the dropdown
         if (!event.target.closest('.custom-dropdown')) {
-            slots.forEach(slot => {
+            ITEM_SLOTS.forEach(slot => {
               hideItemDropdown(slot);
             });
         }
@@ -93,12 +358,14 @@ function hideItemDropdown(slot) {
 function selectItem(id, slot) {
   if (id != 0) {
     const element = document.getElementById(slot);
-    element.innerHTML = `<a itemId=${id} href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+    element.setAttribute('itemid', `${id}`)
+    element.innerHTML = `<a href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
 
     const slotImg = document.getElementById(slot + '-img');
     slotImg.style.display = 'none';
   } else {
     const element = document.getElementById(slot);
+    element.setAttribute('itemid', `${id}`)
     element.innerHTML = ``;
 
     const slotImg = document.getElementById(slot + '-img');
@@ -110,14 +377,7 @@ function selectItem(id, slot) {
 }
 
 function createLinks() {
-  const slots = ["chest-slot", "head-slot", "legs-slot"];
-  // TODO: mode this to a data file
-  const ids = {
-    'chest-slot': [1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
-    'head-slot': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
-    'legs-slot': [209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
-  };
-  slots.forEach(slot => {
+  ITEM_SLOTS.forEach(slot => {
     var dropdownContent = document.getElementById(slot + '-dropdown-content');
 
     // Clear any existing content
@@ -135,11 +395,12 @@ function createLinks() {
       event.preventDefault();
       selectItem('0', slot);
       hideItemDropdown(slot);
+      updateStats();
     });
     dropdownContent.appendChild(unequip);
 
     // Create a link for each id in the array
-    ids[slot].forEach(id => {
+    ITEM_IDS[slot].forEach(id => {
         const link = document.createElement('a');
         link.href = `https://www.wowhead.com/classic/item=${id}`;
         link.id = `${id}`
@@ -148,6 +409,7 @@ function createLinks() {
           event.preventDefault();
           selectItem(id, slot);
           hideItemDropdown(slot);
+          updateStats();
         })
         dropdownContent.appendChild(link);
     });
@@ -159,26 +421,26 @@ function saveInput()
 {
     // Tank Settings
     localStorage.setItem("level", document.querySelector("#level").selectedIndex)
-    localStorage.setItem("race", document.querySelector("#race").selectedIndex)
-    localStorage.setItem("head", document.querySelector("#head").selectedIndex)
-    localStorage.setItem("neck", document.querySelector("#neck").selectedIndex)
-    localStorage.setItem("shoulder", document.querySelector("#shoulder").selectedIndex)
-    localStorage.setItem("cape", document.querySelector("#cape").selectedIndex)
-    localStorage.setItem("chest", document.querySelector("#chest").selectedIndex)
-    localStorage.setItem("wrist", document.querySelector("#wrist").selectedIndex)
-    localStorage.setItem("hands", document.querySelector("#hands").selectedIndex)
-    localStorage.setItem("waist", document.querySelector("#waist").selectedIndex)
-    localStorage.setItem("legs", document.querySelector("#legs").selectedIndex)
-    localStorage.setItem("feet", document.querySelector("#feet").selectedIndex)
-    localStorage.setItem("ringone", document.querySelector("#ringone").selectedIndex)
-    localStorage.setItem("ringtwo", document.querySelector("#ringtwo").selectedIndex)
-    localStorage.setItem("trinketone", document.querySelector("#trinketone").selectedIndex)
-    localStorage.setItem("trinkettwo", document.querySelector("#trinkettwo").selectedIndex)
-    localStorage.setItem("ranged", document.querySelector("#ranged").selectedIndex)
-    localStorage.setItem("mainhand", document.querySelector("#mainhand").selectedIndex)
-    localStorage.setItem("offhand", document.querySelector("#offhand").selectedIndex)
-    localStorage.setItem("mhweptypelist", document.getElementById("mhweptypelist").selectedIndex)
-    localStorage.setItem("ohweptypelist", document.getElementById("ohweptypelist").selectedIndex)
+    // localStorage.setItem("race", document.querySelector("#race").selectedIndex)
+    // localStorage.setItem("head", document.querySelector("#head").selectedIndex)
+    // localStorage.setItem("neck", document.querySelector("#neck").selectedIndex)
+    // localStorage.setItem("shoulder", document.querySelector("#shoulder").selectedIndex)
+    // localStorage.setItem("cape", document.querySelector("#cape").selectedIndex)
+    // localStorage.setItem("chest", document.querySelector("#chest").selectedIndex)
+    // localStorage.setItem("wrist", document.querySelector("#wrist").selectedIndex)
+    // localStorage.setItem("hands", document.querySelector("#hands").selectedIndex)
+    // localStorage.setItem("waist", document.querySelector("#waist").selectedIndex)
+    // localStorage.setItem("legs", document.querySelector("#legs").selectedIndex)
+    // localStorage.setItem("feet", document.querySelector("#feet").selectedIndex)
+    // localStorage.setItem("ringone", document.querySelector("#ringone").selectedIndex)
+    // localStorage.setItem("ringtwo", document.querySelector("#ringtwo").selectedIndex)
+    // localStorage.setItem("trinketone", document.querySelector("#trinketone").selectedIndex)
+    // localStorage.setItem("trinkettwo", document.querySelector("#trinkettwo").selectedIndex)
+    // localStorage.setItem("ranged", document.querySelector("#ranged").selectedIndex)
+    // localStorage.setItem("mainhand", document.querySelector("#mainhand").selectedIndex)
+    // localStorage.setItem("offhand", document.querySelector("#offhand").selectedIndex)
+    // localStorage.setItem("mhweptypelist", document.getElementById("mhweptypelist").selectedIndex)
+    // localStorage.setItem("ohweptypelist", document.getElementById("ohweptypelist").selectedIndex)
 
     localStorage.setItem("headenchant", document.querySelector("#headenchant").selectedIndex)
     localStorage.setItem("shoulderenchant", document.querySelector("#shoulderenchant").selectedIndex)
@@ -300,28 +562,28 @@ function loadInput()
 {
     // Tank Settings
     document.querySelector("#level").selectedIndex = localStorage.getItem("level") ? localStorage.getItem("level") : 0;
-    document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 0;
-    document.querySelector("#head").selectedIndex = localStorage.getItem("head") ? localStorage.getItem("head") : 0;
-    document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 0;
-    document.querySelector("#shoulder").selectedIndex = localStorage.getItem("shoulder") ? localStorage.getItem("shoulder") : 0;
-    document.querySelector("#cape").selectedIndex = localStorage.getItem("cape") ? localStorage.getItem("cape") : 0;
-    document.querySelector("#chest").selectedIndex = localStorage.getItem("chest") ? localStorage.getItem("chest") : 0;
-    document.querySelector("#wrist").selectedIndex = localStorage.getItem("wrist") ? localStorage.getItem("wrist") : 0;
-    document.querySelector("#hands").selectedIndex = localStorage.getItem("hands") ? localStorage.getItem("hands") : 0;
-    document.querySelector("#waist").selectedIndex = localStorage.getItem("waist") ? localStorage.getItem("waist") : 0;
-    document.querySelector("#legs").selectedIndex = localStorage.getItem("legs") ? localStorage.getItem("legs") : 0;
-    document.querySelector("#feet").selectedIndex = localStorage.getItem("feet") ? localStorage.getItem("feet") : 0;
-    document.querySelector("#ringone").selectedIndex = localStorage.getItem("ringone") ? localStorage.getItem("ringone") : 0;
-    document.querySelector("#ringtwo").selectedIndex = localStorage.getItem("ringtwo") ? localStorage.getItem("ringtwo") : 0;
-    document.querySelector("#trinketone").selectedIndex = localStorage.getItem("trinketone") ? localStorage.getItem("trinketone") : 0;
-    document.querySelector("#trinkettwo").selectedIndex = localStorage.getItem("trinkettwo") ? localStorage.getItem("trinkettwo") : 0;
-    document.querySelector("#ranged").selectedIndex = localStorage.getItem("ranged") ? localStorage.getItem("ranged") : 0;
-    document.querySelector("#mhweptypelist").selectedIndex = localStorage.getItem("mhweptypelist") ? localStorage.getItem("mhweptypelist") : 0;
-    document.querySelector("#ohweptypelist").selectedIndex = localStorage.getItem("ohweptypelist") ? localStorage.getItem("ohweptypelist") : 0;
-    updateMHWeaponList(false);
-    updateOHWeaponList(false);
-    document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 0;
-    document.querySelector("#offhand").selectedIndex = localStorage.getItem("offhand") ? localStorage.getItem("offhand") : 0;
+    // document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 0;
+    // document.querySelector("#head").selectedIndex = localStorage.getItem("head") ? localStorage.getItem("head") : 0;
+    // document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 0;
+    // document.querySelector("#shoulder").selectedIndex = localStorage.getItem("shoulder") ? localStorage.getItem("shoulder") : 0;
+    // document.querySelector("#cape").selectedIndex = localStorage.getItem("cape") ? localStorage.getItem("cape") : 0;
+    // document.querySelector("#chest").selectedIndex = localStorage.getItem("chest") ? localStorage.getItem("chest") : 0;
+    // document.querySelector("#wrist").selectedIndex = localStorage.getItem("wrist") ? localStorage.getItem("wrist") : 0;
+    // document.querySelector("#hands").selectedIndex = localStorage.getItem("hands") ? localStorage.getItem("hands") : 0;
+    // document.querySelector("#waist").selectedIndex = localStorage.getItem("waist") ? localStorage.getItem("waist") : 0;
+    // document.querySelector("#legs").selectedIndex = localStorage.getItem("legs") ? localStorage.getItem("legs") : 0;
+    // document.querySelector("#feet").selectedIndex = localStorage.getItem("feet") ? localStorage.getItem("feet") : 0;
+    // document.querySelector("#ringone").selectedIndex = localStorage.getItem("ringone") ? localStorage.getItem("ringone") : 0;
+    // document.querySelector("#ringtwo").selectedIndex = localStorage.getItem("ringtwo") ? localStorage.getItem("ringtwo") : 0;
+    // document.querySelector("#trinketone").selectedIndex = localStorage.getItem("trinketone") ? localStorage.getItem("trinketone") : 0;
+    // document.querySelector("#trinkettwo").selectedIndex = localStorage.getItem("trinkettwo") ? localStorage.getItem("trinkettwo") : 0;
+    // document.querySelector("#ranged").selectedIndex = localStorage.getItem("ranged") ? localStorage.getItem("ranged") : 0;
+    // document.querySelector("#mhweptypelist").selectedIndex = localStorage.getItem("mhweptypelist") ? localStorage.getItem("mhweptypelist") : 0;
+    // document.querySelector("#ohweptypelist").selectedIndex = localStorage.getItem("ohweptypelist") ? localStorage.getItem("ohweptypelist") : 0;
+    // updateMHWeaponList(false);
+    // updateOHWeaponList(false);
+    // document.querySelector("#mainhand").selectedIndex = localStorage.getItem("mainhand") ? localStorage.getItem("mainhand") : 0;
+    // document.querySelector("#offhand").selectedIndex = localStorage.getItem("offhand") ? localStorage.getItem("offhand") : 0;
 
     document.querySelector("#headenchant").selectedIndex = localStorage.getItem("headenchant") ? Math.min(localStorage.getItem("headenchant"), 5) : 0;
     document.querySelector("#shoulderenchant").selectedIndex = localStorage.getItem("shoulderenchant") ? localStorage.getItem("shoulderenchant") : 0;
@@ -440,6 +702,7 @@ function onLoadPage()
 {
     createLinks();
     addEventListeners();
+    loadItemData();
     loadInput();
     updateStats();
 }
@@ -491,7 +754,7 @@ async function main() {
             iterations: iterations,
         })
         worker.addEventListener('error', function(e)  {
-            console.log(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
+            log_message(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
         })
         worker.addEventListener('message', function(e) {
             if (e.data.type == 'progressUpdate') {
@@ -525,18 +788,18 @@ async function main() {
     function postResults() {
 
         let end = Date.now()
-        // console.log(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
+        // log_message(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
         // Some console logging...
         let ret = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights with timestep ${globals.config.timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
         /*
-        console.log(ret);
-        console.log(`TPS: ${Math.round(average(tps)*100)/100}`);
-        console.log(`DPS: ${Math.round(average(dps)*100)/100}`);
-        console.log(`DTPS: ${Math.round(average(dtps)*100)/100}`);
+        log_message(ret);
+        log_message(`TPS: ${Math.round(average(tps)*100)/100}`);
+        log_message(`DPS: ${Math.round(average(dps)*100)/100}`);
+        log_message(`DTPS: ${Math.round(average(dtps)*100)/100}`);
         for (let ability in results)
-            console.log(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);
-        console.log(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
-        console.log(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
+            log_message(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);
+        log_message(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
+        log_message(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
         */
 
         let iterations = globals.config.iterations;
