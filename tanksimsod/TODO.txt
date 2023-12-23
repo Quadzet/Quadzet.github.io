@@ -2,10 +2,13 @@
     - Fixa ikonstorlek vs unequipped
     - enchants - först som tidagare med bättre layout, sedan a la 60u/wowsims
     - Spara current gear, glöm inte att göra SoD-specific, först som tidigare med "Default", sedan med namngivna + resten av settings
-    profiles.sod.gear = {
-      chest: id,
-      legs: id,
-      etc...
+    sod_profiles: {
+      default: {
+        version: 1.0.0,
+        gear {
+          chest: id, etc..
+        }
+      }
     }
  - Lägg till Runes (Furious Thunder)
  - Lägg till rank till alla events, fixa alla "Rend (Rank 3)"

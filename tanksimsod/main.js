@@ -419,9 +419,28 @@ function createLinks() {
 
 function saveInput()
 {
+  let profiles = localStorage.getItem("sod_profiles");
+  profiles = profiles ? JSON.parse(profiles) : {};
+  let profile = {};
+  let profile_name = "Default"; // TODO: Turn into user input
+  profile.version = '1.0.0';
+  
+  // Gear
+  let gear = {};
+  ITEM_SLOTS.forEach(slot => {
+    let element = document.getElementById(slot + '-slot');
+    let itemID = element.getAttribute('itemid');
+    itemID = itemID ? itemID : 0;
+    gear[`${slot}`] = itemID;
+  });
+  profile.gear = gear;
+
+  profiles[`${profile_name}`] = profile;
+  localStorage.setItem("sod_profiles", JSON.stringify(profiles));
+
     // Tank Settings
     localStorage.setItem("level", document.querySelector("#level").selectedIndex)
-    // localStorage.setItem("race", document.querySelector("#race").selectedIndex)
+    localStorage.setItem("race", document.querySelector("#race").selectedIndex)
     // localStorage.setItem("head", document.querySelector("#head").selectedIndex)
     // localStorage.setItem("neck", document.querySelector("#neck").selectedIndex)
     // localStorage.setItem("shoulder", document.querySelector("#shoulder").selectedIndex)
@@ -560,9 +579,25 @@ function saveInput()
 
 function loadInput()
 {
+  // Gear
+  let profiles = localStorage.getItem("sod_profiles");
+  profiles = profiles ? JSON.parse(profiles) : {};
+  let profile_name = "Default"; // TODO: Make user input
+  let profile = profiles[`${profile_name}`];
+  profile = profile ? profile : {};
+  let gear = profile.gear ? profile.gear : {};
+
+  Object.keys(gear).forEach(slot => {
+    let element = document.getElementById(slot + '-slot');
+    if (element) {
+      element.setAttribute('itemid', gear[`${slot}`]); // Update the HTML
+      selectItem(gear[`${slot}`], slot); // Update the UI
+    }
+  });
+
     // Tank Settings
     document.querySelector("#level").selectedIndex = localStorage.getItem("level") ? localStorage.getItem("level") : 0;
-    // document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 0;
+    document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 0;
     // document.querySelector("#head").selectedIndex = localStorage.getItem("head") ? localStorage.getItem("head") : 0;
     // document.querySelector("#neck").selectedIndex = localStorage.getItem("neck") ? localStorage.getItem("neck") : 0;
     // document.querySelector("#shoulder").selectedIndex = localStorage.getItem("shoulder") ? localStorage.getItem("shoulder") : 0;
@@ -698,11 +733,11 @@ function loadInput()
     document.querySelector("#fightLength").value = localStorage.getItem("fightLength") ? localStorage.getItem("fightLength") : 12;
 }  
 
-function onLoadPage()
+async function onLoadPage()
 {
     createLinks();
     addEventListeners();
-    loadItemData();
+    await loadItemData();
     loadInput();
     updateStats();
 }
