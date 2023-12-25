@@ -53,6 +53,7 @@ async function updateProgressbar(progressPerc) {
 }
 
 // TODO: move this to a data file
+const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
@@ -435,32 +436,32 @@ function saveInput()
   });
   profile.gear = gear;
 
+  // Rotation
+  let rotation = {};
+  ABILITIES.forEach(ability => {
+    let obj = {};
+    let use = document.getElementById('use-' + ability).checked;
+    let rage = 0;
+    if (ability != 'raging-blow')
+      rage = Number(document.getElementById(ability + '-rage').value);
+    obj.use = use;
+    obj.rage = rage;
+    rotation[`${ability}`] = obj;
+  });
+  let cbrStacks = 0;
+  rotation.cbrUse = document.getElementById('use-cbr-stop-rage').checked;
+  if (rotation.cbrUse)
+    cbrStacks = Number(document.getElementById('cbr-stacks').value);
+  rotation.cbrStacks = cbrStacks;
+  profile.rotation = rotation;
+
   profiles[`${profile_name}`] = profile;
   localStorage.setItem("sod_profiles", JSON.stringify(profiles));
 
     // Tank Settings
     localStorage.setItem("level", document.querySelector("#level").selectedIndex)
     localStorage.setItem("race", document.querySelector("#race").selectedIndex)
-    // localStorage.setItem("head", document.querySelector("#head").selectedIndex)
-    // localStorage.setItem("neck", document.querySelector("#neck").selectedIndex)
-    // localStorage.setItem("shoulder", document.querySelector("#shoulder").selectedIndex)
-    // localStorage.setItem("cape", document.querySelector("#cape").selectedIndex)
-    // localStorage.setItem("chest", document.querySelector("#chest").selectedIndex)
-    // localStorage.setItem("wrist", document.querySelector("#wrist").selectedIndex)
-    // localStorage.setItem("hands", document.querySelector("#hands").selectedIndex)
-    // localStorage.setItem("waist", document.querySelector("#waist").selectedIndex)
-    // localStorage.setItem("legs", document.querySelector("#legs").selectedIndex)
-    // localStorage.setItem("feet", document.querySelector("#feet").selectedIndex)
-    // localStorage.setItem("ringone", document.querySelector("#ringone").selectedIndex)
-    // localStorage.setItem("ringtwo", document.querySelector("#ringtwo").selectedIndex)
-    // localStorage.setItem("trinketone", document.querySelector("#trinketone").selectedIndex)
-    // localStorage.setItem("trinkettwo", document.querySelector("#trinkettwo").selectedIndex)
-    // localStorage.setItem("ranged", document.querySelector("#ranged").selectedIndex)
-    // localStorage.setItem("mainhand", document.querySelector("#mainhand").selectedIndex)
-    // localStorage.setItem("offhand", document.querySelector("#offhand").selectedIndex)
-    // localStorage.setItem("mhweptypelist", document.getElementById("mhweptypelist").selectedIndex)
-    // localStorage.setItem("ohweptypelist", document.getElementById("ohweptypelist").selectedIndex)
-
+    
     localStorage.setItem("headenchant", document.querySelector("#headenchant").selectedIndex)
     localStorage.setItem("shoulderenchant", document.querySelector("#shoulderenchant").selectedIndex)
     localStorage.setItem("backenchant", document.querySelector("#backenchant").selectedIndex)
@@ -585,8 +586,8 @@ function loadInput()
   let profile_name = "Default"; // TODO: Make user input
   let profile = profiles[`${profile_name}`];
   profile = profile ? profile : {};
-  let gear = profile.gear ? profile.gear : {};
 
+  let gear = profile.gear ? profile.gear : {};
   Object.keys(gear).forEach(slot => {
     let element = document.getElementById(slot + '-slot');
     if (element) {
@@ -594,6 +595,19 @@ function loadInput()
       selectItem(gear[`${slot}`], slot); // Update the UI
     }
   });
+
+  let rotation = profile.rotation ? profile.rotation : {};
+  ABILITIES.forEach(ability => {
+    let abilityUse = document.getElementById('use-' + ability);
+    let abilityRage = document.getElementById(ability + '-rage');
+    let abilitySettings = rotation[`${ability}`] ? rotation[`${ability}`] : {};
+    abilityUse.checked = abilitySettings.use === undefined ? true : abilitySettings.use; // Default to true
+    if (ability != 'raging-blow' && abilitySettings.rage !== undefined)
+      abilityRage.value = abilitySettings.rage;
+  });
+  document.getElementById('use-cbr-stop-rage').checked = rotation.cbrUse === undefined ? true : rotation.cbrUse; // Defaults to true
+  if (rotation.cbrStacks !== undefined)
+    document.getElementById('cbr-stacks').value = rotation.cbrStacks;
 
     // Tank Settings
     document.querySelector("#level").selectedIndex = localStorage.getItem("level") ? localStorage.getItem("level") : 0;

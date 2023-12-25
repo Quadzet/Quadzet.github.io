@@ -32,6 +32,12 @@
     background-color: #f1f1f1;
 }
 
+.rotation-check {
+  margin-right: auto;
+  margin-left: 5px;
+}
+
+
 body {background-color: #222629; color: #C8CED1}
 table {background-color: transparent !important;}
 #bodyDiv {display: flex; flex-wrap: wrap; justify-content: center}
@@ -88,6 +94,11 @@ pre {margin: 0; padding:0}
 #mhweptypeselect select, #ohweptypeselect select {width: 90px}
 #gear #mainhandcontainer, #gear #offhandcontainer {margin-left: auto;}
 
+.hInput-rotation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .hInput {display: flex; flex-direction: row; align-content: center; align-items: center; padding: 0 0 3px 0}
 .hInput input {margin-left:auto; width:50px}
 .hInput .inputSwing {margin-left:0; width:50px}

@@ -616,6 +616,23 @@ function updateStats()
     let bossArmor = Number(document.querySelector("#bossarmor").value);
     bossArmor = getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, bossArmor);
 
+    let rotation = [];
+    ABILITIES.forEach(ability => {
+      let obj = {};
+      let use = document.getElementById('use-' + ability).checked;
+      use = use ? use : false;
+      let rage = 0;
+      if (ability != 'raging-blow')
+        rage = Number(document.getElementById(ability + '-rage').value);
+      obj.use = use;
+      obj.rage = rage;
+      rotation[`${ability}`] = obj;
+    });
+    rotation.cbrStacks = 0;
+    if (document.getElementById('use-cbr-stop-rage').checked)
+        rotation.cbrStacks = Number(document.getElementById('cbr-stacks').value);
+
+
     let globals = {
         tankStats: {
             type: "tank",
@@ -659,6 +676,8 @@ function updateStats()
             staminaMultiplier: staminaMultiplier,
             strengthMultiplier: strengthMultiplier,
             agilityMultiplier: agilityMultiplier,
+
+            rotation: rotation,
 
             talents: {
                 // deathwish: document.getElementById("deathwish").checked,

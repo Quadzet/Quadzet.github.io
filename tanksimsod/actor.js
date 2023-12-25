@@ -5,6 +5,7 @@ class Actor {
         this.name = name
         this.stats = stats
         this.abilities = abilities
+        this.rotation = stats.rotation
 
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
