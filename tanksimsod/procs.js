@@ -9,7 +9,7 @@ class Proc {
 
     }
 
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
         log_message("No event handler specified for proc " + this.name + ".");
         return;
     }
@@ -22,7 +22,7 @@ class Proc {
 let landedHits = ["hit", "crit", "block", "crit block", "glance"];
 
 class ThunderfuryMH extends Proc {
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
         if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.19*0.83) { // 0.83 derives from 17% chance to resist 
@@ -37,9 +37,9 @@ class ThunderfuryMH extends Proc {
                     "damage": damage, 
                     "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
                 // Ensure that the target the get debuff applied
-                target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
+                target.auras.forEach(aura => aura.handleEvent(target, procEvent, reactiveEvents, config))
             }
         }
     }
@@ -47,7 +47,7 @@ class ThunderfuryMH extends Proc {
 
 class ThunderfuryOH extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -63,9 +63,9 @@ class ThunderfuryOH extends Proc {
                     "damage": damage, // don't count enrage, use default 0.9 only
                     "threat": (252 + damage)*source.threatMod, // 252 from debuff applications, my own testing.
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
                 // Ensure that the target the get debuff applied
-                target.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
+                target.auras.forEach(aura => aura.handleEvent(target, procEvent, reactiveEvents, config))
             }
         }
     }
@@ -73,7 +73,7 @@ class ThunderfuryOH extends Proc {
 
 class PerdsMH extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -89,7 +89,7 @@ class PerdsMH extends Proc {
                     "damage": damage, 
                     "threat": damage*source.threatMod,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
             }
         }
     }
@@ -97,7 +97,7 @@ class PerdsMH extends Proc {
 
 class PerdsOH extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -113,7 +113,7 @@ class PerdsOH extends Proc {
                     "damage": damage, // don't count enrage, use default 0.9 only
                     "threat": damage*source.threatMod,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
             }
         }
     }
@@ -121,7 +121,7 @@ class PerdsOH extends Proc {
 
 class DeathbringerMH extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -137,7 +137,7 @@ class DeathbringerMH extends Proc {
                     "damage": damage, 
                     "threat": damage*source.threatMod,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
             }
         }
     }
@@ -145,7 +145,7 @@ class DeathbringerMH extends Proc {
 
 class DeathbringerOH extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability == "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -161,7 +161,7 @@ class DeathbringerOH extends Proc {
                     "damage": damage, // don't count enrage, use default 0.9 only
                     "threat": damage*source.threatMod,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
             }
         }
     }
@@ -169,7 +169,7 @@ class DeathbringerOH extends Proc {
 
 class MSA extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -185,7 +185,7 @@ class MSA extends Proc {
                     "damage": damage, 
                     "threat": damage*source.threatMod,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
             }
         }
     }
@@ -193,7 +193,7 @@ class MSA extends Proc {
 
 class GiftofArthasProc extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         let rng = Math.random();
         if (event.type == "damage" && event.source == "Boss") {
@@ -205,8 +205,8 @@ class GiftofArthasProc extends Proc {
                     ability: this.name,
                     timestamp: event.timestamp,
                 }
-                events.push(procEvent);
-                source.auras.forEach(aura => { if (aura.name == "Gift of Arthas") aura.handleEvent(source, procEvent, events, config)})
+                reactiveEvents.push(procEvent);
+                source.auras.forEach(aura => { if (aura.name == "Gift of Arthas") aura.handleEvent(source, procEvent, reactiveEvents, config)})
 
            }
         }
@@ -219,7 +219,7 @@ class WindfuryProc extends Proc {
         super(input)
     }
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -230,15 +230,16 @@ class WindfuryProc extends Proc {
                     "ability": this.name,
                     "timestamp": event.timestamp,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
 
+                // TODO: HANDLE THIS IN MH SWING:HANFLEVENT() !!!
                 // Ensure that the Windfury buff gets applied and that it resets MH swing timer
-                source.auras.forEach(aura => aura.handleEvent(target, procEvent, events, config))
-                source.abilities.forEach(ability => {
-                    if (ability.name == "MH Swing") {
-                        events.push(ability.use(source, target))
-                    }
-                })
+                // source.auras.forEach(aura => aura.handleEvent(target, procEvent, reactiveEvents, config))
+                // source.abilities.forEach(ability => {
+                //     if (ability.name == "MH Swing") {
+                //         reactiveEvents.push(ability.use(source, target))
+                //     }
+                // })
             }
         }
     }
@@ -250,9 +251,9 @@ class WildStrikesProc extends Proc {
         this.ICDTimer = 0;
     }
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
         // TODO: make damage event flag "direct/dot/etc" and make this only proc from direct dmg, note ranks might not work?
-        if (event.type == "damage" && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate", "Sunder Armor", "Heroic Strike"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
+        if (event.type == "damage" && event.source == source.name && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate", "Sunder Armor", "Heroic Strike"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
             let rng = Math.random()
             if (rng < 0.2) {
                 let procEvent = {
@@ -262,11 +263,12 @@ class WildStrikesProc extends Proc {
                     "timestamp": event.timestamp,
                 }
                 this.ICDTimer = event.timestamp + 1500;
-                events.push(procEvent);
-                let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == source.name)})
-                if(index >= 0)
-                    futureEvents.splice(index, 1)
-                source.abilities["MH Swing"].use(event.timestamp, source, target, events, futureEvents);
+                reactiveEvents.push(procEvent);
+                // TODO HANDLE THIS IN MH SWING.HANDLEEVENTS() !!!!!!!
+                // let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == source.name)})
+                // if(index >= 0)
+                //     futureEvents.splice(index, 1)
+                // source.abilities["MH Swing"].use(event.timestamp, source, target, reactiveEvents, futureEvents);
             }
         }
     }
@@ -276,7 +278,7 @@ class WildStrikesProc extends Proc {
 }
 class HoJProc extends Proc {
     
-    handleEvent(source, target, event, events, futureEvents) {
+    handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability != "Sunder Armor" && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -287,7 +289,7 @@ class HoJProc extends Proc {
                     "ability": this.name,
                     "timestamp": event.timestamp,
                 }
-                events.push(procEvent);
+                reactiveEvents.push(procEvent);
 
                 // Remove 600ms from the MH swing timer if it procs itself, due to an avg of 1.5 batch delay
                 // If it's procced by another ability/OH swing, it's also 1.5 batched, but staatistically that does not matter.
@@ -314,7 +316,7 @@ class BloodFrenzyProc extends Proc {
   constructor() {
     super("Blood Frenzy");
   }
-  handleEvent(source, target, event, events, futureEvents) {
+  handleEvent(source, target, event, reactiveEvents, futureEvents) {
     if (event.type == "damage" && ["Rend (Rank 3)", "Rend", "Deep Wounds"].includes(event.name) && event.amount > 0) {
       let procEvent = {
           type: "rage",
@@ -322,10 +324,11 @@ class BloodFrenzyProc extends Proc {
           source: source.name,
 
           timestamp: event.timestamp,
+
           amount: 3, 
           threat: 3 * 5,
       }
-      registerFutureEvent(procEvent, futureEvents);
+      futureEvents.push(procEvent);
     }
   }
 }

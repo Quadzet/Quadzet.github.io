@@ -1,7 +1,5 @@
 "use strict";
 
-// import * as papa from "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js";
-
 function sleep(ms) { return new Promise((r) => 
     setTimeout(r, ms)); }
 
@@ -930,8 +928,11 @@ async function main() {
         let timelineDOM = document.querySelector("#timeline>pre>code")
         timelineDOM.innerHTML = ""
         exampleEvents.forEach( e => {
-            timelineDOM.innerHTML += formatEvent(e)
-            timelineDOM.innerHTML += "</br>"
+          let eventLine = formatEvent(e);
+          if (eventLine !== undefined) {
+            timelineDOM.innerHTML += eventLine;
+            timelineDOM.innerHTML += "</br>";
+          }
         })
 /*
         var x = linspace(0, globals.config.simDuration, globals.config.simDuration*1000/globals.config.snapshotLen + 1);

@@ -27,11 +27,11 @@ class Aura {
         if (!input.blockMod) this.blockMod = 0; else this.blockMod = input.blockMod; // additive
     }
 
-    apply(timestamp, owner, source, eventList, futureEvents) {
+    apply(timestamp, owner, source, reactiveEvents, futureEvents) {
         // owner.auras[this.name] = this
 
         if (this.duration > 0) {
-          this.refresh(timestamp, owner, eventList, futureEvents);
+          this.refresh(timestamp, owner, reactiveEvents, futureEvents);
           return;
         }
 
@@ -56,7 +56,7 @@ class Aura {
             auraType: this.type,
             timestamp: timestamp,
         }
-        eventList.push(applyEvent);
+        reactiveEvents.push(applyEvent);
 
         // Remove and update any coming auraExpires from this aura
         let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name && e.owner == owner.name)})
@@ -71,13 +71,12 @@ class Aura {
             auraType: this.type,
             timestamp: timestamp + this.maxDuration,
         }
-        registerFutureEvent(futureEvent, futureEvents)
-        owner.handleEvent(applyEvent, eventList, futureEvents);
+        futureEvents.push(futureEvent);
     }
 
-    refresh(timestamp, owner, eventList, futureEvents) {
+    refresh(timestamp, owner, reactiveEvents, futureEvents) {
       if(this.stacks < this.maxStacks) {
-          eventList.push({
+          reactiveEvents.push({
               type: "auraExpire",
               name: this.name,
               owner: owner.name,
@@ -88,7 +87,7 @@ class Aura {
           })
           // Either add one stack, such as for sunder, or set to max stacks, such as for flurry/consumed by rage
           this.stacks = Math.min(Math.max(this.stacks + 1, this.startStacks), this.maxStacks);
-          eventList.push({
+          reactiveEvents.push({
               type: "auraApply",
               name: this.name,
               owner: owner.name,
@@ -105,7 +104,7 @@ class Aura {
           }
         }
         else {
-          eventList.push({
+          reactiveEvents.push({
                 type: "auraRefresh",
                 name: this.name,
                 owner: owner.name,
@@ -122,13 +121,13 @@ class Aura {
         sortDescending(futureEvents)
     }
 
-    removeStack(timestamp, owner, eventList, futureEvents) {
+    removeStack(timestamp, owner, reactiveEvents, futureEvents) {
         if (this.duration == 0)
           return;
         if(this.stacks == 1)
-            this.expire(timestamp, owner, eventList, futureEvents, true)
+            this.expire(timestamp, owner, reactiveEvents, futureEvents, true)
         else {
-            eventList.push({
+            reactiveEvents.push({
                 type: "auraExpire",
                 name: this.name,
                 owner: owner.name,
@@ -146,7 +145,7 @@ class Aura {
         }
     }
 
-    expire(timestamp, owner, eventList, futureEvents, addEvent) {
+    expire(timestamp, owner, reactiveEvents, futureEvents, addEvent) {
         // Add all modifiers here, remember scalingstacks
         if (this.duration == 0)
           return;
@@ -157,7 +156,7 @@ class Aura {
         this.duration = 0;
         delete owner.buffs[this.name]
         if (addEvent)
-          eventList.push({
+          reactiveEvents.push({
             type: "auraExpire",
             name: this.name,
             owner: owner.name,
@@ -171,8 +170,8 @@ class Aura {
             futureEvents.splice(index, 1)
     }
 
-    handleEvent(event, owner, source, eventList, futureEvents) {
-      // log_message("Error: handleEvent not implemented for aura " + this.name + ".");
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+      log_message("Error: handleEvent not implemented for aura " + this.name + ".");
     }
 }
 
@@ -201,20 +200,20 @@ class DefensiveState extends Aura {
             maxDuration: 5000,
         })
     }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
       
       // Add aura after a dodge/block/parry
       if(event.type == "damage" && event.target == owner.name && ["block", "parry", "dodge"].includes(event.hit)) {
-          this.apply(event.timestamp, owner, event.source, eventList, futureEvents)
+          this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents)
       }
       
       // Expire after casting Revenge 
       if(event.source == this.name && event.name == "Revenge") {
-          this.expire(event.timestamp, owner, eventList, futureEvents, true)
+          this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
       }
 
       if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-        this.expire(event.timestamp, owner, eventList, futureEvents, true)
+        this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
       }
 
     }
@@ -233,20 +232,20 @@ class ShieldBlockAura extends Aura {
             startStacks: 2,
         })
     }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
       
       // Add aura after Shield Block has been cast
       if (event.type == "spellCast" && event.name == this.name) {
-        this.apply(event.timestamp, owner, event.source, eventList, futureEvents);
+        this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents);
       }
 
       //  Remove a stack after blocking
       else if(event.type == "damage" && event.target == "Tank" && event.hit == "block") {
-        this.removeStack(event.timestamp, owner, eventList, futureEvents)
+        this.removeStack(event.timestamp, owner, reactiveEvents, futureEvents)
       } 
 
       else if(event.type == "auraExpire") {
-        this.expire(event.timestamp, owner, eventList, futureEvents, true);
+        this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true);
       }
     }
 }
@@ -262,15 +261,15 @@ class FlagellationAura extends Aura {
       damageMod: 1.25,
     })
   }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     // Apply the aura after activating either bers rage or bloodrage
     if (event.type == "auraApply" && ["Berserker Rage", "Bloodrage"].includes(event.name)) {
-      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -290,20 +289,22 @@ class ConsumedByRageAura extends Aura {
 
     })
   }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
-    if (event.type == "rage" && owner.rage > 80 && owner.rage - event.amount < 80) {
-      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+    // NOTE: This relies on the implicit fact that the rage has not yet been added to the Actor
+    //       This logic might change in the future, watch out.
+    if (event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     //  Remove a stack after successfully hitting a target
     if(event.type == "damage" && event.source == "Tank" && (event.name == "MH Swing" || event.name == "OH Swing" || event.name == "Heroic Strike")) {
-      this.removeStack(event.timestamp, owner, eventList, futureEvents)
+      this.removeStack(event.timestamp, owner, reactiveEvents, futureEvents)
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -318,13 +319,13 @@ class BloodrageAura extends Aura {
       maxDuration: 12000,
     })
   }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
     if (event.type == "spellCast" && event.name == "Bloodrage") {
-      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
       for (let i = 0; i < 10; i++) {
-        registerFutureEvent(
+        futureEvents.push(
         {
           timestamp: event.timestamp + i*1000,
           type: "rage",
@@ -333,13 +334,12 @@ class BloodrageAura extends Aura {
 
           amount: 1,
           threat: 5, // TODO: threat even when rage-capped..
-        }
-        , futureEvents);
+        });
       }
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -354,15 +354,15 @@ class RendAura extends Aura {
       maxDuration: 15000,
     })
   }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     if (event.type == "damage" && event.name == "Rend (Rank 3)" && event.hit == "hit") {
 
-      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
     }
   }
 
@@ -385,11 +385,11 @@ class DeepWoundsAura extends Aura {
       maxDuration: 12000,
     })
   }
-    handleEvent(event, owner, source, eventList, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     if (event.type == "damage" && event.hit == "crit") {
 
-      this.apply(event.timestamp, owner, owner.name, eventList, futureEvents);
+      this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
       // Remove all current DW ticks in the futureEvents
       // Add the new additional dmg to the DW pool
       // Generate new ticks with 1/3 the total dmg
@@ -405,7 +405,7 @@ class DeepWoundsAura extends Aura {
           break;
       }
       for (let i = 0; i < 4; i++) {
-        registerFutureEvent(
+        futureEvents.push(
         {
             timestamp: event.timestamp + (i+1)*3000,
             type: "damage",
@@ -416,13 +416,12 @@ class DeepWoundsAura extends Aura {
             threat: totalDmg*source.stats.threatMod/4,
 
             amount: totalDmg/4,
-        }
-        , futureEvents);
+        });
       }
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, eventList, futureEvents, true)
+      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
     }
   }
 }

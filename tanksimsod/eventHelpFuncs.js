@@ -2,7 +2,12 @@
 
 function formatEvent(event) {
     let output = `${(Math.round(event["timestamp"])/1000).toFixed(3)}:\t`
-    if(event["type"] == "damage") {
+    if (["swingTimer", "cooldownFinish", "GCD"].includes(event.type))
+      return;
+    else if (event.type == "combatStart") {
+      output += `Combat Starts.`;
+    }
+    else if(event["type"] == "damage") {
         if(!["dodge", "parry", "miss", "block"].includes(event["hit"])) {
             output += `${event["source"]}'s ${event["name"]} ${ event["hit"] == 'crush' ? `crushes` : event["hit"] + "s"} ${event["target"]} for ${Math.round(event["amount"])} damage!`
         } else if(["crit block", "block"].includes(event["hit"])) {
@@ -21,7 +26,10 @@ function formatEvent(event) {
     } else if(event["type"] == "extra attack") {
         output += `${event["source"]} gains an extra attack from ${event["name"]}!`
     } else if(event["type"] == "rage") {
-        output += `Tank gains ${(event["amount"]).toFixed(2)} rage from ${event["source"]}'s ${event["name"]}!`
+        output += `Tank gains ${(event["amount"]).toFixed(2)} rage from ${event["source"]}'s ${event["name"]} (${event.currentAmount.toFixed(2)} -> ${Math.min(100, event.currentAmount + event.amount).toFixed(2)})!`
+    }
+    else {
+      output += `Unknown event type: ${event.type}: ${JSON.stringify(event)}`;
     }
 
     return output
@@ -47,7 +55,10 @@ function sortDescending(futureEvents) {
     futureEvents.sort( (a,b) => b.timestamp - a.timestamp )
 }
 
-function registerFutureEvent(event, futureEvents) {
+
+function registerFutureEvents(events, futureEvents) {
+  events.forEach(event => {
     futureEvents.push(event)
-    sortDescending(futureEvents)
+  });
+  sortDescending(futureEvents)
 }

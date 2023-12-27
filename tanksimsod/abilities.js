@@ -1,51 +1,87 @@
 "use strict";
 
+function handleParryHaste(event, target, newFutureEvents, futureEvents) {
+  let isHandled = false; 
+  futureEvents.forEach(e => {
+    if (e.type == "swingTimer" && e.source == target.name) {
+      e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+      isHandled = true;
+    }
+  })
+  if (!isHandled) {
+    newFutureEvents.forEach(e => {
+      if (e.type == "swingTimer" && e.source == target.name) {
+        e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+      }
+    })
+    sortDescending(newFutureEvents)
+  } else {
+    sortDescending(futureEvents)
+  }
+}
 
-function updateRage(source, target, event, rageCost, isWhiteHit) {
+function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
+  let rageEvent = {
+      timestamp: event.timestamp,
+      type: "rage",
+      source: event.source,
+      name: event.name,
+
+      amount: 0,
+  }
+  let c = 82.25; // From Guybrush testing on SoD at lvl 25
+  // 0.00911077836 * source.stats.level * source.stats.level + 3.225598133 * source.stats.level + 4.2562911; // Probably wrong, at least in SoD, but ti's the info we have
+  if (isWhiteHit && event.source == "Tank") {
+    let multiplier = (tank.stats.runes && tank.stats.runes.endlessRage) ? 1.25 : 1;
+    if (event.source == "Tank") {
+      if (event.hit == "miss") {}
+      else if (["dodge", "parry"].includes(event.hit)) {
+        rageEvent.amount = 0.75*event.amount*multiplier*7.5/c; // 'refund' 75% of the rage gain
+      } else {
+        rageEvent.amount = event.amount*7.5*multiplier/c;
+      }
+    }
+  }
+  else if (event.target == "Tank") {
+    if (!["dodge", "parry", "miss"].includes(event.hit)) {
+      rageEvent.amount = event.amount*2.5/c;
+    }
+  }
+  if (rageEvent.amount > 0)
+    return rageEvent;
+  else
+    return;
+}
+
+function generateRageEventFromCast(source, target, event, rageCost) {
   let rageEvent = {
       timestamp: event.timestamp,
       type: "rage",
       source: source.name,
       name: event.name,
 
+      currentAmount: source.rage,
       amount: 0,
   }
   if (event.type == "damage") {
-    if (isWhiteHit) {
-      let c = 82.25; // From Guybrush testing on SoD at lvl 25
-      // 0.00911077836 * source.stats.level * source.stats.level + 3.225598133 * source.stats.level + 4.2562911; // Probably wrong, at least in SoD, but ti's the info we have
-      let multiplier = (source.stats.runes && source.stats.runes.endlessRage) ? 1.25 : 1;
-      if (source.name == "Tank") {
-        if (event.hit == "miss") {}
-        else if (["dodge", "parry"].includes(event.hit)) {//source.addRage(0.75*damage*multiplier*7.5/c, true); 
-          rageEvent.amount = 0.75*event.amount*multiplier*7.5/c; // 'refund' 75% of the rage gain
-        } else {
-          rageEvent.amount = event.amount*7.5*multiplier/c;
-          // source.addRage(event.amount*7.5*multiplier/c, true);
-        }
-      }
-      else if (target.name == "Tank") {
-        if (!["dodge", "parry", "miss"].includes(event.hit)) {
-          rageEvent.amount = event.amount*2.5/c;
-          // target.addRage(event.amount*2.5/c, true);
-        }
-      }
-    } else { // Yellow hit
-      if (source.stats.bonuses.fivePieceWrath && Math.random() < 0.25) { //rageCost = Math.max(rageCost - 5, 0) 
-        rageEvent.amount = Math.max(rageCost - 5, 0); // 0.25 instead of 0.2 to account for parry/dodge streaks not consuming the buff
-      }
-      if (["dodge", "parry", "miss"].includes(event.hit)) { //source.addRage(-0.2*rageCost, true); 
-        rageEvent.amount = -0.2*rageCost; // Default ability refund 80%
-      }
-      else { //source.addRage(-rageCost, true);
-        rageEvent.amount = -rageCost;
-      }
+    if (source.stats.bonuses.fivePieceWrath && Math.random() < 0.25) {
+      rageEvent.amount = Math.max(rageCost - 5, 0); // 0.25 instead of 0.2 to account for parry/dodge streaks not consuming the buff
+    }
+    if (["dodge", "parry", "miss"].includes(event.hit)) {
+      rageEvent.amount = -0.2*rageCost; // Default ability refund 80%
+    }
+    else {
+      rageEvent.amount = -rageCost;
     }
   }
   else if (event.type == "spellCast") {
     rageEvent.amount = -rageCost;
   }
-  return rageEvent;
+  rageEvent.currentValue = source.rage;
+  if (rageEvent.amount != 0)
+    return rageEvent;
+  else
+    return;
 }
 
 class Ability {
@@ -57,19 +93,19 @@ class Ability {
         // TODO: spellCrit
         this.currentCooldown = 0
     }
-    processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents) {
-
+    processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents) {
         damageEvent.threat = this.threatCalculator(damageEvent, source)
         if (this.rank(source.stats.level) > 0)
           damageEvent.name = this.name + " (Rank " + this.rank(source.stats.level) + ")"
         else
           damageEvent.name = this.name
         damageEvent.timestamp = timestamp
-        eventList.push(damageEvent)
+        reactiveEvents.push(damageEvent)
 
         this.cooldownReady = timestamp + this.baseCooldown
-        let rageEvent = updateRage(source, target, damageEvent, this.rageCost, false);
-        eventList.push(rageEvent);
+        let rageEvent = generateRageEventFromCast(source, target, damageEvent, this.rageCost, false);
+        if (rageEvent !== undefined)
+          reactiveEvents.push(rageEvent);
         
         if(this.onGCD) {
             source.onGCD = true
@@ -78,7 +114,7 @@ class Ability {
                 source: source.name,
                 timestamp: timestamp + 1500
             }
-            registerFutureEvent(futureEvent, futureEvents)
+            futureEvents.push(futureEvent);
         }
         let futureEvent = {
             type: "cooldownFinish",
@@ -86,13 +122,7 @@ class Ability {
             source: source.name,
             timestamp: timestamp + this.baseCooldown
         }
-        registerFutureEvent(futureEvent, futureEvents)
-        
-        source.handleEvent(damageEvent, eventList, futureEvents)
-        target.handleEvent(damageEvent, eventList, futureEvents)
-
-        source.handleEvent(rageEvent, eventList, futureEvents)
-        target.handleEvent(rageEvent, eventList, futureEvents)
+        futureEvents.push(futureEvent);
     }
     rank(level)
     {
@@ -130,7 +160,7 @@ class Ability {
     }
 
     // This function needs to be implemented in the sub classes!
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         console.log(`Internal Error: Use function not implemented for ability ${this.name}!`);
     }
 
@@ -144,7 +174,7 @@ class Autoattack extends Ability {
         super("MH Swing", 0, 0, false)
     }
 
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damageEvent = {};
         let rageEvent = {};
         // Heroic Strike
@@ -155,12 +185,12 @@ class Autoattack extends Ability {
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.name = "Heroic Strike (Rank " + this.rank(source.stats.level) + ")";
             damageEvent.timestamp = timestamp
-            eventList.push(damageEvent)
+            reactiveEvents.push(damageEvent)
 
             // Remove rage
-            rageEvent = updateRage(source, target, damageEvent, (15 - source.stats.talents.impHS), false);
-            eventList.push(rageEvent);
-            // updateRage(source, damageEvent.hit, (15 - source.stats.talents.impHS));
+            rageEvent = generateRageEventFromCast(source, target, damageEvent, (15 - source.stats.talents.impHS), false);
+            if (rageEvent !== undefined)
+              reactiveEvents.push(rageEvent);
         }
         // White Swing
         else {
@@ -170,10 +200,7 @@ class Autoattack extends Ability {
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.name = "MH Swing";
             damageEvent.timestamp = timestamp
-            eventList.push(damageEvent)
-
-            rageEvent = updateRage(source, target, damageEvent, this.rageCost, true);
-            eventList.push(rageEvent);
+            reactiveEvents.push(damageEvent)
         }
         
         source.isHeroicStrikeQueued = false
@@ -185,12 +212,7 @@ class Autoattack extends Ability {
             timestamp: timestamp + source.getSwingTimer(),
             swingStart: timestamp,
         }
-        registerFutureEvent(futureEvent, futureEvents)
-
-        source.handleEvent(damageEvent, eventList, futureEvents)
-        target.handleEvent(damageEvent, eventList, futureEvents)
-        source.handleEvent(rageEvent, eventList, futureEvents)
-        target.handleEvent(rageEvent, eventList, futureEvents)
+        futureEvents.push(futureEvent);
     }
     // Needs to be overridden since MHSwing is actually both HS and MHSwing...
     threatCalculator(dmg_event, attacker) {
@@ -255,7 +277,7 @@ class Autoattack extends Ability {
 
 class OHSwing extends Ability {
 
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = Math.random()*(source.stats.OHMax - source.stats.OHMin) + source.stats.OHMin + source.getAP()*source.stats.OHSwing/(14*1000); // swing timer is in ms
         damage = damage*(0.5 + 0.025*source.stats.talents.dwspec) +  target.additivePhysBonus;
         damage *=(1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
@@ -263,24 +285,7 @@ class OHSwing extends Ability {
         damageEvent.threat = 0;
         damageEvent.threat = this.threatCalculator(damageEvent, source);
         damageEvent.name = this.name;
-        eventList.push(damageEvent)
-
-        // let multiplier = (source.stats.runes && source.stats.runes.endlessRage) ? 1.25 : 1;
-        // let c = 0.00911077836 * source.stats.level * source.stats.level + 3.225598133 * source.stats.level + 4.2562911; // Probably wrong, at least in SoD, but ti's the info we have
-        // if (damageEvent.hit == "miss") {}
-        // else if (["dodge", "parry"].includes(damageEvent.hit)) source.addRage(0.75*damage*7.5*multiplier/c, true); // 'refund' 75% of the rage gain
-        // else {
-        //     source.addRage(damageEvent.amount*7.5*multiplier/c, true);
-        //     target.addRage(damageEvent.amount*2.5/c);
-        // }
-        // Add rage
-        let rageEvent = updateRage(source, target, damageEvent, this.rageCost, true);
-        // TODO: SET FUTURE_EVENT OH SWING
-        source.handleevent(damageEvent, eventList, futureEvents)
-        target.handleevent(damageEvent, eventList, futureEvents)
-        source.handleevent(rageEvent, eventList, futureEvents)
-        target.handleevent(rageEvent, eventList, futureEvents)
-        eventList.push(rageEvent);
+        reactiveEvents.push(damageEvent)
     }
 }
 /*
@@ -294,7 +299,7 @@ class Bloodthirst extends Ability {
         damageEvent.name = this.name;
 
         // Remove rage
-        updateRage(attacker, damageEvent.hit, this.rageCost)
+        generateRageEventFromCast(attacker, damageEvent.hit, this.rageCost)
         return damageEvent;
     }
 }
@@ -304,12 +309,12 @@ class Revenge extends Ability {
     constructor() {
         super("Revenge", 5000, 5, true)
     }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
         damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
 
     isUsable(timestamp, source) {
@@ -364,21 +369,18 @@ class ShieldBlock extends Ability {
     constructor() {
         super("Shield Block", 6000, 10, false)
     }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let spellCastEvent = {
             type: "spellCast",
             name: this.name,
             source: source.name,
             timestamp: timestamp,
         }
-        this.processDamageEvent(timestamp, spellCastEvent, source, target, eventList, futureEvents)
-        // eventList.push(spellCastEvent)
+        this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
+        reactiveEvents.push(spellCastEvent);
+        // reactiveEvents.push(spellCastEvent)
         // source.onGCD = true
         // this.cooldownReady = timestamp + this.baseCooldown
-
-        // source.applyAura(timestamp, "Shield Block", source.name, eventList, futureEvents)
-
-        // updateRage(source, 'hit', this.rageCost)
     }
     threatCalculator(event, source) {
       return 0;
@@ -389,11 +391,11 @@ class SunderArmor extends Ability {
   constructor(impSA) {
     super("Sunder Armor", 0, 15-impSA, true)
   }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0;
         let damageEvent = rollAttack(source, target, damage, true);
         if (damageEvent.hit == "crit") damageEvent.hit = "hit";  // TODO this can't crit...
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     isUsable(timestamp, source) {
         return this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && (source.rage >= this.rageCost - source.stats.talents.impSA)
@@ -425,15 +427,15 @@ class Bloodrage extends Ability {
         super("Bloodrage", 60000, -10, false) // "cost" is negative 10 rage, ie you gain 10 rage
     }
 
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let spellCastEvent = {
             type: "spellCast",
             name: this.name,
             source: source.name,
             timestamp: timestamp,
         }
-        this.processDamageEvent(timestamp, spellCastEvent, source, target, eventList, futureEvents)
-        // eventList.push(spellCastEvent)
+        this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
+        reactiveEvents.push(spellCastEvent)
     }
     isUsable(timestamp, source) {
         return (this.cooldownReady <= timestamp);
@@ -448,14 +450,14 @@ class HeroicStrike extends Ability {
         super("Heroic Strike", 0, 0, false)
     }
 
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let spellCastEvent = {
             type: "spellCast",
             name: this.name,
             source: source.name,
             timestamp: timestamp,
         }
-        eventList.push(spellCastEvent)
+        reactiveEvents.push(spellCastEvent)
 
         source.isHeroicStrikeQueued = true
     }
@@ -475,7 +477,7 @@ class BattleShout extends Ability {
         return attacker.stats.bshouttargets * this.staticThreat(this.rank(attacker.stats.level)) * attacker.stats.threatMod; 
     }
     
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let spellCastEvent = {
             type: "spellCast",
             name: this.name,
@@ -483,7 +485,7 @@ class BattleShout extends Ability {
             threat: this.threatCalculator({}, source),
             hit: "hit"
         }
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
     }
     isUsable(timestamp, source) {
         return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
@@ -517,12 +519,12 @@ class ShieldSlam extends Ability {
     constructor() {
         super("Shield Slam", 6000, 20, true)
     }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
 
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     rank(level) {
       if (level < 40) return -1;
@@ -560,7 +562,7 @@ class Devastate extends Ability {
         super("Devastate", 0, 15-impSA, true)
     }
 
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
       let stacks = 0
       target.auras.forEach(aura => {
         if (aura.name == "Sunder Armor" && aura.duration > 0)
@@ -571,7 +573,7 @@ class Devastate extends Ability {
       let damage = 0.6 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) * (1 + stacks * 0.06) + target.additivePhysBonus;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
       let damageEvent = rollAttack(source, target, damage, true, false, false, true)
-      this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+      this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     rank(level) {
       if (level < 10) return -1;
@@ -602,12 +604,12 @@ class RagingBlow extends Ability {
     constructor() {
         super("Raging Blow", 8000, 0, true)
     }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
 
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     isUsable(timestamp, source) {
         let isEnraged = false;
@@ -623,12 +625,12 @@ class Rend extends Ability {
     constructor() {
         super("Rend", 0, 10, true)
     }
-    use(timestamp, source, target, eventList, futureEvents) {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0;
         let damageEvent = rollAttack(source, target, damage, true);
         if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
         damageEvent.rank = this.rank(source.stats.level);
-        this.processDamageEvent(timestamp, damageEvent, source, target, eventList, futureEvents)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
 
         for (let i = 0; i < this.duration(this.rank(source.stats.level))/3000; i++) { 
 
@@ -649,7 +651,7 @@ class Rend extends Ability {
             amount: dotDamage,
           }
           dotEvent.threat = this.threatCalculator(dotEvent, source);
-          registerFutureEvent(dotEvent, futureEvents);
+          futureEvents.push(dotEvent);
         }
       }
     rank(level) {

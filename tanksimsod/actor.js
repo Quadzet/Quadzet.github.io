@@ -40,74 +40,52 @@ class Actor {
         this.windfury = false
     }
 
-    handleEvent(event, eventList, futureEvents) {
+    handleEvent(event, reactiveEvents, futureEvents) {
         // Auras
         this.auras.forEach(aura => {
-          aura.handleEvent(event, this, this.target, eventList, futureEvents);
+          aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
         })
 
-        // Procs
-        if(event.source == "Tank" && this.name == "Tank") {
-          this.procs.forEach(proc => {
-            proc.handleEvent(this, this.target, event, eventList, futureEvents)
-          })
-        }
-        if(event.type == "damage" && this.name == "Tank") {
-
-            // We might have just gotten rage to perform an action
-            if(event.source == "Tank" && event.name == "MH Swing")
-                performAction(event.timestamp, this, this.target, eventList, futureEvents)
-
-        // An ability came off cooldown, check if we should use it
-        } else if(event.type == "cooldownFinish" && !this.onGCD) {
-          performAction(event.timestamp, this, this.target, eventList, futureEvents)
-        } else if (event.type == "rage" && this.name == "Tank") {
-          this.addRage(event.amount);
-          // log_message("Tank gains " + event.amount.toFixed(2) + " rage from " + event.name + ". It now has " + this.rage.toFixed(2) + " rage.")
-        // } else if (event.type == "extra attack") {
-
-        }
-
-        // Parry haste
-        if(event.type == "damage" && event.target == this.name && event.hit == "parry") {
-            futureEvents.forEach(e => {
-                if(e.type == "swingTimer" && e.source == this.name)
-                    e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
+        if (this.name == "Tank") {
+          // Procs
+          if(this.name == "Tank") {
+            this.procs.forEach(proc => {
+              proc.handleEvent(this, this.target, event, reactiveEvents, futureEvents)
             })
-            sortDescending(futureEvents)
+          }
+          // Potentially generate rage from the dmg taken/done (white swing)
+          if(event.type == "damage") {
+            let rageEvent = generateRageEventFromDamage(this, this.target, event, ["MH Swing", "OH Swing"].includes(event.name));
+            if (rageEvent !== undefined)
+              reactiveEvents.push(rageEvent);
+          // An ability came off cooldown, check if we should use it
+          } else if(event.type == "cooldownFinish" && !this.onGCD) {
+            performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
+          } else if (event.type == "rage") {
+            this.addRage(event);
+            // We might have just gotten rage to perform an action
+            performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
+            // log_message("Tank gains " + event.amount.toFixed(2) + " rage from " + event.name + ". It now has " + this.rage.toFixed(2) + " rage.")
+          } else if (event.type == "extra attack") {
+            let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source)})
+            if(index >= 0)
+                futureEvents.splice(index, 1)
+            this.abilities["MH Swing"].use(event.timestamp, this, this.target, reactiveEvents, futureEvents);
+          } else 
+          // Placeholder for if we just got rage to be able to take an action
+          if(!this.onGCD) {
+              performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
+          }
         }
-
-        // Placeholder for if we just got rage to be able to take an action
-        if(!this.onGCD) {
-            performAction(event.timestamp, this, this.target, eventList, futureEvents)
-        }
+        // Handled in worker.handleEvent()
+        // if (event.type == "swingTimer") {
+        //   this.abilities[`${event.name}`].use(event.timestamp, this, this.target, reactiveEvents, futureEvents);
+        // }
     }
 
-    // applyAura(timestamp, name, source, eventList, futureEvents, isBuff = true) {
-    //     if(isBuff) {
-    //         if(this.buffs[name]) {
-    //             this.buffs[name].refresh(timestamp, this.name, eventList, futureEvents)
-    //         }
-    //         else {
-    //             let buff = Buffs[name]
-    //             buff.apply(timestamp, this.name, source, eventList, futureEvents)
-    //         }
-    //     }
-    //     else {
-    //         if(this.debuffs[name]) {
-    //             this.debuffs[name].refresh(timestamp, this.name, eventList, futureEvents)
-    //         }
-    //         else {
-    //             let debuff = Debuffs[name]
-    //             debuff.apply(timestamp, this.name, source, eventList, futureEvents)
-    //         }
-    //     }
-    // }
-
-
-
-    addRage(rage, add=false) {
-        this.rage = Math.max(0, Math.min(100, this.rage + rage))
+    addRage(event, add=false) {
+      event.currentAmount = this.rage;
+      this.rage = Math.max(0, Math.min(100, this.rage + event.amount))
     }
 
     getSwingTimer() {
