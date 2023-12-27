@@ -435,7 +435,6 @@ class Bloodrage extends Ability {
             timestamp: timestamp,
         }
         this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
-        reactiveEvents.push(spellCastEvent)
     }
     isUsable(timestamp, source) {
         return (this.cooldownReady <= timestamp);

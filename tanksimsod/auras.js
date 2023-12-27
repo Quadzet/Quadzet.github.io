@@ -76,15 +76,15 @@ class Aura {
 
     refresh(timestamp, owner, reactiveEvents, futureEvents) {
       if(this.stacks < this.maxStacks) {
-          reactiveEvents.push({
-              type: "auraExpire",
-              name: this.name,
-              owner: owner.name,
-              source: this.source,
-              stacks: this.stacks,
-              auraType: this.type,
-              timestamp: timestamp,
-          })
+          // reactiveEvents.push({
+          //     type: "auraExpire",
+          //     name: this.name,
+          //     owner: owner.name,
+          //     source: this.source,
+          //     stacks: this.stacks,
+          //     auraType: this.type,
+          //     timestamp: timestamp,
+          // })
           // Either add one stack, such as for sunder, or set to max stacks, such as for flurry/consumed by rage
           this.stacks = Math.min(Math.max(this.stacks + 1, this.startStacks), this.maxStacks);
           reactiveEvents.push({
@@ -128,7 +128,7 @@ class Aura {
             this.expire(timestamp, owner, reactiveEvents, futureEvents, true)
         else {
             reactiveEvents.push({
-                type: "auraExpire",
+                type: "auraRemoveStack",
                 name: this.name,
                 owner: owner.name,
                 source: this.source,
@@ -316,7 +316,7 @@ class BloodrageAura extends Aura {
       type: "buff",
       name: "Bloodrage",
     
-      maxDuration: 12000,
+      maxDuration: 10000,
     })
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
@@ -327,7 +327,7 @@ class BloodrageAura extends Aura {
       for (let i = 0; i < 10; i++) {
         futureEvents.push(
         {
-          timestamp: event.timestamp + i*1000,
+          timestamp: event.timestamp + (i+1)*1000,
           type: "rage",
           source: owner.name,
           name: this.name,

@@ -45,6 +45,10 @@ self.addEventListener('message', function(e) {
           Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
           Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
         }
+        else if(event.type == "auraApply") {
+          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+        }
         else if(event.type == "rage") {
           Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
         }
@@ -52,6 +56,10 @@ self.addEventListener('message', function(e) {
           Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
         }
         else if(event.type == "damage") {
+          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+        }
+        else if (event.type == "spellCast") {
           Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
           Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
         }
