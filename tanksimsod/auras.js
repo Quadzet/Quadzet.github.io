@@ -125,7 +125,7 @@ class Aura {
         if (this.duration == 0)
           return;
         if(this.stacks == 1)
-            this.expire(timestamp, owner, reactiveEvents, futureEvents, true)
+            this.expire(timestamp, owner, reactiveEvents, futureEvents)
         else {
             reactiveEvents.push({
                 type: "auraRemoveStack",
@@ -145,7 +145,7 @@ class Aura {
         }
     }
 
-    expire(timestamp, owner, reactiveEvents, futureEvents, addEvent) {
+    expire(timestamp, owner, reactiveEvents, futureEvents) {
         // Add all modifiers here, remember scalingstacks
         if (this.duration == 0)
           return;
@@ -155,16 +155,16 @@ class Aura {
         this.stacks = 0
         this.duration = 0;
         delete owner.buffs[this.name]
-        if (addEvent)
-          reactiveEvents.push({
-            type: "auraExpire",
-            name: this.name,
-            owner: owner.name,
-            source: this.source,
-            stacks: this.stacks,
-            auraType: this.type,
-            timestamp: timestamp,
-          })
+        // if (addEvent)
+        //   reactiveEvents.push({
+        //     type: "auraExpire",
+        //     name: this.name,
+        //     owner: owner.name,
+        //     source: this.source,
+        //     stacks: this.stacks,
+        //     auraType: this.type,
+        //     timestamp: timestamp,
+        //   })
         let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name)})
         if(index >= 0)
             futureEvents.splice(index, 1)
@@ -204,7 +204,7 @@ class DefensiveState extends Aura {
       
       // Add aura after a dodge/block/parry
       if(event.type == "damage" && event.target == owner.name && ["block", "parry", "dodge"].includes(event.hit)) {
-          this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents)
+          this.apply(event.timestamp, owner, event.target, reactiveEvents, futureEvents)
       }
       
       // Expire after casting Revenge 
@@ -387,7 +387,8 @@ class DeepWoundsAura extends Aura {
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
-    if (event.type == "damage" && event.hit == "crit") {
+    // Note the Devastate exception
+    if (event.type == "damage" && event.hit == "crit" && event.target == owner.name && event.name != "Devastate") {
 
       this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
       // Remove all current DW ticks in the futureEvents

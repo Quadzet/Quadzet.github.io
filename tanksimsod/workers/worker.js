@@ -15,7 +15,7 @@ self.addEventListener('message', function(e) {
     function handleEvent(event, futureEvents)
     {
       let newEvents = [];
-      let newFutureEvents = []; 
+      // let newFutureEvents = []; 
       let reactiveEvents = [event]; // slightly inefficient
       do {
         // event = reactiveEvents.pop();
@@ -24,53 +24,53 @@ self.addEventListener('message', function(e) {
             let source = Actors["Tank"];
             let target = Actors["Boss"];
 
-            handleCombatStart(source, target, reactiveEvents, newFutureEvents);
-            handleCombatStart(target, source, reactiveEvents, newFutureEvents);
+            handleCombatStart(source, target, reactiveEvents, futureEvents);
+            handleCombatStart(target, source, reactiveEvents, futureEvents);
         }
         else if(event.type == "swingTimer") {
             let source = Actors[event.source];
             let target = Actors[event.target];
-            source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, newFutureEvents); // source and target are just names, find them in the global actor list.
+            source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents); // source and target are just names, find them in the global actor list.
         }
         else if(event.type == "GCD") {
             let source = Actors[event.source];
             let target = source.target;
             source.onGCD = false
-            performAction(event.timestamp, source, target, reactiveEvents, newFutureEvents)
+            performAction(event.timestamp, source, target, reactiveEvents, futureEvents)
         }
         else if(event.type == "cooldownFinish") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if(event.type == "auraExpire") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if(event.type == "auraApply") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if(event.type == "rage") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if(event.type == "extra attack") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if(event.type == "damage") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
         }
         else if (event.type == "spellCast") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, newFutureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, newFutureEvents)
+          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
+          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
         }
         if (event.type == "damage" && event.hit == "parry") {
-          handleParryHaste(event, Actors[event.target], newFutureEvents, futureEvents)
+          handleParryHaste(event, Actors[event.target], futureEvents)
         }
         
         newEvents.push(event);
       } while (reactiveEvents.length > 0)
 
-      registerFutureEvents(newFutureEvents, futureEvents);
+      sortDescending(futureEvents);
       return newEvents;
     }
 

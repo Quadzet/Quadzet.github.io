@@ -1,23 +1,12 @@
 "use strict";
 
-function handleParryHaste(event, target, newFutureEvents, futureEvents) {
-  let isHandled = false; 
+function handleParryHaste(event, target, futureEvents) {
   futureEvents.forEach(e => {
     if (e.type == "swingTimer" && e.source == target.name) {
       e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
-      isHandled = true;
     }
   })
-  if (!isHandled) {
-    newFutureEvents.forEach(e => {
-      if (e.type == "swingTimer" && e.source == target.name) {
-        e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
-      }
-    })
-    sortDescending(newFutureEvents)
-  } else {
-    sortDescending(futureEvents)
-  }
+  sortDescending(futureEvents)
 }
 
 function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
