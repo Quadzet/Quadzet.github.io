@@ -18,7 +18,7 @@ function formatEvent(event) {
     } else if(event["type"] == "auraExpire") {    
         output += `${event.source}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} fades from ${event.owner}.`
     } else if(event["type"] == "auraRemoveStack") {    
-        output += `${event.source}'s ${event.name} on ${event.owner} loses a stack (${event.stacks+1}->${event.stacks}).`
+        output += `${event.source}'s ${event.name} on ${event.owner} loses a stack (${event.stacks}->${event.stacks - 1}).`
     } else if(event["type"] == "auraApply") {    
         output += `${event.owner} gains ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} from ${event.source}.`
     } else if(event["type"] == "auraRefresh") {    

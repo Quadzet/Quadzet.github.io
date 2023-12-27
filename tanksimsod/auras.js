@@ -145,13 +145,14 @@ class Aura {
         }
     }
 
-    expire(timestamp, owner, reactiveEvents, futureEvents) {
+    expire(event, owner, reactiveEvents, futureEvents) {
         // Add all modifiers here, remember scalingstacks
         if (this.duration == 0)
           return;
         owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
         owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
+        event.stacks = this.stacks;
         this.stacks = 0
         this.duration = 0;
         delete owner.buffs[this.name]
@@ -188,6 +189,10 @@ class SunderArmorAura extends Aura {
             armorMod: 0//-520, Apply full stacks at pull instead
         })
     }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+      // TODO
+      // log_message("Error: handleEvent not implemented for aura " + this.name + ".");
+    }
 }
 
 
@@ -209,11 +214,11 @@ class DefensiveState extends Aura {
       
       // Expire after casting Revenge 
       if(event.source == this.name && event.name == "Revenge") {
-          this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+          this.expire(event, owner, reactiveEvents, futureEvents, true)
       }
 
       if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-        this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+        this.expire(event, owner, reactiveEvents, futureEvents, true)
       }
 
     }
@@ -245,7 +250,7 @@ class ShieldBlockAura extends Aura {
       } 
 
       else if(event.type == "auraExpire") {
-        this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true);
+        this.expire(event, owner, reactiveEvents, futureEvents, true);
       }
     }
 }
@@ -269,7 +274,7 @@ class FlagellationAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -299,12 +304,12 @@ class ConsumedByRageAura extends Aura {
     }
 
     //  Remove a stack after successfully hitting a target
-    if(event.type == "damage" && event.source == "Tank" && (event.name == "MH Swing" || event.name == "OH Swing" || event.name == "Heroic Strike")) {
+    if(event.type == "damage" && event.source == "Tank" && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend (Rank 3)", "Raging Blow", "Revenge"].includes(event.name)) {
       this.removeStack(event.timestamp, owner, reactiveEvents, futureEvents)
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -339,7 +344,7 @@ class BloodrageAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
     }
 
   }
@@ -362,7 +367,7 @@ class RendAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
     }
   }
 
@@ -422,7 +427,7 @@ class DeepWoundsAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event.timestamp, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
     }
   }
 }

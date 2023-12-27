@@ -67,7 +67,10 @@ function twoRollTankBossTable(attacker, defender, damage) {
     let rng = 100*Math.random();
     let type = "";
     let damageEvent = {}
-    if (rng < miss) type = 'miss';
+    if (rng < miss) {
+      damage = 0;
+      type = 'miss'
+    }
     else if (rng < miss + parry) {
         damage = 0;
         type = 'parry';
