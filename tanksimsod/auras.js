@@ -17,6 +17,7 @@ class Aura {
         if (!input.scalingStacks) this.scalingStacks = false; else this.scalingStacks = input.scalingStacks;
 
         if (!input.APMod) this.APMod = 0; else this.APMod = input.APMod; // additive
+        if (!input.APMultMod) this.APMultMod = 1; else this.APMultMod = input.APMultMod; // multiplicative
         if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
         if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
@@ -46,6 +47,7 @@ class Aura {
         owner.armor += this.armorMod
         owner.block += this.blockMod
         owner.damageMod *= this.damageMod
+        owner.APMultMod *= this.APMultMod;
 
         let applyEvent = { 
             type: "auraApply",
@@ -101,6 +103,7 @@ class Aura {
               owner.armor += this.armorMod
               owner.block += this.blockMod
               owner.damageMod *= this.damageMod
+              owner.APMultMod *= this.APMultMod;
           }
         }
         else {
@@ -141,6 +144,7 @@ class Aura {
                 owner.armor -= this.armorMod
                 owner.block -= this.blockMod
                 owner.damageMod /= this.damageMod
+                owner.APMultMod /= this.APMultMod;
             }
         }
     }
@@ -152,6 +156,7 @@ class Aura {
         owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
         owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
+        owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);
         event.stacks = this.stacks;
         this.stacks = 0
         this.duration = 0;
@@ -350,6 +355,28 @@ class BloodrageAura extends Aura {
   }
 }
 
+class WildStrikesAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Wild Strikes",
+    
+      maxDuration: 1500,
+      APMultMod: 1.2,
+    })
+  }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    
+    if (event.type == "extra attack" && event.name == "Wild Strikes") {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
+    }
+  }
+}
+
 class RendAura extends Aura {
   constructor() {
     super({
@@ -455,6 +482,8 @@ function TankAuras(globals) {
     ret.push(new ConsumedByRageAura());
   if (globals.tankStats.runes.flagellation)
     ret.push(new FlagellationAura());
+  if (globals.tankStats.bonuses.wildStrikes)
+    ret.push(new WildStrikesAura());
   return ret;
 }
 

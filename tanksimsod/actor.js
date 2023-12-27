@@ -101,9 +101,12 @@ class Actor {
 
     getAP() {
         let AP = this.stats.AP;
-        if (this.windfury) {
-            AP += this.stats.bonuses.windfuryAP
-        }
+        // if (this.windfury) {
+        //     AP += this.stats.bonuses.windfuryAP
+        // }
+        this.auras.forEach(aura => {
+          AP *= aura.APMultMod;
+        })
         return AP;
     }
 
