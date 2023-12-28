@@ -182,6 +182,27 @@ function getEarthStr(level) {
   else return 77;
 }
 
+function getBlockValue(itemID) {
+  switch(itemID) {
+    case 211460: return 15;
+    case 6223: return 14;
+    case 13079: return 14;
+    case 7002: return 13;
+    case 6320: return 13;
+    case 209424: return 14;
+    case 13245: return 9;
+    case 12997: return 11;
+    case 4064: return 11;
+    case 6676: return 10;
+    case 15891: return 9;
+    case 5443: return 9;
+    case 3656: return 10;
+    default:
+      log_message('Unknown shield item id: ' + itemID + '. Could not fetch block value.')
+      return 0;
+  }
+}
+
 function updateStats()
 {
     let level = document.querySelector("#level").value
@@ -332,6 +353,7 @@ function updateStats()
     let _dualWield = ohweapontype != 'Shield';
     let mhwepskill = level * 5;
     let ohwepskill = _dualWield ? level * 5 : 0;
+    if (!_dualWield) blockvalue += getBlockValue(Number(ohwep));
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
