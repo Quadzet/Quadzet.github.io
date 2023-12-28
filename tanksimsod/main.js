@@ -219,6 +219,7 @@ async function loadItemData() {
 
       crit: 0,
       hit: 0,
+      attackpower: 0,
 
       mindmg: 0,
       maxdmg: 0,
@@ -271,6 +272,8 @@ async function loadItemData() {
       spells.forEach((spell, index) => {
 
         let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
+        if (spell.SpellID == 9140)
+          var x = 15;
 
         if (spell.TriggerType == "1") { // Only care about on_equip
           effects.forEach(e => {

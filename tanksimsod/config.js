@@ -194,6 +194,7 @@ function updateStats()
 
       crit: 0,
       hit: 0,
+      attackpower: 0,
 
       defense: 0,
       parry: 0,
@@ -207,17 +208,18 @@ function updateStats()
       if (itemID && itemID != 0) {
         let itemStats = ITEMS[`${itemID}`];
 
-        stats.armor      += itemStats.armor;
-        stats.agility    += itemStats.agility;
-        stats.strength   += itemStats.strength;
-        stats.stamina    += itemStats.stamina;
-        stats.crit       += itemStats.crit;
-        stats.hit        += itemStats.hit;
-        stats.defense    += itemStats.defense;
-        stats.parry      += itemStats.parry;
-        stats.dodge      += itemStats.dodge;
-        stats.block      += itemStats.block;
-        stats.blockvalue += itemStats.blockvalue;
+        stats.armor       += itemStats.armor;
+        stats.agility     += itemStats.agility;
+        stats.strength    += itemStats.strength;
+        stats.stamina     += itemStats.stamina;
+        stats.crit        += itemStats.crit;
+        stats.hit         += itemStats.hit;
+        stats.attackpower += itemStats.attackpower;
+        stats.defense     += itemStats.defense;
+        stats.parry       += itemStats.parry;
+        stats.dodge       += itemStats.dodge;
+        stats.block       += itemStats.block;
+        stats.blockvalue  += itemStats.blockvalue;
       }
     });
     let race = document.querySelector("#race").value
@@ -368,17 +370,18 @@ function updateStats()
         blockvalue += item.blockvalue;
     })
 
-    armor      += stats.armor;
-    agility    += stats.agility;
-    strength   += stats.strength;
-    stamina    += stats.stamina;
-    crit       += stats.crit;
-    hit        += stats.hit;
-    defense    += stats.defense;
-    parry      += stats.parry;
-    dodge      += stats.dodge;
-    block      += stats.block;
-    blockvalue += stats.blockvalue;
+    armor       += stats.armor;
+    agility     += stats.agility;
+    strength    += stats.strength;
+    stamina     += stats.stamina;
+    crit        += stats.crit;
+    hit         += stats.hit;
+    attackpower += stats.attackpower;
+    defense     += stats.defense;
+    parry       += stats.parry;
+    dodge       += stats.dodge;
+    block       += stats.block;
+    blockvalue  += stats.blockvalue;
 
 
     let mhwepskill = level * 5;
