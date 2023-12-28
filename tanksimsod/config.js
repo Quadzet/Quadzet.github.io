@@ -319,8 +319,19 @@ function updateStats()
 
     let mainhand = {};
     let offhand = {};
-    let mhweapontype = "";
-    let ohweapontype = "";
+    let mhwep = document.getElementById('mainhand-slot').getAttribute('itemid');
+    if (mhwep !== undefined) {
+      mainhand = ITEMS[`${mhwep}`];
+    }
+    let ohwep = document.getElementById('offhand-slot').getAttribute('itemid');
+    if (ohwep !== undefined) {
+      offhand = ITEMS[`${ohwep}`];
+    }
+    let mhweapontype = mainhand.type === undefined ? "" : mainhand.type; // eg "Sword"
+    let ohweapontype = offhand.type === undefined ? "" : offhand.type; // eg "Sword"
+    let _dualWield = ohweapontype != 'Shield';
+    let mhwepskill = level * 5;
+    let ohwepskill = _dualWield ? level * 5 : 0;
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
@@ -332,15 +343,8 @@ function updateStats()
           if(itemStats.skilltype.includes(mhweapontype))
             ohwepskill += itemStats.skill;
         }
-        if (slot == 'mainhand') {
-          mainhand = itemStats;
-        }
-        if (slot == 'offhand') {
-          offhand = itemStats;
-        }
       }
     });
-    let _dualWield = offhand && offhand.type != 'Shield';
 
     let mhmin = mainhand.mindmg;
     let mhmax = mainhand.maxdmg;
@@ -368,6 +372,12 @@ function updateStats()
         defense += item.defense;
         block += item.block;
         blockvalue += item.blockvalue;
+        if(item.skilltype !== undefined && item.skilltype != 'none') {
+          if (item.skilltype.includes(mhweapontype))
+            mhwepskill += item.skill;
+          if (item.skilltype.includes(ohweapontype))
+            ohwepskill += item.skill;
+        }
     })
 
     armor       += stats.armor;
@@ -384,8 +394,6 @@ function updateStats()
     blockvalue  += stats.blockvalue;
 
 
-    let mhwepskill = level * 5;
-    let ohwepskill = _dualWield ? level * 5 : 0;
 
 
 
