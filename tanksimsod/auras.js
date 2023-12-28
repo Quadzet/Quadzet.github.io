@@ -124,11 +124,11 @@ class Aura {
         sortDescending(futureEvents)
     }
 
-    removeStack(timestamp, owner, reactiveEvents, futureEvents) {
+    removeStack(event, owner, reactiveEvents, futureEvents) {
         if (this.duration == 0)
           return;
         if(this.stacks == 1)
-            this.expire(timestamp, owner, reactiveEvents, futureEvents)
+            this.expire(event, owner, reactiveEvents, futureEvents)
         else {
             reactiveEvents.push({
                 type: "auraRemoveStack",
@@ -137,7 +137,7 @@ class Aura {
                 source: this.source,
                 stacks: this.stacks,
                 auraType: this.type,
-                timestamp: timestamp,
+                timestamp: event.timestamp,
             })
             this.stacks -= 1
             if(this.scalingStacks) {
@@ -251,7 +251,7 @@ class ShieldBlockAura extends Aura {
 
       //  Remove a stack after blocking
       else if(event.type == "damage" && event.target == "Tank" && event.hit == "block") {
-        this.removeStack(event.timestamp, owner, reactiveEvents, futureEvents)
+        this.removeStack(event, owner, reactiveEvents, futureEvents)
       } 
 
       else if(event.type == "auraExpire") {
@@ -310,7 +310,7 @@ class ConsumedByRageAura extends Aura {
 
     //  Remove a stack after successfully hitting a target
     if(event.type == "damage" && event.source == "Tank" && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend (Rank 3)", "Raging Blow", "Revenge"].includes(event.name)) {
-      this.removeStack(event.timestamp, owner, reactiveEvents, futureEvents)
+      this.removeStack(event, owner, reactiveEvents, futureEvents)
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {

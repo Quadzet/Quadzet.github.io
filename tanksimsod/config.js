@@ -226,7 +226,7 @@ function updateStats()
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
-      if (itemID && itemID != 0) {
+      if (itemID != null && itemID != 0) {
         let itemStats = ITEMS[`${itemID}`];
 
         stats.armor       += itemStats.armor;
@@ -341,15 +341,15 @@ function updateStats()
     let mainhand = {};
     let offhand = {};
     let mhwep = document.getElementById('mainhand-slot').getAttribute('itemid');
-    if (mhwep !== undefined) {
+    if (mhwep != undefined) {
       mainhand = ITEMS[`${mhwep}`];
     }
     let ohwep = document.getElementById('offhand-slot').getAttribute('itemid');
-    if (ohwep !== undefined) {
+    if (ohwep != undefined) {
       offhand = ITEMS[`${ohwep}`];
     }
-    let mhweapontype = mainhand.type === undefined ? "" : mainhand.type; // eg "Sword"
-    let ohweapontype = offhand.type === undefined ? "" : offhand.type; // eg "Sword"
+    let mhweapontype = mainhand.type == undefined ? "" : mainhand.type; // eg "Sword"
+    let ohweapontype = offhand.type == undefined ? "" : offhand.type; // eg "Sword"
     let _dualWield = ohweapontype != 'Shield';
     let mhwepskill = level * 5;
     let ohwepskill = _dualWield ? level * 5 : 0;
