@@ -285,11 +285,11 @@ class FlagellationAura extends Aura {
   }
 }
 
-class ConsumedByRageAura extends Aura {
+class EnrageAura extends Aura {
   constructor() {
     super({
       type: "buff",
-      name: "Consumed by Rage",
+      name: "Enrage",
     
       maxDuration: 12000,
 
@@ -304,12 +304,24 @@ class ConsumedByRageAura extends Aura {
     // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
     // NOTE: This relies on the implicit fact that the rage has not yet been added to the Actor
     //       This logic might change in the future, watch out.
-    if (event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
+    if (owner.stats.runes.consumedByRage && event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
+      if (this.duration > 0 && this.damageMod != 1.25) // In case we have a weaker enrage active, eg talent enrage
+        this.expire(event, owner, reactiveEvents, futureEvents);
+      this.damageMod = 1.25;
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
+    if (owner.stats.talents.enrage > 0 && event.type == "damage" && event.target == owner.name && event.hit == 'crit') {
+      if (this.duration > 0 && this.stacks > 0 && this.damageMod > owner.stats.talents.enrage * 0.05 + 1) {
+        return; // We are affected by a more powerful enrage, eg CbR
+      } else {
+        this.damageMod = owner.stats.talents.enrage * 0.05 + 1;
+        this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+      }
+    }
+
     //  Remove a stack after successfully hitting a target
-    if(event.type == "damage" && event.source == "Tank" && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend (Rank 3)", "Raging Blow", "Revenge"].includes(event.name)) {
+    if(event.type == "damage" && event.source == owner.name && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend (Rank 3)", "Raging Blow", "Revenge"].includes(event.name)) {
       this.removeStack(event, owner, reactiveEvents, futureEvents)
     }
 
@@ -468,7 +480,7 @@ let Debuffs = {
 let Buffs = {
     "Defensive State": new DefensiveState(),
     "Shield Block": new ShieldBlockAura(),
-    "Consumed by Rage": new ConsumedByRageAura(),
+    "Enrage": new EnrageAura(),
     "Bloodrage": new BloodrageAura(),
 }
 
@@ -478,8 +490,8 @@ function TankAuras(globals) {
     new ShieldBlockAura(),
     new BloodrageAura(),
   ]
-  if (globals.tankStats.runes.consumedByRage)
-    ret.push(new ConsumedByRageAura());
+  if (globals.tankStats.runes.consumedByRage || globals.tankStats.talents.enrage > 0)
+    ret.push(new EnrageAura());
   if (globals.tankStats.runes.flagellation)
     ret.push(new FlagellationAura());
   if (globals.tankStats.bonuses.wildStrikes)
