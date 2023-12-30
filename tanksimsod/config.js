@@ -794,7 +794,7 @@ function updateStats()
             MHMax: Number(document.querySelector("#swingMax").value),
             MHSwing: Number(document.querySelector("#swingTimer").value)*1000,
             
-            MHWepSkill: level * 5 + 15, // TODO: Boss level
+            MHWepSkill: bossLevel * 5, 
             damageMod: 0.9, // Defensive Stance
             physDmgMod: 1,
             bleedBonus: bleedBonus,
@@ -802,12 +802,12 @@ function updateStats()
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,
-            blockValue: Math.min(0, bossLevel - 15), // Not confirmed, seems to more or less match at lvl 27 and 63.
+            blockValue: Math.max(0, bossLevel - 15), // Not confirmed, seems to more or less match at lvl 27 and 63.
             
             parry: 5,
             dodge: 5,
             block: 5,
-            defense: level * 5 + 15,
+            defense: bossLevel * 5,
             baseArmor: bossArmor, 
             
             critMod: 2,
