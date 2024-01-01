@@ -674,7 +674,7 @@ function loadProfile(profile)
             "homunculi": "false"
         },
         "calcSettings": {
-            "iterations": "3",
+            "iterations": "3000",
             "fightLength": "60"
         }
     }
@@ -920,19 +920,7 @@ async function main() {
     function postResults() {
 
         let end = Date.now()
-        // log_message(`Boss swingtimer: ${(globals.config.simDuration * globals.config.iterations)/bossSwings}`)
-        // Some console logging...
         let ret = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights with timestep ${globals.config.timeStep} ms using ${numWorkers} threads in ${(end-start)/1000} seconds.`;
-        /*
-        log_message(ret);
-        log_message(`TPS: ${Math.round(average(tps)*100)/100}`);
-        log_message(`DPS: ${Math.round(average(dps)*100)/100}`);
-        log_message(`DTPS: ${Math.round(average(dtps)*100)/100}`);
-        for (let ability in results)
-            log_message(`${ability}: ${Math.round(average(results[`${ability}`])*100)/100}`);
-        log_message(`gainRPS: ${Math.round(average(rageGained)*100)/100}`);
-        log_message(`spentRPS: ${Math.round(average(rageSpent)*100)/100}`);
-        */
 
         let iterations = globals.config.iterations;
         // Pad the vector in case there were fight iterations where an ability was not used at all (is this really needed?)
@@ -984,21 +972,6 @@ async function main() {
         <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
         <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
         `
-        // <tr><td>RPS gained: </td><td>${Math.round(average(rageGained)*100)/100}</td></tr>
-        // <tr><td>RPS spent: </td><td>${Math.round(average(rageSpent)*100)/100}</td></tr>
-/*
-        for(let ability in uptimes) {
-            uptimes[`${ability}`] = [...Array(globals.config.iterations - uptimes[`${ability}`].length)].map((_, i) => 0).concat(uptimes[`${ability}`])
-        }
-        let sortedUptimes = Object.keys(uptimes).map(key => [key, uptimes[key]])
-        sortedUptimes.sort((a,b) => average(b[1]) - average(a[1]))
-        for (let i in sortedUptimes) {
-            //sortedUptimes[i][1] = sortedUptimes[i][1].concat([...Array(globals.config.iterations - sortedUptimes[i][1].length)].map((_, i) => 0)) // fill with zeros
-            generalTable = generalTable.concat(`<tr><td>${sortedUptimes[i][0]} uptime:</td><td>${Math.round(average(sortedUptimes[i][1])*100)/100}%</td></tr>`)
-        }
-        generalTable = generalTable.concat(`</table>`)
-*/
-
         document.getElementById("resultsHeader").innerHTML = `<h2>Results</h2>`
         document.getElementById("generalStats").innerHTML = generalTable;
         document.getElementById("abilitytps").innerHTML = resultTable;
@@ -1019,134 +992,6 @@ async function main() {
             timelineDOM.innerHTML += "</br>";
           }
         })
-/*
-        var x = linspace(0, globals.config.simDuration, globals.config.simDuration*1000/globals.config.snapshotLen + 1);
-
-        let lineShape = document.querySelector("#lineSelect").options[document.querySelector("#lineSelect").selectedIndex].value
-
-        // Make the graph
-        var y_avg = [];
-        var y_99 = [];
-        var y_95 = [];
-        var y_05 = [];
-        var y_01 = [];
-        snapshots.forEach(snapshot => {
-            y_avg.push(Math.round(average(snapshot)));
-            y_99.push(Math.round(quantile(snapshot, 0.99)));
-            y_95.push(Math.round(quantile(snapshot, 0.95)));
-            y_05.push(Math.round(quantile(snapshot, 0.05)));
-            y_01.push(Math.round(quantile(snapshot, 0.01)));
-        });
-
-        var traceAvg = {
-            x: x,
-            y: y_avg,
-            mode: 'lines+markers',
-            name: "Average Threat",
-            line: {
-                color: '#939C56',
-                shape: `${lineShape}`,
-            },
-            marker: {
-                size: 4,
-            }
-        }
-
-        var trace99 = {
-            x: x,
-            y: y_99,
-            mode: 'lines+markers',
-            name: "99th percentile",
-            line: {
-                color: '#569C81',
-                shape: `${lineShape}`,
-            },
-            marker: {
-                size: 4,
-            }
-        }
-
-        var trace95 = {
-            x: x,
-            y: y_95,
-            mode: 'lines+markers',
-            name: "95th percentile",
-            line: {
-                color: '#569B65',
-                shape: `${lineShape}`,
-            },
-            marker: {
-                size: 4,
-            }
-        }
-
-        var trace05 = {
-            x: x,
-            y: y_05,
-            mode: 'lines+markers',
-            name: "5th percentile",
-            line: {
-                color: '#966C44',
-                shape: `${lineShape}`,
-            },
-            marker: {
-                size: 4,
-            }
-        }
-        var trace01 = {
-            x: x,
-            y: y_01,
-            mode: 'lines+markers',
-            name: "1st percentile",
-            line: {
-                color: '#964343',
-                shape: `${lineShape}`,
-            },
-            marker: {
-                size: 4,
-            }
-        }
-
-    // BG grey 222629
-    // dark grey 474b4f
-    // medium grey 6b6e70
-    // light gray c8ced1
-
-
-        var plotData = [ trace99, trace95, traceAvg, trace05, trace01 ];
-        var layout = {
-            title: 'Threat Distribution',
-            width: 1440,
-            height: 810,
-
-            plot_bgcolor: "#222629",
-            paper_bgcolor: "#222629",
-            
-            titlefont: {color: "#c8ced1"}, 
-            xaxis:{
-                title:"Time (s)", 
-                titlefont: {color: "#c8ced1"},
-                tickfont: {color: "#c8ced1"}, 
-                rangemode: "tozero",
-                gridcolor: "#474b4f",
-                linecolor: "#c8ced1",
-                autotick: false,
-                ticks: 'outside',
-                tick0: 0,
-                dtick: 1.5,
-            },
-            yaxis:{
-                title:"Threat",
-                titlefont: {color: "#c8ced1"},
-                tickcolor: "#c8ced1",
-                tickfont: {color: "#c8ced1"},
-                rangemode: "tozero",
-                gridcolor: "#474b4f",
-                linecolor: "#c8ced1"},
-            legend: {font: {color: "#c8ced1"}},
-        }
-        Plotly.newPlot('plotContainer', plotData, layout);
-*/
         document.querySelector("#progressBar").style.display = `none`;
         document.querySelector("#barContainer").style.display = `none`;
         document.querySelector("#plotContainer").style.display = `block`;
