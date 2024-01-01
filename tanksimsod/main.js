@@ -820,13 +820,23 @@ function copyToClipboard() {
   alert('JSON copied to clipboard!');
 }
 
+function enableCalc() {
+  document.getElementById("calcBtn").disabled = false;
+}
+
+function disableCalc() {
+  document.getElementById("calcBtn").disabled = true;
+}
+
 async function onLoadPage()
 {
-    createLinks();
-    addEventListeners();
-    await loadItemData();
-    loadLocalstorage();
-    updateStats();
+  disableCalc();
+  createLinks();
+  addEventListeners();
+  await loadItemData();
+  loadLocalstorage();
+  updateStats();
+  enableCalc();
 }
 
 async function main() {
@@ -1142,7 +1152,11 @@ async function main() {
         document.querySelector("#plotContainer").style.display = `block`;
         document.querySelector("#resultContainer").style.display = `block`;
         document.querySelector("#timeline").style.display = `block`;
+        enableCalc();
     }
 }
 
-
+async function calc() {
+  disableCalc();
+  await main();
+}

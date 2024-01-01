@@ -318,11 +318,11 @@ function updateStats()
     let mainhand = {};
     let offhand = {};
     let mhwep = document.getElementById('mainhand-slot').getAttribute('itemid');
-    if (mhwep != undefined) {
+    if (mhwep != undefined && mhwep != "0") {
       mainhand = ITEMS[`${mhwep}`];
     }
     let ohwep = document.getElementById('offhand-slot').getAttribute('itemid');
-    if (ohwep != undefined) {
+    if (ohwep != undefined && ohwep != "0") {
       offhand = ITEMS[`${ohwep}`];
     }
     let mhweapontype = mainhand.type == undefined ? "" : mainhand.type; // eg "Sword"
