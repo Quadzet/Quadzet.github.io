@@ -89,6 +89,7 @@ self.addEventListener('message', function(e) {
         tpsBreakdown: {},
         casts: {},
     }
+    let progressPerc = 0;
     // *** MAIN LOOP *** 
     for(let i in range(iterations)) {
         let eventList = []
@@ -147,6 +148,12 @@ self.addEventListener('message', function(e) {
 
         if(i == iterations - 1)
             exampleList = eventList
+        if (i/iterations >= progressPerc/100) {
+            progressPerc += 1;
+            postMessage({
+                        type: 'progressUpdate',
+                        progressPerc: 1});
+        }
     }
 /*
     tps
