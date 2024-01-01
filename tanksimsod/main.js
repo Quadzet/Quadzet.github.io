@@ -825,7 +825,7 @@ async function onLoadPage()
     createLinks();
     addEventListeners();
     await loadItemData();
-    loadProfile();
+    loadLocalstorage();
     updateStats();
 }
 
