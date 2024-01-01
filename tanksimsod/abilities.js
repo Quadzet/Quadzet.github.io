@@ -598,9 +598,9 @@ class RagingBlow extends Ability {
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
-        log_message(JSON.stringify(damageEvent));
-        if (damageEvent.amount > 0)
-          log_message((damageEvent.threat/damageEvent.amount))
+        // log_message(JSON.stringify(damageEvent));
+        // if (damageEvent.amount > 0)
+        //   log_message((damageEvent.threat/damageEvent.amount))
     }
     isUsable(timestamp, source) {
         let isEnraged = false;

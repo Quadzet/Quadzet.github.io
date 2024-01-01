@@ -88,6 +88,7 @@ self.addEventListener('message', function(e) {
         dtps: [],
         tpsBreakdown: {},
         casts: {},
+        auras: {},
     }
     let progressPerc = 0;
     // *** MAIN LOOP *** 
@@ -114,33 +115,51 @@ self.addEventListener('message', function(e) {
         let damageTaken = 0
 
         eventList.forEach(event => {
-            if (event) {
-                
-                if (event.source == "Boss") {
-                    if (event.amount && event.type == "damage") damageTaken += event.amount
-                } else if ("threat" in event) { 
-                    threat += event.threat
-                    if (event.type == "damage") {
-                      if (event.amount) damage += event.amount
-                    }
-                    if (event.threat != 0 || event.type == "damage") { // Don't allow non-damage events with zero threat
-                      if (event.name) {
-                        if(!results.tpsBreakdown[`${event.name}`]) results.tpsBreakdown[`${event.name}`] = []
-                        if (!results.tpsBreakdown[`${event.name}`][i]) results.tpsBreakdown[`${event.name}`][i] = {tps: 0, dps: 0, hits: 0, casts: 0};
+          if (event) {
+            if (event.source == "Boss") {
+              if (event.amount && event.type == "damage") damageTaken += event.amount
+            } else if ("threat" in event) { 
+              threat += event.threat
+              if (event.type == "damage") {
+                if (event.amount) damage += event.amount
+              }
+              if (event.threat != 0 || event.type == "damage") { // Don't allow non-damage events with zero threat
+                if (event.name) {
+                  if(!results.tpsBreakdown[`${event.name}`]) results.tpsBreakdown[`${event.name}`] = []
+                  if (!results.tpsBreakdown[`${event.name}`][i]) results.tpsBreakdown[`${event.name}`][i] = {tps: 0, dps: 0, hits: 0, casts: 0};
 
-                        results.tpsBreakdown[`${event.name}`][i].tps += event.threat/globals.config.simDuration;
-                        if (event.amount && event.type == "damage")
-                          results.tpsBreakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
-                        results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
-                        if (event.hit)
-                          results.tpsBreakdown[`${event.name}`][i].hits += ["miss", "dodge", "parry"].includes(event.hit) ? 0 : 1;//event.hit == "hit" ? 1 : 0;//
-                      }
-                    }
+                  results.tpsBreakdown[`${event.name}`][i].tps += event.threat/globals.config.simDuration;
+                  if (event.amount && event.type == "damage")
+                    results.tpsBreakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
+                  results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
+                  if (event.hit)
+                    results.tpsBreakdown[`${event.name}`][i].hits += ["miss", "dodge", "parry"].includes(event.hit) ? 0 : 1;//event.hit == "hit" ? 1 : 0;//
                 }
-              if (event.name == "Rend") {
-                let x = 15;
               }
             }
+            // auras : {
+            //   deepWounds : {
+            //     uptime: [0,0,0,0,0],
+            //   }
+            // }
+            if (event.type == "auraApply") {
+              let obj = results.auras[`${event.name}`];
+              if (obj == null) obj = { uptime: Array(iterations).fill(0), active: Array(iterations).fill(false), };
+              if (!obj.active[i]) { // Don't double count refreshes
+                obj.uptime[i] += 1 - event.timestamp/(globals.config.simDuration*1000);
+                obj.active[i] = true;
+                results.auras[`${event.name}`] = obj;
+              }
+            }
+            if (event.type == "auraExpire") {
+              let obj = results.auras[`${event.name}`];
+              if (obj.active[i]) {
+                obj.uptime[i] -= 1 - event.timestamp/(globals.config.simDuration*1000);
+                obj.active[i] = false;
+                results.auras[`${event.name}`] = obj;
+              }
+            }
+          }
         });
         results.tps.push(threat/globals.config.simDuration)
         results.dps.push(damage/globals.config.simDuration)

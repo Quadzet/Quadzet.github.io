@@ -859,6 +859,7 @@ async function main() {
     let tps = []
     let dps = []
     let dtps = []
+    let auras = {};
     let rageGained = []
     let rageSpent = []
     let snapshots = []
@@ -869,7 +870,6 @@ async function main() {
     updateProgressbar(0)
     document.querySelector("#progressBar").style.display = `block`;
     document.querySelector("#barContainer").style.display = `block`;
-
     let numWorkers = window.navigator.hardwareConcurrency;
     let remainderIterations = globals.config.iterations - Math.floor(globals.config.iterations/numWorkers)*numWorkers
     let numWorkersDone = 0;
@@ -897,18 +897,14 @@ async function main() {
                     if(!results[`${ability}`]) results[`${ability}`] = [];
                     results[`${ability}`] = results[`${ability}`].concat(e.data.results.tpsBreakdown[`${ability}`]);
                 }
-                // for (let ability in e.data.uptimes) {
-                //     if(!uptimes[`${ability}`]) uptimes[`${ability}`] = [];
-                //     uptimes[`${ability}`] = uptimes[`${ability}`].concat(e.data.uptimes[`${ability}`]);
-                // }
                 tps = tps.concat(e.data.results.tps);
                 dps = dps.concat(e.data.results.dps);
                 dtps = dtps.concat(e.data.results.dtps);
-                // rageGained = rageGained.concat(e.data.rageGained);
-                // rageSpent = rageSpent.concat(e.data.rageSpent);
-                // snapshots = snapshots.concat(e.data.snapshots);
-                // breaches += e.data.breaches;
-                // bossSwings += e.data.bossSwings;
+                Object.keys(e.data.results.auras).forEach(aura => {
+                 let obj = auras[`${aura}`] == null ? {uptimes : []} : auras[`${aura}`];
+                 obj.uptimes = obj.uptimes.concat(e.data.results.auras[`${aura}`].uptime);
+                 auras[`${aura}`] = obj;
+                });
                 if (++numWorkersDone === numWorkers) {
                     exampleEvents = e.data.events
                     postResults();
@@ -927,6 +923,9 @@ async function main() {
         for(let result in results) {
             results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => { return { tps: 0, dps: 0, hits: 0, casts: 0 }}).concat(results[`${result}`])
         }
+    
+        log_message(auras);
+
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         // Sort the abilities based on their average tps
         sortedResults.sort((a,b) => {
@@ -957,6 +956,13 @@ async function main() {
         }
         resultTable = resultTable.concat(`<tr><td>Total:</td><td>${Math.round(totalTps/iterations*100)/100}</td><td>${Math.round(totalDps/iterations*100)/100}</td></tr>`)
         resultTable = resultTable.concat(`</table>`)
+
+        let auraTable = `<table><tr><th>Aura</th><th>Uptime</th></tr>`;
+        Object.keys(auras).forEach(aura => {
+          auraTable += `<tr><td>${aura}</td><td>${(average(auras[`${aura}`].uptimes)*100).toFixed(2)}%</td></tr>`;
+        });
+        auraTable += '</table>';
+
         let statsTable = 
         `<table>
         <tr><th>Statistics</th></tr>
@@ -976,6 +982,8 @@ async function main() {
         document.getElementById("generalStats").innerHTML = generalTable;
         document.getElementById("abilitytps").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
+        document.getElementById("auraTable").innerHTML = auraTable;
+
 
         let timelineHeaderDOM = document.querySelector("#timeline>div")
         timelineHeaderDOM.innerHTML = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights using ${numWorkers} threads in ${(end-start)/1000} seconds.`
