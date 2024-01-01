@@ -51,6 +51,14 @@ async function updateProgressbar(progressPerc) {
 }
 
 // TODO: move this to a data file
+const BUFFS = ['mhstone', 'ohstone', 'strbuff', 'apbuff', 'agibuff', 'statbuff', 'foodbuff', 'alcohol', 'potion'];
+const BUFFS2 = ['inspiration', 'devo', 'imploh', 'CoV', 'armorelixir', 'hpelixir', 'dragonslayer', 'boon-of-the-blackfathom', 'ashenvale-cry', 'wcb', 'dmf', 'zandalar',
+'dmstamina', 'dmAP', 'dmspell', 'songflower', 'bshout', 'mark', 'fortitude', 'bloodpact', 'kings', 'might', 'horn-of-lord', 'mangle', 'strofearth', 'wild-strikes'];
+const TANK_SETTINGS = ['level', 'race', 'startRage'];
+const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor', 'CoR', 'faeriefire', 'iea', 'homunculi'];
+const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
+const ENCHANTS = ['head', 'shoulder', 'back', 'chest', 'wrist', 'hand', 'leg', 'feet', 'mhwep', 'ohwep'];
+const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
 const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
@@ -419,12 +427,8 @@ function createLinks() {
   window.$WowheadPower.refreshLinks();
 }
 
-function saveInput()
-{
-  let profiles = localStorage.getItem("sod_profiles");
-  profiles = profiles ? JSON.parse(profiles) : {};
+function generateProfile() {
   let profile = {};
-  let profile_name = "Default"; // TODO: Turn into user input
   profile.version = '1.0.0';
   
   // Gear
@@ -456,117 +460,227 @@ function saveInput()
   rotation.cbrStacks = cbrStacks;
   profile.rotation = rotation;
 
-  profiles[`${profile_name}`] = profile;
-  localStorage.setItem("sod_profiles", JSON.stringify(profiles));
+  // Tank Settings
+  let tankSettings = {};
+  TANK_SETTINGS.forEach(setting => {
+    if (setting == "startRage")
+      tankSettings[`${setting}`] = document.getElementById(setting).value;
+    else
+      tankSettings[`${setting}-ix`] = document.getElementById(setting).selectedIndex;
+  });
+  profile.tankSettings = tankSettings;
+ 
+  // Enchants
+  let enchants = {};
+  ENCHANTS.forEach(slot => {
+    let enchantID = document.getElementById(slot + 'enchant').selectedIndex;
+    enchants[`${slot}-enchant-ix`] = enchantID;
+  });
+  profile.enchants = enchants;
 
-    // Tank Settings
-    localStorage.setItem("level", document.querySelector("#level").selectedIndex)
-    localStorage.setItem("race", document.querySelector("#race").selectedIndex)
+  // Talents 
+  let talents = {};
+  TALENTS.forEach(talent => {
+    talents[`${talent}`] = document.getElementById(talent).value;
+  });
+  profile.talents = talents;
+
+  // Runes
+  let runes = {};
+  RUNES.forEach(rune => {
+    runes[`${rune}`] = document.getElementById(rune).checked;
+  });
+  profile.runes = runes;
     
-    localStorage.setItem("sod_headenchant", document.querySelector("#headenchant").selectedIndex)
-    localStorage.setItem("sod_shoulderenchant", document.querySelector("#shoulderenchant").selectedIndex)
-    localStorage.setItem("sod_backenchant", document.querySelector("#backenchant").selectedIndex)
-    localStorage.setItem("sod_chestenchant", document.querySelector("#chestenchant").selectedIndex)
-    localStorage.setItem("sod_wristenchant", document.querySelector("#wristenchant").selectedIndex)
-    localStorage.setItem("sod_handenchant", document.querySelector("#handenchant").selectedIndex)
-    localStorage.setItem("sod_legenchant", document.querySelector("#legenchant").selectedIndex)
-    localStorage.setItem("sod_feetenchant", document.querySelector("#feetenchant").selectedIndex)
-    localStorage.setItem("sod_mhwepenchant", document.querySelector("#mhwepenchant").selectedIndex)
-    localStorage.setItem("sod_ohwepenchant", document.querySelector("#ohwepenchant").selectedIndex)
+  // Buffs, TODO merge these arrays after we discontinue the dropdowns.
+  let buffs  = {};
+  BUFFS.forEach(buff => {
+    buffs[`${buff}-ix`] = document.getElementById(buff).selectedIndex;
+  });
+  BUFFS2.forEach(buff => {
+    buffs[`${buff}`] = document.getElementById(buff).checked;
+  });
+  profile.buffs = buffs;
 
-    localStorage.setItem("sod_startRage", document.querySelector("#startRage").value)
-    localStorage.setItem("sod_wcb", document.querySelector("#wcb").checked)
-    localStorage.setItem("sod_dmf", document.querySelector("#dmf").checked)
+  // Boss Settings
+  let bossSettings = {};
+  BOSS_SETTINGS.forEach(setting => {
+    let element = document.getElementById(setting);
+    if (setting == "bossLevel")
+      bossSettings[`${setting}`] = element.selectedIndex;
+    else if (['CoR', 'faeriefire', 'iea', 'homonculi'].includes(setting))
+      bossSettings[`${setting}`] = element.checked;
+    else
+      bossSettings[`${setting}`] = element.value;
+  });
+  profile.bossSettings = bossSettings;
 
-    // Talents 
-    localStorage.setItem("sod_deflection", document.getElementById("deflection").value)
-    localStorage.setItem("sod_cruelty", document.getElementById("cruelty").value)
-    localStorage.setItem("sod_anticipation", document.getElementById("anticipation").value)
-    localStorage.setItem("sod_shieldspec", document.getElementById("shieldspec").value)
-    localStorage.setItem("sod_toughness", document.getElementById("toughness").value)
-    localStorage.setItem("sod_impHS", document.querySelector("#impHS").value) 
-    localStorage.setItem("sod_impSA", document.querySelector("#impSA").value) 
-    localStorage.setItem("sod_impRend", document.querySelector("#impRend").value) 
-    localStorage.setItem("sod_impale", document.querySelector("#impale").value) 
-    localStorage.setItem("sod_defiance", document.querySelector("#defiance").value) 
-    localStorage.setItem("sod_enrage", document.querySelector("#enrage").value) 
-    localStorage.setItem("sod_deepWounds", document.querySelector("#deepWounds").value) 
-    
-    // Other Bonuses
-    localStorage.setItem("devastate", document.querySelector("#devastate").checked)
-    localStorage.setItem("endlessRage", document.querySelector("#endlessRage").checked)
-    localStorage.setItem("consumedByRage", document.querySelector("#consumedByRage").checked)
-    localStorage.setItem("furiousThunder", document.querySelector("#furiousThunder").checked)
-    localStorage.setItem("ragingBlow", document.querySelector("#ragingBlow").checked)
-    localStorage.setItem("flagellation", document.querySelector("#flagellation").checked)
-    localStorage.setItem("bloodFrenzy", document.querySelector("#bloodFrenzy").checked)
-    
-    // Buffs
-    localStorage.setItem("sod_mhstone", document.getElementById("mhstone").selectedIndex);
-    localStorage.setItem("sod_ohstone", document.getElementById("ohstone").selectedIndex);
-    localStorage.setItem("sod_strbuff", document.getElementById("strbuff").selectedIndex);
-    localStorage.setItem("sod_apbuff", document.getElementById("apbuff").selectedIndex);
-    localStorage.setItem("sod_agibuff", document.getElementById("agibuff").selectedIndex);
-    localStorage.setItem("sod_statbuff", document.getElementById("statbuff").selectedIndex);
-    localStorage.setItem("sod_foodbuff", document.getElementById("foodbuff").selectedIndex);
-    localStorage.setItem("sod_alcohol", document.getElementById("alcohol").selectedIndex);
-    localStorage.setItem("sod_potion", document.getElementById("potion").selectedIndex);
-
-    localStorage.setItem("sod_inspiration", document.getElementById("inspiration").checked);
-    localStorage.setItem("sod_devo", document.getElementById("devo").checked);
-    localStorage.setItem("sod_imploh", document.getElementById("imploh").checked);
-
-    localStorage.setItem("sod_CoV", document.getElementById("CoV").checked);
-    localStorage.setItem("sod_armorelixir", document.getElementById("armorelixir").checked);
-    localStorage.setItem("sod_hpelixir", document.getElementById("hpelixir").checked);
-    localStorage.setItem("sod_dragonslayer", document.getElementById("dragonslayer").checked);
-    localStorage.setItem("sod_boonOfTheBlackfathom", document.getElementById("boonOfTheBlackfathom").checked);
-    localStorage.setItem("sod_ashenvaleCry", document.getElementById("ashenvaleCry").checked);
-    localStorage.setItem("sod_zandalar", document.getElementById("zandalar").checked);
-    localStorage.setItem("sod_wcb", document.getElementById("wcb").checked);
-    localStorage.setItem("sod_dmf", document.getElementById("dmf").checked);
-    localStorage.setItem("sod_dmstamina", document.getElementById("dmstamina").checked);
-    localStorage.setItem("sod_dmAP", document.getElementById("dmAP").checked);
-    localStorage.setItem("sod_dmspell", document.getElementById("dmspell").checked);
-    localStorage.setItem("sod_songflower", document.getElementById("songflower").checked);
-    localStorage.setItem("sod_bshout", document.getElementById("bshout").checked);
-    localStorage.setItem("sod_mark", document.getElementById("mark").checked);
-    localStorage.setItem("sod_fortitude", document.getElementById("fortitude").checked);
-    localStorage.setItem("sod_bloodpact", document.getElementById("bloodpact").checked);
-    localStorage.setItem("sod_kings", document.getElementById("kings").checked);
-    localStorage.setItem("sod_might", document.getElementById("might").checked);
-    localStorage.setItem("sod_hornOfLord", document.getElementById("hornOfLord").checked);
-    localStorage.setItem("sod_mangle", document.getElementById("mangle").checked);
-    localStorage.setItem("sod_strofearth", document.getElementById("strofearth").checked);
-    localStorage.setItem("sod_wildStrikes", document.getElementById("wildStrikes").checked);
-
-    // Boss Settings
-    localStorage.setItem("sod_bossLevel", document.querySelector("#bossLevel").selectedIndex)
-    localStorage.setItem("sod_swingMin", document.querySelector("#swingMin").value)
-    localStorage.setItem("sod_swingMax", document.querySelector("#swingMax").value)
-    localStorage.setItem("sod_swingTimer", document.querySelector("#swingTimer").value)
-    localStorage.setItem("sod_bossarmor", document.querySelector("#bossarmor").value)
-
-    localStorage.setItem("sod_curseofrecklessness", document.querySelector("#curseofrecklessness").checked)
-    localStorage.setItem("sod_faeriefire", document.querySelector("#faeriefire").checked)
-    localStorage.setItem("sod_iea", document.querySelector("#iea").checked)
-    localStorage.setItem("sod_homunculi", document.querySelector("#homunculi").checked)
-
-    // Calc Settings
-    localStorage.setItem("sod_iterations", document.querySelector("#iterations").value)
-    localStorage.setItem("sod_fightLength", document.querySelector("#fightLength").value)
-
+  // Calc Settings
+  let calcSettings = {
+    'iterations': document.getElementById("iterations").value,
+    'fightLength': document.getElementById("fightLength").value,
+  }
+  profile.calcSettings = calcSettings;
+  return profile;
 }
 
-function loadInput()
+function saveInput()
 {
-  // Gear
+  let profile_name = "Default"; // TODO: Turn into user input
   let profiles = localStorage.getItem("sod_profiles");
   profiles = profiles ? JSON.parse(profiles) : {};
-  let profile_name = "Default"; // TODO: Make user input
-  let profile = profiles[`${profile_name}`];
-  profile = profile ? profile : {};
+  let profile = generateProfile();
+  profiles[`${profile_name}`] = profile;
+  localStorage.setItem("sod_profiles", JSON.stringify(profiles));
+}
 
+function loadProfile(profile)
+{
+
+  const DEFAULT_PROFILE = {
+        "gear": {
+            "head": "211505",
+            "hands": "209568",
+            "neck": "209673",
+            "waist": "211457",
+            "shoulders": "209692",
+            "legs": "209566",
+            "back": "213087",
+            "feet": "209581",
+            "chest": "210794",
+            "wrists": "211463",
+            "finger1": "209565",
+            "finger2": "2933",
+            "trinket1": "211449",
+            "trinket2": "21568",
+            "mainhand": "209525",
+            "offhand": "209424",
+            "ranged": "209688"
+        },
+        "rotation": {
+            "revenge": {
+                "use": true,
+                "rage": 60
+            },
+            "raging-blow": {
+                "use": true,
+                "rage": 0
+            },
+            "rend": {
+                "use": false,
+                "rage": 80
+            },
+            "devastate": {
+                "use": true,
+                "rage": 75
+            },
+            "heroic-strike": {
+                "use": true,
+                "rage": 90
+            },
+            "shield-block": {
+                "use": false,
+                "rage": 90
+            },
+            "cbrUse": true,
+            "cbrStacks": 3
+        },
+        "tankSettings": {
+            "level-ix": 0,
+            "race-ix": 2,
+            "startRage": "40"
+        },
+        "enchants": {
+            "head-enchant-ix": 0,
+            "shoulder-enchant-ix": 0,
+            "back-enchant-ix": 1,
+            "chest-enchant-ix": 1,
+            "wrist-enchant-ix": 1,
+            "hand-enchant-ix": 1,
+            "leg-enchant-ix": 1,
+            "feet-enchant-ix": 1,
+            "mhwep-enchant-ix": 1,
+            "ohwep-enchant-ix": 0
+        },
+        "talents": {
+            "deflection": "5",
+            "cruelty": "3",
+            "anticipation": "0",
+            "shield-spec": "0",
+            "toughness": "3",
+            "impHS": "0",
+            "impSA": "0",
+            "impRend": "0",
+            "impale": "0",
+            "defiance": "0",
+            "enrage": "0",
+            "deep-wounds": "3"
+        },
+        "runes": {
+            "devastate": true,
+            "endless-rage": false,
+            "consumed-by-rage": true,
+            "furious-thunder": false,
+            "raging-blow": true,
+            "flagellation": false,
+            "blood-frenzy": false
+        },
+        "buffs": {
+            "mhstone-ix": 0,
+            "ohstone-ix": 0,
+            "strbuff-ix": 2,
+            "apbuff-ix": 0,
+            "agibuff-ix": 2,
+            "statbuff-ix": 0,
+            "foodbuff-ix": 1,
+            "alcohol-ix": 1,
+            "potion-ix": 0,
+            "inspiration": false,
+            "devo": false,
+            "imploh": false,
+            "CoV": true,
+            "armorelixir": true,
+            "hpelixir": true,
+            "dragonslayer": false,
+            "boon-of-the-blackfathom": true,
+            "ashenvale-cry": true,
+            "wcb": false,
+            "dmf": false,
+            "zandalar": false,
+            "dmstamina": false,
+            "dmAP": false,
+            "dmspell": false,
+            "songflower": false,
+            "bshout": true,
+            "mark": true,
+            "fortitude": true,
+            "bloodpact": false,
+            "kings": true,
+            "might": false,
+            "horn-of-lord": true,
+            "mangle": true,
+            "strofearth": true,
+            "wild-strikes": true
+        },
+        "bossSettings": {
+            "bossLevel": 1,
+            "swingMax": "220",
+            "swingMin": "180",
+            "swingTimer": "2",
+            "bossArmor": "1081",
+            "CoR": true,
+            "faeriefire": true,
+            "iea": false,
+            "homunculi": "false"
+        },
+        "calcSettings": {
+            "iterations": "3",
+            "fightLength": "60"
+        }
+    }
+  profile = profile == null ? DEFAULT_PROFILE : profile;
+
+  // Deprecated with the addition of default json profile
   let defaultGear = {
     'head': 211505,
     'hands': 209568,
@@ -612,109 +726,106 @@ function loadInput()
   if (rotation.cbrStacks !== undefined)
     document.getElementById('cbr-stacks').value = rotation.cbrStacks;
 
-    // Tank Settings
-    document.querySelector("#level").selectedIndex = localStorage.getItem("level") ? localStorage.getItem("level") : 0;
-    document.querySelector("#race").selectedIndex = localStorage.getItem("race") ? localStorage.getItem("race") : 3;
+  // Tank Settings
+  let tankSettings = profile.tankSettings == null ? {} : profile.tankSettings;
+  TANK_SETTINGS.forEach(setting => {
+    if (setting == 'startRage') {
+      if (tankSettings[`${setting}`] != null)
+        document.getElementById(setting).value = tankSettings[`${setting}`];
+    } else {
+      if (tankSettings[`${setting}-ix`] != null)
+        document.getElementById(setting).selectedIndex = tankSettings[`${setting}-ix`];
+    }
+  });
 
-    document.querySelector("#headenchant").selectedIndex = localStorage.getItem("sod_headenchant") ? localStorage.getItem("sod_headenchant") : 0;
-    document.querySelector("#shoulderenchant").selectedIndex = localStorage.getItem("sod_shoulderenchant") ? localStorage.getItem("sod_shoulderenchant") : 0;
-    document.querySelector("#backenchant").selectedIndex = localStorage.getItem("sod_backenchant") ? localStorage.getItem("sod_backenchant") : 1;
-    document.querySelector("#chestenchant").selectedIndex = localStorage.getItem("sod_chestenchant") ? localStorage.getItem("sod_chestenchant") : 1;
-    document.querySelector("#wristenchant").selectedIndex = localStorage.getItem("sod_wristenchant") ? localStorage.getItem("sod_wristenchant") : 1;
-    document.querySelector("#handenchant").selectedIndex = localStorage.getItem("sod_handenchant") ? localStorage.getItem("sod_handenchant") : 1;
-    document.querySelector("#legenchant").selectedIndex = localStorage.getItem("sod_legenchant") ? localStorage.getItem("sod_legenchant") : 1;
-    document.querySelector("#feetenchant").selectedIndex = localStorage.getItem("sod_feetenchant") ? localStorage.getItem("sod_feetenchant") : 1;
-    document.querySelector("#mhwepenchant").selectedIndex = localStorage.getItem("sod_mhwepenchant") ? localStorage.getItem("sod_mhwepenchant") : 1;
-    document.querySelector("#ohwepenchant").selectedIndex = localStorage.getItem("sod_ohwepenchant") ? localStorage.getItem("sod_ohwepenchant") : 0;
+  // Enchants
+  let enchants = profile.enchants == null ? {} : profile.enchants;
+  ENCHANTS.forEach(enchant => {
+    if (enchants[`${enchant}-enchant-ix`] != null)
+      document.getElementById(enchant + 'enchant').selectedIndex = enchants[`${enchant}-enchant-ix`];
+  });
 
-    document.querySelector("#startRage").value = localStorage.getItem("sod_startRage") ? localStorage.getItem("sod_startRage") : 40;
-    document.querySelector("#wcb").checked = localStorage.getItem("sod_wcb") == "true" ? true : false;
-    document.querySelector("#dmf").checked = localStorage.getItem("sod_dmf") == "true" ? true : false;
-
-    // Talents 
-    document.getElementById("deflection").value = localStorage.getItem("sod_deflection") ? localStorage.getItem("sod_deflection") : 5;
-    document.getElementById("cruelty").value = localStorage.getItem("sod_cruelty") ? localStorage.getItem("sod_cruelty") : 3;
-    document.getElementById("anticipation").value = localStorage.getItem("sod_anticipation") ? localStorage.getItem("sod_anticipation") : 0;
-    document.getElementById("shieldspec").value = localStorage.getItem("sod_shieldspec") ? localStorage.getItem("sod_shieldspec") : 0;
-    document.getElementById("toughness").value = localStorage.getItem("sod_toughness") ? localStorage.getItem("sod_toughness") : 0;
-    document.querySelector("#impHS").value = localStorage.getItem("sod_impHS") ? localStorage.getItem("sod_impHS") : 0; 
-    document.querySelector("#impSA").value = localStorage.getItem("sod_impSA") ? localStorage.getItem("sod_impSA") : 0; 
-    document.querySelector("#impRend").value = localStorage.getItem("sod_impRend") ? localStorage.getItem("sod_impRend") : 3; 
-    document.querySelector("#impale").value = localStorage.getItem("sod_impale") ? localStorage.getItem("sod_impale") : 0; 
-    document.querySelector("#defiance").value = localStorage.getItem("sod_defiance") ? localStorage.getItem("sod_defiance") : 0; 
-    document.querySelector("#enrage").value = localStorage.getItem("sod_enrage") ? localStorage.getItem("sod_enrage") : 0; 
-    document.querySelector("#deepWounds").value = localStorage.getItem("sod_deepWounds") ? localStorage.getItem("sod_deepWounds") : 3; 
+  // Talents 
+  let talents = profile.talents == null ? {} : profile.talents;
+  TALENTS.forEach(talent => {
+    if (talents[`${talent}`] != null)
+      document.getElementById(talent).value = talents[`${talent}`];
+  });
     
-    // Other Bonuses
-    document.querySelector("#devastate").checked = localStorage.getItem("devastate") == "false" ? false : true;
-    document.querySelector("#endlessRage").checked = localStorage.getItem("endlessRage") == "true" ? true : false;
-    document.querySelector("#consumedByRage").checked = localStorage.getItem("consumedByRage") == "false" ? false : true;
-    document.querySelector("#furiousThunder").checked = localStorage.getItem("furiousThunder") == "true" ? true : false;
-    document.querySelector("#ragingBlow").checked = localStorage.getItem("ragingBlow") == "true" ? true : false;
-    document.querySelector("#flagellation").checked = localStorage.getItem("flagellation") == "false" ? false : true;
-    document.querySelector("#bloodFrenzy").checked = localStorage.getItem("bloodFrenzy") == "true" ? true : false;
+  // Runes
+  let runes = profile.runes == null ? {} : profile.runes;
+  RUNES.forEach(rune => {
+    if (runes[`${rune}`] != null)
+      document.getElementById(rune).checked = runes[`${rune}`];
+  });
 
-    // Buffs
-    document.getElementById("mhstone").selectedIndex = localStorage.getItem("sod_mhstone") ? localStorage.getItem("sod_mhstone") : 0;
-    document.getElementById("ohstone").selectedIndex = localStorage.getItem("sod_ohstone") ? localStorage.getItem("sod_ohstone") : 0;
-    document.getElementById("strbuff").selectedIndex = localStorage.getItem("sod_strbuff") ? localStorage.getItem("sod_strbuff") : 2;
-    document.getElementById("apbuff").selectedIndex = localStorage.getItem("sod_apbuff") ? localStorage.getItem("sod_apbuff") : 0;
-    document.getElementById("agibuff").selectedIndex = localStorage.getItem("sod_agibuff") ? localStorage.getItem("sod_agibuff") : 2;
-    document.getElementById("statbuff").selectedIndex = localStorage.getItem("sod_statbuff") ? localStorage.getItem("sod_statbuff") : 0;
-    document.getElementById("foodbuff").selectedIndex = localStorage.getItem("sod_foodbuff") ? localStorage.getItem("sod_foodbuff") : 1;
-    document.getElementById("alcohol").selectedIndex = localStorage.getItem("sod_alcohol") ? localStorage.getItem("sod_alcohol") : 1;
-    document.getElementById("potion").selectedIndex = localStorage.getItem("sod_potion") ? localStorage.getItem("sod_potion") : 0;
+  // Buffs
+  let buffs = profile.buffs == null ? {} : profile.buffs;
+  BUFFS.forEach(buff => {
+    if (buffs[`${buff}-ix`] != null)
+      document.getElementById(buff).selectedIndex = buffs[`${buff}-ix`];
+  });
+  BUFFS2.forEach(buff => {
+    if (buffs[`${buff}`] != null)
+      document.getElementById(buff).checked = buffs[`${buff}`];
+  });
 
-    document.getElementById("inspiration").checked = localStorage.getItem("sod_inspiration") == "true" ? true : false;
-    document.getElementById("devo").checked = localStorage.getItem("sod_devo") == "true" ? true : false;
-    document.getElementById("imploh").checked = localStorage.getItem("sod_imploh") == "true" ? true : false;
+  // Boss Settings
+  let bossSettings = profile.bossSettings == null ? {} : profile.bossSettings;
+  BOSS_SETTINGS.forEach(setting => {
+    if (bossSettings[`${setting}`] != null) {
+      if (setting == 'bossLevel')
+        document.getElementById(setting).selectedIndex = bossSettings[`${setting}`];
+      else if (['swingMin', 'swingMax', 'bossArmor'].includes(setting))
+        document.getElementById(setting).value = bossSettings[`${setting}`];
+      else
+        document.getElementById(setting).checked = bossSettings[`${setting}`];
+    }
+  });
 
-    document.getElementById("CoV").checked = localStorage.getItem("sod_CoV") == "true" ? true : false;// 
-    document.getElementById("armorelixir").checked = localStorage.getItem("sod_armorelixir") == "false" ? false : true;
-    document.getElementById("hpelixir").checked = localStorage.getItem("sod_hpelixir") == "false" ? false : true;
-    document.getElementById("dragonslayer").checked = localStorage.getItem("sod_dragonslayer") == "true" ? true : false;
-    document.getElementById("boonOfTheBlackfathom").checked = localStorage.getItem("sod_boonOfTheBlackfathom") == "true" ? true : false;
-    document.getElementById("ashenvaleCry").checked = localStorage.getItem("sod_ashenvaleCry") == "true" ? true : false;
-    document.getElementById("zandalar").checked = localStorage.getItem("sod_zandalar") == "true" ? true : false;
-    document.getElementById("wcb").checked = localStorage.getItem("sod_wcb") == "true" ? true : false;
-    document.getElementById("dmf").checked = localStorage.getItem("sod_dmf") == "true" ? true : false;
-    document.getElementById("dmstamina").checked = localStorage.getItem("sod_dmstamina") == "true" ? true : false;
-    document.getElementById("dmAP").checked = localStorage.getItem("sod_dmAP") == "true" ? true : false;
-    document.getElementById("dmspell").checked = localStorage.getItem("sod_dmspell") == "true" ? true : false;
-    document.getElementById("songflower").checked = localStorage.getItem("sod_songflower") == "true" ? true : false;
-    document.getElementById("bshout").checked = localStorage.getItem("sod_bshout") == "false" ? false : true;
-    document.getElementById("mark").checked = localStorage.getItem("sod_mark") == "true" ? true : false;
-    document.getElementById("fortitude").checked = localStorage.getItem("sod_fortitude") == "true" ? true : false;
-    document.getElementById("bloodpact").checked = localStorage.getItem("sod_bloodpact") == "true" ? true : false;
-    document.getElementById("kings").checked = localStorage.getItem("sod_kings") == "true" ? true : false;
-    document.getElementById("might").checked = localStorage.getItem("sod_might") == "true" ? true : false;
-    document.getElementById("hornOfLord").checked = localStorage.getItem("sod_hornOfLord") == "true" ? true : false;
-    document.getElementById("mangle").checked = localStorage.getItem("sod_mangle") == "true" ? true : false;
-    document.getElementById("strofearth").checked = localStorage.getItem("sod_strofearth") == "true" ? true : false;
-    document.getElementById("wildStrikes").checked = localStorage.getItem("sod_wildStrikes") == "true" ? true : false;
-
-    // Boss Settings
-    document.querySelector("#bossLevel").selectedIndex = localStorage.getItem("sod_bossLevel") ? localStorage.getItem("sod_bossLevel") : 1;
-    document.querySelector("#swingMin").value = localStorage.getItem("sod_swingMin") ? localStorage.getItem("sod_swingMin") : 170;
-    document.querySelector("#swingMax").value = localStorage.getItem("sod_swingMax") ? localStorage.getItem("sod_swingMax") : 200;
-    document.querySelector("#swingTimer").value = localStorage.getItem("sod_swingTimer") ? localStorage.getItem("sod_swingTimer") : 2;
-    document.querySelector("#bossarmor").value = localStorage.getItem("sod_bossarmor") ? localStorage.getItem("sod_bossarmor") : 1108;
-    document.querySelector("#curseofrecklessness").checked = localStorage.getItem("sod_curseofrecklessness") == "false" ? false : true;
-    document.querySelector("#faeriefire").checked = localStorage.getItem("sod_faeriefire") == "false" ? false : true;
-    document.querySelector("#iea").checked = localStorage.getItem("sod_iea") == "true" ? true : false;
-    document.querySelector("#homunculi").checked = localStorage.getItem("sod_homunculi") == "false" ? false : true;
-
-    // Calc Settings
-    document.querySelector("#iterations").value = localStorage.getItem("sod_iterations") ? localStorage.getItem("sod_iterations") : 3000;
-    document.querySelector("#fightLength").value = localStorage.getItem("sod_fightLength") ? localStorage.getItem("sod_fightLength") : 60;
+  // Calc Settings
+  let calcSettings = profile.calcSettings == null ? {} : profile.calcSettings;
+  if (calcSettings.iterations != null)
+    document.getElementById("iterations").value = calcSettings.iterations;
+  if (calcSettings.fightLength != null)
+    document.getElementById("fightLength").value = calcSettings.fightLength;
 }  
+
+function loadLocalstorage() {
+  let profiles = localStorage.getItem("sod_profiles");
+  profiles = profiles ? JSON.parse(profiles) : {};
+  let profile_name = "Default"; // TODO: Make user input
+  let profile = profiles[`${profile_name}`];
+  loadProfile(profile);
+}
+
+function processJson() {
+  try {
+      const jsonInput = document.getElementById('jsonInput').value;
+      const parsedJson = JSON.parse(jsonInput);
+      loadProfile(parsedJson);
+  } catch (error) {
+      alert('Invalid JSON format. Please check your input.');
+  }
+}
+
+function copyToClipboard() {
+  let profile = generateProfile();
+  const tempInput = document.createElement('input');
+  tempInput.value = JSON.stringify(profile);
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand('copy');
+  document.body.removeChild(tempInput);
+  alert('JSON copied to clipboard!');
+}
 
 async function onLoadPage()
 {
     createLinks();
     addEventListeners();
     await loadItemData();
-    loadInput();
+    loadProfile();
     updateStats();
 }
 

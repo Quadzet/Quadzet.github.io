@@ -29,7 +29,7 @@
 
 /* Style for the links on hover */
 .dropdown-content a:hover {
-    background-color: #f1f1f1;
+    background-color: #929292;
 }
 
 .rotation-check {
@@ -37,6 +37,39 @@
   margin-left: 5px;
 }
 
+#jsonInput {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 5px;
+            resize: none;
+            background-color: #929292;
+            /* color: white; */
+}
+#jsonInput::placeholder {
+  color: #0d0d0d85;
+}
+
+.json-buttons {
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.jsonButton {
+    display: inline-block;
+    padding: 10px;
+    width: auto;
+    margin-left: 5px;
+    background-color: #717171;
+    color: white;
+    border: none;
+    border-radius: 1px;
+    cursor: pointer;
+}
+
+.jsonButton:hover {
+    background-color: #b3b3b3;
+}
 
 body {background-color: #222629; color: #C8CED1}
 table {background-color: transparent !important;}
@@ -57,7 +90,7 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
 #Grid      {display: inline-grid; grid-gap: 5px 40px; justify-content:start; grid-template-rows: auto auto; grid-template-columns: 450px 300px 300px}
 #header    {grid-column: 1/span 3; grid-row: 1; margin: 0px auto 0px auto; text-align: center}
 #header h2 {margin-bottom: 7px}
-#leftCol   {display: inline-grid; grid-column: 1; grid-row: 2; grid-template-columns: 300px 150px; grid-template-rows: /*545px*/ auto auto; grid-column-gap: 0px; justify-content: top }
+#leftCol   {display: inline-grid; grid-column: 1; grid-row: 2; grid-template-columns: 300px 150px; grid-template-rows: 650px auto; grid-column-gap: 0px; justify-content: top }
 #gear      {grid-column: 1; grid-row: 1;}
  /* max-height: 100%} */
 #enchants  {grid-column: 2; grid-row: 1; padding-left: 5px;}

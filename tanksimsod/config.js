@@ -279,32 +279,15 @@ function updateStats()
     let cruelty = Number(document.getElementById("cruelty").value);
     let anticipation = Number(document.getElementById("anticipation").value);
     let toughness = Number(document.getElementById("toughness").value);
-    let shieldspec = Number(document.getElementById("shieldspec").value);
+    let shieldspec = Number(document.getElementById("shield-spec").value);
     let impHS = Number(document.getElementById("impHS").value);
     let impSA = Number(document.getElementById("impSA").value);
     let impRend = Number(document.getElementById("impRend").value);
     let defiance = Number(document.getElementById("defiance").value);
     let impale = Number(document.getElementById("impale").value);
-    // let dwspec = Number(document.getElementById("dwspec").value);
 
     let gear = [
         races[race],
-        // heads[head],
-        // necks[neck],
-        // shoulders[shoulder],
-        // capes[cape],
-        // chests[chest],
-        // wrists[wrist],
-        // hands[hand],
-        // waists[waist],
-        // legs[leg],
-        // feet[boots],
-        // rings[ringone],
-        // rings[ringtwo],
-        // trinkets[trinketone],
-        // trinkets[trinkettwo],
-        // rangedweps[ranged],
-        // weapons[mainhand],
         enchants[headenchant],
         enchants[shoulderenchant],
         enchants[backenchant],
@@ -316,12 +299,6 @@ function updateStats()
         enchants[mhwepenchant],
         enchants[ohwepenchant],
     ];
-    // let _dualWield = document.querySelector("#ohweptypelist").value == 'Shields' ? false : true;
-    // if (_dualWield) {
-    //     gear.push(weapons[offhand])
-    // } else {
-    //     gear.push(shields[offhand])
-    // }
 
     let strength = 0;
     let stamina = 0;
@@ -415,24 +392,6 @@ function updateStats()
     block       += stats.block;
     blockvalue  += stats.blockvalue;
 
-
-
-
-
-    // gear.forEach(item => {
-    //     if(item.skilltype && item.skilltype != 'none') {
-    //         if(item.skilltype.includes(mhweapontype))
-    //             mhwepskill += item.skill;
-    //     }
-    // })
-
-    // gear.forEach(item => {
-    //     if(item.skilltype && item.skilltype != 'none') {
-    //         if(item.skilltype.includes(ohweapontype))
-    //             ohwepskill += item.skill;
-    //     }
-    // })
-
     armor *= (1+0.02*toughness); // Only applies to armor from gear
     armor *= document.getElementById("imploh").checked ? 1.3 : 1;
     // Buffs
@@ -507,8 +466,8 @@ function updateStats()
     let impBShout = true; // TODO
     attackpower += document.getElementById("bshout").checked ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0; 
     // TODO: Exclusive with Might
-    agility += document.getElementById("hornOfLord").checked ? 6 : 0;
-    strength += document.getElementById("hornOfLord").checked ? 6 : 0;
+    agility += document.getElementById("horn-of-lord").checked ? 6 : 0;
+    strength += document.getElementById("horn-of-lord").checked ? 6 : 0;
 
     let bleedBonus = document.getElementById("mangle").checked ? 1.3 : 1;
 
@@ -519,9 +478,9 @@ function updateStats()
    
     let damageMod = 0.9; // Def stance
     damageMod *= document.querySelector("#dmf").checked ? 1.1 : 1; 
-    damageMod *= document.querySelector("#ashenvaleCry").checked ? 1.05 : 1; 
-    crit += document.getElementById("boonOfTheBlackfathom").checked ? 2 : 0;
-    attackpower += document.getElementById("boonOfTheBlackfathom").checked ? 20 : 0;
+    damageMod *= document.querySelector("#ashenvale-cry").checked ? 1.05 : 1; 
+    crit += document.getElementById("boon-of-the-blackfathom").checked ? 2 : 0;
+    attackpower += document.getElementById("boon-of-the-blackfathom").checked ? 20 : 0;
     attackpower += document.getElementById("dragonslayer").checked ? 140 : 0;
     crit += document.getElementById("dragonslayer").checked ? 5 : 0;
     attackpower += document.getElementById("dmAP").checked ? 200 : 0;
@@ -642,11 +601,11 @@ function updateStats()
     ohwepskill += extraohskill;
 
     let bossLevel = Number(document.querySelector("#level").value) + Number(document.querySelector("#bossLevel").value)
-    let CoR = document.querySelector("#curseofrecklessness").checked;
+    let CoR = document.querySelector("#CoR").checked;
     let IEA = document.querySelector("#iea").checked;
     let faerieFire = document.querySelector("#faeriefire").checked;
     let homunculi = document.querySelector("#homunculi").checked;
-    let bossArmor = Number(document.querySelector("#bossarmor").value);
+    let bossArmor = Number(document.querySelector("#bossArmor").value);
     bossArmor = getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, bossArmor);
 
     let rotation = [];
@@ -718,7 +677,7 @@ function updateStats()
                 // shieldslam: document.getElementById("shieldslam").checked,
                 // flurry: Number(document.getElementById("flurry").value),
                 enrage: Number(document.getElementById("enrage").value),
-                deepWounds: Number(document.getElementById("deepWounds").value),
+                deepWounds: Number(document.getElementById("deep-wounds").value),
                 deflection: deflection,
                 cruelty: cruelty,
                 anticipation: anticipation,
@@ -764,7 +723,7 @@ function updateStats()
                 // goa: document.getElementById("goa").checked,
 
                 // windfury: document.querySelector("#windfury").checked,
-                wildStrikes: document.querySelector("#wildStrikes").checked,
+                wildStrikes: document.querySelector("#wild-strikes").checked,
                 wcb: _wcb,
                 dmf: document.querySelector("#dmf").checked,
                 crusaderMH: mhwepenchant == "Crusader",
@@ -775,13 +734,12 @@ function updateStats()
 
             runes: {
               devastate: document.getElementById("devastate").checked,
-              endlessRage: document.getElementById("endlessRage").checked,
-              // quickStrike: document.getElementById("quickStrike").checked,
-              consumedByRage: document.getElementById("consumedByRage").checked,
-              furiousThunder: document.getElementById("furiousThunder").checked,
+              endlessRage: document.getElementById("endless-rage").checked,
+              consumedByRage: document.getElementById("consumed-by-rage").checked,
+              furiousThunder: document.getElementById("furious-thunder").checked,
               flagellation: document.getElementById("flagellation").checked,
-              ragingBlow: document.getElementById("ragingBlow").checked,
-              bloodFrenzy: document.getElementById("bloodFrenzy").checked,
+              ragingBlow: document.getElementById("raging-blow").checked,
+              bloodFrenzy: document.getElementById("blood-frenzy").checked,
             }
             
         },
