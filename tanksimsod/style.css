@@ -1,25 +1,60 @@
+html, body {
+  background-color: #222629;
+  color: #C8CED1;
+  display: flex;
+  flex-direction: row;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+
 .gear-row {
   display: flex;
   justify-content: space-between;
 }
 
-/* Style for the custom dropdown */
+#header    {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  border-bottom: 2px solid grey;
+}
+
+.header-btn {
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  text-align:center;
+}
+
+.header-btn:hover {
+  background-color: rgb(85, 85, 85);
+}
+
 .custom-dropdown {
     position: relative;
     display: inline-block;
 }
 
-/* Style for the dropdown content */
+.custom-dropdown > img:hover {
+  cursor: pointer;
+}
+
+.custom-dropdown > img {
+  margin: 6px;
+}
+
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     z-index: 1;
 }
 
-/* Style for the links inside the dropdown */
 .dropdown-content a {
     color: black;
     padding: 12px 16px;
@@ -27,7 +62,6 @@
     display: block;
 }
 
-/* Style for the links on hover */
 .dropdown-content a:hover {
     background-color: #929292;
 }
@@ -71,14 +105,92 @@
     background-color: #b3b3b3;
 }
 
-body {background-color: #222629; color: #C8CED1}
-table {background-color: transparent !important;}
-#bodyDiv {display: flex; flex-wrap: wrap; justify-content: center}
+#center {
+  display: flex;  
+  flex-direction: row;
+  padding: 16px;
+}
+
+
+#left-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid grey;
+  padding: 8px;
+  height: 100%;
+  min-width: 250px;
+}
+
+#right-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid grey;
+  width: 100%;
+}
+
+#gear {
+  display: flex;
+  flex-direction: row;
+}
+
+#gear-select {
+  display: flex;
+  flex-direction: column;
+}
+
+#talents {
+  display: none;
+  flex-direction: column;
+}
+
+#rotation {
+  display: none;
+  flex-direction: column;
+}
+
+#auras {
+  display: none;
+  flex-direction: column;
+}
+
+.aura-toggle-default {
+  margin: 2px;
+  border: 1px solid rgb(119, 119, 119);
+  filter: grayscale(100%);
+}
+
+.aura-toggle-active {
+  border: 1px solid rgba(39, 165, 39, 0.753);
+  filter: grayscale(0%);
+}
+
+.aura-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.aura-row-header {
+  font-size: large;
+  padding: 4px 4px 4px 0px;
+}
+#results {
+  display: none;
+  flex-direction: column;
+}
+
+#profiles {
+  display: none;
+  flex-direction: column;
+}
+
+#talents .talent-input {width: 17px}
+input {background-color: #474b4f; color: #C8CED1; }
+
 #input {background-color: #222629; color: #C8CED1}
 button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: #C8CED1}
 #lineSelect {width: 170px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
-#barContainer {width: 300px; border: 100px; background-color: #474b4f; color: #C8CED1; margin: auto; display: none}
-#progressBar {width: 0%; height: 30px; text-align: center; background-color: #C8CED1}
+#barContainer {width: 100%; background-color: #474b4f; color: #858c8f; margin: auto; display: none}
+#progressBar {width: 0%; height: 30px; text-align: center; background-color: #81a4bdb2}
 #resultContainer {grid-column: 1/span 3; display: flex; flex-direction: row; justify-content: left; margin: 0 auto 0 0;}
 #resultContainer table { border-collapse: collapse; }
 #resultContainer th {text-align: left}
@@ -86,40 +198,21 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
 #resultContainer > div {display:inline-table; align-self: flex-start}
 #selectRow td { padding: 0px 8px 12px 0px; border-bottom: 0px}
 #timeline {display:none}
+#gear select {width: 200px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 
-#Grid      {display: inline-grid; grid-gap: 5px 40px; justify-content:start; grid-template-rows: auto auto; grid-template-columns: 450px 300px 300px}
-#header    {grid-column: 1/span 3; grid-row: 1; margin: 0px auto 0px auto; text-align: center}
-#header h2 {margin-bottom: 7px}
-#leftCol   {display: inline-grid; grid-column: 1; grid-row: 2; grid-template-columns: 300px 150px; grid-template-rows: 650px auto; grid-column-gap: 0px; justify-content: top }
-#gear      {grid-column: 1; grid-row: 1;}
- /* max-height: 100%} */
-#enchants  {grid-column: 2; grid-row: 1; padding-left: 5px;}
-#enchants > .hInput {
-  margin-bottom:5px;
-}
  
-/* max-height: 100%} */
-#bottomleft{display: inline-grid; grid-column: 1/3; grid-row: 2;}
-#talents   {grid-column: 1; grid-row: 1;}
-#bonuses   {grid-column: 2; grid-row: 1; margin-left: 10px}
-#middleCol {grid-column: 2; grid-row: 2}
-#rightCol  {grid-column: 3; grid-row: 2}
-input {background-color: #474b4f; color: #C8CED1; }
 
 code {height: 60vh; width: 700px; display:block;padding:.5rem 1rem; overflow:auto; background-color: #101113; white-space: pre;}
 pre {margin: 0; padding:0}
 
-#talents .talent-input {width: 17px}
 
 #calcSettings button {margin-left: auto}
 
-#gear select {width: 200px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #enchants select {width: 145px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #buffs select {width: 160px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #bossSettings select {width: 50px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #playerstats input {margin-left:4px; width:40px}
 #playerstats .playerstats {margin-left:auto; margin-right: 20px}
-/* #levelSelect select {width:60px} */
 #levelSelect select {width:50px}
 .playerstatcontainer {margin-right:40px}
 
@@ -136,5 +229,10 @@ pre {margin: 0; padding:0}
 .hInput input {margin-left:auto; width:50px}
 .hInput .inputSwing {margin-left:0; width:50px}
 .hInput label {margin: 0}
+.left-col-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 input::-webkit-outer-spin-button,input::-webkit-inner-spin-button {-webkit-appearance: none; margin: 0;}
 input[type=number] {-moz-appearance: textfield;}

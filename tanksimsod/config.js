@@ -64,6 +64,11 @@ function updateOHWeaponList(doUpdateStats)
     if(doUpdateStats) updateStats();
 }
 
+function checkAuraToggle(name) {
+  let element = document.getElementById(`${name}-aura-img`);
+  return element.classList.contains('aura-toggle-active');
+}
+
 function getFFArmor(level) {
   if (level < 18) return 0;
   else if (level < 30) return 175;
@@ -393,109 +398,66 @@ function updateStats()
     blockvalue  += stats.blockvalue;
 
     armor *= (1+0.02*toughness); // Only applies to armor from gear
-    armor *= document.getElementById("imploh").checked ? 1.3 : 1;
+    armor *= checkAuraToggle("loh") ? 1.3 : 1;
     // Buffs
-    let mhstone = document.getElementById("mhstone").value
-    crit += mhstone == "Elemental" ? 2 : 0;
-    attackpower += mhstone == "Consecrated" ? 100 : 0;
-    mhmin += mhstone == "Coarse Sharpening Stone" ? 3 : 0;
-    mhmax += mhstone == "Coarse Sharpening Stone" ? 3 : 0;
+    mhmin += checkAuraToggle('coarse') ? 3 : 0;
+    mhmax += checkAuraToggle('coarse') ? 3 : 0;
     mhmin += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
     mhmax += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
-    hit += mhstone == "BFD Sharpening Stone" ? 2 : 0;
+    hit += checkAuraToggle('bfdstone') ? 2 : 0;
 
-    let ohstone = document.getElementById("ohstone").value
-    if (_dualWield) {
-        crit += ohstone == "Elemental" ? 2 : 0;
-        attackpower += ohstone == "Consecrated" ? 100 : 0;
-        ohmin += ohstone == "Coarse Sharpening Stone" ? 3 : 0;
-        ohmax += ohstone == "Coarse Sharpening Stone" ? 3 : 0;
-        ohmin += document.getElementById("ohwepenchant") == "Lesser Striking" ? 2 : 0;
-        ohmax += document.getElementById("ohwepenchant") == "Lesser Striking" ? 2 : 0;
-        hit += ohstone == "BFD Sharpening Stone" ? 2 : 0;
-    }
-
-    strength += Number(document.getElementById("strbuff").value)
-    agility += Number(document.getElementById("agibuff").value)
-    // agility += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 25 : 0;
-    // agility += document.getElementById("agibuff").value == "Elixir of Greater Agility" ? 25 : 0;
-    crit += document.getElementById("agibuff").value == "Elixir of the Mongoose" ? 2 : 0;
-    attackpower += Number(document.getElementById("apbuff").value)
-
-    let statbuff = document.getElementById("statbuff").value
-    agility += statbuff == "Ground Scorpok Assay" ? 25 : 0;
-    strength += statbuff == "R.O.I.D.S." ? 25 : 0;
-    stamina += statbuff == "Spirit of Zanza" ? 50 : 0;
-
-    let foodbuff = document.getElementById("foodbuff").value
-    stamina += foodbuff == "Heavy Crocolisk Stew" ? 8 : 0;
-    strength += foodbuff == "Smoked Desert Dumplings" ? 25 : 0;
-    strength += foodbuff == "Blessed Sunfruit" ? 10 : 0;
-    agility += foodbuff == "Grilled Squid" ? 10 : 0;
-    stamina += foodbuff == "Dirge's Kickin' Chimaerok Chops" ? 25 : 0;
-    stamina += foodbuff == "Tender Wolf Steak" ? 12 : 0;
-    
-    stamina += Number(document.getElementById("alcohol").value);
+    strength += checkAuraToggle('ogre') ? 8 : 0;
+    agility += checkAuraToggle('lesseragi') ? 8 : 0;
+    stamina += checkAuraToggle('food') ? 8 : 0;
+    stamina += checkAuraToggle('rumsey') ? 15 : 0;
 
     let _startRage = Number(document.querySelector("#startRage").value);
-    let _mrp = false;
-    if(document.getElementById("potion").value == "Mighty Rage") {
-        _startRage = Math.min(100, _startRage + 45 + Math.random()*30);
-        _mrp = true;
-    }
 
-    extrahp += document.getElementById("hpelixir").checked ? 27 : 0;
-    // extrahp += document.getElementById("titans").checked ? 1200 : 0;
+    extrahp += checkAuraToggle('minorfort') ? 27 : 0;
     extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
     extrahp += legenchant == "Libram of Constitution" ? 100 : 0;
     extrahp += headenchant == "Libram of Constitution" ? 100 : 0;
-    let _wcb = document.querySelector("#wcb").checked;
-    extrahp += _wcb ? 300 : 0;
+    extrahp += checkAuraToggle('wcb') ? 300 : 0;
 
-    // crit += document.getElementById("pack").checked ? 3 : 0;
-    // attackpower += document.getElementById("trueshot").checked ? 100 : 0;
-
-    let mark = document.getElementById("mark").checked; // Assumed to be improved
+    let mark = checkAuraToggle('motw'); // Assumed to be improved
     let impMOTW = true; // TODO
     // Should we floor..?
     stamina += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0; 
     agility += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
     strength += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
     let impMight = true; // TODO
-    attackpower += document.getElementById("might").checked ? Math.floor(getMightAP(level) * (impMight ? 1.2 : 1)): 0;
+    attackpower += checkAuraToggle('might') ? Math.floor(getMightAP(level) * (impMight ? 1.2 : 1)): 0;
     let impBShout = true; // TODO
-    attackpower += document.getElementById("bshout").checked ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0; 
-    // TODO: Exclusive with Might
-    agility += document.getElementById("horn-of-lord").checked ? 6 : 0;
-    strength += document.getElementById("horn-of-lord").checked ? 6 : 0;
+    attackpower += checkAuraToggle('battleshout') ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0; 
+    agility += checkAuraToggle('horn') ? 6 : 0;
+    strength += checkAuraToggle('horn') ? 6 : 0;
 
-    let bleedBonus = document.getElementById("mangle").checked ? 1.3 : 1;
+    let bleedBonus = checkAuraToggle('mangle') ? 1.3 : 1;
 
     let impFort = true; // TODO
-    stamina += document.getElementById("fortitude").checked ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
+    stamina += checkAuraToggle('fort') ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
     let impImp = true; // TODO
-    stamina += document.getElementById("bloodpact").checked ? Math.floor(getPactStam(level) * (impImp ? 1.3 : 1)) : 0;
+    stamina += checkAuraToggle('bloodpact') ? Math.floor(getPactStam(level) * (impImp ? 1.3 : 1)) : 0;
    
     let damageMod = 0.9; // Def stance
-    damageMod *= document.querySelector("#dmf").checked ? 1.1 : 1; 
-    damageMod *= document.querySelector("#ashenvale-cry").checked ? 1.05 : 1; 
-    crit += document.getElementById("boon-of-the-blackfathom").checked ? 2 : 0;
-    attackpower += document.getElementById("boon-of-the-blackfathom").checked ? 20 : 0;
-    attackpower += document.getElementById("dragonslayer").checked ? 140 : 0;
-    crit += document.getElementById("dragonslayer").checked ? 5 : 0;
-    attackpower += document.getElementById("dmAP").checked ? 200 : 0;
-    crit += document.getElementById("songflower").checked ? 5 : 0;
-    stamina += document.getElementById("songflower").checked ? 15 : 0;
-    agility += document.getElementById("songflower").checked ? 15 : 0;
-    strength += document.getElementById("songflower").checked ? 15 : 0;
+    damageMod *= checkAuraToggle("dmf") ? 1.1 : 1; 
+    damageMod *= checkAuraToggle("ashcry") ? 1.05 : 1; 
+    crit += checkAuraToggle("botbf") ? 2 : 0;
+    attackpower += checkAuraToggle("botbf") ? 20 : 0;
+    attackpower += checkAuraToggle("dragonslayer") ? 140 : 0;
+    crit += checkAuraToggle("dragonslayer") ? 5 : 0;
+    attackpower += checkAuraToggle("fengus") ? 200 : 0;
+    crit += checkAuraToggle("songflower") ? 5 : 0;
+    stamina += checkAuraToggle("songflower") ? 15 : 0;
+    agility += checkAuraToggle("songflower") ? 15 : 0;
+    strength += checkAuraToggle("songflower") ? 15 : 0;
     
-    spellcrit += document.getElementById("dragonslayer").checked ? 10 : 0;
-    spellcrit += document.getElementById("dmspell").checked ? 3 : 0;
-    spellcrit += document.getElementById("songflower").checked ? 5 : 0;
+    spellcrit += checkAuraToggle("dragonslayer") ? 10 : 0;
+    spellcrit += checkAuraToggle("slipkik") ? 3 : 0;
+    spellcrit += checkAuraToggle("songflower") ? 5 : 0;
 
     let enhTotems = true; // TODO
-    strength += document.getElementById("strofearth").checked ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
-    // agility += document.getElementById("graceofair").checked ? 20 : 0;
+    strength += checkAuraToggle("strtotem") ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
 
     // Stat deltas input by user
     let extrastrength    = Number(document.getElementById("playerextrastrength").value);
@@ -514,41 +476,33 @@ function updateStats()
     let extraohskill     = Number(document.getElementById("playerextraohskill").value);
     let extrahaste       = Number(document.getElementById("playerextrahaste").value);
 
-    // Set bonuses
-    if(mainhand == "Dal'Rend's Sacred Charge" && offhand == "Dal'Rend's Tribal Guardian") attackpower += 50;
-    if(mainhand == "Warblade of the Hakkari (MH)" && offhand == "Warblade of the Hakkari (OH)") {
-        mhwepskill += 6
-        ohwepskill += 6
-    }
-
-
     // Multiplicative buffs last, except for armor
-    stamina *= document.getElementById("dmstamina").checked ? 1.15 : 1;
-    stamina *= document.getElementById("zandalar").checked ? 1.15 : 1;
-    agility *= document.getElementById("zandalar").checked ? 1.15 : 1;
-    strength *= document.getElementById("zandalar").checked ? 1.15 : 1;
-    stamina *= document.getElementById("kings").checked ? 1.1 : 1;
-    agility *= document.getElementById("kings").checked ? 1.1 : 1;
-    strength *= document.getElementById("kings").checked ? 1.1 : 1;
+    stamina *= checkAuraToggle("moldar") ? 1.15 : 1;
+    stamina *= checkAuraToggle("zandalar") ? 1.15 : 1;
+    agility *= checkAuraToggle("zandalar") ? 1.15 : 1;
+    strength *= checkAuraToggle("zandalar") ? 1.15 : 1;
+    stamina *= checkAuraToggle("kings") ? 1.1 : 1;
+    agility *= checkAuraToggle("kings") ? 1.1 : 1;
+    strength *= checkAuraToggle("kings") ? 1.1 : 1;
 
     armor += agility*2;
-    armor *= document.getElementById("inspiration").checked ? 1.25 : 1;
-    armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
+    armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
+    // armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
     let impDevo = true; // TODO
-    armor += document.getElementById("devo").checked ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
-    armor += document.getElementById("armorelixir").checked ? 150 : 0;
+    armor += checkAuraToggle("devo") ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
+    armor += checkAuraToggle("defense") ? 150 : 0;
     armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
 
-    let staminaMultiplier = (document.getElementById("dmstamina").checked ? 1.15 : 1)*(document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
-    let strengthMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
-    let agilityMultiplier = (document.getElementById("zandalar").checked ? 1.15 : 1)*(document.getElementById("kings").checked ? 1.1 : 1)
+    let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1)*(checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
+    let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
+    let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
 
     extrastamina *= staminaMultiplier;
     extrastrength *= strengthMultiplier;
     extraagility *= agilityMultiplier;
 
-    extraarmor *= document.getElementById("inspiration").checked ? 1.25 : 1;
-    extraarmor *= document.getElementById("imploh").checked ? 1.3 : 1;
+    extraarmor *= checkAuraToggle("inspiration") ? 1.25 : 1;
+    extraarmor *= checkAuraToggle("loh") ? 1.3 : 1;
 
     agility = Math.floor(agility)
     strength = Math.floor(strength)
@@ -565,7 +519,7 @@ function updateStats()
     blockvalue = _dualWield ? 0 : blockvalue
 
     let hastePerc = extrahaste + (document.getElementById("headenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("legenchant").value == "Libram of Rapidity" ? 1 : 0) + ( document.getElementById("handenchant").value == "Minor Haste" ? 1 : 0);
-        hastePerc += _wcb ? 15 : 0;
+        hastePerc += checkAuraToggle('wcb') ? 15 : 0;
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
@@ -723,13 +677,13 @@ function updateStats()
                 // goa: document.getElementById("goa").checked,
 
                 // windfury: document.querySelector("#windfury").checked,
-                wildStrikes: document.querySelector("#wild-strikes").checked,
-                wcb: _wcb,
-                dmf: document.querySelector("#dmf").checked,
+                wildStrikes: checkAuraToggle("wildstrikes"),
+                wcb: checkAuraToggle('wcb'),
+                dmf: checkAuraToggle("dmf"),
                 crusaderMH: mhwepenchant == "Crusader",
                 crusaderOH: ohwepenchant == "Crusader",
                 // windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
-                mrp: _mrp,
+                // mrp: _mrp,
             },
 
             runes: {
@@ -756,7 +710,7 @@ function updateStats()
             damageMod: 0.9, // Defensive Stance
             physDmgMod: 1,
             bleedBonus: bleedBonus,
-            additivePhysBonus: document.getElementById("CoV").checked ? 2 : 0,
+            additivePhysBonus: checkAuraToggle('cov') ? 2 : 0,
             hastePerc: 0,
             AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
             crit: 5,

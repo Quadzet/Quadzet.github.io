@@ -51,9 +51,13 @@ async function updateProgressbar(progressPerc) {
 }
 
 // TODO: move this to a data file
-const BUFFS = ['mhstone', 'ohstone', 'strbuff', 'apbuff', 'agibuff', 'statbuff', 'foodbuff', 'alcohol', 'potion'];
-const BUFFS2 = ['inspiration', 'devo', 'imploh', 'CoV', 'armorelixir', 'hpelixir', 'dragonslayer', 'boon-of-the-blackfathom', 'ashenvale-cry', 'wcb', 'dmf', 'zandalar',
-'dmstamina', 'dmAP', 'dmspell', 'songflower', 'bshout', 'mark', 'fortitude', 'bloodpact', 'kings', 'might', 'horn-of-lord', 'mangle', 'strofearth', 'wild-strikes'];
+const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wildstrikes', 'lion', 'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
+              'lesseragi', 'ogre', 'defense', 'minorfort', 'food', 'coarse', 'bfdstone', 'rumsey',
+              'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
+              'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor'];
+// const BUFFS = ['mhstone', 'ohstone', 'strbuff', 'apbuff', 'agibuff', 'statbuff', 'foodbuff', 'alcohol', 'potion'];
+// const BUFFS2 = ['inspiration', 'devo', 'imploh', 'CoV', 'armorelixir', 'hpelixir', 'dragonslayer', 'boon-of-the-blackfathom', 'ashenvale-cry', 'wcb', 'dmf', 'zandalar',
+// 'dmstamina', 'dmAP', 'dmspell', 'songflower', 'bshout', 'mark', 'fortitude', 'bloodpact', 'kings', 'might', 'horn-of-lord', 'mangle', 'strofearth', 'wild-strikes'];
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor', 'CoR', 'faeriefire', 'iea', 'homunculi'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
@@ -81,6 +85,20 @@ const ITEM_IDS = {
   'ranged': [209830, 209688, 3021, 209563],
 };
 var ITEMS = {};
+
+function toggleAura(event, id, exclusives) {
+  event.preventDefault();
+  const element = document.getElementById(id + '-aura-img');
+  // let active = element.getAttribute('active');
+  element.classList.toggle('aura-toggle-active');
+  if (exclusives != null && element.classList.contains('aura-toggle-active')) {
+    exclusives.forEach(name => {
+      var exElement = document.getElementById(name + '-aura-img');
+      exElement.classList.remove('aura-toggle-active');
+    });
+  }
+  updateStats();
+}
 
 async function fetchTable(tableName) {
   let parsedData = [];
@@ -369,7 +387,7 @@ function selectItem(id, slot) {
   if (id != 0) {
     const element = document.getElementById(slot + '-slot');
     element.setAttribute('itemid', `${id}`)
-    element.innerHTML = `<a href="https://classic.wowhead.com/item=${id}"  data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+    element.innerHTML = `<a href="https://classic.wowhead.com/item=${id}" data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
 
     const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'none';
@@ -492,13 +510,11 @@ function generateProfile() {
   });
   profile.runes = runes;
     
-  // Buffs, TODO merge these arrays after we discontinue the dropdowns.
+  // Buffs
   let buffs  = {};
   BUFFS.forEach(buff => {
-    buffs[`${buff}-ix`] = document.getElementById(buff).selectedIndex;
-  });
-  BUFFS2.forEach(buff => {
-    buffs[`${buff}`] = document.getElementById(buff).checked;
+    let element = document.getElementById(`${buff}-aura-img`);
+    buffs[`${buff}`] = element.classList.contains('aura-toggle-active');
   });
   profile.buffs = buffs;
 
@@ -762,12 +778,9 @@ function loadProfile(profile)
   // Buffs
   let buffs = profile.buffs == null ? {} : profile.buffs;
   BUFFS.forEach(buff => {
-    if (buffs[`${buff}-ix`] != null)
-      document.getElementById(buff).selectedIndex = buffs[`${buff}-ix`];
-  });
-  BUFFS2.forEach(buff => {
-    if (buffs[`${buff}`] != null)
-      document.getElementById(buff).checked = buffs[`${buff}`];
+    let element = document.getElementById(`${buff}-aura-img`);
+    if (buffs[`${buff}`])
+      element.classList.add('aura-toggle-active');
   });
 
   // Boss Settings
@@ -819,6 +832,16 @@ function copyToClipboard() {
   document.body.removeChild(tempInput);
   alert('JSON copied to clipboard!');
 }
+
+const SECTIONS = ['gear', 'talents', 'rotation', 'auras', 'about', 'profiles', 'results'];
+function changeSection(id) {
+  SECTIONS.forEach(section => {
+    document.getElementById(section).style.display = 'none';
+  });
+  document.getElementById(id).style.display = 'flex';
+
+}
+
 
 function enableCalc() {
   document.getElementById("calcBtn").disabled = false;
@@ -1002,7 +1025,6 @@ async function main() {
         })
         document.querySelector("#progressBar").style.display = `none`;
         document.querySelector("#barContainer").style.display = `none`;
-        document.querySelector("#plotContainer").style.display = `block`;
         document.querySelector("#resultContainer").style.display = `block`;
         document.querySelector("#timeline").style.display = `block`;
         enableCalc();
