@@ -59,7 +59,7 @@ const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wil
 // const BUFFS2 = ['inspiration', 'devo', 'imploh', 'CoV', 'armorelixir', 'hpelixir', 'dragonslayer', 'boon-of-the-blackfathom', 'ashenvale-cry', 'wcb', 'dmf', 'zandalar',
 // 'dmstamina', 'dmAP', 'dmspell', 'songflower', 'bshout', 'mark', 'fortitude', 'bloodpact', 'kings', 'might', 'horn-of-lord', 'mangle', 'strofearth', 'wild-strikes'];
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
-const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor', 'CoR', 'faeriefire', 'iea', 'homunculi'];
+const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
 const ENCHANTS = ['head', 'shoulder', 'back', 'chest', 'wrist', 'hand', 'leg', 'feet', 'mhwep', 'ohwep'];
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
@@ -789,10 +789,8 @@ function loadProfile(profile)
     if (bossSettings[`${setting}`] != null) {
       if (setting == 'bossLevel')
         document.getElementById(setting).selectedIndex = bossSettings[`${setting}`];
-      else if (['swingMin', 'swingMax', 'bossArmor'].includes(setting))
+      else 
         document.getElementById(setting).value = bossSettings[`${setting}`];
-      else
-        document.getElementById(setting).checked = bossSettings[`${setting}`];
     }
   });
 

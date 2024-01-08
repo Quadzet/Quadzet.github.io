@@ -555,10 +555,10 @@ function updateStats()
     ohwepskill += extraohskill;
 
     let bossLevel = Number(document.querySelector("#level").value) + Number(document.querySelector("#bossLevel").value)
-    let CoR = document.querySelector("#CoR").checked;
-    let IEA = document.querySelector("#iea").checked;
-    let faerieFire = document.querySelector("#faeriefire").checked;
-    let homunculi = document.querySelector("#homunculi").checked;
+    let CoR = checkAuraToggle("cor");
+    let IEA = checkAuraToggle("iea");
+    let faerieFire = checkAuraToggle("faeriefire");
+    let homunculi = checkAuraToggle("degrade");
     let bossArmor = Number(document.querySelector("#bossArmor").value);
     bossArmor = getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, bossArmor);
 
