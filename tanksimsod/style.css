@@ -191,19 +191,97 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
 #lineSelect {width: 170px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #barContainer {width: 100%; background-color: #474b4f; color: #858c8f; margin: auto; display: none}
 #progressBar {width: 0%; height: 30px; text-align: center; background-color: #81a4bdb2}
-#resultContainer {grid-column: 1/span 3; display: flex; flex-direction: row; justify-content: left; margin: 0 auto 0 0;}
-#resultContainer table { border-collapse: collapse; }
-#resultContainer th {text-align: left}
-#resultContainer td {padding: 0px 14px 0px 0px; border-bottom: 1px solid #474b4f; }
-#resultContainer > div {display:inline-table; align-self: flex-start}
+#resultContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* align-items: center; */
+  margin: 0 0 0 0;
+  width: 100%;
+}
+#resultContainer table {
+  border-collapse: collapse;
+  display: table;
+  width: 90%;
+}
+#resultContainer th {
+  text-align: right;
+  border-bottom: 2px solid #474b4f;
+  padding: 4px 4px 4px 4px;
+}
+#resultContainer td {
+  padding: 6px;
+  border-bottom: 1px solid #474b4f;
+  text-align: right;
+}
+#resultContainer tr:hover {
+  background-color: #3f3f3f;
+}
+#resultContainer td:first-child, #resultContainer th:first-child {
+  text-align: left;
+}
+#resultContainer > div {
+  display: flex;
+  justify-content: space-around;
+  /* align-items: center; */
+  padding-bottom: 12px;
+}
+#minor-tables {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+#minor-tables > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 12px;
+  width: 35%;
+}
+#resultContainer #log-description {
+  margin: 0px;
+  padding-bottom: 0px;
+  width: 90%;
+  /* padding: 0 5vh 0 5vh; */
+}
+code {
+  height: 100%; /*60vh;*/
+  width: 100%;
+  display:block;
+  /* margin: 0px 10vh 0 10vh; */
+  /* margin: 0 5vh 0 5vh; */
+  overflow:auto;
+  background-color: #101113;
+  white-space: pre;
+}
+#log {
+  flex-direction: column;
+  text-align: left;
+  align-items: center;
+  width: 100%;
+}
+#log-description {
+  display: inline-block;
+}
+pre {
+  display:inline-block;
+  margin: 0;
+  padding:0;
+  width: 90%;
+}
+
 #selectRow td { padding: 0px 8px 12px 0px; border-bottom: 0px}
-#timeline {display:none}
+#timeline {
+  display:none;
+  flex-direction: row;
+  justify-content: space-around;
+}
 #gear select {width: 200px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 
  
 
-code {height: 60vh; width: 700px; display:block;padding:.5rem 1rem; overflow:auto; background-color: #101113; white-space: pre;}
-pre {margin: 0; padding:0}
 
 
 #calcSettings button {margin-left: auto}

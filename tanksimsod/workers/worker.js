@@ -126,14 +126,21 @@ self.addEventListener('message', function(e) {
               if (event.threat != 0 || event.type == "damage") { // Don't allow non-damage events with zero threat
                 if (event.name) {
                   if(!results.tpsBreakdown[`${event.name}`]) results.tpsBreakdown[`${event.name}`] = []
-                  if (!results.tpsBreakdown[`${event.name}`][i]) results.tpsBreakdown[`${event.name}`][i] = {tps: 0, dps: 0, hits: 0, casts: 0};
+                  if (!results.tpsBreakdown[`${event.name}`][i]) results.tpsBreakdown[`${event.name}`][i] = {tps: 0, dps: 0, casts: 0, hits: 0, crits: 0, glances: 0, misses: 0, dodges: 0, parries: 0, blocks: 0};
 
                   results.tpsBreakdown[`${event.name}`][i].tps += event.threat/globals.config.simDuration;
                   if (event.amount && event.type == "damage")
                     results.tpsBreakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
                   results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
-                  if (event.hit)
-                    results.tpsBreakdown[`${event.name}`][i].hits += ["miss", "dodge", "parry"].includes(event.hit) ? 0 : 1;//event.hit == "hit" ? 1 : 0;//
+                  if (event.hit) {
+                    results.tpsBreakdown[`${event.name}`][i].hits    += event.hit == "hit" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].crits   += event.hit == "crit" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].misses  += event.hit == "miss" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].dodges  += event.hit == "dodge" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].parries += event.hit == "parry" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].blocks  += event.hit == "block" || event.hit == "crit block" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].glances += event.hit == "glance" ? 1 : 0;
+                  }
                 }
               }
             }

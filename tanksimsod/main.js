@@ -953,66 +953,91 @@ async function main() {
           let btps = b[1].reduce((a, b) => a += b.tps, 0);
           let atps = a[1].reduce((a, b) => a += b.tps, 0);
           return btps- atps;
-          // average(b[1].tps) - average(a[1].tps)
-          // return
         })
 
-        let resultTable = `<table><tr><th>Ability</th><th>TPS</th><th>DPS</th><th>Casts</th><th>Hits</th></tr>`;
+        let resultTable = `<table><tr><th class="table-first-col">Ability</th><th>TPS</th><th>DPS</th><th>Casts</th><th>Landed</th><th>Hit</th><th>Crit</th><th>Miss</th><th>Dodge</th><th>Parry</th><th>Block</th><th>Glance</th></tr>`;
         let totalTps = 0;
         let totalDps = 0;
         for (let i in sortedResults) {
           let result = {tps: 0, dps: 0, casts: 0, hits: 0};
           if (sortedResults[i]) {
             result = sortedResults[i][1].reduce((accumulator, element) => {
-              accumulator.tps += element.tps;
-              accumulator.dps += element.dps;
-              accumulator.casts += element.casts;
-              accumulator.hits += element.hits
+              accumulator.tps     += element.tps;
+              accumulator.dps     += element.dps;
+              accumulator.casts   += element.casts;
+              accumulator.hits    += element.hits;
+              accumulator.crits   += element.crits;
+              accumulator.misses  += element.misses;
+              accumulator.dodges  += element.dodges;
+              accumulator.parries += element.parries;
+              accumulator.blocks  += element.blocks;
+              accumulator.glances += element.glances;
               return accumulator;
-            }, { tps: 0, dps: 0, hits: 0, casts: 0 });
+            }, { tps: 0, dps: 0, hits: 0, casts: 0, crits: 0, glances: 0, misses: 0, dodges: 0, parries: 0, blocks: 0});
           }
-          resultTable = resultTable.concat(`<tr><td>${sortedResults[i][0]}:</td><td>${Math.round(result.tps/iterations*100)/100}</td><td>${Math.round(result.dps/iterations*100)/100}</td><td>${Math.round(result.casts/iterations*100)/100}</td><td>${Math.round(result.hits/iterations*100)/100}</td></tr>`)
+          log_message(result);
+          resultTable = resultTable.concat(`<tr>
+            <td class="table-first-col">${sortedResults[i][0]}:</td>
+            <td>${(result.tps/iterations).toFixed(2)}</td>
+            <td>${(result.dps/iterations).toFixed(2)}</td>
+            <td>${(result.casts/iterations).toFixed(2)}</td>
+            <td>${((result.hits + result.crits + result.glances + result.blocks)/iterations).toFixed(2)}</td>
+            <td>${(result.hits/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.crits/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.misses/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.dodges/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.parries/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.blocks/(result.casts)*100).toFixed(2)}%</td>
+            <td>${(result.glances/(result.casts)*100).toFixed(2)}%</td>
+          </tr>`);
           totalTps += result.tps;
           totalDps += result.dps;
         }
-        resultTable = resultTable.concat(`<tr><td>Total:</td><td>${Math.round(totalTps/iterations*100)/100}</td><td>${Math.round(totalDps/iterations*100)/100}</td></tr>`)
+        resultTable = resultTable.concat(`
+            <tr><td>Total:</td>
+            <td>${Math.round(totalTps/iterations*100)/100}</td>
+            <td>${Math.round(totalDps/iterations*100)/100}</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>`)
         resultTable = resultTable.concat(`</table>`)
 
-        let auraTable = `<table><tr><th>Aura</th><th>Uptime</th></tr>`;
-        Object.keys(auras).forEach(aura => {
-          auraTable += `<tr><td>${aura}</td><td>${(average(auras[`${aura}`].uptimes)*100).toFixed(2)}%</td></tr>`;
+        // Sort the auras based on their average uptime
+        let sortedAuras = Object.keys(auras).map(key => [key, average(auras[key].uptimes)])
+        sortedAuras.sort((a,b) => {
+          return b[1] - a[1];
+        });
+        let auraTable = `<table><tr><th class="table-first-col">Aura</th><th>Uptime</th></tr>`;
+        sortedAuras.forEach(vec => {
+          auraTable += `<tr><td class="table-first-col">${vec[0]}</td><td>${(vec[1]*100).toFixed(2)}%</td></tr>`;
         });
         auraTable += '</table>';
 
         let statsTable = 
         `<table>
-        <tr><th>Statistics</th></tr>
-        <tr><td>TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td></tr>
-        <tr><td>DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td></tr>
+        <tr><th>Statistics</th><th></th><th></th></tr>
+        <tr><td class="table-first-col">TPS standard deviation:</td><td>${Math.round(std(tps)*100)/100}</ts><td> (${Math.round(std(tps)/average(tps)*10000)/100}%)</td></tr>
+        <tr><td class="table-first-col">DPS standard deviation:</td><td>${Math.round(std(dps)*100)/100}</ts><td> (${Math.round(std(dps)/average(dps)*10000)/100}%)</td></tr>
         </table>`
-        // <tr><td>Threshold failed:</td><td>${breaches}</ts><td> (${Math.round(breaches/globals.config.iterations*10000)/100}%)</td></tr>
 
         let generalTable = 
         `<table>
-        <tr><th>General Stats</th></tr>
         <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td></tr>
         <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
         <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
+        </table>
         `
-        document.getElementById("resultsHeader").innerHTML = `<h2>Results</h2>`
+        // document.getElementById("resultsHeader").innerHTML = `<h2>Results</h2>`
         document.getElementById("generalStats").innerHTML = generalTable;
-        document.getElementById("abilitytps").innerHTML = resultTable;
+        document.getElementById("tpsTable").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
         document.getElementById("auraTable").innerHTML = auraTable;
 
 
-        let timelineHeaderDOM = document.querySelector("#timeline>div")
+        let timelineHeaderDOM = document.querySelector("#log-description")
         timelineHeaderDOM.innerHTML = `Calculated ${globals.config.iterations} iterations of ${globals.config.simDuration}s. fights using ${numWorkers} threads in ${(end-start)/1000} seconds.`
         timelineHeaderDOM.innerHTML += "</br>"
         timelineHeaderDOM.innerHTML += "Example fight:"
         timelineHeaderDOM.innerHTML += "</br>"
 
-        let timelineDOM = document.querySelector("#timeline>pre>code")
+        let timelineDOM = document.querySelector("#log>pre>code")
         timelineDOM.innerHTML = ""
         exampleEvents.forEach( e => {
           let eventLine = formatEvent(e);
@@ -1023,8 +1048,8 @@ async function main() {
         })
         document.querySelector("#progressBar").style.display = `none`;
         document.querySelector("#barContainer").style.display = `none`;
-        document.querySelector("#resultContainer").style.display = `block`;
-        document.querySelector("#timeline").style.display = `block`;
+        document.querySelector("#resultContainer").style.display = `flex`;
+        document.querySelector("#log").style.display = `flex`;
         enableCalc();
     }
 }
