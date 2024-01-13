@@ -249,35 +249,6 @@ function updateStats()
       }
     });
     let race = document.querySelector("#race").value
-    // let head = document.querySelector("#head").value
-    // let neck = document.querySelector("#neck").value
-    // let shoulder = document.querySelector("#shoulder").value
-    // let cape = document.querySelector("#cape").value
-    // let chest = document.querySelector("#chest").value
-    // let wrist = document.querySelector("#wrist").value
-    // let hand = document.querySelector("#hands").value
-    // let waist = document.querySelector("#waist").value
-    // let leg = document.querySelector("#legs").value
-    // let boots = document.querySelector("#feet").value
-    // let ringone = document.querySelector("#ringone").value
-    // let ringtwo = document.querySelector("#ringtwo").value
-    // let trinketone = document.querySelector("#trinketone").value
-    // let trinkettwo = document.querySelector("#trinkettwo").value
-    // let ranged = document.querySelector("#ranged").value
-    // let mainhand = document.querySelector("#mainhand").value
-    // let offhand = document.querySelector("#offhand").value
-
-    // Enchants
-    let headenchant = document.querySelector("#headenchant").value
-    let shoulderenchant = document.querySelector("#shoulderenchant").value
-    let backenchant = document.querySelector("#backenchant").value
-    let chestenchant = document.querySelector("#chestenchant").value
-    let wristenchant = document.querySelector("#wristenchant").value
-    let handenchant = document.querySelector("#handenchant").value
-    let legenchant = document.querySelector("#legenchant").value
-    let feetenchant = document.querySelector("#feetenchant").value
-    let mhwepenchant = document.querySelector("#mhwepenchant").value
-    let ohwepenchant = document.querySelector("#ohwepenchant").value
 
     // Talents
     let deflection = Number(document.getElementById("deflection").value);
@@ -290,20 +261,6 @@ function updateStats()
     let impRend = Number(document.getElementById("impRend").value);
     let defiance = Number(document.getElementById("defiance").value);
     let impale = Number(document.getElementById("impale").value);
-
-    let gear = [
-        races[race],
-        enchants[headenchant],
-        enchants[shoulderenchant],
-        enchants[backenchant],
-        enchants[chestenchant],
-        enchants[wristenchant],
-        enchants[handenchant],
-        enchants[legenchant],
-        enchants[feetenchant],
-        enchants[mhwepenchant],
-        enchants[ohwepenchant],
-    ];
 
     let strength = 0;
     let stamina = 0;
@@ -363,27 +320,40 @@ function updateStats()
         ohmax = offhand.maxdmg;
         ohswing = offhand.swingtimer;
     }
-    gear.forEach(item => {
-        strength += item.strength;
-        stamina += item.stamina;
-        agility += item.agility;
-        hit += item.hit;
-        crit += item.crit;
-        attackpower += item.attackpower;
-        armor += item.armor;
-        parry += item.parry;
-        dodge += item.dodge;
-        defense += item.defense;
-        block += item.block;
-        blockvalue += item.blockvalue;
-        if(item.skilltype !== undefined && item.skilltype != 'none') {
-          if (item.skilltype.includes(mhweapontype))
-            mhwepskill += item.skill;
-          if (item.skilltype.includes(ohweapontype))
-            ohwepskill += item.skill;
-        }
-    })
 
+    // *** Get Enchant Bonuses *** //
+    ENCHANT_SLOTS.forEach(slot => {
+      const element = document.getElementById(slot + '-enchant');
+      let id = Number(element.getAttribute('enchantID'));
+      let enchant = ENCHANT_DATA[id];
+
+        extrahp += enchant.health;
+        strength += enchant.strength;
+        stamina += enchant.stamina;
+        agility += enchant.agility;
+        hit += enchant.hit;
+        crit += enchant.crit;
+        attackpower += enchant.attackpower;
+        armor += enchant.armor;
+        parry += enchant.parry;
+        dodge += enchant.dodge;
+        defense += enchant.defense;
+        block += enchant.block;
+        blockvalue += enchant.blockvalue;
+        if(enchant.skilltype !== undefined && enchant.skilltype != 'none') {
+          if (enchant.skilltype.includes(mhweapontype))
+            mhwepskill += enchant.skill;
+          if (enchant.skilltype.includes(ohweapontype))
+            ohwepskill += enchant.skill;
+        if (_dualWield) {
+          ohmin += enchant.damage;
+          ohmax += enchant.damage;
+        }
+        mhmin += enchant.damage;
+        mhmax += enchant.damage;
+        }
+    });
+    
     armor       += stats.armor;
     agility     += stats.agility;
     strength    += stats.strength;
@@ -402,8 +372,6 @@ function updateStats()
     // Buffs
     mhmin += checkAuraToggle('coarse') ? 3 : 0;
     mhmax += checkAuraToggle('coarse') ? 3 : 0;
-    mhmin += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
-    mhmax += document.getElementById("mhwepenchant") == "Lesser Striking" ? 2 : 0;
     hit += checkAuraToggle('bfdstone') ? 2 : 0;
 
     strength += checkAuraToggle('ogre') ? 8 : 0;
@@ -414,9 +382,6 @@ function updateStats()
     let _startRage = Number(document.querySelector("#startRage").value);
 
     extrahp += checkAuraToggle('minorfort') ? 27 : 0;
-    extrahp += document.getElementById("chestenchant").value == "Major Health" ? 100 : 0;
-    extrahp += legenchant == "Libram of Constitution" ? 100 : 0;
-    extrahp += headenchant == "Libram of Constitution" ? 100 : 0;
     extrahp += checkAuraToggle('wcb') ? 300 : 0;
 
     let mark = checkAuraToggle('motw'); // Assumed to be improved
@@ -518,8 +483,7 @@ function updateStats()
     block = _dualWield ? 0 : block
     blockvalue = _dualWield ? 0 : blockvalue
 
-    let hastePerc = extrahaste + (document.getElementById("headenchant").value == "Libram of Rapidity" ? 1 : 0) + (document.getElementById("legenchant").value == "Libram of Rapidity" ? 1 : 0) + ( document.getElementById("handenchant").value == "Minor Haste" ? 1 : 0);
-        hastePerc += checkAuraToggle('wcb') ? 15 : 0;
+    let hastePerc = checkAuraToggle('wcb') ? 15 : 0;
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
@@ -614,7 +578,7 @@ function updateStats()
             baseArmor: armor,
             baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
             
-            threatMod: 1.3 * (1 + 0.03*defiance) * (document.getElementById("handenchant").value == "Threat" ? 1.02 : 1),
+            threatMod: 1.3 * (1 + 0.03*defiance),
             critMod: 2 + impale*0.1,
 
             startRage: _startRage,
@@ -672,7 +636,7 @@ function updateStats()
                 // twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
                 // threePieceConqueror: document.getElementById("threePieceConqueror").checked,
                 // fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
-                threatenchant: document.getElementById("handenchant").value == "Threat",
+                // threatenchant: document.getElementById("handenchant").value == "Threat",
                 // berserking: document.getElementById("berserking").checked,
                 // goa: document.getElementById("goa").checked,
 
@@ -680,8 +644,8 @@ function updateStats()
                 wildStrikes: checkAuraToggle("wildstrikes"),
                 wcb: checkAuraToggle('wcb'),
                 dmf: checkAuraToggle("dmf"),
-                crusaderMH: mhwepenchant == "Crusader",
-                crusaderOH: ohwepenchant == "Crusader",
+                // crusaderMH: mhwepenchant == "Crusader",
+                // crusaderOH: ohwepenchant == "Crusader",
                 // windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
                 // mrp: _mrp,
             },
@@ -725,6 +689,10 @@ function updateStats()
             critMod: 2,
             threatMod: 0,
             startRage: 0,
+
+            bonuses: {
+              armorDebuff: IEA || homunculi,
+            },
         },
         // Calc Settings and other globals
         config: {

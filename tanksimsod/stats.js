@@ -178,663 +178,523 @@ let races = {
 
 }
 
-let heads = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Brutal Helm": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 8,
-        "agility": 7,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 163,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let necks = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Scout's Medallion": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 2,
-        "agility": 6,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let chests = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Brutal Hauberk": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 5,
-        "stamina": 14,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 218,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
- }
-
-let shoulders = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Sentry's Shoulderguards of the Monkey": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 6,
-        "agility": 6,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 149,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let capes = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Cape of the Brotherhood": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 3,
-        "agility": 6,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 21,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let wrists = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Jimmied Handcuffs": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 3,
-        "stamina": 7,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 89,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let hands = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Warsong Gauntlets": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 10,
-        "stamina": 3,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 130,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let waists = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Wicked Chain Waistband of the Monkey": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 6,
-        "agility": 6,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 111,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let legs = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Sentry's Leggings of the Monkey": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 7,
-        "agility": 7,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 171,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let feet = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Battleforge Boots of the Monkey": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 6,
-        "agility": 6,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 134,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let rings = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Seal of Sylvanas": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 3,
-        "stamina": 8,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Legionnaire's Band": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 4,
-        "stamina": 2,
-        "agility": 4,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let trinkets = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Insignia of the Horde": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Rune of Duty": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 4,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-}
-
-let rangedweps = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Ranger Bow": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 1,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
- }
-
-let shields = {
-    "None": {
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Commander's Crest": {
-        "strength": 6,
-        "stamina": 3,
-        "agility": 0,
-        "hit": 0,
-        "crit": 0,
-        "attackpower": 0,
-        "parry": 0,
-        "dodge": 0,
-        "defense": 7,
-        "armor": 623,
-        "blockvalue": 13,
-        "block": 0
-    },
-}
-
-let weapons = {
-    "None": {
-        "min": 0,
-        "max": 0,
-        "swingtimer": 2,
-        "crit": 0,
-        "hit": 0,
-        "strength": 0,
-        "stamina": 0,
-        "agility": 0,
-        "attackpower": 0,
-        "dodge": 0,
-        "parry": 0,
-        "defense": 0,
-        "armor": 0,
-        "skill": 0,
-        "skilltype": 0,
-        "blockvalue": 0,
-        "block": 0
-    },
-    "Legionnaire's Sword": {
-       "min": 40,
-       "max": 61,
-       "swingtimer": 2.7,
-       "strength": 5,
-       "stamina": 3,
-       "agility": 0,
-       "hit": 0,
-       "crit": 0,
-       "attackpower": 0,
-       "armor": 0,
-       "parry": 0,
-       "dodge": 0,
-       "defense": 0,
-       "skill": 0,
-       "blockvalue": 0,
-       "block": 0
-    },
-}
-
-let enchants = {
-    "None": {
+let ENCHANT_DATA = {
+    0: {
+       "name": "None",
+       "description": "Add Enchant",
+       "health": 0,
        "strength": 0,
        "stamina": 0,
        "agility": 0,
+       "armor": 0,
+
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+
        "dodge": 0,
        "block": 0,
        "blockvalue": 0,
        "defense": 0,
-       "armor": 0,
-       "parry": 0
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
     },
-    "Minor Agility": {
+
+    13882: {
+       "name": "Lesser Agility",
+       "description": "+3 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 3,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    7867: {
+       "name": "Minor Agility",
+       "description": "+1 agility",
+       "health": 0,
        "strength": 0,
        "stamina": 0,
        "agility": 1,
+       "armor": 0,
+
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+
        "dodge": 0,
        "block": 0,
        "blockvalue": 0,
        "defense": 0,
-       "armor": 0,
-       "parry": 0
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
     },
-    "Minor Stats": {
+    7779: {
+       "name": "Minor Agility",
+       "description": "+1 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 1,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13626: {
+       "name": "Minor Stats",
+       "description": "+1 stats",
+       "health": 0,
        "strength": 1,
        "stamina": 1,
        "agility": 1,
+       "armor": 0,
+
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+
        "dodge": 0,
        "block": 0,
        "blockvalue": 0,
        "defense": 0,
-       "armor": 0,
-       "parry": 0
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
     },
-    "Minor Stamina": {
-       "strength": 0,
-       "stamina": 1,
-       "agility": 0,
-       "crit": 0,
-       "hit": 0,
-       "attackpower": 0,
-       "dodge": 0,
-       "block": 0,
-       "blockvalue": 0,
-       "defense": 0,
-       "armor": 0,
-       "parry": 0
-    },
-    "Lesser Stamina": {
+    13501: {
+       "name": "Lesser Stamina",
+       "description": "+3 stamina",
+       "health": 0,
        "strength": 0,
        "stamina": 3,
        "agility": 0,
+       "armor": 0,
+
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+
        "dodge": 0,
        "block": 0,
        "blockvalue": 0,
        "defense": 0,
-       "armor": 0,
-       "parry": 0
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
     },
-    "Heavy Armor Kit": {
+    3780: {
+       "name": "Heavy Armor Kit",
+       "description": "+24 armor",
+       "health": 0,
        "strength": 0,
        "stamina": 0,
        "agility": 0,
-       "crit": 0,
-       "hit": 0,
-       "attackpower": 0,
-       "dodge": 0,
-       "block": 0,
-       "blockvalue": 0,
-       "defense": 0,
        "armor": 24,
-       "parry": 0
-    },
-    "Lesser Striking": {
-       "strength": 0,
-       "stamina": 0,
-       "agility": 0,
+
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+
        "dodge": 0,
        "block": 0,
        "blockvalue": 0,
        "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13503: {
+       "name": "Lesser Striking",
+       "description": "+2 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
        "armor": 0,
-       "parry": 0
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 2,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    7788: {
+       "name": "Minor Striking",
+       "description": "+1 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 1,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13536: {
+       "name": "Lesser Strength",
+       "description": "+3 strength",
+       "health": 0,
+       "strength": 3,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    241: {
+       "name": "Lesser Strength",
+       "description": "+3 strength",
+       "health": 0,
+       "strength": 3,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    7428: {
+       "name": "Minor Deflect",
+       "description": "+1 defense",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 1,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    248: {
+       "name": "Minor Strength",
+       "description": "+1 strength",
+       "health": 0,
+       "strength": 1,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13378: {
+       "name": "Minor Stamina",
+       "description": "+1 stamina",
+       "health": 0,
+       "strength": 0,
+       "stamina": 1,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    7863: {
+       "name": "Minor Stamina",
+       "description": "+1 stamina",
+       "health": 0,
+       "strength": 0,
+       "stamina": 1,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+
+    13464: {
+       "name": "Lesser Protection",
+       "description": "+30 armor",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 30,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+
+    6042: {
+       "name": "Iron Shield Spike",
+       "description": "8-12 reflect",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+
+    13421: {
+       "name": "Lesser Protection",
+       "description": "+20 armor",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 20,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+
+    7857: {
+       "name": "Health",
+       "description": "+25 health",
+       "health": 25,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
     },
 } 

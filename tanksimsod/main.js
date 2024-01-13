@@ -55,13 +55,22 @@ const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wil
               'lesseragi', 'ogre', 'defense', 'minorfort', 'food', 'coarse', 'bfdstone', 'rumsey',
               'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
               'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor'];
-// const BUFFS = ['mhstone', 'ohstone', 'strbuff', 'apbuff', 'agibuff', 'statbuff', 'foodbuff', 'alcohol', 'potion'];
-// const BUFFS2 = ['inspiration', 'devo', 'imploh', 'CoV', 'armorelixir', 'hpelixir', 'dragonslayer', 'boon-of-the-blackfathom', 'ashenvale-cry', 'wcb', 'dmf', 'zandalar',
-// 'dmstamina', 'dmAP', 'dmspell', 'songflower', 'bshout', 'mark', 'fortitude', 'bloodpact', 'kings', 'might', 'horn-of-lord', 'mangle', 'strofearth', 'wild-strikes'];
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-const ENCHANTS = ['head', 'shoulder', 'back', 'chest', 'wrist', 'hand', 'leg', 'feet', 'mhwep', 'ohwep'];
+const ENCHANT_SLOTS = ['head', 'shoulders', 'back', 'chest', 'wrists', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
+const ENCHANT_IDS = {
+  'head': [0, 3780],
+  'shoulders': [0],
+  'back': [0, 13882, 13421],
+  'chest': [0, 13626, 7857],
+  'wrists': [0, 7428, 7779, 13536, 13501],
+  'hands': [0, 3780],
+  'legs': [0, 3780],
+  'feet': [0, 7867, 7863, 3780],
+  'mainhand': [0, 7788, 13503],
+  'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
+};
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
 const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
@@ -340,7 +349,7 @@ async function loadItemData() {
 
     Items[`${id}`] = obj;
   }
-  // log_message('Items:', Items);
+  log_message(Items);
   ITEMS = Items;
 }
 
@@ -349,17 +358,23 @@ function addEventListeners() {
       const element = document.getElementById(slot + '-slot');
       element.addEventListener('click', function(event) {
         event.preventDefault();
-        // var id = element.getAttribute('itemId');
-
-        // selectItem(id, slot);
+      })
+    });
+    ENCHANT_SLOTS.forEach(slot => {
+      const element = document.getElementById(slot + '-enchant');
+      element.addEventListener('click', function(event) {
+        event.preventDefault();
       })
     });
 
     document.body.addEventListener('click', function(event) {
         // Check if the clicked element is not part of the dropdown
-        if (!event.target.closest('.custom-dropdown')) {
+        if (!event.target.closest('.gear-slot')) {
             ITEM_SLOTS.forEach(slot => {
               hideItemDropdown(slot);
+            });
+            ENCHANT_SLOTS.forEach(slot => {
+              hideEnchantDropdown(slot);
             });
         }
     });
@@ -368,7 +383,26 @@ function addEventListeners() {
 }
 
 
-function showItemDropdown(slot) {
+function showEnchantDropdown(event, slot) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropdown = document.getElementById(slot + '-enchant-dropdown-content');
+    const dropdowns = document.getElementsByClassName('dropdown-content')
+    // Hide any already opened dropdown
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns.item(i).style.display = 'none';
+    }
+    dropdown.style.display = 'block';
+}
+
+function hideEnchantDropdown(slot) {
+    const dropdown = document.getElementById(slot + '-enchant-dropdown-content');
+    dropdown.style.display = 'none';
+}
+
+function showItemDropdown(event, slot) {
+    event.preventDefault();
+    event.stopPropagation();
     const dropdown = document.getElementById(slot + '-slot-dropdown-content');
     const dropdowns = document.getElementsByClassName('dropdown-content')
     // Hide any already opened dropdown
@@ -383,24 +417,121 @@ function hideItemDropdown(slot) {
     dropdown.style.display = 'none';
 }
 
+const GEAR_ROWS = [['head', 'hands'], ['neck', 'waist'], ['shoulders', 'legs'], ['back', 'feet'], ['chest', 'finger1'], ['wrists', 'finger2'], ['mainhand', 'trinket1'], ['offhand', 'trinket2'], ['ranged']];
+const RIGHT_SLOTS = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
+function createGearRows() {
+  const gearSelect = document.getElementById('gear-select');
+  GEAR_ROWS.forEach(row => {
+    if (row.length == 2) {
+      const element = document.createElement('div');
+      element.classList.add('gear-row');
+      element.style.display = 'flex';
+      element.innerHTML = `
+        <div>
+          <div class="gear-slot gear-slot-left" id="${row[0]}-slot" >
+            <img id="${row[0]}-slot-img" itemId='0' src="img/${row[0]}.jpg" onclick="showItemDropdown(event, '${row[0]}')"/>
+            <div id="${row[0]}-slot-icon" class="slot-icon" onclick="showItemDropdown(event, '${row[0]}')"></div>
+            <div class="slot-text" id="${row[0]}-slot-text">
+              <a class="gear-text" id="${row[0]}-text" onclick="showItemDropdown(event, '${row[0]}')"></a>
+              <a onclick="showEnchantDropdown(event, '${row[0]}')" class="gear-enchant" id="${row[0]}-enchant" data-wh-rename-link="false" href="#">${ENCHANT_SLOTS.includes(row[0]) ? 'Add Enchant' : ''}</a>
+            </div>
+          </div>
+          <div id="${row[0]}-slot-dropdown-content" class="dropdown-content"></div>
+          <div id="${row[0]}-enchant-dropdown-content" class="dropdown-content"></div>
+        </div>
+        <div>
+          <div class="gear-slot gear-slot-right" id="${row[1]}-slot">
+            <img id="${row[1]}-slot-img" itemId='0' src="img/${row[1]}.jpg" onclick="showItemDropdown(event, '${row[1]}')"/>
+            <div class="slot-text" id="${row[1]}-slot-text">
+              <a class="gear-text" id="${row[1]}-text" onclick="showItemDropdown(event, '${row[1]}')"></a>
+              <a onclick="showEnchantDropdown(event, '${row[1]}')" class="gear-enchant" id="${row[1]}-enchant" data-wh-rename-link="false" href="#">${ENCHANT_SLOTS.includes(row[1]) ? 'Add Enchant' : ''}</a>
+            </div>
+            <div id="${row[1]}-slot-icon" class="slot-icon" onclick="showItemDropdown(event, '${row[1]}')"></div>
+          </div>
+          <div id="${row[1]}-slot-dropdown-content" class="dropdown-content"></div>
+          <div id="${row[1]}-enchant-dropdown-content" class="dropdown-content"></div>
+        </div>
+      `;
+      gearSelect.appendChild(element);      
+    } else { // length == 1
+      const element = document.createElement('div');
+      element.classList.add('gear-row');
+      element.style.display = 'flex';
+      element.innerHTML = `
+        <div>
+          <div class="gear-slot gear-slot-left" id="${row[0]}-slot" >
+            <img id="${row[0]}-slot-img" itemId='0' src="img/${row[0]}.jpg" onclick="showItemDropdown(event, '${row[0]}')"/>
+            <div id="${row[0]}-slot-icon" class="slot-icon" onclick="showItemDropdown(event, '${row[0]}')"></div>
+            <div class="slot-text" id="${row[0]}-slot-text">
+              <a class="gear-text" id="${row[0]}-text" onclick="showItemDropdown(event, '${row[0]}')"></a>
+              <a onclick="showEnchantDropdown(event, '${row[0]}')" class="gear-enchant" id="${row[0]}-enchant" data-wh-rename-link="false" href="#">${ENCHANT_SLOTS.includes(row[0]) ? 'Add Enchant' : ''}</a>
+            </div>
+          </div>
+          <div id="${row[0]}-slot-dropdown-content" class="dropdown-content"></div>
+          <div id="${row[0]}-enchant-dropdown-content" class="dropdown-content"></div>
+        </div>
+      `;
+      gearSelect.appendChild(element);      
+    }
+  });
+}
+function selectEnchant(id, slot) {
+  const slotText = document.getElementById(slot + '-enchant');
+  if (id != 0) {
+    slotText.href = `https://classic.wowhead.com/spell=${id}`;
+    slotText.classList.add('enchanted');
+  } else {
+    slotText.href = '';
+    slotText.classList.remove('enchanted');
+  }
+  slotText.setAttribute('enchantID', `${id}`)
+  slotText.innerHTML = ENCHANT_DATA[`${id}`].description;
+}
+
 function selectItem(id, slot) {
   if (id != 0) {
-    const element = document.getElementById(slot + '-slot');
-    element.setAttribute('itemid', `${id}`)
-    element.innerHTML = `<a href="https://classic.wowhead.com/item=${id}" data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+    // set text
+    const slotText = document.getElementById(slot + '-text');
+    slotText.href = `https://classic.wowhead.com/item=${id}`;
 
+    // set icon
+    const slotIcon = document.getElementById(slot + '-slot-icon');
+    slotIcon.innerHTML = `
+      <a href="https://classic.wowhead.com/item=${id}" data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+
+    const element = document.getElementById(slot + '-slot');
+    element.setAttribute('itemid', `${id}`);
+    // element.style.display = 'flex';
+    const textElement = document.getElementById(slot + '-slot-text');
+    textElement.style.display = 'flex';
+    const iconElement = document.getElementById(slot + '-slot-icon');
+    iconElement.style.display = 'flex';
+
+    element.setAttribute('itemid', `${id}`);
     const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'none';
   } else {
+    // set text
+    const slotText = document.getElementById(slot + '-text');
+    slotText.href = `https://classic.wowhead.com/item=${id}`;
+
+    // set icon
+    const slotIcon = document.getElementById(slot + '-slot-icon');
+    slotIcon.innerHTML = `
+      <a href="https://classic.wowhead.com/item=${id}" data-wh-rename-link="false" data-wh-icon-size="large"></a>`;
+      
     const element = document.getElementById(slot + '-slot');
-    element.setAttribute('itemid', `${id}`)
-    element.innerHTML = ``;
+    element.setAttribute('itemid', `${id}`);
+    // element.style.display = 'none';
+    const textElement = document.getElementById(slot + '-slot-text');
+    textElement.style.display = 'none';
+    const iconElement = document.getElementById(slot + '-slot-icon');
+    iconElement.style.display = 'none';
 
     const slotImg = document.getElementById(slot + '-slot-img');
-    slotImg.style.display = 'block';
+    slotImg.style.display = 'flex';
   }
-  // Find the stats of the id
-  // UpdateStats() with 
+
   window.$WowheadPower.refreshLinks(); // Needed?
 }
 
@@ -421,6 +552,7 @@ function createLinks() {
     unequip.appendChild(span);
     unequip.addEventListener('click', function(event) {
       event.preventDefault();
+      event.stopPropagation();
       selectItem('0', slot);
       hideItemDropdown(slot);
       updateStats();
@@ -431,12 +563,36 @@ function createLinks() {
     ITEM_IDS[slot].forEach(id => {
         const link = document.createElement('a');
         link.href = `https://www.wowhead.com/classic/item=${id}`;
-        link.id = `${id}`
         
         link.addEventListener('click', function(event) {
           event.preventDefault();
+          event.stopPropagation();
           selectItem(id, slot);
           hideItemDropdown(slot);
+          updateStats();
+        })
+        dropdownContent.appendChild(link);
+    });
+  }); 
+
+  ENCHANT_SLOTS.forEach(slot => {
+    var dropdownContent = document.getElementById(slot + '-enchant-dropdown-content');
+
+    // Clear any existing content
+    dropdownContent.innerHTML = '';
+
+    // Create a link for each id in the array
+    ENCHANT_IDS[slot].forEach(id => {
+        const link = document.createElement('a');
+        if (id != 0)
+          link.href = `https://www.wowhead.com/classic/spell=${id}`;
+        else
+          link.innerHTML = `${ENCHANT_DATA[`${id}`].name}`;
+       
+        link.addEventListener('click', function(event) {
+          event.preventDefault();
+          selectEnchant(id, slot);
+          hideEnchantDropdown(slot);
           updateStats();
         })
         dropdownContent.appendChild(link);
@@ -490,9 +646,10 @@ function generateProfile() {
  
   // Enchants
   let enchants = {};
-  ENCHANTS.forEach(slot => {
-    let enchantID = document.getElementById(slot + 'enchant').selectedIndex;
-    enchants[`${slot}-enchant-ix`] = enchantID;
+  ENCHANT_SLOTS.forEach(slot => {
+    const element = document.getElementById(slot + '-enchant');
+    let enchantID = Number(element.getAttribute('enchantID'));
+    enchants[`${slot}-enchant-id`] = enchantID;
   });
   profile.enchants = enchants;
 
@@ -524,7 +681,7 @@ function generateProfile() {
     let element = document.getElementById(setting);
     if (setting == "bossLevel")
       bossSettings[`${setting}`] = element.selectedIndex;
-    else if (['CoR', 'faeriefire', 'iea', 'homonculi'].includes(setting))
+    else if (['CoR', 'faeriefire', 'iea', 'homunculi'].includes(setting))
       bossSettings[`${setting}`] = element.checked;
     else
       bossSettings[`${setting}`] = element.value;
@@ -756,9 +913,9 @@ function loadProfile(profile)
 
   // Enchants
   let enchants = profile.enchants == null ? {} : profile.enchants;
-  ENCHANTS.forEach(enchant => {
-    if (enchants[`${enchant}-enchant-ix`] != null)
-      document.getElementById(enchant + 'enchant').selectedIndex = enchants[`${enchant}-enchant-ix`];
+  ENCHANT_SLOTS.forEach(enchant => {
+    if (enchants[`${enchant}-enchant-id`] != null)
+      selectEnchant(enchants[`${enchant}-enchant-id`], enchant)
   });
 
   // Talents 
@@ -852,6 +1009,7 @@ function disableCalc() {
 async function onLoadPage()
 {
   disableCalc();
+  createGearRows();
   createLinks();
   addEventListeners();
   await loadItemData();

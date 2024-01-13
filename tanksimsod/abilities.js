@@ -556,7 +556,7 @@ class Devastate extends Ability {
         if (aura.name == "Sunder Armor" && aura.duration > 0)
           stacks = aura.stacks;
       })
-      if (target.IEA || target.homonculi)
+      if (target.stats.bonuses.armorDebuff) // IEA or Homunculi
         stacks = 5;
       let damage = 0.6 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) * (1 + stacks * 0.06) + target.additivePhysBonus;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
