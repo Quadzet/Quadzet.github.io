@@ -112,6 +112,124 @@ html, body {
     background-color: #929292;
 }
 
+
+/*** talents ***/
+.talent-tree {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: inset 0 0 4rem 2rem #222629;
+  border: 1px solid grey;
+  padding: 10px;
+}
+
+#prot-tree {
+  background-image: url('img/prot-bg.jpg');
+}
+
+#fury-tree {
+  background-image: url('img/fury-bg.jpg');
+}
+
+#arms-tree {
+  background-image: url('img/arms-bg.jpg');
+}
+
+.talent {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  margin: 8px;
+}
+
+.talent-counter {
+  display: inline-block;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.877);
+  color: rgba(29, 231, 90, 0.699);
+  font-size: smaller;
+  padding: 0px 2px 0px 2px;
+  border-radius: 4px;
+  left: 24px;
+  top: 29px;
+}
+
+.talent img {
+    border: 1px solid rgba(29, 231, 90, 0.699);
+}
+
+.talent-unavailable img, .talent-unavailable .talent-counter {
+  filter: grayscale(100%);
+}
+
+.talent-maxed img{
+  border: 1px solid rgba(231, 218, 29, 0.699);
+}
+
+.talent-maxed .talent-counter{
+  color: rgba(231, 218, 29, 0.699);
+}
+
+.arrow-1 {
+  background-image: url('img/arrow-2png.png');
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  height: 1.6rem;
+  position: relative;
+  top: 2.9rem;
+}
+
+.arrow-2 {
+  background-image: url('img/arrow-2png.png');
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  height: 5.2rem;
+  position: relative;
+  top: 2.9rem;
+}
+
+.arrow-active {
+  background-image: url('img/arrow-2-active.png');
+}
+
+#deep-wounds-arrow {
+  grid-area: 1 / 3 / 6 / 3;
+}
+
+#impale-arrow {
+  grid-area: 3 / 3 / 8 / 3;
+}
+
+#anger-management-arrow {
+  grid-area: 2 / 2 / 8 / 2;
+}
+
+#mortal-strike-arrow {
+  grid-area: 5 / 2 / 8 / 2;
+}
+
+#flurry-arrow {
+  grid-area: 4 / 3 / 8 / 3;
+}
+
+#bloodthirst-arrow {
+  grid-area: 5 / 2 / 8 / 2;
+}
+
+#improved-shield-block-arrow {
+  grid-area: 1 / 2 / 8 / 2;
+}
+
+#last-stand-arrow {
+  grid-area: 2 / 1 / 8 / 1;
+}
+
+#shield-slam-arrow {
+  grid-area: 5 / 2 / 8 / 2;
+}
+
 .rotation-check {
   margin-right: auto;
   margin-left: 5px;
@@ -190,7 +308,8 @@ html, body {
 
 #talents {
   display: none;
-  flex-direction: column;
+  flex-direction: row;
+
 }
 
 #rotation {

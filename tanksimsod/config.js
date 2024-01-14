@@ -208,6 +208,11 @@ function getBlockValue(itemID) {
   }
 }
 
+function getTalentValue(name) {
+  const element = document.getElementById(`${name}`);
+  return Number(element.getAttribute('value'));
+}
+
 function updateStats()
 {
     let level = document.querySelector("#level").value
@@ -251,16 +256,16 @@ function updateStats()
     let race = document.querySelector("#race").value
 
     // Talents
-    let deflection = Number(document.getElementById("deflection").value);
-    let cruelty = Number(document.getElementById("cruelty").value);
-    let anticipation = Number(document.getElementById("anticipation").value);
-    let toughness = Number(document.getElementById("toughness").value);
-    let shieldspec = Number(document.getElementById("shield-spec").value);
-    let impHS = Number(document.getElementById("impHS").value);
-    let impSA = Number(document.getElementById("impSA").value);
-    let impRend = Number(document.getElementById("impRend").value);
-    let defiance = Number(document.getElementById("defiance").value);
-    let impale = Number(document.getElementById("impale").value);
+    let deflection = getTalentValue("deflection");
+    let cruelty = getTalentValue("cruelty");
+    let anticipation = getTalentValue("anticipation");
+    let toughness = getTalentValue("toughness");
+    let shieldspec = getTalentValue("shield-specialization");
+    let impHS = getTalentValue("improved-heroic-strike");
+    let impSA = getTalentValue("improved-sunder-armor");
+    let impRend = getTalentValue("improved-rend");
+    let defiance = getTalentValue("defiance");
+    let impale = getTalentValue("impale");
 
     let strength = 0;
     let stamina = 0;
@@ -272,7 +277,7 @@ function updateStats()
     let armor = 0;
     let parry = 0;
     let dodge = 0;
-    let defense = Math.round(anticipation*2);
+    let defense = 0 + Math.round(anticipation*2);
     let block = 0;
     let blockvalue = 0;
     let extrahp = 94; // Base hp for all races
@@ -367,7 +372,7 @@ function updateStats()
     block       += stats.block;
     blockvalue  += stats.blockvalue;
 
-    armor *= (1+0.02*toughness); // Only applies to armor from gear
+    armor *= (1 + 0.02*toughness); // Only applies to armor from gear
     armor *= checkAuraToggle("loh") ? 1.3 : 1;
     // Buffs
     mhmin += checkAuraToggle('coarse') ? 3 : 0;
@@ -452,7 +457,6 @@ function updateStats()
 
     armor += agility*2;
     armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
-    // armor += document.getElementById("potion").value == "Greater Stoneshield" ? 2000 : 0;
     let impDevo = true; // TODO
     armor += checkAuraToggle("devo") ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
     armor += checkAuraToggle("defense") ? 150 : 0;
@@ -473,11 +477,11 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
-    crit = crit + cruelty + agility/9 + (mhwepskill-(level * 5))*0.04
+    crit = crit + agility/9 + (mhwepskill-(level * 5))*0.04 + cruelty;
 
-    parry += 5 + deflection + defense*0.04
+    parry += 5 + defense*0.04 + deflection;
     dodge += agility/9 + defense*0.04
-    block += shieldspec + 5 + defense*0.04
+    block += 5 + defense*0.04 + shieldspec;
     blockvalue += strength/20
 
     block = _dualWield ? 0 : block
@@ -562,7 +566,7 @@ function updateStats()
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: damageMod,
-            physDmgMod: 1,// + 0.02*Number(document.getElementById("1hspec").value), // passive phys damage mods
+            physDmgMod: 1 + 0.02*getTalentValue('one-handed-specialization'), // passive phys damage mods
             additivePhysBonus: 0, 
             hastePerc: hastePerc, 
             AP: attackpower + strength*2,
@@ -590,12 +594,12 @@ function updateStats()
             rotation: rotation,
 
             talents: {
-                // deathwish: document.getElementById("deathwish").checked,
-                // bloodthirst: document.getElementById("bloodthirst").checked,
-                // shieldslam: document.getElementById("shieldslam").checked,
-                // flurry: Number(document.getElementById("flurry").value),
-                enrage: Number(document.getElementById("enrage").value),
-                deepWounds: Number(document.getElementById("deep-wounds").value),
+                deathwish: getTalentValue("death-wish") > 0,
+                bloodthirst: getTalentValue("bloodthirst") > 0,
+                shieldslam: getTalentValue("shield-slam") > 0,
+                flurry: getTalentValue("flurry"),
+                enrage: getTalentValue("enrage"),
+                deepWounds: getTalentValue("deep-wounds"),
                 deflection: deflection,
                 cruelty: cruelty,
                 anticipation: anticipation,

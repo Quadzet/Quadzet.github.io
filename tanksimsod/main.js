@@ -654,11 +654,11 @@ function generateProfile() {
   profile.enchants = enchants;
 
   // Talents 
-  let talents = {};
-  TALENTS.forEach(talent => {
-    talents[`${talent}`] = document.getElementById(talent).value;
-  });
-  profile.talents = talents;
+  // let talents = {};
+  // TALENTS.forEach(talent => {
+  //   talents[`${talent}`] = document.getElementById(talent).value;
+  // });
+  profile.talents = getTalents();
 
   // Runes
   let runes = {};
@@ -709,148 +709,147 @@ function saveInput()
 
 function loadProfile(profile)
 {
-
   const DEFAULT_PROFILE = {
-        "gear": {
-            "head": "211505",
-            "hands": "209568",
-            "neck": "209673",
-            "waist": "211457",
-            "shoulders": "209692",
-            "legs": "209566",
-            "back": "213087",
-            "feet": "209581",
-            "chest": "210794",
-            "wrists": "211463",
-            "finger1": "209565",
-            "finger2": "2933",
-            "trinket1": "211449",
-            "trinket2": "21568",
-            "mainhand": "209525",
-            "offhand": "209424",
-            "ranged": "209688"
-        },
-        "rotation": {
-            "revenge": {
-                "use": true,
-                "rage": 60
-            },
-            "raging-blow": {
-                "use": true,
-                "rage": 0
-            },
-            "rend": {
-                "use": false,
-                "rage": 80
-            },
-            "devastate": {
-                "use": true,
-                "rage": 75
-            },
-            "heroic-strike": {
-                "use": true,
-                "rage": 90
-            },
-            "shield-block": {
-                "use": false,
-                "rage": 90
-            },
-            "cbrUse": true,
-            "cbrStacks": 3
-        },
-        "tankSettings": {
-            "level-ix": 0,
-            "race-ix": 2,
-            "startRage": "40"
-        },
-        "enchants": {
-            "head-enchant-ix": 0,
-            "shoulder-enchant-ix": 0,
-            "back-enchant-ix": 1,
-            "chest-enchant-ix": 1,
-            "wrist-enchant-ix": 1,
-            "hand-enchant-ix": 1,
-            "leg-enchant-ix": 1,
-            "feet-enchant-ix": 1,
-            "mhwep-enchant-ix": 1,
-            "ohwep-enchant-ix": 0
-        },
-        "talents": {
-            "deflection": "5",
-            "cruelty": "3",
-            "anticipation": "0",
-            "shield-spec": "0",
-            "toughness": "3",
-            "impHS": "0",
-            "impSA": "0",
-            "impRend": "0",
-            "impale": "0",
-            "defiance": "0",
-            "enrage": "0",
-            "deep-wounds": "3"
-        },
-        "runes": {
-            "devastate": true,
-            "endless-rage": false,
-            "consumed-by-rage": true,
-            "furious-thunder": false,
-            "raging-blow": true,
-            "flagellation": false,
-            "blood-frenzy": false
-        },
-        "buffs": {
-            "mhstone-ix": 0,
-            "ohstone-ix": 0,
-            "strbuff-ix": 2,
-            "apbuff-ix": 0,
-            "agibuff-ix": 2,
-            "statbuff-ix": 0,
-            "foodbuff-ix": 1,
-            "alcohol-ix": 1,
-            "potion-ix": 0,
-            "inspiration": false,
-            "devo": false,
-            "imploh": false,
-            "CoV": true,
-            "armorelixir": true,
-            "hpelixir": true,
-            "dragonslayer": false,
-            "boon-of-the-blackfathom": true,
-            "ashenvale-cry": true,
-            "wcb": false,
-            "dmf": false,
-            "zandalar": false,
-            "dmstamina": false,
-            "dmAP": false,
-            "dmspell": false,
-            "songflower": false,
-            "bshout": true,
-            "mark": true,
-            "fortitude": true,
-            "bloodpact": false,
-            "kings": true,
-            "might": false,
-            "horn-of-lord": true,
-            "mangle": true,
-            "strofearth": true,
-            "wild-strikes": true
-        },
-        "bossSettings": {
-            "bossLevel": 1,
-            "swingMax": "220",
-            "swingMin": "180",
-            "swingTimer": "2",
-            "bossArmor": "1081",
-            "CoR": true,
-            "faeriefire": true,
-            "iea": false,
-            "homunculi": "false"
-        },
-        "calcSettings": {
-            "iterations": "3000",
-            "fightLength": "60"
-        }
+    "version": "1.0.0",
+    "gear": {
+      "head": "211505",
+      "hands": "209568",
+      "neck": "209673",
+      "waist": "211457",
+      "shoulders": "209692",
+      "legs": "209566",
+      "back": "213087",
+      "feet": "209581",
+      "chest": "210794",
+      "wrists": "211463",
+      "finger1": "209565",
+      "finger2": "2933",
+      "trinket1": "211449",
+      "trinket2": "21568",
+      "mainhand": "209525",
+      "offhand": "209424",
+      "ranged": "209688"
+    },
+    "rotation": {
+      "revenge": {
+        "use": false,
+        "rage": 60
+      },
+      "raging-blow": {
+        "use": true,
+        "rage": 0
+      },
+      "rend": {
+        "use": false,
+        "rage": 80
+      },
+      "devastate": {
+        "use": true,
+        "rage": 75
+      },
+      "heroic-strike": {
+        "use": true,
+        "rage": 90
+      },
+      "shield-block": {
+        "use": false,
+        "rage": 90
+      },
+      "cbrUse": true,
+      "cbrStacks": 3
+    },
+    "tankSettings": {
+      "level-ix": 0,
+      "race-ix": 2,
+      "startRage": "40"
+    },
+    "enchants": {
+      "head-enchant-id": 3780,
+      "shoulders-enchant-id": 0,
+      "back-enchant-id": 13882,
+      "chest-enchant-id": 13626,
+      "wrists-enchant-id": 13501,
+      "hands-enchant-id": 3780,
+      "legs-enchant-id": 3780,
+      "feet-enchant-id": 7867,
+      "mainhand-enchant-id": 13503,
+      "offhand-enchant-id": 13464
+    },
+    "talents": {
+      "deflection": 5,
+      "cruelty": 3,
+      "anticipation": 0,
+      "shield-specialization": 0,
+      "toughness": 0,
+      "improved-heroic-strike": 2,
+      "improved-sunder-armor": 0,
+      "improved-rend": 3,
+      "impale": 0,
+      "defiance": 0,
+      "enrage": 0,
+      "deep-wounds": 3,
+    },
+    "runes": {
+      "devastate": true,
+      "endless-rage": false,
+      "consumed-by-rage": true,
+      "furious-thunder": false,
+      "raging-blow": false,
+      "flagellation": true,
+      "blood-frenzy": false
+    },
+    "buffs": {
+      "battleshout": true,
+      "motw": true,
+      "kings": false,
+      "might": false,
+      "horn": true,
+      "strtotem": true,
+      "wildstrikes": true,
+      "lion": true,
+      "fort": true,
+      "bloodpact": true,
+      "devo": true,
+      "loh": false,
+      "inspiration": false,
+      "lesseragi": true,
+      "ogre": true,
+      "defense": true,
+      "minorfort": true,
+      "food": true,
+      "coarse": false,
+      "bfdstone": false,
+      "rumsey": true,
+      "botbf": true,
+      "ashcry": true,
+      "dmf": true,
+      "wcb": false,
+      "zandalar": false,
+      "dragonslayer": false,
+      "moldar": false,
+      "fengus": false,
+      "slipkik": false,
+      "songflower": false,
+      "mangle": true,
+      "cov": true,
+      "sunder": false,
+      "iea": false,
+      "degrade": true,
+      "faeriefire": true,
+      "cor": true
+    },
+    "bossSettings": {
+      "bossLevel": 1,
+      "swingMax": "200",
+      "swingMin": "200",
+      "swingTimer": "1",
+      "bossArmor": "1081"
+    },
+    "calcSettings": {
+      "iterations": "1000",
+      "fightLength": "30"
     }
+  }
   profile = profile == null ? DEFAULT_PROFILE : profile;
 
   // Deprecated with the addition of default json profile
@@ -920,10 +919,7 @@ function loadProfile(profile)
 
   // Talents 
   let talents = profile.talents == null ? {} : profile.talents;
-  TALENTS.forEach(talent => {
-    if (talents[`${talent}`] != null)
-      document.getElementById(talent).value = talents[`${talent}`];
-  });
+  loadTalents(talents);
     
   // Runes
   let runes = profile.runes == null ? {} : profile.runes;
@@ -1012,6 +1008,7 @@ async function onLoadPage()
   createGearRows();
   createLinks();
   addEventListeners();
+  await createTalentTrees();
   await loadItemData();
   loadLocalstorage();
   updateStats();
