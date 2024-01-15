@@ -123,6 +123,7 @@ html, body {
   box-shadow: inset 0 0 4rem 2rem #222629;
   border: 1px solid grey;
   padding: 10px;
+  margin-bottom: auto;
 }
 
 #prot-tree {
@@ -307,19 +308,26 @@ html, body {
 }
 
 #talents {
-  display: none;
+  display: flex;
   flex-direction: row;
-
 }
 
 #rotation {
-  display: none;
+  display: flex;
   flex-direction: column;
+  border: 1px solid grey;
 }
 
-#auras {
+#settings {
   display: none;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+#buffs {
+  display: inline-block;
+  /* flex-direction: row; */
+  border: 1px solid grey;
 }
 
 .aura-toggle-default {
@@ -348,7 +356,7 @@ html, body {
 }
 
 #profiles {
-  display: none;
+  display: flex;
   flex-direction: column;
 }
 
@@ -361,7 +369,7 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
 #barContainer {width: 100%; background-color: #474b4f; color: #858c8f; margin: auto; display: none}
 #progressBar {width: 0%; height: 30px; text-align: center; background-color: #81a4bdb2}
 #resultContainer {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   /* align-items: center; */
@@ -416,7 +424,7 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
   /* padding: 0 5vh 0 5vh; */
 }
 code {
-  height: 100%; /*60vh;*/
+  height: 60vh;
   width: 100%;
   display:block;
   /* margin: 0px 10vh 0 10vh; */

@@ -984,7 +984,7 @@ function copyToClipboard() {
   alert('JSON copied to clipboard!');
 }
 
-const SECTIONS = ['gear', 'talents', 'rotation', 'auras', 'about', 'profiles', 'results'];
+const SECTIONS = ['gear', 'settings', 'results'];
 function changeSection(id) {
   SECTIONS.forEach(section => {
     document.getElementById(section).style.display = 'none';
@@ -1008,7 +1008,7 @@ async function onLoadPage()
   createGearRows();
   createLinks();
   addEventListeners();
-  await createTalentTrees();
+  createTalentTrees();
   await loadItemData();
   loadLocalstorage();
   updateStats();
