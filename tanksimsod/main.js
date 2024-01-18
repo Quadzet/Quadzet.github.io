@@ -98,12 +98,24 @@ var ITEMS = {};
 function toggleAura(event, id, exclusives) {
   event.preventDefault();
   const element = document.getElementById(id + '-aura-img');
-  // let active = element.getAttribute('active');
   element.classList.toggle('aura-toggle-active');
   if (exclusives != null && element.classList.contains('aura-toggle-active')) {
     exclusives.forEach(name => {
       var exElement = document.getElementById(name + '-aura-img');
       exElement.classList.remove('aura-toggle-active');
+    });
+  }
+  updateStats();
+}
+
+function toggleRune(event, id, exclusives) {
+  event.preventDefault();
+  const element = document.getElementById(id + '-rune-img');
+  element.classList.toggle('rune-toggle-active');
+  if (exclusives != null && element.classList.contains('rune-toggle-active')) {
+    exclusives.forEach(name => {
+      var exElement = document.getElementById(name + '-rune-img');
+      exElement.classList.remove('rune-toggle-active');
     });
   }
   updateStats();
@@ -654,16 +666,12 @@ function generateProfile() {
   profile.enchants = enchants;
 
   // Talents 
-  // let talents = {};
-  // TALENTS.forEach(talent => {
-  //   talents[`${talent}`] = document.getElementById(talent).value;
-  // });
   profile.talents = getTalents();
 
   // Runes
   let runes = {};
   RUNES.forEach(rune => {
-    runes[`${rune}`] = document.getElementById(rune).checked;
+    runes[`${rune}`] = checkRuneToggle(rune);
   });
   profile.runes = runes;
     
@@ -924,8 +932,9 @@ function loadProfile(profile)
   // Runes
   let runes = profile.runes == null ? {} : profile.runes;
   RUNES.forEach(rune => {
-    if (runes[`${rune}`] != null)
-      document.getElementById(rune).checked = runes[`${rune}`];
+    let element = document.getElementById(`${rune}-rune-img`);
+    if (runes[`${rune}`])
+      element.classList.add('rune-toggle-active');
   });
 
   // Buffs
@@ -1173,7 +1182,7 @@ async function main() {
         </table>`
 
         let generalTable = 
-        `<table>
+        `<table id="generalStatsTable">
         <tr><td>TPS: </td><td>${Math.round(average(tps)*100)/100}</td></tr>
         <tr><td>DPS: </td><td>${Math.round(average(dps)*100)/100}</td></tr>
         <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>

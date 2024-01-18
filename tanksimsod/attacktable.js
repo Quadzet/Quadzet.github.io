@@ -19,7 +19,7 @@ function getParryHastedSwing(current, base) {
 }
 
 function armorReduction(atkLvl, armor) {
-    return armor/(armor + 400 + (atkLvl*85));
+    return Math.min(0.75, armor/(armor + 400 + (atkLvl*85)));
 }
 
 // Player hitting boss

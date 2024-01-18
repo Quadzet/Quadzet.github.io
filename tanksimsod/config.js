@@ -64,6 +64,11 @@ function updateOHWeaponList(doUpdateStats)
     if(doUpdateStats) updateStats();
 }
 
+function checkRuneToggle(name) {
+  let element = document.getElementById(`${name}-rune-img`);
+  return element.classList.contains('rune-toggle-active');
+}
+
 function checkAuraToggle(name) {
   let element = document.getElementById(`${name}-aura-img`);
   return element.classList.contains('aura-toggle-active');
@@ -99,7 +104,7 @@ function getIEAArmor(level) {
 
 function getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, armor) {
   armor = armor ? armor : 0;
-  if (bossLevel == 27) armor = 1108;
+  // if (bossLevel == 27) armor = 1108;
   if (CoR) armor -= getCoRArmor(level);
   if (faerieFire) armor -= getFFArmor(level);
   if (IEA && homunculi) armor -= Math.max(getHomunArmor(level), getIEAArmor(level));
@@ -655,13 +660,13 @@ function updateStats()
             },
 
             runes: {
-              devastate: document.getElementById("devastate").checked,
-              endlessRage: document.getElementById("endless-rage").checked,
-              consumedByRage: document.getElementById("consumed-by-rage").checked,
-              furiousThunder: document.getElementById("furious-thunder").checked,
-              flagellation: document.getElementById("flagellation").checked,
-              ragingBlow: document.getElementById("raging-blow").checked,
-              bloodFrenzy: document.getElementById("blood-frenzy").checked,
+              devastate: checkRuneToggle("devastate"),
+              endlessRage: checkRuneToggle("endless-rage"),
+              consumedByRage: checkRuneToggle("consumed-by-rage"),
+              furiousThunder: checkRuneToggle("furious-thunder"),
+              flagellation: checkRuneToggle("flagellation"),
+              ragingBlow: checkRuneToggle("raging-blow"),
+              bloodFrenzy: checkRuneToggle("blood-frenzy"),
             }
             
         },

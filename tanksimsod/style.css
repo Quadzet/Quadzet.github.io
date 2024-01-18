@@ -1,4 +1,6 @@
 html, body {
+  font-family: 'Times New Roman', sans-serif;
+  font-family: 'Times New Roman', serif;
   background-color: #222629;
   color: #C8CED1;
   display: flex;
@@ -29,9 +31,11 @@ html, body {
 
 .header-btn {
   cursor: pointer;
-  padding: 10px;
-  width: 100%;
+  padding: 20px;
+  width: 40%;
   text-align:center;
+  font-weight: 1000;
+  font-size: larger;
 }
 
 .header-btn:hover {
@@ -312,44 +316,77 @@ html, body {
   flex-direction: row;
 }
 
-#rotation {
+.section-header {
+  font-size: large;
+  padding: 0px 0px 0px 10px;
+  display: inline-block;
+}
+.settings-header {
+  font-size: large;
+  margin: 4px 0px 2px 0px;
+  display: inline-block;
+}
+
+#rotation, #misc-settings {
   display: flex;
   flex-direction: column;
   border: 1px solid grey;
+  padding: 8px;
 }
 
 #settings {
   display: none;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 #buffs {
-  display: inline-block;
-  /* flex-direction: row; */
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   border: 1px solid grey;
+  min-width: 320px;
+  max-width: 50%;
+  flex-wrap: wrap;
+  padding: 6px;
 }
 
-.aura-toggle-default {
+.aura-toggle-default, .rune-toggle-default {
   margin: 2px;
   border: 1px solid rgb(119, 119, 119);
   filter: grayscale(100%);
 }
 
-.aura-toggle-active {
+.aura-toggle-active, .rune-toggle-active{
   border: 1px solid rgba(39, 165, 39, 0.753);
   filter: grayscale(0%);
 }
 
-.aura-row {
+.aura-row, .rune-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0px 10px 0px 10px;
 }
 
-.aura-row-header {
-  font-size: large;
-  padding: 4px 4px 4px 0px;
+.rune-row {
+  flex-wrap: nowrap;
 }
+.rune-header {
+  padding: 0px 10px 0px 10px;
+}
+
+.aura-row-header, .rune-row-header{
+  font-size: medium;
+  padding: 0px 10px 0px 10px;
+}
+
+.runes {
+  display: flex;
+  flex-direction: column;
+}
+
 #results {
   display: none;
   flex-direction: column;
@@ -455,14 +492,54 @@ pre {
   flex-direction: row;
   justify-content: space-around;
 }
-#gear select {width: 200px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
+#race, #level {
+  width: 90px;
+  margin-left:auto;
+  padding: 0px 8px 0px 0px;
+  background-color: #474b4f;
+  color: #C8CED1
+}
 
- 
+#calcSettings, #playerstats {
+  padding: 10px;
+}
 
+#calcButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 
+#calcBtn {
+  width: 160px;
+  height: 40px;
+  border: none;
+  font-size: 18px;
+  font-family: 'Times New Roman', Times, serif;
+}
 
-#calcSettings button {margin-left: auto}
+#generalStats {
+  font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin: 0px;
+  padding: 8px;
+}
 
+#generalStatsTable tr:hover, #generalStatsTable tr:hover td {
+  background-color:#3f3f3f;
+}
+
+#generalStatsTable {
+  border-collapse: collapse;
+}
+
+#calcBtn:hover {
+  border: 1px solid grey;
+  background-color:#3f3f3f;
+  cursor: pointer;
+}
 #enchants select {width: 145px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #buffs select {width: 160px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #bossSettings select {width: 50px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
