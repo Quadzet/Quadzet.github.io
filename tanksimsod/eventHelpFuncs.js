@@ -52,6 +52,59 @@ function statRound(val) {
     return floor_val;
   }
 }
+function checkInput(name, val, suffix) {
+  if (!val)
+    log_message("Missing " + name + suffix);
+}
+
+function generateDamageEvent(input) {
+  let name = input.name || "Unknown";
+  let suffix = " when generating damage_event for " + name + ".";
+  checkInput('name', input.name, suffix);
+  checkInput('timestamp', input.timestamp, suffix);
+  checkInput('hit', input.hit, suffix);
+  checkInput('amount', input.amount, suffix);
+  checkInput('source', input.source, suffix);
+  checkInput('target', input.target, suffix);
+  checkInput('threat', input.threat, suffix);
+  checkInput('trigger', input.trigger, suffix);
+  return {
+    name: input.name,
+    timestamp: input.timestamp,
+    type: "damage",
+    hit: input.hit,
+    amount: input.amount,
+    source: input.source,
+    target: input.target,
+
+    threat: input.threat,
+    trigger: input.trigger,
+  }
+}
+
+function generateTickEvents(input) {
+  let name = input.name || "Unknown";
+  let suffix = " when generating damage_event for " + name + ".";
+  checkInput('timestamp', input.timestamp, suffix);
+  checkInput('duration', input.duration, suffix);
+  checkInput('interval', input.interval, suffix);
+  let events = [];
+  for (let i = 1; i < ~~(input.duration/input.interval); i++) {
+    events.push(
+      generateDamageEvent({
+        name: input.name,
+        timestamp: input.timestamp + i*input.interval,
+        hit: "tick",
+        amount: input.amount,
+        source: input.source,
+        target: input.target,
+        trigger: input.trigger,
+        threat: input.threat,
+      })
+    );
+  }
+  return events;
+}
 
 function sortDescending(futureEvents) {
     futureEvents.sort( (a,b) => b.timestamp - a.timestamp )

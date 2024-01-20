@@ -162,8 +162,8 @@ async function fetchTable(tableName) {
   return parsedData;
 }
 
-function getRow(table, id) {
-  for(let r of table) if (r.ID == id) return r;
+function getRow(table, column, id) {
+  for(let r of table) if (r[column] == id) return r;
 }
 
 function getRows(table, column, id) {
@@ -244,8 +244,18 @@ function getType(cl, subcl) {
   }
 }
 
+const ppmExceptions = {
+  13440: 3,
+}
+
+function getPPM(id) {
+  let ppm = ppmExceptions[id];
+  if (ppm)
+    return ppm;
+  return 1;
+}
+
 async function loadItemData() {
-  // const ids = [2244, 19351, 22422, 22418, 14551, 18805, 210794]; // Test data
   const ids = [].concat(...Object.values(ITEM_IDS));
   
   var Items = {};
@@ -253,6 +263,10 @@ async function loadItemData() {
   const itemSparseDataCSV = await fetchTable('ItemSparsePruned');
   const itemEffectData = await fetchTable('ItemEffectPruned');
   const spellEffectData = await fetchTable('SpellEffectPruned');
+  const spellCategoriesData = await fetchTable('SpellCategoriesPruned'); // TODO: prune
+  const spellMiscData = await fetchTable('SpellMiscPruned'); // TODO prune
+  const spellDurationData = await fetchTable('SpellDurationPruned'); // TODO Prune
+  const spellNameData = await fetchTable('SpellNamePruned'); // TODO prune
 
   // Transform into a JSON object
   const itemSparseData = itemSparseDataCSV.reduce((result, row) => {
@@ -298,9 +312,7 @@ async function loadItemData() {
     let item = itemData[`${id}`];
     let itemSparse = itemSparseData[`${id}`];
     let missing = false;
-    if (id == 21568) {
-      let debug = true;
-    }
+
     if (!item) {
       missing = true;
       log_message("Missing item data for ID " + id + ".");
@@ -333,8 +345,6 @@ async function loadItemData() {
       spells.forEach((spell, index) => {
 
         let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
-        if (spell.SpellID == 9140)
-          var x = 15;
 
         if (spell.TriggerType == "1") { // Only care about on_equip
           effects.forEach(e => {
@@ -368,10 +378,57 @@ async function loadItemData() {
             }
           });
         }
+
+        let category = getRow(spellCategoriesData, 'SpellID', spell.SpellID);
+        let misc = getRow(spellMiscData, 'SpellID', spell.SpellID);
+        let proc = {id: spell.SpellID};
+
+        // Physical <=> schoolmask == 0x1
+        if (misc != null && !(parseInt(misc.SchoolMask) & 1)) proc.magic = true;
+
+        effects.forEach(e => {
+          // direct dmg
+          if (e.Effect == 2) {
+            proc.dmg = parseInt(e.EffectBasePoints) + 1;
+            // Average out any random component to the dmg
+            if (e.EffectDieSides)
+              proc.dmg = proc.dmg + ~~((parseInt(e.EffectDieSides) - 1) / 2);
+          }
+          // dot
+          if (e.Effect == 6 && e.EffectAura == 3) {
+            proc.tick = parseInt(e.EffectBasePoints) + 1;
+            proc.interval = e.EffectAuraPeriod;
+            let duration = getRow(spellDurationData, 'ID', misc.DurationIndex);
+            proc.duration = duration.Duration;
+            if (category && category.Mechanic == 15) proc.bleed = true;
+          }
+          // leech
+          if (e.Effect == 9) {
+            proc.dmg = parseInt(e.EffectBasePoints) + 1;
+            // Average out any random component to the dmg
+            if (e.EffectDieSides)
+              proc.dmg = proc.dmg + ~~((parseInt(e.EffectDieSides) - 1) / 2);
+            proc.coeff = 1;
+          }
+        });
+
+        let triggerSpell = effects.filter(e => !!parseInt(e.EffectTriggerSpell));
+        let proc2;
+        if (triggerSpell.length) {
+          proc2 = {}; //TODO: create proc from triggerSpell[0].EffectTriggerSpell
+        }
+        if (proc == null && proc2 != null)
+          proc = proc2;
+        if (proc && (proc.spell || proc.extra || proc.dmg || proc.tick) && obj.slot !== "ranged") {
+          proc.name = getRow(spellNameData, 'ID', spell.SpellID).Name_lang;
+          proc.ppm = getPPM(proc.id);
+          obj.proc = proc;
+          log_message(proc);
+        }
       }
     )}
 
-    // TODO: Procs, of the tiger etc, striking
+    // TODO: of the tiger etc, striking
 
     Items[`${id}`] = obj;
   }

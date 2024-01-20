@@ -457,10 +457,11 @@ class DeepWoundsAura extends Aura {
             source: source.name,
             target: event.target,
             name: this.name,
-            hit: "hit",
+            hit: "tick",
             threat: totalDmg*source.stats.threatMod/4,
 
             amount: totalDmg/4,
+            trigger: false,
         });
       }
     }

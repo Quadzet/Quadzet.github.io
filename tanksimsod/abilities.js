@@ -174,6 +174,7 @@ class Autoattack extends Ability {
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.name = "Heroic Strike (Rank " + this.rank(source.stats.level) + ")";
             damageEvent.timestamp = timestamp
+            damageEvent.trigger = true;
             reactiveEvents.push(damageEvent)
 
             // Remove rage
@@ -189,6 +190,7 @@ class Autoattack extends Ability {
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.name = "MH Swing";
             damageEvent.timestamp = timestamp
+            damageEvent.trigger = true;
             reactiveEvents.push(damageEvent)
         }
         
@@ -274,6 +276,7 @@ class OHSwing extends Ability {
         damageEvent.threat = 0;
         damageEvent.threat = this.threatCalculator(damageEvent, source);
         damageEvent.name = this.name;
+        damageEvent.trigger = false;
         reactiveEvents.push(damageEvent)
     }
 }
@@ -303,6 +306,7 @@ class Revenge extends Ability {
         damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
 
@@ -384,6 +388,7 @@ class SunderArmor extends Ability {
         let damage = 0;
         let damageEvent = rollAttack(source, target, damage, true);
         if (damageEvent.hit == "crit") damageEvent.hit = "hit";  // TODO this can't crit...
+        damageEvent.trigger = true;
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     isUsable(timestamp, source) {
@@ -511,6 +516,7 @@ class ShieldSlam extends Ability {
         let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = false;
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
@@ -561,6 +567,7 @@ class Devastate extends Ability {
       let damage = 0.6 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) * (1 + stacks * 0.06) + target.additivePhysBonus;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
       let damageEvent = rollAttack(source, target, damage, true, false, false, true)
+      damageEvent.trigger = true;
       this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     rank(level) {
@@ -596,6 +603,7 @@ class RagingBlow extends Ability {
         let damage = (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
         // log_message(JSON.stringify(damageEvent));
@@ -621,6 +629,7 @@ class Rend extends Ability {
         let damageEvent = rollAttack(source, target, damage, true);
         if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
         damageEvent.rank = this.rank(source.stats.level);
+        damageEvent.trigger = false;
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
 
         for (let i = 0; i < this.duration(this.rank(source.stats.level))/3000; i++) { 
@@ -636,10 +645,11 @@ class Rend extends Ability {
             source: damageEvent.source,
             target: damageEvent.target,
             name: this.name,
-            hit: "hit", 
+            hit: "tick", 
             threat: dotDamage * source.stats.threatMod,
 
             amount: dotDamage,
+            trigger: false,
           }
           dotEvent.threat = this.threatCalculator(dotEvent, source);
           futureEvents.push(dotEvent);

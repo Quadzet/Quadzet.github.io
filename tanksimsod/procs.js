@@ -215,8 +215,8 @@ class GiftofArthasProc extends Proc {
 }
 
 class WindfuryProc extends Proc {
-    constructor(input) {
-        super(input)
+    constructor() {
+        super("Windfury")
     }
     
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
@@ -333,25 +333,60 @@ class BloodFrenzyProc extends Proc {
   }
 }
 
+class WeaponProc extends Proc {
+  constructor(proc) {
+    super(proc.name);
+    this.duration = proc.duration;
+    this.damage = proc.dmg;
+    this.tick = proc.tick;
+    this.interval = proc.interval;
+    this.ppm = proc.ppm;
+    this.procChance = proc.procChance;
+    this.magic = proc.magic;
+  }
+  handleEvent(source, target, event, reactiveEvents, futureEvents) {
+    if (event.trigger && source.name == event.source) {
+      let rng = Math.random();
+      if (rng < this.procChance) {
+        if (this.damage > 0) {
+          futureEvents.push(generateDamageEvent({
+            timestamp: event.timestamp,
+            name: this.name,
+            hit: 'hit', //TODO !!
+            amount: this.damage,
+            source: source.name,
+            target: target.name,
+            threat: this.damage * source.stats.threatMod,
+            trigger: false,
+          }))
+        }
+        if (this.tick > 0) {
+          let tickEvents = generateTickEvents({
+            timestamp: event.timestamp,
+            name: this.name,
+            amount: this.tick,
+            source: source.name,
+            target: target.name,
+            threat: this.tick * source.stats.threatMod,
+            interval: this.interval,
+            duration: this.duration,
+            trigger: false,
+          });
+          tickEvents.forEach(event => {
+            futureEvents.push(event);
+          })
+        }
+      }
+    }
+  }
+}
+
 function getTankProcs(globals) {
     let ret = []
-    if(globals.tankStats.weapons.thunderfuryMH) {
-        ret.push(
-            new ThunderfuryMH({
-                name: "Thunderfury",
-                damage: 300,
-            })
-        )
-    }
 
-    if(globals.tankStats.weapons.thunderfuryOH) {
-        ret.push(
-            new ThunderfuryOH({
-                name: "Thunderfury",
-                damage: 300,
-            })
-        )
-    }
+    globals.tankStats.procs.forEach(proc => {
+      ret.push(new WeaponProc(proc))
+    });
 
     if(globals.tankStats.bonuses.wildStrikes) {
         ret.push(
@@ -367,69 +402,6 @@ function getTankProcs(globals) {
         )
     }
 
-    // if(globals.tankStats.trinkets.hoj) {
-    //     ret.push(
-    //         new HoJProc({
-    //             name: "Hand of Justice", 
-    //         })
-    //     )
-    // }
-
-    if(globals.tankStats.weapons.perdsMH) {
-        ret.push(
-            new PerdsMH({
-                name: "Perdition's Blade MH",
-                damage: 48,
-
-            })
-        )
-    }
-
-    if(globals.tankStats.weapons.perdsOH) {
-        ret.push(
-            new PerdsOH({
-                name: "Perdition's Blade OH",
-                damage: 48,
-            })
-        )
-    }
-
-    if(globals.tankStats.weapons.dbMH) {
-        ret.push(
-            new DeathbringerMH({
-                name: "Deathbringer MH",
-                damage: 125,
-            })
-        )
-    }
-
-    if(globals.tankStats.weapons.dbOH) {
-        ret.push(
-            new DeathbringerOH({
-                name: "Deathbringer OH",
-                damage: 125,
-            })
-        )
-    }
-
-    if(globals.tankStats.weapons.msaMH) {
-        ret.push(
-            new MSA({
-                name: "Misplaced Servo Arm MH",
-                damage: 125,
-            })
-        )
-    }
-
-    if(globals.tankStats.weapons.msaOH) {
-        ret.push(
-            new MSA({
-                name: "Misplaced Servo Arm OH",
-                damage: 125,
-            })
-        )
-    }
-    
     if(globals.tankStats.runes.bloodFrenzy) {
         ret.push(
             new BloodFrenzyProc()

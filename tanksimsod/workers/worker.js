@@ -133,7 +133,7 @@ self.addEventListener('message', function(e) {
                     results.tpsBreakdown[`${event.name}`][i].dps += event.amount/globals.config.simDuration;
                   results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
                   if (event.hit) {
-                    results.tpsBreakdown[`${event.name}`][i].hits    += event.hit == "hit" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].hits    += event.hit == "hit" || event.hit == 'tick' ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].crits   += event.hit == "crit" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].misses  += event.hit == "miss" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].dodges  += event.hit == "dodge" ? 1 : 0;

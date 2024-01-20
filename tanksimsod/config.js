@@ -237,6 +237,8 @@ function updateStats()
       dodge: 0,
       block: 0,
       blockvalue: 0,
+
+      procs: [],
     };
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
@@ -256,6 +258,9 @@ function updateStats()
         stats.dodge       += itemStats.dodge;
         stats.block       += itemStats.block;
         stats.blockvalue  += itemStats.blockvalue;
+
+        if (itemStats.proc != null) 
+          stats.procs.push(itemStats.proc);
       }
     });
     let race = document.querySelector("#race").value
@@ -324,6 +329,10 @@ function updateStats()
     let ohmax = 0;
     let ohswing = 0;
 
+    // Update the procchance based on mh wep swingtimer
+    stats.procs.forEach(proc => {
+      proc.procChance = proc.ppm * mhswing / 60000;
+    });
 
     if (_dualWield) {
         ohmin = offhand.mindmg;
@@ -658,7 +667,7 @@ function updateStats()
                 // windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
                 // mrp: _mrp,
             },
-
+            procs: stats.procs,
             runes: {
               devastate: checkRuneToggle("devastate"),
               endlessRage: checkRuneToggle("endless-rage"),
