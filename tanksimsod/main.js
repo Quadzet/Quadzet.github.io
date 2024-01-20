@@ -44,6 +44,20 @@ function getAmount(event, ability, type) {
     else return 0;
 }
 
+function refreshLinks() {
+  let links = document.getElementsByTagName('a');
+  Array.from(links).forEach(link => {
+    link.classList.remove('q1');
+    link.classList.remove('q2');
+    link.classList.remove('q3');
+    link.classList.remove('q4');
+  })
+  window.$WowheadPower.refreshLinks();
+  Array.from(links).forEach(link => {
+    link.classList.remove('q1');
+  })
+}
+
 // Fill the progressbar
 async function updateProgressbar(progressPerc) {
     document.querySelector("#progressBar").style.width = `${progressPerc}%`
@@ -390,8 +404,12 @@ function addEventListeners() {
             });
         }
     });
-
-
+    window.addEventListener('click', function (event) {
+        const element = document.getElementById('profiles')
+        if (event.target === element) {
+          hideProfiles();
+        }
+    })
 }
 
 
@@ -498,6 +516,8 @@ function selectEnchant(id, slot) {
   }
   slotText.setAttribute('enchantID', `${id}`)
   slotText.innerHTML = ENCHANT_DATA[`${id}`].description;
+  refreshLinks();
+  // window.$WowheadPower.refreshLinks(); // Needed?
 }
 
 function selectItem(id, slot) {
@@ -543,8 +563,8 @@ function selectItem(id, slot) {
     const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'flex';
   }
-
-  window.$WowheadPower.refreshLinks(); // Needed?
+  refreshLinks();
+  // window.$WowheadPower.refreshLinks(); // Needed?
 }
 
 function createLinks() {
@@ -610,7 +630,8 @@ function createLinks() {
         dropdownContent.appendChild(link);
     });
   }); 
-  window.$WowheadPower.refreshLinks();
+  refreshLinks();
+  // window.$WowheadPower.refreshLinks();
 }
 
 function generateProfile() {
@@ -999,9 +1020,18 @@ function changeSection(id) {
     document.getElementById(section).style.display = 'none';
   });
   document.getElementById(id).style.display = 'flex';
-
 }
 
+function showProfiles(event) {
+  event.stopPropagation();
+  const element = document.getElementById('profiles');
+  element.style.display = 'block';
+}
+
+function hideProfiles() {
+  const element = document.getElementById('profiles');
+  element.style.display = 'none';
+}
 
 function enableCalc() {
   document.getElementById("calcBtn").disabled = false;
