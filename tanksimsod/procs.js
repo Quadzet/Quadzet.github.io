@@ -349,32 +349,31 @@ class WeaponProc extends Proc {
       let rng = Math.random();
       if (rng < this.procChance) {
         if (this.damage > 0) {
-          futureEvents.push(generateDamageEvent({
-            timestamp: event.timestamp,
-            name: this.name,
-            hit: 'hit', //TODO !!
-            amount: this.damage,
-            source: source.name,
-            target: target.name,
-            threat: this.damage * source.stats.threatMod,
-            trigger: false,
-          }))
+          let damageEvent = rollSpellAttack(source, target, this.damage * source.getDamageMod(), false);
+          damageEvent.name = this.name;
+          damageEvent.timestamp = event.timestamp;
+          damageEvent.threat = damageEvent.amount * source.stats.threatMod;
+          damageEvent.trigger = false;
+          futureEvents.push(generateDamageEvent(damageEvent));
         }
         if (this.tick > 0) {
-          let tickEvents = generateTickEvents({
-            timestamp: event.timestamp,
-            name: this.name,
-            amount: this.tick,
-            source: source.name,
-            target: target.name,
-            threat: this.tick * source.stats.threatMod,
-            interval: this.interval,
-            duration: this.duration,
-            trigger: false,
-          });
-          tickEvents.forEach(event => {
-            futureEvents.push(event);
-          })
+          clearFutureTicks(this.name, futureEvents);
+          let damageEvent = rollSpellAttack(source, target, this.tick * source.getDamageMod(), true);
+          damageEvent.name = this.name;
+          damageEvent.timestamp = event.timestamp;
+          damageEvent.threat = damageEvent.amount * source.stats.threatMod;
+          damageEvent.trigger = false;
+          damageEvent.duration = this.duration;
+          damageEvent.interval = this.interval;
+          damageEvent.trigger = this.trigger;
+          if (event.hit == 'miss')
+            futureEvents.push(generateDamageEvent(damageEvent));
+          else {
+            let tickEvents = generateTickEvents(damageEvent);
+            tickEvents.forEach(event => {
+              futureEvents.push(event);
+            });
+          }
         }
       }
     }

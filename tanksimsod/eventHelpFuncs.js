@@ -8,13 +8,27 @@ function formatEvent(event) {
       output += `Combat Starts.`;
     }
     else if(event["type"] == "damage") {
-        if(!["dodge", "parry", "miss", "block"].includes(event["hit"])) {
-            output += `${event["source"]}'s ${event["name"]} ${ event["hit"] == 'crush' ? `crushes` : event["hit"] + "s"} ${event["target"]} for ${Math.round(event["amount"])} damage!`
-        } else if(["crit block", "block"].includes(event["hit"])) {
-            output += `${event["source"]}'s ${event["name"]} ${event["hit"] == "block" ? `hits` : `crits`} ${event["target"] } for ${Math.round(event["amount"])} damage (${Math.round(event.blockAmount)} blocked)!`
-        } else {
-            output += `${event["source"]}'s ${event["name"]} ${event["hit"] == "parry" ? `is parried by` : event["hit"] == "dodge" ? `is dodged by` : `misses`} ${event["target"]}!`
-        }
+            output += `${event["source"]}'s ${event["name"]} `;
+            
+            if (['dodge', 'parry', 'miss'].includes(event.hit)) {
+              output += `${event["hit"] == "parry" ? `is parried by` : event["hit"] == "dodge" ? `is dodged by` : `misses`} ${event["target"]}!`
+            } else {
+              if (event.hit == 'hit') output += ' hits ';
+              else if (event.hit == 'crush') output += ' crushes ';
+              else if (event.hit == 'tick') output += ' ticks on ';
+              else if (event.hit == 'block') output += ' hits ';
+              else if (event.hit == 'crit') output += ' crits ';
+              else if (event.hit == 'crit block') output += ' crits ';
+              else if (event.hit == 'glance') output += ' glances ';
+              else if (event.hit == 'dodge') output += ' is dodged ';
+              else if (event.hit == 'glance') output += ' glances ';
+              else if (event.hit == 'glance') output += ' glances ';
+
+              output += `${event["target"] } for ${event["amount"].toFixed(2)} damage`
+              if (event.resist || 0 > 0) output += ` (${event.resist.toFixed(2)} resisted)!`;
+              else if (event.blockAmount && event.blockAmount > 0) output += ` (${event.blockAmount.toFixed(2)} blocked)!`
+              else output += '!'
+            }
     } else if(event["type"] == "auraExpire") {    
         output += `${event.source}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} fades from ${event.owner}.`
     } else if(event["type"] == "auraRemoveStack") {    
@@ -57,6 +71,17 @@ function checkInput(name, val, suffix) {
     log_message("Missing " + name + suffix);
 }
 
+function clearFutureTicks(name, futureEvents) {
+  while (true) {
+    let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == name)})
+    if(index >= 0) {
+      futureEvents.splice(index, 1)
+    }
+    else 
+      break;
+  }
+}
+
 function generateDamageEvent(input) {
   let name = input.name || "Unknown";
   let suffix = " when generating damage_event for " + name + ".";
@@ -68,18 +93,8 @@ function generateDamageEvent(input) {
   checkInput('target', input.target, suffix);
   checkInput('threat', input.threat, suffix);
   checkInput('trigger', input.trigger, suffix);
-  return {
-    name: input.name,
-    timestamp: input.timestamp,
-    type: "damage",
-    hit: input.hit,
-    amount: input.amount,
-    source: input.source,
-    target: input.target,
-
-    threat: input.threat,
-    trigger: input.trigger,
-  }
+  input.type = "damage";
+  return input; 
 }
 
 function generateTickEvents(input) {
@@ -89,19 +104,12 @@ function generateTickEvents(input) {
   checkInput('duration', input.duration, suffix);
   checkInput('interval', input.interval, suffix);
   let events = [];
-  for (let i = 1; i < ~~(input.duration/input.interval); i++) {
-    events.push(
-      generateDamageEvent({
-        name: input.name,
-        timestamp: input.timestamp + i*input.interval,
-        hit: "tick",
-        amount: input.amount,
-        source: input.source,
-        target: input.target,
-        trigger: input.trigger,
-        threat: input.threat,
-      })
-    );
+  input.hit = 'hit';  
+  let timestamp = input.timestamp;
+  for (let i = 1; i < ~~(input.duration / input.interval); i++) {
+    let inputCopy = { ...input };
+    inputCopy.timestamp = timestamp + i * input.interval;
+    events.push(generateDamageEvent(inputCopy));
   }
   return events;
 }
