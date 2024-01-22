@@ -22,6 +22,32 @@ function armorReduction(atkLvl, armor) {
     return Math.min(0.75, armor/(armor + 400 + (atkLvl*85)));
 }
 
+const spellMissTable = {
+  '-3': 0.01,
+  '-2': 0.02,
+  '-1': 0.03,
+  '0': 0.04,
+  '1': 0.05,
+  '2': 0.06,
+  '3': 0.17,
+  '4': 0.28,
+  '5': 0.39,
+  '6': 0.5,
+  '7': 0.61,
+  '8': 0.72,
+  '9': 0.83,
+  '10': 0.9,
+};
+
+function spellMiss(levelDiff) {
+  let ret = spellMissTable[levelDiff];
+  if (ret != null)
+    return ret;
+  else
+    log_message("Level diff too large for lookup table: " + levelDiff);
+}
+
+
 // Player hitting boss
 function getGlanceMod(wepSkill, defense) {
     return Math.max(Math.min(0.95, 0.65 + (wepSkill + 15 - defense)*0.04), 0.65);
@@ -232,4 +258,61 @@ function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = 
     if (meleeSpell == true) return twoRollTankBossTable(attacker, defender, damage);
     else if (attacker.stats.type == "tank" && defender.stats.type == "boss") return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
     else if (attacker.stats.type == "boss" && defender.stats.type == "tank") return rollBossTankTable(attacker, defender, damage, yellow);
+}
+
+function rollSpellAttack(attacker, defender, damage, isDot) {
+  let miss = spellMiss(defender.stats.level - attacker.stats.level);
+  let spellCrit = attacker.stats.spellCrit || 0;
+  spellCrit += 0.02; // Around 2% at lvl 25 with no buffs TODO: Actually get the correct amount, int per crit at 25: 31.8, base: 3.18%
+  // levelBasedResist: 2/15 * defenderLevel * levelDiff ? source Zephan sheet
+  // Assume boss resistance 25 for now
+  // TODO: include spell pen lmao
+  // netResistance = Min(Max((resistance - spellpen, 0) + levelBasedResist), defenderLevel * 5)
+  // TODO: levelBasedResist does not apply to binary spells
+  // Note: Calculations are simplified and lacking minmax checks because they should not matter with available gear
+  let isBinary = false;
+  let netResistance = 25;
+
+  if (!isBinary) netResistance += 2/15 * defender.stats.level * (defender.stats.level - attacker.stats.level);
+  // if (isDot) netResistance *= 0.1;
+  // defender.stats.level ??
+  let resistCap = attacker.stats.level * 5;
+  // Source: https://royalgiraffe.github.io/resist-analysis
+  let resistChance = netResistance > resistCap / 3 ?
+                      Math.min(1, 0.75 + (netResistance / resistCap - 1/3) * 0.75) :
+                      0.75 * netResistance / resistCap * 3;
+  let avgResist = isDot ? netResistance * 0.1 > resistCap * 2 / 3 ? 
+                      0.75 * netResistance * 0.1 / resistCap - 3/16 * (netResistance * 0.1 / resistCap - 2/3) : 
+                      0.5 * netResistance * 0.1 / resistCap : 
+                      netResistance > resistCap * 2 / 3 ? 
+                      0.75 * netResistance / resistCap - 3/16 * (netResistance / resistCap - 2/3) : 
+                      0.5 * netResistance / resistCap;
+
+  let resistAmount = 0;
+  if (Math.random() < resistChance) resistAmount = damage * avgResist / resistChance;
+  // Source: Zephan warlock spreadsheet
+  // let mitigation = netResistance > defender.stats.level * 10 / 3 ? 
+  //         0.5625 * netResistance / (defender.stats.level * 5) + 0.5 : 
+  //         0.75 * netResistance / (defender.stats.level * 5);
+
+  let rng = Math.random();
+  let damageEvent = {
+    type: "damage",
+    source: attacker.name,
+    target: defender.name,
+  };
+  if (rng < miss) {
+    damageEvent.hit = 'miss';
+    damageEvent.amount = 0;
+    damageEvent.resist = 0;
+  } else if (rng < miss + spellCrit) {
+    damageEvent.hit = 'crit';
+    damageEvent.amount = (damage - resistAmount) * 1.5;
+    damageEvent.resist = resistAmount * 1.5;
+  } else {
+    damageEvent.hit = 'hit';
+    damageEvent.amount = (damage - resistAmount);
+    damageEvent.resist = resistAmount;
+  }
+  return damageEvent;
 }
