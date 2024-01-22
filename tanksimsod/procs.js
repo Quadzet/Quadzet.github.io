@@ -343,6 +343,7 @@ class WeaponProc extends Proc {
     this.ppm = proc.ppm;
     this.procChance = proc.procChance;
     this.magic = proc.magic;
+    this.trigger = false; // Don't trigger additional procs
   }
   handleEvent(source, target, event, reactiveEvents, futureEvents) {
     if (event.trigger && source.name == event.source) {
