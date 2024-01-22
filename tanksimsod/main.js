@@ -1120,9 +1120,9 @@ async function main() {
     const globals = updateStats();
     
     document.getElementById("errorContainer").innerHTML = ""
-    if(Number(document.getElementById("fightLength").value) > 120){
-        document.getElementById("errorContainer").innerHTML = "Please choose a fight duration below 120."
-        return;
+    if (globals.config.iterations == 0 || globals.config.simDuration == 0) {
+      enableCalc();
+      return;
     }
 
     let start = Date.now()

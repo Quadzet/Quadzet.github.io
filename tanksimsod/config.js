@@ -715,7 +715,7 @@ function updateStats()
         // Calc Settings and other globals
         config: {
             landedHits: ["hit", "crit", "block", "crit block", "glance"],
-            simDuration: Math.round(Math.ceil(Number(document.querySelector("#fightLength").value)*2.5)*4)/10, // Fight duration in seconds
+            simDuration: Number(document.querySelector("#fightLength").value), // Fight duration in seconds
             iterations:  Number(document.querySelector("#iterations").value), // Number of fights simulated
 
         },
