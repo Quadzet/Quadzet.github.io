@@ -99,6 +99,8 @@ html, body {
 .dropdown-content {
     display: none;
     position: absolute;
+    max-height: 400px;
+    overflow-y: auto;
     background-color: #222629;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     z-index: 1;
