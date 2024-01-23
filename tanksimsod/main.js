@@ -1043,11 +1043,16 @@ function loadProfile(profile)
 }  
 
 function loadLocalstorage() {
-  let profiles = localStorage.getItem("sod_profiles");
-  profiles = profiles ? JSON.parse(profiles) : {};
-  let profile_name = "Default"; // TODO: Make user input
-  let profile = profiles[`${profile_name}`];
-  loadProfile(profile);
+  try {
+    let profiles = localStorage.getItem("sod_profiles");
+    profiles = profiles ? JSON.parse(profiles) : {};
+    let profile_name = "Default"; // TODO: Make user input
+    let profile = profiles[`${profile_name}`];
+    loadProfile(profile);
+  } catch({name, message}) {
+    log_message("Unable to load profile: " + message + ". Loading default profile.");
+    loadProfile(null);
+  }
 }
 
 function processJson() {

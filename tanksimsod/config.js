@@ -264,6 +264,21 @@ function updateStats()
       }
     });
     let race = document.querySelector("#race").value
+    stats.strength += races[race].strength;
+    stats.stamina += races[race].stamina;
+    stats.agility += races[race].agility;
+
+    stats.hit += races[race].hit;
+    stats.crit += races[race].crit;
+    stats.attackpower += races[race].attackpower;
+
+    stats.armor += races[race].armor;
+    stats.parry += races[race].parry;
+    stats.dodge += races[race].dodge;
+    stats.defense += races[race].defense;
+    stats.block += races[race].block;
+    stats.blockvalue += races[race].blockvalue;
+
 
     // Talents
     let deflection = getTalentValue("deflection");
@@ -321,6 +336,10 @@ function updateStats()
         }
       }
     });
+    if(races[race].skilltype.includes(mhweapontype))
+      mhwepskill += races[race].skill;
+    if(races[race].skilltype.includes(mhweapontype))
+      ohwepskill += races[race].skill;
 
     let mhmin = mainhand.mindmg;
     let mhmax = mainhand.maxdmg;

@@ -134,21 +134,16 @@ self.addEventListener('message', function(e) {
                   results.tpsBreakdown[`${event.name}`][i].casts += 1; // TODO make cast events but ignore them when writing out the results
                   if (event.hit) {
                     results.tpsBreakdown[`${event.name}`][i].hits    += event.hit == "hit" || event.hit == 'tick' ? 1 : 0;
-                    results.tpsBreakdown[`${event.name}`][i].crits   += event.hit == "crit" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].crits   += event.hit == "crit" || event.hit == "crit block" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].misses  += event.hit == "miss" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].dodges  += event.hit == "dodge" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].parries += event.hit == "parry" ? 1 : 0;
-                    results.tpsBreakdown[`${event.name}`][i].blocks  += event.hit == "block" || event.hit == "crit block" ? 1 : 0;
+                    results.tpsBreakdown[`${event.name}`][i].blocks  += event.hit == "block" ? 1 : 0;
                     results.tpsBreakdown[`${event.name}`][i].glances += event.hit == "glance" ? 1 : 0;
                   }
                 }
               }
             }
-            // auras : {
-            //   deepWounds : {
-            //     uptime: [0,0,0,0,0],
-            //   }
-            // }
             if (event.type == "auraApply") {
               let obj = results.auras[`${event.name}`];
               if (obj == null) obj = { uptime: Array(iterations).fill(0), active: Array(iterations).fill(false), };

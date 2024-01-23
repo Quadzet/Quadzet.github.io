@@ -346,7 +346,7 @@ class WeaponProc extends Proc {
     this.trigger = false; // Don't trigger additional procs
   }
   handleEvent(source, target, event, reactiveEvents, futureEvents) {
-    if (event.trigger && source.name == event.source) {
+    if (event.type == "damage" && event.trigger && source.name == event.source && landedHits.includes(event.hit)) {
       let rng = Math.random();
       if (rng < this.procChance) {
         if (this.damage > 0) {
@@ -355,7 +355,7 @@ class WeaponProc extends Proc {
           damageEvent.timestamp = event.timestamp;
           damageEvent.threat = damageEvent.amount * source.stats.threatMod;
           damageEvent.trigger = false;
-          futureEvents.push(generateDamageEvent(damageEvent));
+          reactiveEvents.push(generateDamageEvent(damageEvent));
         }
         if (this.tick > 0) {
           clearFutureTicks(this.name, futureEvents);

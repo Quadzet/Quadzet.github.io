@@ -77,10 +77,6 @@ class Actor {
               performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
           }
         }
-        // Handled in worker.handleEvent()
-        // if (event.type == "swingTimer") {
-        //   this.abilities[`${event.name}`].use(event.timestamp, this, this.target, reactiveEvents, futureEvents);
-        // }
     }
 
     addRage(event, add=false) {
