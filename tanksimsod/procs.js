@@ -253,7 +253,7 @@ class WildStrikesProc extends Proc {
     
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
         // TODO: make damage event flag "direct/dot/etc" and make this only proc from direct dmg, note ranks might not work?
-        if (event.type == "damage" && event.source == source.name && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate", "Sunder Armor", "Heroic Strike"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
+        if (event.type == "damage" && event.source == source.name && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate (Rank 2)", "Sunder Armor (Rank 2)", "Heroic Strike (Rank 4)", "Revenge (Rank 2)"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
             let rng = Math.random()
             if (rng < 0.2) {
                 let procEvent = {
