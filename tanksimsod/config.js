@@ -338,7 +338,7 @@ function updateStats()
     });
     if(races[race].skilltype.includes(mhweapontype))
       mhwepskill += races[race].skill;
-    if(races[race].skilltype.includes(mhweapontype))
+    if(races[race].skilltype.includes(ohweapontype))
       ohwepskill += races[race].skill;
 
     let mhmin = mainhand.mindmg;
