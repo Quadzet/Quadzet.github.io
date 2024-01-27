@@ -500,6 +500,13 @@ function createTalentArrows() {
 }
 
 function createTalentTree(talentTree, name) {
+  let container = document.createElement('div');
+  container.classList.add('talent-tree-container');
+  let header = document.createElement('div');
+  header.classList.add('talent-header');
+  const displayName = name == 'arms' ? 'Arms' : name == 'fury' ? 'Fury' : 'Protection';
+  header.innerHTML = `<span>${displayName}</span><span class="talent-tree-counter" id="${name}-talent-counter">0</span>`;
+
   let tree = document.createElement('div');
   tree.classList.add('talent-tree');
   tree.id = `${name}-tree`;
@@ -521,7 +528,18 @@ function createTalentTree(talentTree, name) {
     tree.appendChild(cell);
   });
   let element = document.getElementById('talents');
-  element.appendChild(tree);
+  container.appendChild(header);
+  container.appendChild(tree);
+  element.appendChild(container);
+}
+
+function addTalentFooter() {
+  let footer = document.createElement('div');
+  footer.classList.add('talent-footer');
+  footer.innerHTML = `<div>Points left: <span id="talent-points-remaining">${talentPointCap()}</span></div><span id="talent-reset-button" onclick="resetTalents()">Reset</span>`;
+
+  const talents = document.getElementById('talents-container');
+  talents.appendChild(footer);
 }
 
 // *** INIT *** //
@@ -530,6 +548,7 @@ function createTalentTrees() {
   createTalentTree(FURY_TALENTS, 'fury');
   createTalentTree(PROT_TALENTS, 'prot');
   createTalentArrows();
+  addTalentFooter();
 }
 
 
@@ -742,6 +761,29 @@ function setTalentPointCount(name, val, data) {
   }
 }
 
+function updateCounters(treeName, change) {
+  const treeCounter = document.getElementById(`${treeName}-talent-counter`)
+  let currentCount = parseInt(treeCounter.innerHTML);
+  treeCounter.innerHTML = `${currentCount + change}`;
+  
+  const remainingCounter = document.getElementById('talent-points-remaining');
+  let currentRemaining = parseInt(remainingCounter.innerHTML);
+  remainingCounter.innerHTML = `${currentRemaining - change}`;
+}
+
+function resetCounters() {
+  const armsCounter = document.getElementById(`arms-talent-counter`)
+  armsCounter.innerHTML = `${0}`;
+  const furyCounter = document.getElementById(`fury-talent-counter`)
+  furyCounter.innerHTML = `${0}`;
+  const protCounter = document.getElementById(`prot-talent-counter`)
+  protCounter.innerHTML = `${0}`;
+  
+  const remainingCounter = document.getElementById('talent-points-remaining');
+  let currentRemaining = parseInt(remainingCounter.innerHTML);
+  remainingCounter.innerHTML = `${talentPointCap()}`;
+}
+
 function deselectTalent(event, name) {
   event.preventDefault();
   let treeName = getTreeName(name);
@@ -756,6 +798,7 @@ function deselectTalent(event, name) {
   val -= 1;
 
   setTalentPointCount(name, val, data);
+  updateCounters(treeName, -1);
   updateTalentAvailability();
 
   updateStats();
@@ -777,9 +820,26 @@ function selectTalent(event, name) {
   val += 1;
 
   setTalentPointCount(name, val, data);
+  updateCounters(treeName, 1);
 
   updateTalentAvailability();
   updateStats();
+}
+
+function resetTalents() {
+  ARMS_TALENTS.forEach(talent => {
+    const data = getTalentData('arms', talent.name);
+    setTalentPointCount(talent.name, 0, data);
+  });
+  FURY_TALENTS.forEach(talent => {
+    const data = getTalentData('fury', talent.name);
+    setTalentPointCount(talent.name, 0, data);
+  });
+  PROT_TALENTS.forEach(talent => {
+    const data = getTalentData('prot', talent.name);
+    setTalentPointCount(talent.name, 0, data);
+  });
+  resetCounters();
 }
 
 function loadTalents(talents) {
@@ -787,8 +847,9 @@ function loadTalents(talents) {
     const treeName = getTreeName(talentName);
     const data = getTalentData(treeName, talentName);
     setTalentPointCount(talentName, talents[`${talentName}`], data);
+    updateCounters(treeName, talents[`${talentName}`]);
   });
-  // Need this to activate the talents, before potoentially shutting the off..
+  // Need this to activate the talents, before potentially shutting the off..
   updateTalentTreeAvailability(ARMS_TALENTS);
   updateTalentTreeAvailability(FURY_TALENTS);
   updateTalentTreeAvailability(PROT_TALENTS);
