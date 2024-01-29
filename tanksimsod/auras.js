@@ -321,7 +321,7 @@ class EnrageAura extends Aura {
     }
 
     //  Remove a stack after successfully hitting a target
-    if(event.type == "damage" && event.source == owner.name && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend (Rank 3)", "Raging Blow", "Revenge"].includes(event.name)) {
+    if(event.type == "damage" && event.source == owner.name && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend", "Raging Blow", "Revenge"].includes(event.name)) {
       this.removeStack(event, owner, reactiveEvents, futureEvents)
     }
 
@@ -432,7 +432,7 @@ class DeepWoundsAura extends Aura {
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
     // Note the Devastate exception
-    if (event.type == "damage" && event.hit == "crit" && event.target == owner.name && event.name != "Devastate (Rank 2)") {
+    if (event.type == "damage" && event.hit == "crit" && event.target == owner.name && event.name != "Devastate") {
 
       this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
       // Remove all current DW ticks in the futureEvents

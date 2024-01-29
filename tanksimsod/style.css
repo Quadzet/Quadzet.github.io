@@ -504,6 +504,7 @@ button {width: 70px; margin: 0px 0px 8px 0px; background-color: #474b4f; color: 
   width: 100%;
 }
 #resultContainer table {
+  white-space: nowrap;
   border-collapse: collapse;
   display: table;
   width: 90%;

@@ -1,4 +1,4 @@
-let logging = true;
+let logging = false;
 
 function log_message(message) {
   if (logging)

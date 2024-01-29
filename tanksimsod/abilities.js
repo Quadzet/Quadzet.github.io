@@ -84,10 +84,10 @@ class Ability {
     }
     processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents) {
         damageEvent.threat = this.threatCalculator(damageEvent, source)
-        if (this.rank(source.stats.level) > 0)
-          damageEvent.name = this.name + " (Rank " + this.rank(source.stats.level) + ")"
-        else
-          damageEvent.name = this.name
+        let rank = this.rank(source.stats.level);
+        if (rank > 0)
+          damageEvent.rank = rank;
+        damageEvent.name = this.name
         damageEvent.timestamp = timestamp
         reactiveEvents.push(damageEvent)
 
@@ -172,7 +172,8 @@ class Autoattack extends Ability {
             damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
             damageEvent = rollAttack(source, target, damage, true);
             damageEvent.threat = this.threatCalculator(damageEvent, source);
-            damageEvent.name = "Heroic Strike (Rank " + this.rank(source.stats.level) + ")";
+            damageEvent.rank = this.rank(source.stats.level);
+            damageEvent.name = "Heroic Strike";
             damageEvent.timestamp = timestamp
             damageEvent.trigger = true;
             reactiveEvents.push(damageEvent)

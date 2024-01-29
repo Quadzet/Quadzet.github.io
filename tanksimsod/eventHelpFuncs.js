@@ -2,13 +2,16 @@
 
 function formatEvent(event) {
     let output = `${(Math.round(event["timestamp"])/1000).toFixed(3)}:\t`
+    let name = event.name;
+    if (event.rank != null && event.rank > 0)
+      name += ' (Rank ' + event.rank + ')';
     if (["swingTimer", "cooldownFinish", "GCD"].includes(event.type))
       return;
     else if (event.type == "combatStart") {
       output += `Combat Starts.`;
     }
     else if(event["type"] == "damage") {
-            output += `${event["source"]}'s ${event["name"]} `;
+            output += `${event["source"]}'s ${name} `;
             
             if (['dodge', 'parry', 'miss'].includes(event.hit)) {
               output += `${event["hit"] == "parry" ? `is parried by` : event["hit"] == "dodge" ? `is dodged by` : `misses`} ${event["target"]}!`
@@ -38,11 +41,11 @@ function formatEvent(event) {
     } else if(event["type"] == "auraRefresh") {    
         output += `${event.owner}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} is refreshed by ${event.source}.`
     } else if(event["type"] == "spellCast") {
-        output += `${event["source"]} casts ${event["name"]}.`
+        output += `${event["source"]} casts ${name}.`
     } else if(event["type"] == "extra attack") {
-        output += `${event["source"]} gains an extra attack from ${event["name"]}!`
+        output += `${event["source"]} gains an extra attack from ${name}!`
     } else if(event["type"] == "rage") {
-        output += `Tank gains ${(event["amount"]).toFixed(2)} rage from ${event["source"]}'s ${event["name"]} (${event.currentAmount.toFixed(2)} -> ${Math.min(100, event.currentAmount + event.amount).toFixed(2)})!`
+        output += `Tank gains ${(event["amount"]).toFixed(2)} rage from ${event["source"]}'s ${name} (${event.currentAmount.toFixed(2)} -> ${Math.min(100, event.currentAmount + event.amount).toFixed(2)})!`
     }
     else {
       output += `Unknown event type: ${event.type}: ${JSON.stringify(event)}`;
