@@ -839,7 +839,10 @@ function resetTalents() {
     const data = getTalentData('prot', talent.name);
     setTalentPointCount(talent.name, 0, data);
   });
+
   resetCounters();
+  updateTalentAvailability();
+  updateStats();
 }
 
 function loadTalents(talents) {
