@@ -312,6 +312,13 @@ function updateStats()
     let mhwep = document.getElementById('mainhand-slot').getAttribute('itemid');
     if (mhwep != undefined && mhwep != "0") {
       mainhand = ITEMS[`${mhwep}`];
+    } else {
+      mainhand = {
+        mindmg: 0,
+        maxdmg: 0,
+        swingtimer: 2000,
+        type: 'none',
+      };
     }
     let ohwep = document.getElementById('offhand-slot').getAttribute('itemid');
     if (ohwep != undefined && ohwep != "0") {
