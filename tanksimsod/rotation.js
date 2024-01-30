@@ -7,12 +7,6 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
         // TODO: use spell id, now it gets conflated with the talent Enrage
         source.auras.forEach(aura => { if (aura.name == "Enrage" && aura.duration > 0) cbrStacks = aura.stacks; });
         let holdAbilities = cbrStacks < source.rotation.cbrStacks && source.rage < 80;
-        // if (cbrStacks == 0 && source.rage > 80)
-        //   log_message(timestamp + ": We somehow have 0 cbr stacks while having " + source.rage + " rage.");
-        // if (cbrStacks > 0)
-        //   log_message(timestamp + ": We have " + cbrStacks + " stacks of cbr.")
-        // if (holdAbilities)
-        //   log_message(timestamp + ": Holding abilities at rage: " + source.rage + " and cbr stacks: " + cbrStacks + ".")
         // Tank GCD action priority list, TODO: Make this smarter, don't have to check the other onGCD if we have jus tused an ability
         if (holdAbilities) {
           let x = 15;

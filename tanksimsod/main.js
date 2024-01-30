@@ -155,7 +155,6 @@ async function fetchTable(tableName) {
       });
     });
 
-    // log_message('Parsed CSV results:', parsedData);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -315,11 +314,11 @@ async function loadItemData() {
 
     if (!item) {
       missing = true;
-      log_message("Missing item data for ID " + id + ".");
+      log_message(LOG_LEVEL.WARNING, "Missing item data for ID " + id + ".");
     } 
     if (!itemSparse) {
       missing = true;
-      log_message("Missing itemSparse data for ID " + id + ".");
+      log_message(LOG_LEVEL.WARNING, "Missing itemSparse data for ID " + id + ".");
     }
     if (missing)
       continue;
@@ -423,7 +422,6 @@ async function loadItemData() {
           proc.name = getRow(spellNameData, 'ID', spell.SpellID).Name_lang;
           proc.ppm = getPPM(proc.id);
           obj.proc = proc;
-          log_message(proc);
         }
       }
     )}
@@ -432,7 +430,6 @@ async function loadItemData() {
 
     Items[`${id}`] = obj;
   }
-  log_message(Items);
   ITEMS = Items;
 }
 
@@ -1050,7 +1047,7 @@ function loadLocalstorage() {
     let profile = profiles[`${profile_name}`];
     loadProfile(profile);
   } catch({name, message}) {
-    log_message("Unable to load profile: " + message + ". Loading default profile.");
+    log_message(LOG_LEVEL.WARNING, "Unable to load profile: " + message + ". Loading default profile.");
     loadProfile(null);
   }
 }
@@ -1163,7 +1160,7 @@ async function main() {
             iterations: iterations,
         })
         worker.addEventListener('error', function(e)  {
-            log_message(`Error: Line ${e.lineno} in ${e.filename}: ${e.message}`)
+            log_message(LOG_LEVEL.ERROR, `Line ${e.lineno} in ${e.filename}: ${e.message}`)
         })
         worker.addEventListener('message', function(e) {
             if (e.data.type == 'progressUpdate') {
@@ -1201,8 +1198,6 @@ async function main() {
             results[`${result}`] = [...Array(globals.config.iterations - results[`${result}`].length)].map((_, i) => { return { tps: 0, dps: 0, hits: 0, casts: 0 }}).concat(results[`${result}`])
         }
     
-        log_message(auras);
-
         let sortedResults = Object.keys(results).map(key => [key, results[key]])
         // Sort the abilities based on their average tps
         sortedResults.sort((a,b) => {
@@ -1231,7 +1226,6 @@ async function main() {
               return accumulator;
             }, { tps: 0, dps: 0, hits: 0, casts: 0, crits: 0, glances: 0, misses: 0, dodges: 0, parries: 0, blocks: 0});
           }
-          log_message(result);
           resultTable = resultTable.concat(`<tr>
             <td class="table-first-col">${sortedResults[i][0]}:</td>
             <td>${(result.tps/iterations).toFixed(2)}</td>

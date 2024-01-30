@@ -10,7 +10,7 @@ class Proc {
     }
 
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
-        log_message("No event handler specified for proc " + this.name + ".");
+        log_message(LOG_LEVEL.WARNING, "No event handler specified for proc " + this.name + ".");
         return;
     }
     reset() {

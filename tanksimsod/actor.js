@@ -65,7 +65,6 @@ class Actor {
             this.addRage(event);
             // We might have just gotten rage to perform an action
             performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
-            // log_message("Tank gains " + event.amount.toFixed(2) + " rage from " + event.name + ". It now has " + this.rage.toFixed(2) + " rage.")
           } else if (event.type == "extra attack") {
             let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source)})
             if(index >= 0)

@@ -44,7 +44,7 @@ function spellMiss(levelDiff) {
   if (ret != null)
     return ret;
   else
-    log_message("Level diff too large for lookup table: " + levelDiff);
+    log_message(LOG_LEVEL.ERROR, "Level diff too large for lookup table: " + levelDiff);
 }
 
 

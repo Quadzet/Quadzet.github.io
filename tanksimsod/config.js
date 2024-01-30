@@ -208,7 +208,7 @@ function getBlockValue(itemID) {
     case 5443: return 9;
     case 3656: return 10;
     default:
-      log_message('Unknown shield item id: ' + itemID + '. Could not fetch block value.')
+      log_message(LOG_LEVEL.WARNING, 'Unknown shield item id: ' + itemID + '. Could not fetch block value.')
       return 0;
   }
 }

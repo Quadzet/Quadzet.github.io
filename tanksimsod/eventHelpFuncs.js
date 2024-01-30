@@ -71,7 +71,7 @@ function statRound(val) {
 }
 function checkInput(name, val, suffix) {
   if (!val)
-    log_message("Missing " + name + suffix);
+    log_message(LOG_LEVEL.WARNING, "Missing " + name + suffix);
 }
 
 function clearFutureTicks(name, futureEvents) {

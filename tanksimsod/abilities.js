@@ -607,9 +607,6 @@ class RagingBlow extends Ability {
         damageEvent.trigger = true;
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
-        // log_message(JSON.stringify(damageEvent));
-        // if (damageEvent.amount > 0)
-        //   log_message((damageEvent.threat/damageEvent.amount))
     }
     isUsable(timestamp, source) {
         let isEnraged = false;
@@ -672,7 +669,7 @@ class Rend extends Ability {
       if (rank == 3) return 15000;
       if (rank == 4) return 18000;
       else if (rank < 8) return 21000;
-      else log_message("Invalid rank of " + this.name + ": " + rank);
+      else log_message(LOG_LEVEL.WARNING, "Invalid rank of " + this.name + ": " + rank);
     }
     damage(rank) {
       if (rank == 1) return 5;
@@ -682,7 +679,7 @@ class Rend extends Ability {
       if (rank == 5) return 14;
       if (rank == 6) return 18;
       if (rank == 7) return 21;
-      else log_message("Invalid rank of " + this.name + ": " + rank);
+      else log_message(LOG_LEVEL.WARNING, "Invalid rank of " + this.name + ": " + rank);
     }
     isUsable(timestamp, source) {
         return this.cooldownReady <= timestamp && (!source.onGCD || !this.onGCD) && source.rage >= this.rageCost;

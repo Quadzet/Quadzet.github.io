@@ -177,7 +177,7 @@ class Aura {
     }
 
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-      log_message("Error: handleEvent not implemented for aura " + this.name + ".");
+      log_message(LOG_LEVEL.ERROR, "handleEvent not implemented for aura " + this.name + ".");
     }
 }
 
@@ -416,7 +416,7 @@ class RendAura extends Aura {
     if (rank == 3) return 15000;
     if (rank == 4) return 18000;
     else if (rank < 8) return 21000;
-    else log_message("Invalid rank of " + this.name + ": " + rank);
+    else log_message(LOG_LEVEL.ERROR, "Invalid rank of " + this.name + ": " + rank);
   }
 }
 
