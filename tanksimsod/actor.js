@@ -18,12 +18,11 @@ class Actor {
         this.block = stats.block
         this.GCD = 0
         this.onGCD = false
+        this.inCombat = false
         this.rage = stats.startRage
 
         this.procs = procs
         this.auras = auras
-        // this.buffs = 
-        // this.debuffs = {}
         
         this.uptimes = {}
         
@@ -41,6 +40,11 @@ class Actor {
     }
 
     handleEvent(event, reactiveEvents, futureEvents) {
+        // Scheduled events, eg prepull actions
+        if (this.name == "Tank" && event.type == "scheduledEvent") {
+          handleScheduledEvent(event, this, this.target, reactiveEvents, futureEvents);
+          return;
+        }
         // Auras
         this.auras.forEach(aura => {
           aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
@@ -124,7 +128,7 @@ class Actor {
 
     reset() {
         for(let ability in this.abilities) {
-            this.abilities[`${ability}`].cooldownReady = 0
+            this.abilities[`${ability}`].cooldownReady = -90000;
         }
         this.auras.forEach(aura => {
           aura.duration = 0;
@@ -134,6 +138,7 @@ class Actor {
         this.buffs = {}
         this.debuffs = {}
         this.onGCD = false
+        this.inCombat = false
         this.rage = this.stats.startRage
         this.isHeroicStrikeQueued = false
         this.IEA = false

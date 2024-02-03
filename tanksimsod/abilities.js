@@ -79,8 +79,7 @@ class Ability {
         this.baseCooldown = baseCooldown
         this.rageCost = rageCost
         this.onGCD = onGCD
-        // TODO: spellCrit
-        this.currentCooldown = 0
+        this.cooldownReady = -90000; // Set abilities to be ready 90s before cbt start to enable prepull actions
     }
     processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents) {
         damageEvent.threat = this.threatCalculator(damageEvent, source)
@@ -281,22 +280,20 @@ class OHSwing extends Ability {
         reactiveEvents.push(damageEvent)
     }
 }
-/*
-class Bloodthirst extends Ability {
-    use(attacker, defender) {
-        let damage = 0.45*attacker.getAP() + defender.additivePhysBonus;
-        damage *= (1 - armorReduction(attacker.stats.level, defender.getArmor())) * attacker.getDamageMod();
-        let damageEvent = rollAttack(attacker, defender, damage, true, false, false, true);
-        damageEvent.threat = 0;
-        damageEvent.threat = this.threatCalculator(damageEvent, attacker);
-        damageEvent.name = this.name;
 
-        // Remove rage
-        generateRageEventFromCast(attacker, damageEvent.hit, this.rageCost)
-        return damageEvent;
+class Bloodthirst extends Ability {
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let damage = 0.45*source.getAP() + target.additivePhysBonus;
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
+
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    constructor() {
+        super("Bloodthirst", 6000, 30, true)
     }
 }
-*/
 
 class Revenge extends Ability {
     constructor() {
@@ -436,6 +433,25 @@ class Bloodrage extends Ability {
     }
     threatCalculator(event, source) {
       return 50;
+    }
+}
+
+class DeathWish extends Ability {
+    constructor() {
+        super("Death Wish", 180000, 10, true)
+    }
+
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let spellCastEvent = {
+            type: "spellCast",
+            name: this.name,
+            source: source.name,
+            timestamp: timestamp,
+        }
+        this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
+    }
+    threatCalculator(event, source) {
+      return 0;
     }
 }
 
@@ -694,7 +710,6 @@ class Rend extends Ability {
 function TankAbilities(tankStats) {
   let abilities = {
     "MH Swing": new Autoattack(),
-    "Shield Slam": new ShieldSlam(),
     "Revenge": new Revenge(),
     "Shield Block": new ShieldBlock(),
     "Heroic Strike": new HeroicStrike(),
@@ -707,6 +722,12 @@ function TankAbilities(tankStats) {
     abilities["Devastate"] = new Devastate(tankStats.talents.impSA);
   else
     abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
+  if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
+      abilities["Shield Slam"] = new ShieldSlam();
+  if (tankStats.talents.bloodthirst)
+      abilities["Bloodthirst"] = new Bloodthirst();
+  if (tankStats.talents.deathwish)
+      abilities["Death Wish"] = new DeathWish();
   // TODO: OH swing
   return abilities;
 }

@@ -10,6 +10,9 @@ function formatEvent(event) {
     else if (event.type == "combatStart") {
       output += `Combat Starts.`;
     }
+    else if (event.type == "scheduledEvent") {
+      output += `Scheduled Action: Attempting to use ${event.ability}.`;
+    }
     else if(event["type"] == "damage") {
             output += `${event["source"]}'s ${name} `;
             

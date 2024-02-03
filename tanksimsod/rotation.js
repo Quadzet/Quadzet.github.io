@@ -1,7 +1,15 @@
 
 "use strict";
 
+function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {
+  // if (event.ability)...
+  if (source.abilities[`${event.ability}`].isUsable(event.timestamp, source)) {
+    source.abilities[`${event.ability}`].use(event.timestamp, source, target, reactiveEvents, futureEvents);
+  }
+}
+
 function performAction(timestamp, source, target, reactiveEvents, futureEvents) {
+    if (!source.inCombat) return; // Don't take non-scheduled actions out of combat
     if(source.name == "Tank") {
         let cbrStacks = 0;
         // TODO: use spell id, now it gets conflated with the talent Enrage
@@ -15,8 +23,14 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
           }
         }
         if(!source.onGCD) {
-            if(!holdAbilities && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
+            if(!holdAbilities && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
+                source.abilities["Death Wish"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
+            }
+            if(!holdAbilities && source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
                 source.abilities["Shield Slam"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
+            }
+            if(!holdAbilities && source.abilities["Bloodthirst"] != null && source.abilities["Bloodthirst"].isUsable(timestamp, source)) {
+                source.abilities["Bloodthirst"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
             if(!holdAbilities && source.rotation["revenge"].use && source.rage > source.rotation["revenge"].rage && source.abilities["Revenge"].isUsable(timestamp, source)) {
                 source.abilities["Revenge"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
@@ -62,6 +76,7 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
 
 // TODO: Prepull stuff like potions and trinkets etc.. or put it all in FutureEvents?
 function handleCombatStart(source, target, reactiveEvents, futureEvents) {
+    source.inCombat = true;
     if(source.name == "Tank") {
         source.abilities["MH Swing"].use(0, source, target, reactiveEvents, futureEvents)
         performAction(0, source, target, reactiveEvents, futureEvents)

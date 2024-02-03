@@ -7,8 +7,8 @@ function average(array) {
     if (array) return array.reduce((a, b) => a + b) / array.length;
     else return 0;
 };
-const range = (length) =>
-  Array.from({ length }, (_, i) => i)
+// const range = (length) =>
+//   Array.from({ length }, (_, i) => i)
 
 function linspace(start, end, length = Math.max(Math.round(end-start) + 1, 1)) {
     if(length < 2) { return length === 1 ? [start] : [] ; }
@@ -86,7 +86,7 @@ const ENCHANT_IDS = {
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
-const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block"];
+const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],

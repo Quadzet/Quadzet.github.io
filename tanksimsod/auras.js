@@ -44,9 +44,10 @@ class Aura {
         this.source = source
 
         // Add all modifiers here
-        owner.armor += this.armorMod
-        owner.block += this.blockMod
-        owner.damageMod *= this.damageMod
+        owner.armor += this.armorMod;
+        owner.block += this.blockMod;
+        owner.hastePerc += this.hastePerc;
+        owner.damageMod *= this.damageMod;
         owner.APMultMod *= this.APMultMod;
 
         let applyEvent = { 
@@ -102,6 +103,7 @@ class Aura {
           if(this.scalingStacks) {
               owner.armor += this.armorMod
               owner.block += this.blockMod
+              owner.hastePerc += this.hastePerc;
               owner.damageMod *= this.damageMod
               owner.APMultMod *= this.APMultMod;
           }
@@ -143,6 +145,7 @@ class Aura {
             if(this.scalingStacks) {
                 owner.armor -= this.armorMod
                 owner.block -= this.blockMod
+                owner.hastePerc -= this.hastePerc;
                 owner.damageMod /= this.damageMod
                 owner.APMultMod /= this.APMultMod;
             }
@@ -155,25 +158,25 @@ class Aura {
           return;
         owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
         owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
+        owner.hastePerc -= this.hastePerc * (this.scalingStacks ? this.stacks : 1)
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
         owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);
         event.stacks = this.stacks;
         this.stacks = 0
         this.duration = 0;
         delete owner.buffs[this.name]
-        // if (addEvent)
-        //   reactiveEvents.push({
-        //     type: "auraExpire",
-        //     name: this.name,
-        //     owner: owner.name,
-        //     source: this.source,
-        //     stacks: this.stacks,
-        //     auraType: this.type,
-        //     timestamp: timestamp,
-        //   })
         let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name)})
         if(index >= 0)
             futureEvents.splice(index, 1)
+        reactiveEvents.push({
+          type: "auraExpire",
+          name: this.name,
+          owner: owner.name,
+          source: this.source,
+          stacks: this.stacks,
+          auraType: this.type,
+          timestamp: event.timestamp,
+        })
     }
 
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
@@ -285,6 +288,31 @@ class FlagellationAura extends Aura {
   }
 }
 
+class FlurryAura extends Aura {
+  constructor(points) {
+    super({
+      type: "buff",
+      name: "Flurry",
+    
+      maxDuration: 12000,
+
+      maxStacks: 3,
+      startStacks: 3,
+      hastePerc: 5 + 5*points,
+
+    })
+  }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    
+    if (event.type == "damage" && ["crit", "crit block"].includes(event.hit) && ["MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst", "Shield Slam", "Raging Blow", "Slam", "Execute", "Quickstrike", "Whirlwind", "Devastate", "Mortal Strike"].includes(event.name) && event.source == owner.name) {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+    }
+    if (event.type == "damage" && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.name) && event.source == owner.name) {
+      this.removeStack(event, owner, reactiveEvents, futureEvents);
+    }
+  }
+}
+
 class EnrageAura extends Aura {
   constructor() {
     super({
@@ -323,6 +351,31 @@ class EnrageAura extends Aura {
     //  Remove a stack after successfully hitting a target
     if(event.type == "damage" && event.source == owner.name && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend", "Raging Blow", "Revenge"].includes(event.name)) {
       this.removeStack(event, owner, reactiveEvents, futureEvents)
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event, owner, reactiveEvents, futureEvents, true)
+    }
+
+  }
+}
+
+class DeathWishAura extends Aura {
+  constructor() {
+    super({
+      type: "debuff",
+      name: "Death Wish",
+    
+      maxDuration: 30000,
+      damageMod: 1.2,
+      percArmorMod: 0.8,
+    })
+  }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    
+    // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
+    if (event.type == "spellCast" && event.name == "Death Wish") {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
@@ -497,6 +550,11 @@ function TankAuras(globals) {
     ret.push(new FlagellationAura());
   if (globals.tankStats.bonuses.wildStrikes)
     ret.push(new WildStrikesAura());
+  if (globals.tankStats.talents.flurry > 0)
+    ret.push(new FlurryAura(globals.tankStats.talents.flurry));
+  if (globals.tankStats.talents.deathwish)
+    ret.push(new DeathWishAura());
+
   return ret;
 }
 

@@ -1,6 +1,7 @@
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
 
+
 self.addEventListener('message', function(e) {
     let globals = e.data.globals;
     let iterations = e.data.iterations;
@@ -21,22 +22,27 @@ self.addEventListener('message', function(e) {
         // event = reactiveEvents.pop();
         event = reactiveEvents.shift();
         if(event.type == "combatStart") {
-            let source = Actors["Tank"];
-            let target = Actors["Boss"];
+          let source = Actors["Tank"];
+          let target = Actors["Boss"];
 
-            handleCombatStart(source, target, reactiveEvents, futureEvents);
-            handleCombatStart(target, source, reactiveEvents, futureEvents);
+          handleCombatStart(source, target, reactiveEvents, futureEvents);
+          handleCombatStart(target, source, reactiveEvents, futureEvents);
+        }
+        else if (event.type == "scheduledEvent") {
+          let source = Actors["Tank"];
+          let target = Actors["Boss"];
+          handleScheduledEvent(event, source, target, reactiveEvents, futureEvents);
         }
         else if(event.type == "swingTimer") {
-            let source = Actors[event.source];
-            let target = Actors[event.target];
-            source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents); // source and target are just names, find them in the global actor list.
+          let source = Actors[event.source];
+          let target = Actors[event.target];
+          source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents); // source and target are just names, find them in the global actor list.
         }
         else if(event.type == "GCD") {
-            let source = Actors[event.source];
-            let target = source.target;
-            source.onGCD = false
-            performAction(event.timestamp, source, target, reactiveEvents, futureEvents)
+          let source = Actors[event.source];
+          let target = source.target;
+          source.onGCD = false
+          performAction(event.timestamp, source, target, reactiveEvents, futureEvents)
         }
         else if(event.type == "cooldownFinish") {
           Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
@@ -74,6 +80,16 @@ self.addEventListener('message', function(e) {
       return newEvents;
     }
 
+    function generatePrePullEvents(Tank, Boss, eventList, FutureEvents) {
+      // Prepull Death Wish
+      // if (Tank.abilities["Death Wish"])
+      //   Tank.abilities["Death Wish"].use(-1500, Tank, Boss, eventList, FutureEvents);
+      FutureEvents.push({timestamp: -1500, type: "scheduledEvent", ability: "Death Wish"});
+
+      FutureEvents.push({timestamp: 0, type: "combatStart"});
+      sortDescending(FutureEvents);
+    }
+
     Actors = {
         "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
         "Boss": new Actor("Boss", globals.bossStats, BossAbilities, BossProcs, BossAuras(globals)),
@@ -93,17 +109,18 @@ self.addEventListener('message', function(e) {
     let progressPerc = 0;
     // *** MAIN LOOP *** 
     for(let i in range(iterations)) {
-        let eventList = []
-        let FutureEvents = [{timestamp: 0, type: "combatStart"}]
-        Actors.Tank.reset()
-        Actors.Boss.reset()
+        let eventList = [];
+        let FutureEvents = [];
+        Actors.Tank.reset();
+        Actors.Boss.reset();
+        generatePrePullEvents(Actors.Tank, Actors.Boss, eventList, FutureEvents);
         while(true)
         {
-            let event = FutureEvents.pop()
-            let timestamp = event.timestamp
+            let event = FutureEvents.pop();
+            let timestamp = event.timestamp;
             if(timestamp > globals.config.simDuration*1000)
-                break
-            let newEvents = handleEvent(event, FutureEvents)
+                break;
+            let newEvents = handleEvent(event, FutureEvents);
             // TODO: Better perf to concat? Probably not
             newEvents.forEach(event => {
               eventList.push(event);
@@ -148,7 +165,7 @@ self.addEventListener('message', function(e) {
               let obj = results.auras[`${event.name}`];
               if (obj == null) obj = { uptime: Array(iterations).fill(0), active: Array(iterations).fill(false), };
               if (!obj.active[i]) { // Don't double count refreshes
-                obj.uptime[i] += 1 - event.timestamp/(globals.config.simDuration*1000);
+                obj.uptime[i] += 1 - Math.max(event.timestamp, 0)/(globals.config.simDuration*1000);
                 obj.active[i] = true;
                 results.auras[`${event.name}`] = obj;
               }
@@ -156,7 +173,7 @@ self.addEventListener('message', function(e) {
             if (event.type == "auraExpire") {
               let obj = results.auras[`${event.name}`];
               if (obj.active[i]) {
-                obj.uptime[i] -= 1 - event.timestamp/(globals.config.simDuration*1000);
+                obj.uptime[i] -= 1 - Math.max(event.timestamp, 0)/(globals.config.simDuration*1000);
                 obj.active[i] = false;
                 results.auras[`${event.name}`] = obj;
               }
