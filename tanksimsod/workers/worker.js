@@ -82,9 +82,8 @@ self.addEventListener('message', function(e) {
 
     function generatePrePullEvents(Tank, Boss, eventList, FutureEvents) {
       // Prepull Death Wish
-      // if (Tank.abilities["Death Wish"])
-      //   Tank.abilities["Death Wish"].use(-1500, Tank, Boss, eventList, FutureEvents);
-      FutureEvents.push({timestamp: -1500, type: "scheduledEvent", ability: "Death Wish"});
+      if (Tank.abilities["Death Wish"] && Tank.stats.rotation['death-wish'].use)
+        FutureEvents.push({timestamp: -1500, type: "scheduledEvent", ability: "Death Wish"});
 
       FutureEvents.push({timestamp: 0, type: "combatStart"});
       sortDescending(FutureEvents);

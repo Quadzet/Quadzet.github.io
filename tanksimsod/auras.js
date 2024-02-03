@@ -45,6 +45,7 @@ class Aura {
 
         // Add all modifiers here
         owner.armor += this.armorMod;
+        owner.percArmorMod *= this.percArmorMod;
         owner.block += this.blockMod;
         owner.hastePerc += this.hastePerc;
         owner.damageMod *= this.damageMod;
@@ -102,6 +103,7 @@ class Aura {
           // Add all modifiers here
           if(this.scalingStacks) {
               owner.armor += this.armorMod
+              owner.percArmorMod *= this.percArmorMod;
               owner.block += this.blockMod
               owner.hastePerc += this.hastePerc;
               owner.damageMod *= this.damageMod
@@ -145,6 +147,7 @@ class Aura {
             if(this.scalingStacks) {
                 owner.armor -= this.armorMod
                 owner.block -= this.blockMod
+                owner.percArmorMod /= this.percArmorMod;
                 owner.hastePerc -= this.hastePerc;
                 owner.damageMod /= this.damageMod
                 owner.APMultMod /= this.APMultMod;
@@ -158,6 +161,7 @@ class Aura {
           return;
         owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1) 
         owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
+        owner.percArmorMod /= this.percArmorMod * (this.scalingStacks ? this.stacks : 1)
         owner.hastePerc -= this.hastePerc * (this.scalingStacks ? this.stacks : 1)
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
         owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);

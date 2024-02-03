@@ -86,7 +86,7 @@ const ENCHANT_IDS = {
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
-const ABILITIES = ["revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
+const ABILITIES = ["death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
@@ -708,7 +708,7 @@ function generateProfile() {
     let obj = {};
     let use = document.getElementById('use-' + ability).checked;
     let rage = 0;
-    if (ability != 'raging-blow')
+    if (!['raging-blow', 'death-wish'].includes(ability))
       rage = Number(document.getElementById(ability + '-rage').value);
     obj.use = use;
     obj.rage = rage;
@@ -819,6 +819,10 @@ function loadProfile(profile)
         "rage": 60
       },
       "raging-blow": {
+        "use": true,
+        "rage": 0
+      },
+      "death-wish": {
         "use": true,
         "rage": 0
       },
@@ -974,7 +978,7 @@ function loadProfile(profile)
       abilityUse.checked = abilitySettings.use === undefined ? true : abilitySettings.use; // Default to true
     else
       abilityUse.checked = abilitySettings.use === undefined ? false : abilitySettings.use; // Default to false
-    if (ability != 'raging-blow' && abilitySettings.rage !== undefined)
+    if (!['raging-blow', 'death-wish'].includes(ability) && abilitySettings.rage !== undefined)
       abilityRage.value = abilitySettings.rage;
   });
   document.getElementById('use-cbr-stop-rage').checked = rotation.cbrUse === undefined ? true : rotation.cbrUse; // Defaults to true

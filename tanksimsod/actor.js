@@ -12,6 +12,7 @@ class Actor {
         this.additivePhysBonus = stats.additivePhysBonus
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
+        this.percArmorMod = 1
         this.defense = stats.defense
         this.crit = stats.crit
         this.hit = stats.hit
@@ -95,7 +96,7 @@ class Actor {
     getArmor() {
         // if(this.name == "Tank" && this.armor < 10)
         //     console.log(this.armor)
-        return Math.max(0, this.armor);
+        return Math.max(0, this.armor * this.percArmorMod);
     }
 
     getAP() {
@@ -149,6 +150,7 @@ class Actor {
         this.rageGained = 0
         this.rageSpent = 0
         this.armor = this.stats.baseArmor
+        this.percArmorMod = 1
         this.uptimes = {}
 
         this.threatMod = this.stats.threatMod

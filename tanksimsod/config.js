@@ -576,7 +576,7 @@ function updateStats()
       let use = document.getElementById('use-' + ability).checked;
       use = use ? use : false;
       let rage = 0;
-      if (ability != 'raging-blow')
+      if (!['raging-blow', 'death-wish'].includes(ability))
         rage = Number(document.getElementById(ability + '-rage').value);
       obj.use = use;
       obj.rage = rage;

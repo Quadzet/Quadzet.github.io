@@ -23,7 +23,7 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
           }
         }
         if(!source.onGCD) {
-            if(!holdAbilities && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
+            if(!holdAbilities && source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
                 source.abilities["Death Wish"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
             if(!holdAbilities && source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
