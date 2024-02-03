@@ -3,7 +3,7 @@
 
 function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {
   // if (event.ability)...
-  if (source.abilities[`${event.ability}`].isUsable(event.timestamp, source)) {
+  if (source.abilities[`${event.ability}`] != null && source.abilities[`${event.ability}`].isUsable(event.timestamp, source)) {
     source.abilities[`${event.ability}`].use(event.timestamp, source, target, reactiveEvents, futureEvents);
   }
 }

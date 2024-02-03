@@ -321,7 +321,7 @@ class EnrageAura extends Aura {
     
       maxDuration: 12000,
 
-      damageMod: 1.25,
+      damageMod: 1.1,
       maxStacks: 12,
       startStacks: 12,
 
@@ -333,9 +333,9 @@ class EnrageAura extends Aura {
     // NOTE: This relies on the implicit fact that the rage has not yet been added to the Actor
     //       This logic might change in the future, watch out.
     if (owner.stats.runes.consumedByRage && event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
-      if (this.duration > 0 && this.damageMod != 1.25) // In case we have a weaker enrage active, eg talent enrage
+      if (this.duration > 0 && this.damageMod <= 1.1) // In case we have a weaker enrage active, eg talent enrage
         this.expire(event, owner, reactiveEvents, futureEvents);
-      this.damageMod = 1.25;
+      this.damageMod = 1.1;
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 

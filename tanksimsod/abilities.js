@@ -581,7 +581,7 @@ class Devastate extends Ability {
       })
       if (target.stats.bonuses.armorDebuff) // IEA or Homunculi
         stacks = 5;
-      let damage = 0.6 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) * (1 + stacks * 0.06) + target.additivePhysBonus;
+      let damage = ((source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin)*1000)/source.stats.MHSwing + source.getAP()/14) * (1 + stacks * 0.1) + target.additivePhysBonus;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
       let damageEvent = rollAttack(source, target, damage, true, false, false, true)
       damageEvent.trigger = true;
