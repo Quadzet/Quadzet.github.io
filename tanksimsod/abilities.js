@@ -617,7 +617,7 @@ class RagingBlow extends Ability {
         super("Raging Blow", 8000, 0, true)
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
-        let damage = (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + target.additivePhysBonus;
+        let damage = 0.8 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = true;
