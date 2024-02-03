@@ -1012,6 +1012,7 @@ function loadProfile(profile)
   let runes = profile.runes == null ? {} : profile.runes;
   RUNES.forEach(rune => {
     let element = document.getElementById(`${rune}-rune-img`);
+    element.classList.remove('rune-toggle-active');
     if (runes[`${rune}`])
       element.classList.add('rune-toggle-active');
   });

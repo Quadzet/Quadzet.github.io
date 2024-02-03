@@ -846,6 +846,7 @@ function resetTalents() {
 }
 
 function loadTalents(talents) {
+  resetTalents();
   Object.keys(talents).forEach(talentName => {
     const treeName = getTreeName(talentName);
     const data = getTalentData(treeName, talentName);
