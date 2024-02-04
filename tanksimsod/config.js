@@ -702,6 +702,8 @@ function updateStats()
               flagellation: checkRuneToggle("flagellation"),
               ragingBlow: checkRuneToggle("raging-blow"),
               bloodFrenzy: checkRuneToggle("blood-frenzy"),
+              preciseTiming: checkRuneToggle("precise-timing"),
+              focusedRage: checkRuneToggle("focused-rage"),
             }
             
         },

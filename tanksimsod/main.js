@@ -85,8 +85,8 @@ const ENCHANT_IDS = {
   'mainhand': [0, 7788, 13503],
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
-const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy'];
-const ABILITIES = ["death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
+const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage'];
+const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
@@ -109,6 +109,56 @@ const ITEM_IDS = {
 };
 var ITEMS = {};
 
+function updateRotation() {
+  let element = document.getElementById('rotation-death-wish');
+  if (getTalentValue('death-wish') > 0)
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-raging-blow');
+  if (checkRuneToggle('raging-blow'))
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-shield-slam');
+  if (getTalentValue('shield-slam') > 0)
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-bloodthirst');
+  if (getTalentValue('bloodthirst') > 0)
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-slam');
+  if (checkRuneToggle('precise-timing'))
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-devastate');
+  if (checkRuneToggle('devastate')) {
+    let spanElement = document.getElementById('rotation-devastate-label');
+    spanElement.innerHTML = 'Devastate above '
+    element.style.display = 'flex';
+  }
+  else {
+    let spanElement = document.getElementById('rotation-devastate-label');
+    spanElement.innerHTML = 'Sunder Armor above '
+    element.style.display = 'flex';
+  }
+
+  element = document.getElementById('rotation-consumed-by-rage');
+  if (checkRuneToggle('consumed-by-rage'))
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+}
+
 function toggleAura(event, id, exclusives) {
   event.preventDefault();
   const element = document.getElementById(id + '-aura-img');
@@ -119,6 +169,7 @@ function toggleAura(event, id, exclusives) {
       exElement.classList.remove('aura-toggle-active');
     });
   }
+  updateRotation();
   updateStats();
 }
 
@@ -132,6 +183,7 @@ function toggleRune(event, id, exclusives) {
       exElement.classList.remove('rune-toggle-active');
     });
   }
+  updateRotation();
   updateStats();
 }
 
@@ -559,6 +611,7 @@ function createGearRows() {
     }
   });
 }
+
 function selectEnchant(id, slot) {
   const slotText = document.getElementById(slot + '-enchant');
   if (id != 0) {
@@ -1067,6 +1120,7 @@ function processJson() {
   }
 }
 
+
 function copyToClipboard() {
   let profile = generateProfile();
   const tempInput = document.createElement('input');
@@ -1114,6 +1168,7 @@ async function onLoadPage()
   createTalentTrees();
   await loadItemData();
   loadLocalstorage();
+  updateRotation();
   updateStats();
   enableCalc();
 }

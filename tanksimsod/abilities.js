@@ -178,7 +178,7 @@ class Autoattack extends Ability {
             reactiveEvents.push(damageEvent)
 
             // Remove rage
-            rageEvent = generateRageEventFromCast(source, target, damageEvent, (15 - source.stats.talents.impHS), false);
+            rageEvent = generateRageEventFromCast(source, target, damageEvent, (15 - source.stats.talents.impHS - (source.stats.runes.focusedRage ? 3 : 0)), false);
             if (rageEvent !== undefined)
               reactiveEvents.push(rageEvent);
         }
@@ -211,7 +211,7 @@ class Autoattack extends Ability {
             dmg_event.hit != "parry" && 
             dmg_event.hit != "dodge" && 
             dmg_event.hit != "miss" ) {
-            if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - attacker.stats.talents.impHS)) {
+            if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - attacker.stats.talents.impHS - (attacker.stats.runes.focusedRage ? 3 : 0))) {
               let rank = this.rank(attacker.stats.level);
               return ((dmg_event.amount * this.threatModifier(rank)) +  this.staticThreat(rank)) * attacker.stats.threatMod;
             } else {
@@ -282,6 +282,9 @@ class OHSwing extends Ability {
 }
 
 class Bloodthirst extends Ability {
+    constructor(rageReduction) {
+        super("Bloodthirst", 6000, 30-rageReduction, true)
+    }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0.45*source.getAP() + target.additivePhysBonus;
         damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
@@ -290,14 +293,11 @@ class Bloodthirst extends Ability {
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
-    constructor() {
-        super("Bloodthirst", 6000, 30, true)
-    }
 }
 
 class Revenge extends Ability {
-    constructor() {
-        super("Revenge", 5000, 5, true)
+    constructor(rageReduction) {
+        super("Revenge", 5000, 5-rageReduction, true)
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
@@ -379,8 +379,8 @@ class ShieldBlock extends Ability {
 }
 
 class SunderArmor extends Ability {
-  constructor(impSA) {
-    super("Sunder Armor", 0, 15-impSA, true)
+  constructor(rageReduction, impSA) {
+    super("Sunder Armor", 0, 15-impSA-rageReduction, true)
   }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0;
@@ -525,9 +525,41 @@ class BattleShout extends Ability {
     }
 }
 
+class Slam extends Ability {
+    constructor(rageReduction) {
+        super("Slam", 6000, 20-rageReduction, true)
+    }
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let damage = ((source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin)) + source.getAP()*source.stats.MHSwing/(14*1000)) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
+
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    rank(level) {
+      if (level < 30) return -1;
+      else if (level < 38) return 1;
+      else if (level < 46) return 2;
+      else if (level < 54) return 3;
+      else return 4;
+    }
+    damage(rank) {
+      if (rank == 1) return 32;
+      else if (rank == 2) return 43;
+      else if (rank == 3) return 68;
+      else if (rank == 4) return 87;
+      else 
+      {
+        console.log("Error: invalid rank for " + this.name + ": " + rank)
+        return 0;
+      }
+    }
+}
+
 class ShieldSlam extends Ability {
-    constructor() {
-        super("Shield Slam", 6000, 20, true)
+    constructor(rageReduction) {
+        super("Shield Slam", 6000, 20-rageReduction, true)
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() + target.additivePhysBonus;
@@ -569,8 +601,8 @@ class ShieldSlam extends Ability {
 }
 
 class Devastate extends Ability {
-    constructor(impSA) {
-        super("Devastate", 0, 15-impSA, true)
+    constructor(rageReduction, impSA) {
+        super("Devastate", 0, 15-impSA-rageReduction, true)
     }
 
     use(timestamp, source, target, reactiveEvents, futureEvents) {
@@ -635,8 +667,8 @@ class RagingBlow extends Ability {
 }
 
 class Rend extends Ability {
-    constructor() {
-        super("Rend", 0, 10, true)
+    constructor(rageReduction) {
+        super("Rend", 0, 10 - rageReduction, true)
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0;
@@ -708,24 +740,27 @@ class Rend extends Ability {
 // ]
 // Then we sort the vector wrt prio, and use TankAbilities[1].ability.name/use etc
 function TankAbilities(tankStats) {
+  let focusedRage = tankStats.runes.focusedRage ? 3 : 0;
   let abilities = {
     "MH Swing": new Autoattack(),
-    "Revenge": new Revenge(),
+    "Revenge": new Revenge(focusedRage),
     "Shield Block": new ShieldBlock(),
     "Heroic Strike": new HeroicStrike(),
     "Bloodrage": new Bloodrage(),
-    "Rend": new Rend(),
+    "Rend": new Rend(focusedRage),
   }
   if (tankStats.runes.ragingBlow)
     abilities["Raging Blow"] = new RagingBlow();
+  if (tankStats.runes.preciseTiming)
+    abilities["Slam"] = new Slam(focusedRage);
   if (tankStats.runes.devastate)
-    abilities["Devastate"] = new Devastate(tankStats.talents.impSA);
+    abilities["Devastate"] = new Devastate(focusedRage, tankStats.talents.impSA);
   else
-    abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
+    abilities["Sunder Armor"] = new SunderArmor(focusedRage, tankStats.talents.impSA);
   if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
-      abilities["Shield Slam"] = new ShieldSlam();
+      abilities["Shield Slam"] = new ShieldSlam(focusedRage);
   if (tankStats.talents.bloodthirst)
-      abilities["Bloodthirst"] = new Bloodthirst();
+      abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
   if (tankStats.talents.deathwish)
       abilities["Death Wish"] = new DeathWish();
   // TODO: OH swing

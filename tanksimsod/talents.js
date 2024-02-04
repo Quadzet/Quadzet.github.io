@@ -801,6 +801,7 @@ function deselectTalent(event, name) {
   updateCounters(treeName, -1);
   updateTalentAvailability();
 
+  updateRotation();
   updateStats();
 }
 
@@ -823,6 +824,7 @@ function selectTalent(event, name) {
   updateCounters(treeName, 1);
 
   updateTalentAvailability();
+  updateRotation();
   updateStats();
 }
 
@@ -842,6 +844,7 @@ function resetTalents() {
 
   resetCounters();
   updateTalentAvailability();
+  updateRotation();
   updateStats();
 }
 

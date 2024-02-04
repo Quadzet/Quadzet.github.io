@@ -38,6 +38,9 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
             if(source.rotation["raging-blow"].use && source.abilities["Raging Blow"] && source.abilities["Raging Blow"].isUsable(timestamp, source)) {
                 source.abilities["Raging Blow"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
+            if(!holdAbilities && source.rotation["slam"].use && source.rage > source.rotation["slam"].rage && source.abilities["Slam"] && source.abilities["Slam"].isUsable(timestamp, source)) {
+              source.abilities["Slam"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
+            }
             if(!holdAbilities && source.rotation["rend"].use && source.rage > source.rotation["rend"].rage && source.abilities["Rend"] && source.abilities["Rend"].isUsable(timestamp, source)) {
               let rendActive = false;
               // TODO: Ineffective
