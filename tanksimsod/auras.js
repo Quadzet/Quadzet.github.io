@@ -132,7 +132,7 @@ class Aura {
         if (this.duration == 0)
           return;
         if(this.stacks == 1)
-            this.expire(event, owner, reactiveEvents, futureEvents)
+            this.expire(event, owner, reactiveEvents, futureEvents, true)
         else {
             reactiveEvents.push({
                 type: "auraRemoveStack",
@@ -155,7 +155,7 @@ class Aura {
         }
     }
 
-    expire(event, owner, reactiveEvents, futureEvents) {
+    expire(event, owner, reactiveEvents, futureEvents, addEvent) {
         // Add all modifiers here, remember scalingstacks
         if (this.duration == 0)
           return;
@@ -172,15 +172,16 @@ class Aura {
         let index = futureEvents.findIndex(e => {return (e.type == "auraExpire" && e.name == this.name)})
         if(index >= 0)
             futureEvents.splice(index, 1)
-        reactiveEvents.push({
-          type: "auraExpire",
-          name: this.name,
-          owner: owner.name,
-          source: this.source,
-          stacks: this.stacks,
-          auraType: this.type,
-          timestamp: event.timestamp,
-        })
+        if (addEvent)
+          reactiveEvents.push({
+            type: "auraExpire",
+            name: this.name,
+            owner: owner.name,
+            source: this.source,
+            stacks: this.stacks,
+            auraType: this.type,
+            timestamp: event.timestamp,
+          })
     }
 
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
@@ -230,7 +231,7 @@ class DefensiveState extends Aura {
       }
 
       if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-        this.expire(event, owner, reactiveEvents, futureEvents, true)
+        this.expire(event, owner, reactiveEvents, futureEvents, false)
       }
 
     }
@@ -262,7 +263,7 @@ class ShieldBlockAura extends Aura {
       } 
 
       else if(event.type == "auraExpire") {
-        this.expire(event, owner, reactiveEvents, futureEvents, true);
+        this.expire(event, owner, reactiveEvents, futureEvents, false);
       }
     }
 }
@@ -286,7 +287,7 @@ class FlagellationAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
 
   }
@@ -339,17 +340,17 @@ class EnrageAura extends Aura {
     if (owner.stats.runes.consumedByRage && event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
       if (this.duration > 0 && this.stacks > 0 && this.damageMod > 1.1)
         return; // We are affected by a more powerful enrage
+      this.expire(event, owner, reactiveEvents, futureEvents, true);
       this.damageMod = 1.1;
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     if (owner.stats.talents.enrage > 0 && event.type == "damage" && event.target == owner.name && event.hit == 'crit') {
-      if (this.duration > 0 && this.stacks > 0 && this.damageMod > owner.stats.talents.enrage * 0.05 + 1) {
-        return; // We are affected by a more powerful enrage, eg CbR
-      } else {
-        this.damageMod = owner.stats.talents.enrage * 0.05 + 1;
-        this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-      }
+      if (this.duration > 0 && this.stacks > 0 && this.damageMod > owner.stats.talents.enrage * 0.05 + 1)
+        return; // We are affected by a more powerful enrage
+      this.expire(event, owner, reactiveEvents, futureEvents, true);
+      this.damageMod = owner.stats.talents.enrage * 0.05 + 1;
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     //  Remove a stack after successfully hitting a target
@@ -358,7 +359,7 @@ class EnrageAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
 
   }
@@ -383,7 +384,7 @@ class DeathWishAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
 
   }
@@ -418,7 +419,7 @@ class BloodrageAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
 
   }
@@ -441,7 +442,7 @@ class WildStrikesAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
   }
 }
@@ -463,7 +464,7 @@ class RendAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
   }
 
@@ -524,7 +525,7 @@ class DeepWoundsAura extends Aura {
     }
 
     if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-      this.expire(event, owner, reactiveEvents, futureEvents, true)
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
   }
 }
