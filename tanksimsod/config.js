@@ -606,7 +606,7 @@ function updateStats()
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: damageMod,
-            physDmgMod: 1 + 0.02*getTalentValue('one-handed-specialization'), // passive phys damage mods
+            physDamageMod: 1 + 0.02*getTalentValue('one-handed-specialization') + (checkRuneToggle('single-minded-fury') && _dualWield ? 0.1 : 0), // passive phys damage mods
             additivePhysBonus: 0, 
             hastePerc: hastePerc, 
             AP: attackpower + strength*2,
@@ -718,7 +718,7 @@ function updateStats()
             
             MHWepSkill: bossLevel * 5, 
             damageMod: 0.9, // Defensive Stance
-            physDmgMod: 1,
+            physDamageMod: 1,
             bleedBonus: bleedBonus,
             additivePhysBonus: checkAuraToggle('cov') ? 2 : 0,
             hastePerc: 0,

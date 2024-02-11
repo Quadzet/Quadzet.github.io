@@ -350,7 +350,7 @@ class WeaponProc extends Proc {
       let rng = Math.random();
       if (rng < this.procChance) {
         if (this.damage > 0) {
-          let damageEvent = rollSpellAttack(source, target, this.damage * source.getDamageMod(), false);
+          let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false);
           damageEvent.name = this.name;
           damageEvent.timestamp = event.timestamp;
           damageEvent.threat = damageEvent.amount * source.stats.threatMod;
@@ -359,7 +359,7 @@ class WeaponProc extends Proc {
         }
         if (this.tick > 0) {
           clearFutureTicks(this.name, futureEvents);
-          let damageEvent = rollSpellAttack(source, target, this.tick * source.getDamageMod(), true);
+          let damageEvent = rollSpellAttack(source, target, this.tick * source.getSpellDamageMod(), true);
           damageEvent.name = this.name;
           damageEvent.timestamp = event.timestamp;
           damageEvent.threat = damageEvent.amount * source.stats.threatMod;

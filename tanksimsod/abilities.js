@@ -168,7 +168,7 @@ class Autoattack extends Ability {
         // Heroic Strike
         if (source.isHeroicStrikeQueued && source.rage > (15 - source.stats.talents.impHS)) {
             let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
-            damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+            damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
             damageEvent = rollAttack(source, target, damage, true);
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.rank = this.rank(source.stats.level);
@@ -185,7 +185,7 @@ class Autoattack extends Ability {
         // White Swing
         else {
             let damage = this.weaponSwingRoll(source) + target.additivePhysBonus;
-            damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+            damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
             damageEvent = rollAttack(source, target, damage, false, source.stats.dualWield);
             damageEvent.threat = this.threatCalculator(damageEvent, source);
             damageEvent.name = "MH Swing";
@@ -274,7 +274,7 @@ class OHSwing extends Ability {
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = Math.random()*(source.stats.OHMax - source.stats.OHMin) + source.stats.OHMin + source.getAP()*source.stats.OHSwing/(14*1000);
         damage = damage*(0.5 + 0.025*source.stats.talents.dwspec) +  target.additivePhysBonus;
-        damage *=(1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *=(1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, false, !source.isHeroicStrikeQueued, true);
         // damageEvent.threat = 0;
         // damageEvent.threat = this.threatCalculator(damageEvent, source);
@@ -300,7 +300,7 @@ class Bloodthirst extends Ability {
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0.45*source.getAP() + target.additivePhysBonus;
-        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = true;
 
@@ -315,7 +315,7 @@ class Revenge extends Ability {
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
         damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
-        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = true;
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
@@ -544,7 +544,7 @@ class Slam extends Ability {
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = ((source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin)) + source.getAP()*source.stats.MHSwing/(14*1000)) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
-        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = true;
 
@@ -576,7 +576,7 @@ class ShieldSlam extends Ability {
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() + target.additivePhysBonus;
-        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = false;
 
@@ -627,7 +627,7 @@ class Devastate extends Ability {
       if (target.stats.bonuses.armorDebuff) // IEA or Homunculi
         stacks = 5;
       let damage = ((source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin))*1000/source.stats.MHSwing + source.getAP()/14) * (1 + source.hastePerc/100) * (1 + stacks * 0.1) + target.additivePhysBonus;
-      damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod()
+      damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod()
       let damageEvent = rollAttack(source, target, damage, true, false, false, true)
       damageEvent.trigger = true;
       this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
@@ -663,7 +663,7 @@ class RagingBlow extends Ability {
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = 0.8 * (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + target.additivePhysBonus;
-        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
         let damageEvent = rollAttack(source, target, damage, true, false, false, true);
         damageEvent.trigger = true;
 

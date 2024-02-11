@@ -21,6 +21,7 @@ class Aura {
         if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
         if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
+        if (!input.physDamageMod) this.physDamageMod = 1; else this.physDamageMod = input.physDamageMod; // multiplicative
         if (!input.hastePerc) this.hastePerc = 0; else this.hastePerc = input.hastePerc; // percentage
         if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
         if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
@@ -49,6 +50,7 @@ class Aura {
         owner.block += this.blockMod;
         owner.hastePerc += this.hastePerc;
         owner.damageMod *= this.damageMod;
+        owner.physDamageMod *= this.physDamageMod;
         owner.APMultMod *= this.APMultMod;
 
         let applyEvent = { 
@@ -80,15 +82,6 @@ class Aura {
 
     refresh(timestamp, owner, reactiveEvents, futureEvents) {
       if(this.stacks < this.maxStacks) {
-          // reactiveEvents.push({
-          //     type: "auraExpire",
-          //     name: this.name,
-          //     owner: owner.name,
-          //     source: this.source,
-          //     stacks: this.stacks,
-          //     auraType: this.type,
-          //     timestamp: timestamp,
-          // })
           // Either add one stack, such as for sunder, or set to max stacks, such as for flurry/consumed by rage
           this.stacks = Math.min(Math.max(this.stacks + 1, this.startStacks), this.maxStacks);
           reactiveEvents.push({
@@ -107,6 +100,7 @@ class Aura {
               owner.block += this.blockMod
               owner.hastePerc += this.hastePerc;
               owner.damageMod *= this.damageMod
+              owner.physDamageMod /= this.physDamageMod;
               owner.APMultMod *= this.APMultMod;
           }
         }
@@ -145,11 +139,12 @@ class Aura {
             })
             this.stacks -= 1
             if(this.scalingStacks) {
-                owner.armor -= this.armorMod
-                owner.block -= this.blockMod
+                owner.armor -= this.armorMod;
+                owner.block -= this.blockMod;
                 owner.percArmorMod /= this.percArmorMod;
                 owner.hastePerc -= this.hastePerc;
-                owner.damageMod /= this.damageMod
+                owner.damageMod /= this.damageMod;
+                owner.physDamageMod /= this.physDamageMod;
                 owner.APMultMod /= this.APMultMod;
             }
         }
@@ -164,6 +159,7 @@ class Aura {
         owner.percArmorMod /= this.percArmorMod * (this.scalingStacks ? this.stacks : 1)
         owner.hastePerc -= this.hastePerc * (this.scalingStacks ? this.stacks : 1)
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
+        owner.physDamageMod /= this.physDamageMod * (this.scalingStacks ? this.stacks : 1)
         owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);
         event.stacks = this.stacks;
         this.stacks = 0
@@ -276,7 +272,7 @@ class FlagellationAura extends Aura {
     
       maxDuration: 12000,
 
-      damageMod: 1.25,
+      physDamageMod: 1.25,
     })
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
@@ -326,7 +322,7 @@ class EnrageAura extends Aura {
     
       maxDuration: 12000,
 
-      damageMod: 1.1,
+      physDamageMod: 1.1,
       maxStacks: 12,
       startStacks: 12,
 
@@ -338,18 +334,18 @@ class EnrageAura extends Aura {
     // NOTE: This relies on the implicit fact that the rage has not yet been added to the Actor
     //       This logic might change in the future, watch out.
     if (owner.stats.runes.consumedByRage && event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
-      if (this.duration > 0 && this.stacks > 0 && this.damageMod > 1.1)
+      if (this.duration > 0 && this.stacks > 0 && this.physDamageMod > 1.1)
         return; // We are affected by a more powerful enrage
       this.expire(event, owner, reactiveEvents, futureEvents, true);
-      this.damageMod = 1.1;
+      this.physDamageMod = 1.1;
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
     if (owner.stats.talents.enrage > 0 && event.type == "damage" && event.target == owner.name && event.hit == 'crit') {
-      if (this.duration > 0 && this.stacks > 0 && this.damageMod > owner.stats.talents.enrage * 0.05 + 1)
+      if (this.duration > 0 && this.stacks > 0 && this.physDamageMod > owner.stats.talents.enrage * 0.05 + 1)
         return; // We are affected by a more powerful enrage
       this.expire(event, owner, reactiveEvents, futureEvents, true);
-      this.damageMod = owner.stats.talents.enrage * 0.05 + 1;
+      this.physDamageMod = owner.stats.talents.enrage * 0.05 + 1;
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
@@ -372,7 +368,7 @@ class DeathWishAura extends Aura {
       name: "Death Wish",
     
       maxDuration: 30000,
-      damageMod: 1.2,
+      physDamageMod: 1.2,
       percArmorMod: 0.8,
     })
   }
@@ -497,7 +493,7 @@ class DeepWoundsAura extends Aura {
       // Add the new additional dmg to the DW pool
       // Generate new ticks with 1/3 the total dmg
       // Note double dipping dmg mods
-      let totalDmg = owner.stats.bleedBonus * source.stats.talents.deepWounds * 0.2 * source.getDamageMod() * source.getDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
+      let totalDmg = owner.stats.bleedBonus * source.stats.talents.deepWounds * 0.2 * source.getPhysDamageMod() * source.getPhysDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
       while (true) {
         let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == this.name)})
         if(index >= 0) {

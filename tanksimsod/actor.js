@@ -9,6 +9,7 @@ class Actor {
 
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
+        this.physDamageMod = stats.physDamageMod
         this.additivePhysBonus = stats.additivePhysBonus
         this.hastePerc = stats.hastePerc
         this.armor = stats.baseArmor
@@ -122,11 +123,12 @@ class Actor {
         return this.block
     }
 
-    // Physical dmg mod
-    getDamageMod() {
-        let damageMod = this.damageMod
-        damageMod *= this.stats.physDmgMod;
-        return damageMod;
+    getPhysDamageMod() {
+      return this.damageMod * this.physDamageMod;
+    }
+
+    getSpellDamageMod() {
+      return this.damageMod;
     }
 
 
@@ -147,6 +149,7 @@ class Actor {
         this.isHeroicStrikeQueued = false
         this.IEA = false
         this.damageMod = this.stats.damageMod
+        this.physDamageMod = this.stats.physDamageMod
         this.hastePerc = this.stats.hastePerc
         this.defense = this.stats.defense
         this.additivePhysBonus = this.stats.additivePhysBonus 
