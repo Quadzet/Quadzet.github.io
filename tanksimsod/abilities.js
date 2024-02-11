@@ -267,17 +267,30 @@ class Autoattack extends Ability {
 }
 
 class OHSwing extends Ability {
+    constructor() {
+        super("OH Swing", 0, 0, false)
+    }
 
     use(timestamp, source, target, reactiveEvents, futureEvents) {
-        let damage = Math.random()*(source.stats.OHMax - source.stats.OHMin) + source.stats.OHMin + source.getAP()*source.stats.OHSwing/(14*1000); // swing timer is in ms
+        let damage = Math.random()*(source.stats.OHMax - source.stats.OHMin) + source.stats.OHMin + source.getAP()*source.stats.OHSwing/(14*1000);
         damage = damage*(0.5 + 0.025*source.stats.talents.dwspec) +  target.additivePhysBonus;
         damage *=(1 - armorReduction(source.stats.level, target.getArmor())) * source.getDamageMod();
         let damageEvent = rollAttack(source, target, damage, false, !source.isHeroicStrikeQueued, true);
-        damageEvent.threat = 0;
-        damageEvent.threat = this.threatCalculator(damageEvent, source);
-        damageEvent.name = this.name;
+        // damageEvent.threat = 0;
+        // damageEvent.threat = this.threatCalculator(damageEvent, source);
+        // damageEvent.name = this.name;
         damageEvent.trigger = false;
-        reactiveEvents.push(damageEvent)
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents);
+        // reactiveEvents.push(damageEvent)
+        let futureEvent = {
+            type: "swingTimer",
+            source: source.name,
+            target: target.name,
+            name: "OH Swing",
+            timestamp: timestamp + source.getOHSwingTimer(),
+            swingStart: timestamp,
+        }
+        futureEvents.push(futureEvent);
     }
 }
 
@@ -749,11 +762,13 @@ function TankAbilities(tankStats) {
     "Bloodrage": new Bloodrage(),
     "Rend": new Rend(focusedRage),
   }
+  if (tankStats.dualWield)
+    abilities["OH Swing"] = new OHSwing();
   if (tankStats.runes.ragingBlow)
     abilities["Raging Blow"] = new RagingBlow();
   if (tankStats.runes.preciseTiming)
     abilities["Slam"] = new Slam(focusedRage);
-  if (tankStats.runes.devastate)
+  if (tankStats.runes.devastate && !tankStats.dualWield)
     abilities["Devastate"] = new Devastate(focusedRage, tankStats.talents.impSA);
   else
     abilities["Sunder Armor"] = new SunderArmor(focusedRage, tankStats.talents.impSA);
@@ -763,7 +778,6 @@ function TankAbilities(tankStats) {
       abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
   if (tankStats.talents.deathwish)
       abilities["Death Wish"] = new DeathWish();
-  // TODO: OH swing
   return abilities;
 }
 

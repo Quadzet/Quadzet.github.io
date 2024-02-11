@@ -19,16 +19,16 @@ function formatEvent(event) {
             if (['dodge', 'parry', 'miss'].includes(event.hit)) {
               output += `${event["hit"] == "parry" ? `is parried by` : event["hit"] == "dodge" ? `is dodged by` : `misses`} ${event["target"]}!`
             } else {
-              if (event.hit == 'hit') output += ' hits ';
-              else if (event.hit == 'crush') output += ' crushes ';
-              else if (event.hit == 'tick') output += ' ticks on ';
-              else if (event.hit == 'block') output += ' hits ';
-              else if (event.hit == 'crit') output += ' crits ';
-              else if (event.hit == 'crit block') output += ' crits ';
-              else if (event.hit == 'glance') output += ' glances ';
-              else if (event.hit == 'dodge') output += ' is dodged ';
-              else if (event.hit == 'glance') output += ' glances ';
-              else if (event.hit == 'glance') output += ' glances ';
+              if (event.hit == 'hit') output += 'hits ';
+              else if (event.hit == 'crush') output += 'crushes ';
+              else if (event.hit == 'tick') output += 'ticks on ';
+              else if (event.hit == 'block') output += 'hits ';
+              else if (event.hit == 'crit') output += 'crits ';
+              else if (event.hit == 'crit block') output += 'crits ';
+              else if (event.hit == 'glance') output += 'glances ';
+              else if (event.hit == 'dodge') output += 'is dodged ';
+              else if (event.hit == 'glance') output += 'glances ';
+              else if (event.hit == 'glance') output += 'glances ';
 
               output += `${event["target"] } for ${event["amount"].toFixed(2)} damage`
               if (event.resist || 0 > 0) output += ` (${event.resist.toFixed(2)} resisted)!`;

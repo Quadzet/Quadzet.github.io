@@ -91,6 +91,9 @@ class Actor {
     getSwingTimer() {
         return this.stats.MHSwing/(1+this.hastePerc/100)
     }
+    getOHSwingTimer() {
+        return this.stats.OHSwing/(1+this.hastePerc/100)
+    }
 
     // *** old *** 
     getArmor() {

@@ -82,6 +82,8 @@ function handleCombatStart(source, target, reactiveEvents, futureEvents) {
     source.inCombat = true;
     if(source.name == "Tank") {
         source.abilities["MH Swing"].use(0, source, target, reactiveEvents, futureEvents)
+        if (source.stats.dualWield)
+          source.abilities["OH Swing"].use(0, source, target, reactiveEvents, futureEvents)
         performAction(0, source, target, reactiveEvents, futureEvents)
     } else if (source.name == "Boss") {
         source.abilities["MH Swing"].use(0, source, target, reactiveEvents, futureEvents)

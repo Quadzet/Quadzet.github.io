@@ -650,7 +650,7 @@ function updateStats()
                 impRend: impRend,
                 defiance: defiance,
                 impale: impale,
-                // dwspec: dwspec,
+                dwspec: getTalentValue("dual-wield-specialization"),
             },
             weapons: {
                 thunderfuryMH: mainhand == "Thunderfury",
