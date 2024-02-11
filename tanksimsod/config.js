@@ -593,7 +593,7 @@ function updateStats()
             level: Number(document.querySelector("#level").value),
 
             dualWield: _dualWield,
-            playerNormSwing: document.querySelector("#mhweptypelist") == "Daggers" ? 1700: 2400,
+            playerNormSwing: mhweapontype == "Daggers" ? 1700: 2400,
 
             MHMin: mhmin,
             MHMax: mhmax,
