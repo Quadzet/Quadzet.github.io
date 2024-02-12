@@ -535,8 +535,10 @@ class BattleShout extends Ability {
 }
 
 class Slam extends Ability {
-    constructor(rageReduction) {
-        super("Slam", 6000, 20-rageReduction, true)
+    constructor(rageReduction, preciseTiming, bloodsurge) {
+        super("Slam", preciseTiming ? 6000 : 0, (20-rageReduction) * (bloodsurge ? 0 : 1), true)
+        this.preciseTiming = preciseTiming;
+        this.bloodsurge = bloodsurge;
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
         let damage = ((source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin)) + source.getAP()*source.stats.MHSwing/(14*1000)) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
@@ -545,6 +547,20 @@ class Slam extends Ability {
         damageEvent.trigger = true;
 
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    isUsable(timestamp, source) {
+      if (this.preciseTiming) {
+        return super.isUsable(timestamp, source);
+      }
+      if (this.bloodsurge) {
+        let proc = false;
+        source.auras.forEach(aura => {
+          if (aura instanceof BloodsurgeAura && aura.duration > 0) {
+            proc = true;
+          }
+        });
+        return proc && super.isUsable(timestamp, source);
+      }
     }
     rank(level) {
       if (level < 30) return -1;
@@ -761,8 +777,8 @@ function TankAbilities(tankStats) {
     abilities["OH Swing"] = new OHSwing();
   if (tankStats.runes.ragingBlow)
     abilities["Raging Blow"] = new RagingBlow();
-  if (tankStats.runes.preciseTiming)
-    abilities["Slam"] = new Slam(focusedRage);
+  if (tankStats.runes.preciseTiming || tankStats.runes.bloodsurge)
+    abilities["Slam"] = new Slam(focusedRage, tankStats.runes.preciseTiming, tankStats.runes.bloodsurge);
   if (tankStats.runes.devastate && !tankStats.dualWield)
     abilities["Devastate"] = new Devastate(focusedRage, tankStats.talents.impSA);
   else

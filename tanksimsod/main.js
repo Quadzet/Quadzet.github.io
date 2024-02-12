@@ -85,7 +85,7 @@ const ENCHANT_IDS = {
   'mainhand': [0, 7788, 13503],
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
-const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury'];
+const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
@@ -141,7 +141,7 @@ function updateRotation(globals) {
     element.style.display = 'none';
   
   element = document.getElementById('rotation-slam');
-  if (checkRuneToggle('precise-timing'))
+  if (checkRuneToggle('precise-timing') || checkRuneToggle('bloodsurge'))
     element.style.display = 'flex';
   else
     element.style.display = 'none';

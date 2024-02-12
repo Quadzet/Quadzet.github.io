@@ -443,6 +443,30 @@ class WildStrikesAura extends Aura {
   }
 }
 
+class BloodsurgeAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Bloodsurge",
+    
+      maxDuration: 15000,
+    })
+  }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    
+    if (event.type == "damage" && event.source == owner.name && ['Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && landedHits.includes(event.hit) && Math.random() < 0.3) {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+    }
+
+    if (event.type == "damage" && event.source == owner.name && event.name == 'Slam') {
+      this.expire(event, owner, reactiveEvents, futureEvents, true);
+    }
+
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event, owner, reactiveEvents, futureEvents, false);
+    }
+  }
+}
 class RendAura extends Aura {
   constructor() {
     super({
@@ -546,6 +570,8 @@ function TankAuras(globals) {
   ]
   if (globals.tankStats.runes.consumedByRage || globals.tankStats.talents.enrage > 0)
     ret.push(new EnrageAura());
+  if (globals.tankStats.runes.bloodsurge)
+    ret.push(new BloodsurgeAura());
   if (globals.tankStats.runes.flagellation)
     ret.push(new FlagellationAura());
   if (globals.tankStats.bonuses.wildStrikes)

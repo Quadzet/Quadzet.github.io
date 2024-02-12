@@ -706,6 +706,7 @@ function updateStats()
               ragingBlow: checkRuneToggle("raging-blow"),
               bloodFrenzy: checkRuneToggle("blood-frenzy"),
               preciseTiming: checkRuneToggle("precise-timing"),
+              bloodsurge: checkRuneToggle("bloodsurge"),
               focusedRage: checkRuneToggle("focused-rage"),
             }
             
