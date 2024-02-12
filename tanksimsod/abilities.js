@@ -381,10 +381,6 @@ class ShieldBlock extends Ability {
             timestamp: timestamp,
         }
         this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
-        reactiveEvents.push(spellCastEvent);
-        // reactiveEvents.push(spellCastEvent)
-        // source.onGCD = true
-        // this.cooldownReady = timestamp + this.baseCooldown
     }
     threatCalculator(event, source) {
       return 0;
@@ -757,7 +753,6 @@ function TankAbilities(tankStats) {
   let abilities = {
     "MH Swing": new Autoattack(),
     "Revenge": new Revenge(focusedRage),
-    "Shield Block": new ShieldBlock(),
     "Heroic Strike": new HeroicStrike(),
     "Bloodrage": new Bloodrage(),
     "Rend": new Rend(focusedRage),
@@ -778,6 +773,8 @@ function TankAbilities(tankStats) {
       abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
   if (tankStats.talents.deathwish)
       abilities["Death Wish"] = new DeathWish();
+  if (!tankStats.dualWield)
+    abilities["Shield Block"] = new ShieldBlock();
   return abilities;
 }
 

@@ -109,7 +109,7 @@ const ITEM_IDS = {
 };
 var ITEMS = {};
 
-function updateRotation() {
+function updateRotation(globals) {
   let element = document.getElementById('rotation-death-wish');
   if (getTalentValue('death-wish') > 0)
     element.style.display = 'flex';
@@ -124,6 +124,12 @@ function updateRotation() {
   
   element = document.getElementById('rotation-shield-slam');
   if (getTalentValue('shield-slam') > 0)
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+  
+  element = document.getElementById('rotation-shield-block');
+  if (!globals.tankStats.dualWield)
     element.style.display = 'flex';
   else
     element.style.display = 'none';
@@ -169,8 +175,8 @@ function toggleAura(event, id, exclusives) {
       exElement.classList.remove('aura-toggle-active');
     });
   }
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
 }
 
 function toggleRune(event, id, exclusives) {
@@ -183,8 +189,8 @@ function toggleRune(event, id, exclusives) {
       exElement.classList.remove('rune-toggle-active');
     });
   }
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
 }
 
 async function fetchTable(tableName) {
@@ -694,7 +700,8 @@ function createLinks() {
       event.stopPropagation();
       selectItem('0', slot);
       hideItemDropdown(slot);
-      updateStats();
+      let globals = updateStats();
+      updateRotation(globals);
     });
     dropdownContent.appendChild(unequip);
 
@@ -708,7 +715,8 @@ function createLinks() {
           event.stopPropagation();
           selectItem(id, slot);
           hideItemDropdown(slot);
-          updateStats();
+          let globals = updateStats();
+          updateRotation(globals);
         })
         dropdownContent.appendChild(link);
     });
@@ -1168,8 +1176,8 @@ async function onLoadPage()
   createTalentTrees();
   await loadItemData();
   loadLocalstorage();
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
   enableCalc();
 }
 

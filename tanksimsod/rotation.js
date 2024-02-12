@@ -64,7 +64,7 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
           if(source.rage < 75)
             source.abilities["Bloodrage"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
         }
-        if(!holdAbilities && source.rotation["shield-block"].use && source.rage > source.rotation["shield-block"].rage && source.abilities["Shield Block"].isUsable(timestamp, source)) {
+        if(!holdAbilities && source.rotation["shield-block"].use && source.rage > source.rotation["shield-block"].rage && source.abilities["Shield Block"] && source.abilities["Shield Block"].isUsable(timestamp, source)) {
           source.abilities["Shield Block"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
         }
         if(!holdAbilities && source.rotation["heroic-strike"].use && source.rage > source.rotation["heroic-strike"].rage && source.abilities["Heroic Strike"].isUsable(timestamp, source)) {

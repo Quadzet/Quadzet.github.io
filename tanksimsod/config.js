@@ -649,6 +649,7 @@ function updateStats()
                 shieldspec: shieldspec,
                 impHS: impHS,
                 impSA: impSA,
+                impSB: getTalentValue("improved-shield-block"),
                 impRend: impRend,
                 defiance: defiance,
                 impale: impale,

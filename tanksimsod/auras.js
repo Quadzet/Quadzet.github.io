@@ -234,16 +234,16 @@ class DefensiveState extends Aura {
 }
 
 class ShieldBlockAura extends Aura {
-    constructor() {
+    constructor(impSB) {
         super({
             type: "buff",
             name: "Shield Block",
 
-            maxDuration: 6000,
+            maxDuration: 6000 + impSB * 0.5,
 
             blockMod: 75,
-            maxStacks: 2,
-            startStacks: 2,
+            maxStacks: 1 + (impSB > 0 ? 1 : 0),
+            startStacks: 1 + (impSB > 0 ? 1 : 0),
         })
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
@@ -258,7 +258,7 @@ class ShieldBlockAura extends Aura {
         this.removeStack(event, owner, reactiveEvents, futureEvents)
       } 
 
-      else if(event.type == "auraExpire") {
+      else if(event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
         this.expire(event, owner, reactiveEvents, futureEvents, false);
       }
     }
@@ -542,7 +542,6 @@ let Buffs = {
 function TankAuras(globals) {
   let ret = [
     new DefensiveState(),
-    new ShieldBlockAura(),
     new BloodrageAura(),
   ]
   if (globals.tankStats.runes.consumedByRage || globals.tankStats.talents.enrage > 0)
@@ -555,6 +554,8 @@ function TankAuras(globals) {
     ret.push(new FlurryAura(globals.tankStats.talents.flurry));
   if (globals.tankStats.talents.deathwish)
     ret.push(new DeathWishAura());
+  if (!globals.tankStats.dualWield)
+    ret.push(new ShieldBlockAura(globals.tankStats.talents.impSB));
 
   return ret;
 }

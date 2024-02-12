@@ -801,8 +801,8 @@ function deselectTalent(event, name) {
   updateCounters(treeName, -1);
   updateTalentAvailability();
 
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
 }
 
 function selectTalent(event, name) {
@@ -824,8 +824,8 @@ function selectTalent(event, name) {
   updateCounters(treeName, 1);
 
   updateTalentAvailability();
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
 }
 
 function resetTalents() {
@@ -844,8 +844,8 @@ function resetTalents() {
 
   resetCounters();
   updateTalentAvailability();
-  updateRotation();
-  updateStats();
+  let globals = updateStats();
+  updateRotation(globals);
 }
 
 function loadTalents(talents) {
