@@ -109,7 +109,8 @@ class Actor {
         //     AP += this.stats.bonuses.windfuryAP
         // }
         this.auras.forEach(aura => {
-          AP *= aura.APMultMod;
+          if (aura.duration > 0)
+            AP *= aura.APMultMod;
         })
         return AP;
     }

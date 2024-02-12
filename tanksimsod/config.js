@@ -350,6 +350,8 @@ function updateStats()
 
     let mhmin = mainhand.mindmg;
     let mhmax = mainhand.maxdmg;
+    mhmin += document.getElementById('head-slot').getAttribute('itemid') == 215166 ? 3 : 0;
+    mhmax += document.getElementById('head-slot').getAttribute('itemid') == 215166 ? 3 : 0;
     let mhswing = mainhand.swingtimer;
     let ohmin = 0;
     let ohmax = 0;
