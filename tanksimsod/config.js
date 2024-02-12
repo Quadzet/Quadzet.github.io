@@ -328,6 +328,10 @@ function updateStats()
     let ohweapontype = offhand.type == undefined ? "" : offhand.type; // eg "Sword"
     let twohand = mainhand.slot == 'twohand';
     let _dualWield = ohweapontype != 'Shield' && !twohand;
+    if (mhweapontype == "Axe")
+      crit += getTalentValue('axe-specialization');
+    if (mhweapontype == "Polearm")
+      crit += getTalentValue('polearm-specialization');
     let mhwepskill = level * 5;
     let ohwepskill = _dualWield ? level * 5 : 0;
     if (!_dualWield && !twohand) blockvalue += getBlockValue(Number(ohwep));
@@ -610,7 +614,7 @@ function updateStats()
             MHWepSkill: mhwepskill,
             OHWepSkill: _dualWield ? ohwepskill : 0,
             damageMod: damageMod,
-            physDamageMod: 1 + 0.02*getTalentValue('one-handed-specialization') + (checkRuneToggle('single-minded-fury') && _dualWield ? 0.1 : 0), // passive phys damage mods
+            physDamageMod: 1 + 0.02*getTalentValue('one-handed-specialization') + (checkRuneToggle('single-minded-fury') && _dualWield ? 0.1 : 0) + (twohand ? getTalentValue('two-handed-weapon-specialization') * 0.01 : 0), // passive phys damage mods
             additivePhysBonus: 0, 
             hastePerc: hastePerc, 
             AP: attackpower + strength*2,
@@ -640,6 +644,7 @@ function updateStats()
             talents: {
                 deathwish: getTalentValue("death-wish") > 0,
                 bloodthirst: getTalentValue("bloodthirst") > 0,
+                mortalStrike: getTalentValue("mortal-strike") > 0,
                 shieldslam: getTalentValue("shield-slam") > 0,
                 flurry: getTalentValue("flurry"),
                 enrage: getTalentValue("enrage"),
@@ -656,6 +661,7 @@ function updateStats()
                 defiance: defiance,
                 impale: impale,
                 dwspec: getTalentValue("dual-wield-specialization"),
+                swordSpec: mhweapontype == "Sword" ? getTalentValue('sword-specialization') : 0,
             },
             weapons: {
                 thunderfuryMH: mainhand == "Thunderfury",

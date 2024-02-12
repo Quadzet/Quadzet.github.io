@@ -509,7 +509,6 @@ class DeepWoundsAura extends Aura {
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
-    // Note the Devastate exception
     if (event.type == "damage" && event.hit == "crit" && event.target == owner.name) {
 
       this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);

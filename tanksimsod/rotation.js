@@ -29,8 +29,11 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
             if(!holdAbilities && source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
                 source.abilities["Shield Slam"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
-            if(!holdAbilities && source.abilities["Bloodthirst"] != null && source.abilities["Bloodthirst"].isUsable(timestamp, source)) {
+            if(!holdAbilities && source.abilities["Bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["Bloodthirst"].isUsable(timestamp, source)) {
                 source.abilities["Bloodthirst"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
+            }
+            if(!holdAbilities && source.abilities["Mortal Strike"] != null && source.rotation["mortal-strike"].use && source.rage > source.rotation["mortal-strike"].rage && source.abilities["Mortal Strike"].isUsable(timestamp, source)) {
+                source.abilities["Mortal Strike"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
             if(!holdAbilities && source.rotation["revenge"].use && source.rage > source.rotation["revenge"].rage && source.abilities["Revenge"].isUsable(timestamp, source)) {
                 source.abilities["Revenge"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);

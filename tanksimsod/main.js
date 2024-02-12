@@ -86,7 +86,7 @@ const ENCHANT_IDS = {
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
-const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike"];
+const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [215166, 211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
@@ -129,7 +129,7 @@ function updateRotation(globals) {
     element.style.display = 'none';
   
   element = document.getElementById('rotation-shield-block');
-  if (!globals.tankStats.dualWield && !globals.tankSettings.twohand)
+  if (!globals.tankStats.dualWield && !globals.tankStats.twohand)
     element.style.display = 'flex';
   else
     element.style.display = 'none';

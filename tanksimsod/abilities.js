@@ -669,6 +669,38 @@ class Devastate extends Ability {
     }
 }
 
+class MortalStrike extends Ability {
+    constructor(rageReduction) {
+        super("Mortal Strike", 6000, 30-rageReduction, true)
+    }
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let damage = (source.stats.MHMin + Math.random()*(source.stats.MHMax - source.stats.MHMin) + source.getAP()*source.stats.playerNormSwing/(14*1000)) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
+        let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
+
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    rank(level) {
+      if (level < 40) return -1;
+      else if (level < 48) return 1;
+      else if (level < 54) return 2;
+      else if (level < 60) return 3;
+      else return 4;
+    }
+    damage(rank) {
+      if (rank == 1) return 85;
+      else if (rank == 2) return 110;
+      else if (rank == 3) return 135;
+      else if (rank == 4) return 160;
+      else 
+      {
+        console.log("Error: invalid rank for " + this.name + ": " + rank)
+        return 0;
+      }
+    }
+}
+
 class RagingBlow extends Ability {
     constructor() {
         super("Raging Blow", 8000, 0, true)
@@ -806,6 +838,8 @@ function TankAbilities(tankStats) {
       abilities["Shield Slam"] = new ShieldSlam(focusedRage);
   if (tankStats.talents.bloodthirst)
       abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
+  if (tankStats.talents.mortalStrike)
+      abilities["Mortal Strike"] = new MortalStrike(focusedRage);
   if (tankStats.talents.deathwish)
       abilities["Death Wish"] = new DeathWish();
   if (!tankStats.dualWield && !tankStats.twohand)
