@@ -710,6 +710,7 @@ function updateStats()
               preciseTiming: checkRuneToggle("precise-timing"),
               bloodsurge: checkRuneToggle("bloodsurge"),
               focusedRage: checkRuneToggle("focused-rage"),
+              quickStrike: checkRuneToggle("quick-strike"),
             }
             
         },

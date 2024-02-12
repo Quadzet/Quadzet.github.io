@@ -691,6 +691,23 @@ class RagingBlow extends Ability {
     }
 }
 
+class QuickStrike extends Ability {
+    constructor(rageReduction) {
+        super("Quick Strike", 0, 20 - rageReduction, true)
+    }
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let damage = source.getAP() * (Math.random() * 0.1 + 0.1) + target.additivePhysBonus;
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
+        let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+        damageEvent.trigger = true;
+
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    staticThreat(rank) {
+      return 16; // Accurate at lvl 25, needs testing at 40+
+    }
+}
+
 class Rend extends Ability {
     constructor(rageReduction) {
         super("Rend", 0, 10 - rageReduction, true)
@@ -777,6 +794,8 @@ function TankAbilities(tankStats) {
     abilities["OH Swing"] = new OHSwing();
   if (tankStats.runes.ragingBlow)
     abilities["Raging Blow"] = new RagingBlow();
+  if (tankStats.runes.quickStrike && tankStats.twohand)
+    abilities["Quick Strike"] = new QuickStrike(focusedRage + tankStats.talents.impHS);
   if (tankStats.runes.preciseTiming || tankStats.runes.bloodsurge)
     abilities["Slam"] = new Slam(focusedRage, tankStats.runes.preciseTiming, tankStats.runes.bloodsurge);
   if (tankStats.runes.devastate && !tankStats.dualWield && !tankStats.twohand)

@@ -41,6 +41,9 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
             if(!holdAbilities && source.rotation["slam"].use && source.rage > source.rotation["slam"].rage && source.abilities["Slam"] && source.abilities["Slam"].isUsable(timestamp, source)) {
               source.abilities["Slam"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
             }
+            if(!holdAbilities && source.rotation["quick-strike"].use && source.rage > source.rotation["quick-strike"].rage && source.abilities["Quick Strike"] && source.abilities["Quick Strike"].isUsable(timestamp, source)) {
+              source.abilities["Quick Strike"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
+            }
             if(!holdAbilities && source.rotation["rend"].use && source.rage > source.rotation["rend"].rage && source.abilities["Rend"] && source.abilities["Rend"].isUsable(timestamp, source)) {
               let rendActive = false;
               // TODO: Ineffective

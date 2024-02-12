@@ -454,7 +454,7 @@ class BloodsurgeAura extends Aura {
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
-    if (event.type == "damage" && event.source == owner.name && ['Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && landedHits.includes(event.hit) && Math.random() < 0.3) {
+    if (event.type == "damage" && event.source == owner.name && ['Quick Strike', 'Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && landedHits.includes(event.hit) && Math.random() < 0.3) {
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }
 
