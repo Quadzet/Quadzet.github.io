@@ -326,10 +326,11 @@ function updateStats()
     }
     let mhweapontype = mainhand.type == undefined ? "" : mainhand.type; // eg "Sword"
     let ohweapontype = offhand.type == undefined ? "" : offhand.type; // eg "Sword"
-    let _dualWield = ohweapontype != 'Shield';
+    let twohand = mainhand.slot == 'twohand';
+    let _dualWield = ohweapontype != 'Shield' && !twohand;
     let mhwepskill = level * 5;
     let ohwepskill = _dualWield ? level * 5 : 0;
-    if (!_dualWield) blockvalue += getBlockValue(Number(ohwep));
+    if (!_dualWield && !twohand) blockvalue += getBlockValue(Number(ohwep));
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
@@ -526,10 +527,10 @@ function updateStats()
     block += 5 + defense*0.04 + shieldspec;
     blockvalue += strength/20
 
-    block = _dualWield ? 0 : block
-    blockvalue = _dualWield ? 0 : blockvalue
+    block = (_dualWield || twohand) ? 0 : block
+    blockvalue = (_dualWield || twohand) ? 0 : blockvalue
 
-    let hastePerc = checkAuraToggle('wcb') ? 15 : 0;
+    let hastePerc = (checkAuraToggle('wcb') ? 15 : 0) + (twohand && checkRuneToggle('frenzied-assault') ? 20 : 0);
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
@@ -595,7 +596,8 @@ function updateStats()
             level: Number(document.querySelector("#level").value),
 
             dualWield: _dualWield,
-            playerNormSwing: mhweapontype == "Daggers" ? 1700: 2400,
+            twohand: twohand,
+            playerNormSwing: mhweapontype == "Daggers" ? 1700: twohand ? 3300 : 2400,
 
             MHMin: mhmin,
             MHMax: mhmax,

@@ -580,7 +580,7 @@ function TankAuras(globals) {
     ret.push(new FlurryAura(globals.tankStats.talents.flurry));
   if (globals.tankStats.talents.deathwish)
     ret.push(new DeathWishAura());
-  if (!globals.tankStats.dualWield)
+  if (!globals.tankStats.dualWield && !globals.tankStats.twohand)
     ret.push(new ShieldBlockAura(globals.tankStats.talents.impSB));
 
   return ret;

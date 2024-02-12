@@ -481,7 +481,7 @@ class HeroicStrike extends Ability {
         source.isHeroicStrikeQueued = true
     }
     isUsable(timestamp, source) {
-        return (source.isHeroicStrikeQueued == false && source.rage > this.rageCost + (source.stats.dualWield ? 0 : 60));
+        return (source.isHeroicStrikeQueued == false && source.rage > this.rageCost);
     }
     threatCalculator(event, source) {
       return 0;
@@ -507,7 +507,7 @@ class BattleShout extends Ability {
         this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
     }
     isUsable(timestamp, source) {
-        return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost + (attacker.stats.dualWield ? 10 : 15));
+        return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost);
     }
     rank(level) {
       if (level < 12) return 1;
@@ -779,7 +779,7 @@ function TankAbilities(tankStats) {
     abilities["Raging Blow"] = new RagingBlow();
   if (tankStats.runes.preciseTiming || tankStats.runes.bloodsurge)
     abilities["Slam"] = new Slam(focusedRage, tankStats.runes.preciseTiming, tankStats.runes.bloodsurge);
-  if (tankStats.runes.devastate && !tankStats.dualWield)
+  if (tankStats.runes.devastate && !tankStats.dualWield && !tankStats.twohand)
     abilities["Devastate"] = new Devastate(focusedRage, tankStats.talents.impSA);
   else
     abilities["Sunder Armor"] = new SunderArmor(focusedRage, tankStats.talents.impSA);
@@ -789,7 +789,7 @@ function TankAbilities(tankStats) {
       abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
   if (tankStats.talents.deathwish)
       abilities["Death Wish"] = new DeathWish();
-  if (!tankStats.dualWield)
+  if (!tankStats.dualWield && !tankStats.twohand)
     abilities["Shield Block"] = new ShieldBlock();
   return abilities;
 }

@@ -85,7 +85,7 @@ const ENCHANT_IDS = {
   'mainhand': [0, 7788, 13503],
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
 };
-const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge'];
+const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
@@ -103,7 +103,7 @@ const ITEM_IDS = {
   'finger2': [213284, 19512, 12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
   'trinket1': [213348, 21568, 211451, 211449, 211420, 18854],
   'trinket2': [213348, 21568, 211451, 211449, 211420, 18854],
-  'mainhand': [213286, 212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
+  'mainhand': [216495, 213286, 212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
   'offhand': [216496, 211460, 6223, 13079, 7002, 6320, 209424, 13245, 12997, 4064, 6676, 15891, 5443, 3656, 212583],
   'ranged': [9426, 209830, 209688, 3021, 209563],
 };
@@ -480,6 +480,9 @@ async function loadItemData() {
           proc.name = getRow(spellNameData, 'ID', spell.SpellID).Name_lang;
           proc.ppm = getPPM(proc.id);
           obj.proc = proc;
+        
+        // Glowing Gneuro-Linked Cowl 'procs' itself and does dmg to boss...
+        if (id == 215166) delete obj.proc;
         }
       }
     )}
@@ -655,6 +658,10 @@ function selectItem(id, slot) {
     element.setAttribute('itemid', `${id}`);
     const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'none';
+    if (ITEMS[id].slot == "twohand") {
+      selectItem(0, 'offhand');
+      selectEnchant(0, 'offhand');
+    }
   } else {
     // set text
     const slotText = document.getElementById(slot + '-text');
