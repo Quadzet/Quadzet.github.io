@@ -75,18 +75,18 @@ const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossA
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
 const ENCHANT_SLOTS = ['head', 'shoulders', 'back', 'chest', 'wrists', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
 const ENCHANT_IDS = {
-  'head': [0, 3780],
+  'head': [0],
   'shoulders': [0],
-  'back': [0, 13882, 13421],
-  'chest': [0, 13626, 7857],
-  'wrists': [0, 7428, 7779, 13536, 13501],
-  'hands': [0, 3780],
-  'legs': [0, 3780],
-  'feet': [0, 7867, 7863, 3780],
-  'mainhand': [0, 7788, 13503],
-  'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
-  'twohand': [],
-  'shield': [0, 13464, 13378],
+  'back': [0, 13882, 13421, 13746],
+  'chest': [0, 13700, 13626, 7857, 10487, 3780],
+  'wrists': [0, 7428, 13646, 7779, 13536, 13501, 13661],
+  'wrists': [0, 13661, 7428, 13646, 7779, 13536, 13501],
+  'hands': [0, 13815, 13887, 10487, 3780], // 13948 minor haste
+  'legs': [0, 10487, 3780],
+  'feet': [0, 13637, 7867, 7863, 10487, 3780],
+  'mainhand': [0, 7788, 13503, 13639, 435481],
+  'twohand': [20030, 13937, 435481],
+  'shield': [0, 13817, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
@@ -548,11 +548,42 @@ function showEnchantDropdown(event, slot) {
     event.stopPropagation();
     const dropdown = document.getElementById(slot + '-enchant-dropdown-content');
     const dropdowns = document.getElementsByClassName('dropdown-content')
+
+    let enchantSlot = slot
+    // Select correct enchant list depending on 2h, mh, oh or shield
+    if (enchantSlot == 'mainhand' || enchantSlot == 'offhand' || enchantSlot == 'onehand') {
+      var gearElement = document.getElementById(enchantSlot + '-slot');
+      let itemID = gearElement.getAttribute('itemid');
+      if (ITEMS[`${itemID}`].slot == "twohand") enchantSlot = 'twohand';
+      else if (['offhand', 'onehand'].includes(ITEMS[`${itemID}`].slot) && ITEMS[`${itemID}`].type == "Shield") enchantSlot = 'shield';
+      else if (['offhand', 'onehand'].includes(ITEMS[`${itemID}`].slot)) enchantSlot = 'mainhand';
+    }
+    // Clear any existing content
+    dropdown.innerHTML = '';
+
+    // Create a link for each id in the array
+    ENCHANT_IDS[enchantSlot].forEach(id => {
+        const link = document.createElement('a');
+        if (id != 0)
+          link.href = `https://www.wowhead.com/classic/spell=${id}`;
+        else
+          link.innerHTML = `${ENCHANT_DATA[`${id}`].name}`;
+       
+        link.addEventListener('click', function(event) {
+          event.preventDefault();
+          selectEnchant(id, slot);
+          hideEnchantDropdown(slot);
+          updateStats();
+        })
+        dropdown.appendChild(link);
+    });
+
     // Hide any already opened dropdown
     for (let i = 0; i < dropdowns.length; i++) {
       dropdowns.item(i).style.display = 'none';
     }
     dropdown.style.display = 'block';
+    refreshLinks();
 }
 
 function hideEnchantDropdown(slot) {
@@ -677,6 +708,14 @@ function selectItem(id, slot) {
       selectItem(0, 'offhand');
       selectEnchant(0, 'offhand');
     }
+    if (slot == "offhand") {
+      var mhElement = document.getElementById('mainhand-slot');
+      var mhitemid = mhElement.getAttribute('itemid');
+      if (ITEMS[mhitemid].slot == "twohand") {
+        selectItem(0, 'mainhand');
+        selectEnchant(0, 'mainhand');
+      }
+    }
   } else {
     // set text
     const slotText = document.getElementById(slot + '-text');
@@ -744,31 +783,7 @@ function createLinks() {
     });
   }); 
 
-  ENCHANT_SLOTS.forEach(slot => {
-    var dropdownContent = document.getElementById(slot + '-enchant-dropdown-content');
-
-    // Clear any existing content
-    dropdownContent.innerHTML = '';
-
-    // Create a link for each id in the array
-    ENCHANT_IDS[slot].forEach(id => {
-        const link = document.createElement('a');
-        if (id != 0)
-          link.href = `https://www.wowhead.com/classic/spell=${id}`;
-        else
-          link.innerHTML = `${ENCHANT_DATA[`${id}`].name}`;
-       
-        link.addEventListener('click', function(event) {
-          event.preventDefault();
-          selectEnchant(id, slot);
-          hideEnchantDropdown(slot);
-          updateStats();
-        })
-        dropdownContent.appendChild(link);
-    });
-  }); 
   refreshLinks();
-  // window.$WowheadPower.refreshLinks();
 }
 
 function generateProfile() {

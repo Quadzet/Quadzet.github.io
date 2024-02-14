@@ -781,6 +781,34 @@ let ENCHANT_DATA = {
        "proc": 0,
        "ppm": 0,
     },
+    13887: {
+       "name": "Strength",
+       "description": "+5 strength",
+       "health": 0,
+       "strength": 5,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
     13661: {
        "name": "Strength",
        "description": "+5 strength",
@@ -809,7 +837,7 @@ let ENCHANT_DATA = {
        "proc": 0,
        "ppm": 0,
     },
-    8173: {
+    10487: {
        "name": "Thick Armor Kit",
        "description": "+32 armor",
        "health": 0,
@@ -1000,7 +1028,7 @@ let ENCHANT_DATA = {
        "skill": 0,
        "skilltype": [],
 
-       "damage": 7,
+       "damage": 9,
 
        "proc": 0,
        "ppm": 0,
@@ -1029,6 +1057,286 @@ let ENCHANT_DATA = {
        "skilltype": [],
 
        "damage": 7,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13637: {
+       "name": "Lesser Agility",
+       "description": "+3 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 3,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13746: {
+       "name": "Greater Defense",
+       "description": "+50 armor",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 50,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13646: {
+       "name": "Lesser Deflection",
+       "description": "+2 defense",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 2,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13817: {
+       "name": "Stamina",
+       "description": "+5 stamina",
+       "health": 0,
+       "strength": 0,
+       "stamina": 5,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13689: {
+       "name": "Lesser Block",
+       "description": "+2% block",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 2,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13631: {
+       "name": "Lesser Stamina",
+       "description": "+3 stamina",
+       "health": 0,
+       "strength": 0,
+       "stamina": 3,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13817: {
+       "name": "Stamina",
+       "description": "+5 stamina",
+       "health": 0,
+       "strength": 0,
+       "stamina": 5,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13815: {
+       "name": "Agility",
+       "description": "+5 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 5,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    0: {
+       "name": "None",
+       "description": "Add Enchant",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    0: {
+       "name": "None",
+       "description": "Add Enchant",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
 
        "proc": 0,
        "ppm": 0,
