@@ -125,6 +125,18 @@ function updateRotation(globals) {
   else
     element.style.display = 'none';
   
+  element = document.getElementById('rotation-quick-strike');
+  if (checkRuneToggle('quick-strike'))
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+    
+  element = document.getElementById('rotation-mortal-strike');
+  if (getTalentValue('mortal-strike') > 0)
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+
   element = document.getElementById('rotation-shield-slam');
   if (getTalentValue('shield-slam') > 0)
     element.style.display = 'flex';
