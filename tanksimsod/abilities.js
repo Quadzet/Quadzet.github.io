@@ -18,22 +18,22 @@ function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
 
       amount: 0,
   }
-  let c = 82.25; // From Guybrush testing on SoD at lvl 25
+  //let c = 82.25; // From Guybrush testing on SoD at lvl 25
   // 0.00911077836 * source.stats.level * source.stats.level + 3.225598133 * source.stats.level + 4.2562911; // Probably wrong, at least in SoD, but ti's the info we have
   if (isWhiteHit && event.source == "Tank") {
     let multiplier = (tank.stats.runes && tank.stats.runes.endlessRage) ? 1.25 : 1;
     if (event.source == "Tank") {
       if (event.hit == "miss") {}
       else if (["dodge", "parry"].includes(event.hit)) {
-        rageEvent.amount = 0.75*event.amount*multiplier*7.5/c; // 'refund' 75% of the rage gain
+        rageEvent.amount = 0.75*event.amount*multiplier*7.5/tank.rageConv; // 'refund' 75% of the rage gain
       } else {
-        rageEvent.amount = event.amount*7.5*multiplier/c;
+        rageEvent.amount = event.amount*7.5*multiplier/tank.rageConv;
       }
     }
   }
   else if (event.target == "Tank") {
     if (!["dodge", "parry", "miss"].includes(event.hit)) {
-      rageEvent.amount = event.amount*2.5/c;
+      rageEvent.amount = event.amount*2.5/tank.rageConv;
     }
   }
   if (rageEvent.amount > 0)

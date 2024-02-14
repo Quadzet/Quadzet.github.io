@@ -89,7 +89,7 @@ function getCoRArmor(level) {
   else return 640;
 }
 function getHomunArmor(level) {
-  return 1025; // TODO: other levels I guess lol
+  return 1550;//1025; // TODO: other levels I guess lol
 }
 
 // Note: Only with 2/2 imp expose
@@ -104,7 +104,6 @@ function getIEAArmor(level) {
 
 function getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, armor) {
   armor = armor ? armor : 0;
-  // if (bossLevel == 27) armor = 1108;
   if (CoR) armor -= getCoRArmor(level);
   if (faerieFire) armor -= getFFArmor(level);
   if (IEA && homunculi) armor -= Math.max(getHomunArmor(level), getIEAArmor(level));
@@ -163,6 +162,12 @@ function getBShoutAP(level) {
   else if (level < 52) return 139;
   else if (level < 60) return 193;
   else return 232;
+}
+
+function getTrueshotAP(level) {
+  if (level < 50) return 50;
+  else if (level < 60) return 75;
+  else return 100;
 }
 
 function getFortStam(level) {
@@ -263,6 +268,19 @@ function updateStats()
           stats.procs.push(itemStats.proc);
       }
     });
+    // Talents
+    let deflection = getTalentValue("deflection");
+    let cruelty = getTalentValue("cruelty");
+    let anticipation = getTalentValue("anticipation");
+    let shieldspec = getTalentValue("shield-specialization");
+    let impHS = getTalentValue("improved-heroic-strike");
+    let impSA = getTalentValue("improved-sunder-armor");
+    let impRend = getTalentValue("improved-rend");
+    let defiance = getTalentValue("defiance");
+    let impale = getTalentValue("impale");
+    let toughness = getTalentValue("toughness");
+    stats.armor *= (1 + 0.02*toughness); // Only applies to armor from gear
+    
     let race = document.querySelector("#race").value
     stats.strength += races[race].strength;
     stats.stamina += races[race].stamina;
@@ -278,19 +296,6 @@ function updateStats()
     stats.defense += races[race].defense;
     stats.block += races[race].block;
     stats.blockvalue += races[race].blockvalue;
-
-
-    // Talents
-    let deflection = getTalentValue("deflection");
-    let cruelty = getTalentValue("cruelty");
-    let anticipation = getTalentValue("anticipation");
-    let toughness = getTalentValue("toughness");
-    let shieldspec = getTalentValue("shield-specialization");
-    let impHS = getTalentValue("improved-heroic-strike");
-    let impSA = getTalentValue("improved-sunder-armor");
-    let impRend = getTalentValue("improved-rend");
-    let defiance = getTalentValue("defiance");
-    let impale = getTalentValue("impale");
 
     let strength = 0;
     let stamina = 0;
@@ -419,21 +424,24 @@ function updateStats()
     block       += stats.block;
     blockvalue  += stats.blockvalue;
 
-    armor *= (1 + 0.02*toughness); // Only applies to armor from gear
     armor *= checkAuraToggle("loh") ? 1.3 : 1;
     // Buffs
     mhmin += checkAuraToggle('coarse') ? 3 : 0;
     mhmax += checkAuraToggle('coarse') ? 3 : 0;
     hit += checkAuraToggle('bfdstone') ? 2 : 0;
 
+    strength += checkAuraToggle('giants') ? 8 : 0;
     strength += checkAuraToggle('ogre') ? 8 : 0;
-    agility += checkAuraToggle('lesseragi') ? 8 : 0;
-    stamina += checkAuraToggle('food') ? 8 : 0;
+    strength += checkAuraToggle('str-scroll') ? 13 : 0;
+    agility += checkAuraToggle('agi') ? 15 : 0;
+    stamina += checkAuraToggle('stam-food') ? 8 : 0;
+    agility += checkAuraToggle('agi-food') ? 10 : 0;
     stamina += checkAuraToggle('rumsey') ? 15 : 0;
+    hit     += checkAuraToggle('dark-desire') ? 2 : 0;
 
     let _startRage = Number(document.querySelector("#startRage").value);
 
-    extrahp += checkAuraToggle('minorfort') ? 27 : 0;
+    extrahp += checkAuraToggle('fort-elixir') ? 120 : 0;
     extrahp += checkAuraToggle('wcb') ? 300 : 0;
 
     let mark = checkAuraToggle('motw'); // Assumed to be improved
@@ -446,8 +454,10 @@ function updateStats()
     attackpower += checkAuraToggle('might') ? Math.floor(getMightAP(level) * (impMight ? 1.2 : 1)): 0;
     let impBShout = true; // TODO
     attackpower += checkAuraToggle('battleshout') ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0; 
-    agility += checkAuraToggle('horn') ? 6 : 0;
-    strength += checkAuraToggle('horn') ? 6 : 0;
+    attackpower += checkAuraToggle('trueshot') ? Math.floor(getTrueshotAP(level)) : 0;
+    agility += checkAuraToggle('horn') ? 17 : 0;
+    strength += checkAuraToggle('horn') ? 17 : 0;
+    crit += checkAuraToggle('leader-of-the-pack') ? 3 : 0;
 
     let bleedBonus = checkAuraToggle('mangle') ? 1.3 : 1;
 
@@ -472,6 +482,7 @@ function updateStats()
     spellcrit += checkAuraToggle("dragonslayer") ? 10 : 0;
     spellcrit += checkAuraToggle("slipkik") ? 3 : 0;
     spellcrit += checkAuraToggle("songflower") ? 5 : 0;
+    spellcrit += checkAuraToggle("spark-of-inspiration") ? 4 : 0;
 
     let enhTotems = true; // TODO
     strength += checkAuraToggle("strtotem") ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
@@ -506,7 +517,7 @@ function updateStats()
     armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
     let impDevo = true; // TODO
     armor += checkAuraToggle("devo") ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
-    armor += checkAuraToggle("defense") ? 150 : 0;
+    armor += checkAuraToggle("defense") ? 250 : 0;
     armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
 
     let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1)*(checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
@@ -524,17 +535,17 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
-    crit = crit + agility/9 + (mhwepskill-(level * 5))*0.04 + cruelty;
+    crit = crit + agility * 0.0758 + (mhwepskill-(level * 5))*0.04 + cruelty;
 
     parry += 5 + defense*0.04 + deflection;
-    dodge += agility/9 + defense*0.04
+    dodge += agility * 0.0758 + defense*0.04
     block += 5 + defense*0.04 + shieldspec;
     blockvalue += strength/20
 
     block = (_dualWield || twohand) ? 0 : block
     blockvalue = (_dualWield || twohand) ? 0 : blockvalue
 
-    let hastePerc = (checkAuraToggle('wcb') ? 15 : 0) + (twohand && checkRuneToggle('frenzied-assault') ? 20 : 0);
+    let hastePerc = (checkAuraToggle('wcb') ? 15 : 0) + (twohand && checkRuneToggle('frenzied-assault') ? 20 : 0) + (checkAuraToggle("spark-of-inspiration") ? 10 : 0);
 
     document.getElementById("playerhp").innerHTML = `${Math.round((stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
     document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;

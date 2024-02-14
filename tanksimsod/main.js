@@ -66,9 +66,10 @@ async function updateProgressbar(progressPerc) {
 
 // TODO: move this to a data file
 const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wildstrikes', 'lion', 'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
-              'lesseragi', 'ogre', 'defense', 'minorfort', 'food', 'coarse', 'bfdstone', 'rumsey',
+              'ogre', 'defense', 'fort-elixir', 'coarse', 'bfdstone', 'rumsey',
               'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
-              'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor'];
+              'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor', 'agi', 'giants', 'spark-of-inspiration', 'dark-desire', 'stam-food', 'agi-food', 'str-scroll',
+              'leader-of-the-pack', 'trueshot'];
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
@@ -84,6 +85,8 @@ const ENCHANT_IDS = {
   'feet': [0, 7867, 7863, 3780],
   'mainhand': [0, 7788, 13503],
   'offhand': [0, 13464, 13378],//, 6042], TODO: Shield Spike
+  'twohand': [],
+  'shield': [0, 13464, 13378],
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];

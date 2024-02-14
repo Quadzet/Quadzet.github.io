@@ -6,6 +6,7 @@ class Actor {
         this.stats = stats
         this.abilities = abilities
         this.rotation = stats.rotation
+        this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
 
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod

@@ -8,6 +8,7 @@
     hit: 0,
     crit: 0,
     attackpower: 0,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -31,6 +32,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -50,6 +52,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -69,6 +72,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -88,6 +92,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -107,6 +112,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -126,6 +132,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -145,6 +152,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 55,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -164,6 +172,7 @@ let races = {
     hit: 0,
     crit: 0,
     attackpower: 160,
+    haste: 0,
 
     armor: 0,
     parry: 0,
@@ -191,6 +200,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -219,6 +229,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -246,6 +257,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -273,6 +285,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -300,6 +313,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -327,6 +341,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -354,6 +369,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -381,6 +397,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -408,6 +425,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -435,6 +453,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -462,6 +481,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -489,6 +509,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -516,6 +537,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -543,6 +565,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -570,6 +593,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -598,6 +622,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -626,6 +651,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -654,6 +680,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -682,6 +709,7 @@ let ENCHANT_DATA = {
        "crit": 0,
        "hit": 0,
        "attackpower": 0,
+       "haste": 0,
 
        "dodge": 0,
        "block": 0,
@@ -693,6 +721,314 @@ let ENCHANT_DATA = {
        "skilltype": [],
 
        "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13693: {
+       "name": "Striking",
+       "description": "+3 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 3,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13700: {
+       "name": "Lesser Stats",
+       "description": "+2 stats",
+       "health": 0,
+       "strength": 2,
+       "stamina": 2,
+       "agility": 2,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13661: {
+       "name": "Strength",
+       "description": "+5 strength",
+       "health": 0,
+       "strength": 5,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    8173: {
+       "name": "Thick Armor Kit",
+       "description": "+32 armor",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 32,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13815: {
+       "name": "Agility",
+       "description": "+5 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 5,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13948: {
+       "name": "Minor Haste",
+       "description": "+1% haste",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 1,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    435481: {
+       "name": "Dismantle",
+       "description": "dmg to mechs",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 75,
+       "ppm": 1,
+    },
+    27837: {
+       "name": "Agility",
+       "description": "+25 agility",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 25,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    6043: {
+       "name": "Iron Counterweight",
+       "description": "+3% haste",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 3,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    20030: {
+       "name": "Superior Impact",
+       "description": "+9 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 7,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13937: {
+       "name": "Greater Impact",
+       "description": "+7 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 7,
 
        "proc": 0,
        "ppm": 0,
