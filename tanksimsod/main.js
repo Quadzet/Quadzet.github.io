@@ -73,14 +73,14 @@ const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wil
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-const ENCHANT_SLOTS = ['head', 'shoulders', 'back', 'chest', 'wrists', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
+const ENCHANT_SLOTS = ['head', 'shoulders', 'back', 'chest', 'wrist', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
 const ENCHANT_IDS = {
   'head': [0],
   'shoulders': [0],
   'back': [0, 13882, 13421, 13746],
   'chest': [0, 13700, 13626, 7857, 10487, 3780],
-  'wrists': [0, 7428, 13646, 7779, 13536, 13501, 13661],
-  'wrists': [0, 13661, 7428, 13646, 7779, 13536, 13501],
+  'wrist': [0, 7428, 13646, 7779, 13536, 13501, 13661],
+  'wrist': [0, 13661, 7428, 13646, 7779, 13536, 13501],
   'hands': [0, 13815, 13887, 10487, 3780], // 13948 minor haste
   'legs': [0, 10487, 3780],
   'feet': [0, 13637, 7867, 7863, 10487, 3780],
@@ -90,7 +90,7 @@ const ENCHANT_IDS = {
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
-const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrists', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
+const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [215166, 211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
   'hands': [213319, 211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
@@ -101,7 +101,7 @@ const ITEM_IDS = {
   'back': [213307, 2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
   'feet': [9637, 211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
   'chest': [213313, 1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
-  'wrists': [19581, 211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
+  'wrist': [19581, 211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
   'finger1': [213284, 19512, 12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
   'finger2': [213284, 19512, 12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
   'trinket1': [213348, 21568, 211451, 211449, 211420, 18854],
@@ -244,6 +244,12 @@ function getRows(table, column, id) {
   return result;
 }
 
+function getValues(table, col) {
+  let result = [];
+  for (let r of table) result.push(r[col]);
+  return result;
+}
+
 function getStat(obj, type) {
   let stat = 0;
   if (obj["StatModifier_bonusStat_0"] == type) stat += parseInt(obj["StatModifier_bonusAmount_0"]);
@@ -328,7 +334,7 @@ function getPPM(id) {
 }
 
 async function loadItemData() {
-  const ids = [].concat(...Object.values(ITEM_IDS));
+  // const ids = [].concat(...Object.values(ITEM_IDS));
   
   var Items = {};
   const itemDataCSV = await fetchTable('ItemPruned');
@@ -352,6 +358,7 @@ async function loadItemData() {
     return result;
   }, {});
 
+  const ids = getValues(itemDataCSV, 'ID');
   for (let id of ids) {
     let obj = {
       name: "",
@@ -594,6 +601,61 @@ function hideEnchantDropdown(slot) {
 function showItemDropdown(event, slot) {
     event.preventDefault();
     event.stopPropagation();
+    var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
+
+    // Clear any existing content
+    dropdownContent.innerHTML = '';
+
+    // Add an Unequip option
+    var unequip = document.createElement('a');
+    unequip.href = '#';
+    unequip.id = '0';
+    var span = document.createElement('span');
+    var spanText = document.createTextNode('Unequip');
+    span.appendChild(spanText);
+    unequip.appendChild(span);
+    unequip.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      selectItem('0', slot);
+      hideItemDropdown(slot);
+      let globals = updateStats();
+      updateRotation(globals);
+    });
+    dropdownContent.appendChild(unequip);
+
+    // Create a link for each id in the array
+    let slotItemIDs = []
+    Object.keys(ITEMS).forEach(id => {
+
+      let slotFilter = slot
+      if (slot == 'finger1' || slot == 'finger2')
+        slotFilter = 'finger';
+      if (slot == 'trinket1' || slot == 'trinket2')
+        slotFilter = 'trinket';
+
+      // TODO: Add filters here
+      if (ITEMS[`${id}`].slot != slotFilter)
+        return;
+      slotItemIDs.push(id);
+    });
+    // ITEM_IDS[slot].forEach(id => {
+    slotItemIDs.sort((a, b) => ITEMS[`${b}`].ilvl - ITEMS[`${a}`].ilvl);
+    slotItemIDs.forEach(id => {
+        const link = document.createElement('a');
+        link.href = `https://www.wowhead.com/classic/item=${id}`;
+        
+        link.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          selectItem(id, slot);
+          hideItemDropdown(slot);
+          let globals = updateStats();
+          updateRotation(globals);
+        })
+        dropdownContent.appendChild(link);
+    });
+    
     const dropdown = document.getElementById(slot + '-slot-dropdown-content');
     const dropdowns = document.getElementsByClassName('dropdown-content')
     // Hide any already opened dropdown
@@ -601,6 +663,7 @@ function showItemDropdown(event, slot) {
       dropdowns.item(i).style.display = 'none';
     }
     dropdown.style.display = 'block';
+    refreshLinks();
 }
 
 function hideItemDropdown(slot) {
@@ -608,7 +671,7 @@ function hideItemDropdown(slot) {
     dropdown.style.display = 'none';
 }
 
-const GEAR_ROWS = [['head', 'hands'], ['neck', 'waist'], ['shoulders', 'legs'], ['back', 'feet'], ['chest', 'finger1'], ['wrists', 'finger2'], ['mainhand', 'trinket1'], ['offhand', 'trinket2'], ['ranged']];
+const GEAR_ROWS = [['head', 'hands'], ['neck', 'waist'], ['shoulders', 'legs'], ['back', 'feet'], ['chest', 'finger1'], ['wrist', 'finger2'], ['mainhand', 'trinket1'], ['offhand', 'trinket2'], ['ranged']];
 const RIGHT_SLOTS = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
 function createGearRows() {
   const gearSelect = document.getElementById('gear-select');
@@ -742,46 +805,46 @@ function selectItem(id, slot) {
 }
 
 function createLinks() {
-  ITEM_SLOTS.forEach(slot => {
-    var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
+  // ITEM_SLOTS.forEach(slot => {
+  //   var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
 
-    // Clear any existing content
-    dropdownContent.innerHTML = '';
+  //   // Clear any existing content
+  //   dropdownContent.innerHTML = '';
 
-    // Add an Unequip option
-    var unequip = document.createElement('a');
-    unequip.href = '#';
-    unequip.id = '0';
-    var span = document.createElement('span');
-    var spanText = document.createTextNode('Unequip');
-    span.appendChild(spanText);
-    unequip.appendChild(span);
-    unequip.addEventListener('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      selectItem('0', slot);
-      hideItemDropdown(slot);
-      let globals = updateStats();
-      updateRotation(globals);
-    });
-    dropdownContent.appendChild(unequip);
+  //   // Add an Unequip option
+  //   var unequip = document.createElement('a');
+  //   unequip.href = '#';
+  //   unequip.id = '0';
+  //   var span = document.createElement('span');
+  //   var spanText = document.createTextNode('Unequip');
+  //   span.appendChild(spanText);
+  //   unequip.appendChild(span);
+  //   unequip.addEventListener('click', function(event) {
+  //     event.preventDefault();
+  //     event.stopPropagation();
+  //     selectItem('0', slot);
+  //     hideItemDropdown(slot);
+  //     let globals = updateStats();
+  //     updateRotation(globals);
+  //   });
+  //   dropdownContent.appendChild(unequip);
 
-    // Create a link for each id in the array
-    ITEM_IDS[slot].forEach(id => {
-        const link = document.createElement('a');
-        link.href = `https://www.wowhead.com/classic/item=${id}`;
+  //   // Create a link for each id in the array
+  //   ITEM_IDS[slot].forEach(id => {
+  //       const link = document.createElement('a');
+  //       link.href = `https://www.wowhead.com/classic/item=${id}`;
         
-        link.addEventListener('click', function(event) {
-          event.preventDefault();
-          event.stopPropagation();
-          selectItem(id, slot);
-          hideItemDropdown(slot);
-          let globals = updateStats();
-          updateRotation(globals);
-        })
-        dropdownContent.appendChild(link);
-    });
-  }); 
+  //       link.addEventListener('click', function(event) {
+  //         event.preventDefault();
+  //         event.stopPropagation();
+  //         selectItem(id, slot);
+  //         hideItemDropdown(slot);
+  //         let globals = updateStats();
+  //         updateRotation(globals);
+  //       })
+  //       dropdownContent.appendChild(link);
+  //   });
+  // }); 
 
   refreshLinks();
 }
@@ -902,7 +965,7 @@ function loadProfile(profile)
       "back": "213087",
       "feet": "209581",
       "chest": "210794",
-      "wrists": "211463",
+      "wrist": "211463",
       "finger1": "209565",
       "finger2": "2933",
       "trinket1": "211449",
@@ -953,7 +1016,7 @@ function loadProfile(profile)
       "shoulders-enchant-id": 0,
       "back-enchant-id": 13882,
       "chest-enchant-id": 13626,
-      "wrists-enchant-id": 13501,
+      "wrist-enchant-id": 13501,
       "hands-enchant-id": 3780,
       "legs-enchant-id": 3780,
       "feet-enchant-id": 7867,
@@ -1048,7 +1111,7 @@ function loadProfile(profile)
     'back': 213087,
     'feet': 209581,
     'chest': 210794,
-    'wrists': 211463,
+    'wrist': 211463,
     'finger1': 209565,
     'finger2': 2933,
     'trinket1': 211449,
