@@ -861,6 +861,12 @@ function selectItem(id, slot) {
   refreshLinks();
 }
 
+function updateBleedResistance() {
+  var slider = document.getElementById("bleed-resistance");
+  var output = document.getElementById("bleed-resistance-span");
+  output.innerHTML = slider.value + '%';
+}
+
 // TODO: Remove
 function createLinks() {
   refreshLinks();
@@ -947,6 +953,7 @@ function generateProfile() {
     else
       bossSettings[`${setting}`] = element.value;
   });
+  bossSettings['bleed-resistance'] = document.getElementById('bleed-resistance').value;
   profile.bossSettings = bossSettings;
 
   // Calc Settings
@@ -1213,6 +1220,10 @@ function loadProfile(profile)
         document.getElementById(setting).value = bossSettings[`${setting}`];
     }
   });
+  if (bossSettings['bleed-resistance'] != null) {
+    document.getElementById('bleed-resistance').value = bossSettings['bleed-resistance'];
+    updateBleedResistance();
+  }
 
   // Calc Settings
   let calcSettings = profile.calcSettings == null ? {} : profile.calcSettings;

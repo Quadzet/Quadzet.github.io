@@ -26,6 +26,11 @@ body::-webkit-scrollbar-thumb {
   background-color: #888;
 }
 
+.hInput input, .hInput-rotation input {
+  border: 1px solid gray;
+  outline: none;
+}
+
 .gear-row {
   display: flex;
   justify-content: space-between;
@@ -666,7 +671,20 @@ pre {
 }
 #enchants select {width: 145px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
 #buffs select {width: 160px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
-#bossSettings select {width: 50px; margin-left:auto; padding: 0px 8px 0px 0px; background-color: #474b4f; color: #C8CED1}
+#bossSettings {
+  /* min-width: 300px; */
+}
+#bossSettings select {
+  width: 50px;
+  margin-left:auto;
+  padding: 0px 8px 0px 0px;
+  background-color: #474b4f;
+  color: #C8CED1
+}
+#bleed-resistance {
+  width: 100px;
+  margin-left: 10px;
+}
 #playerstats input {margin-left:4px; width:40px}
 #playerstats .playerstats {margin-left:auto; margin-right: 20px}
 #levelSelect select {width:50px}

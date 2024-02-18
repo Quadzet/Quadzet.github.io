@@ -459,7 +459,7 @@ function updateStats()
     strength += checkAuraToggle('horn') ? 17 : 0;
     crit += checkAuraToggle('leader-of-the-pack') ? 3 : 0;
 
-    let bleedBonus = checkAuraToggle('mangle') ? 1.3 : 1;
+    let bleedBonus = (checkAuraToggle('mangle') ? 1.3 : 1) * (1 - document.getElementById('bleed-resistance').value / 100);
 
     let impFort = true; // TODO
     stamina += checkAuraToggle('fort') ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
