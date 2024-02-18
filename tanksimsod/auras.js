@@ -478,7 +478,7 @@ class RendAura extends Aura {
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
-    if (event.type == "damage" && event.name == "Rend (Rank 3)" && event.hit == "hit") {
+    if (event.type == "damage" && event.name == "Rend" && event.hit == "hit") {
 
       this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
     }

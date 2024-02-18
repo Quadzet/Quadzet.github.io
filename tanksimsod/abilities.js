@@ -736,7 +736,7 @@ class QuickStrike extends Ability {
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
     }
     staticThreat(rank) {
-      return 16; // Accurate at lvl 25, needs testing at 40+
+      return 16; // Accurate at lvl 25 and 40
     }
 }
 
