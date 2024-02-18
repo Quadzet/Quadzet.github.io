@@ -73,10 +73,10 @@ const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wil
 const TANK_SETTINGS = ['level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
 const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-const ENCHANT_SLOTS = ['head', 'shoulders', 'back', 'chest', 'wrist', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
+const ENCHANT_SLOTS = ['head', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
 const ENCHANT_IDS = {
   'head': [0],
-  'shoulders': [0],
+  'shoulder': [0],
   'back': [0, 13882, 13421, 13746],
   'chest': [0, 13700, 13626, 7857, 10487, 3780],
   'wrist': [0, 7428, 13646, 7779, 13536, 13501, 13661],
@@ -90,13 +90,13 @@ const ENCHANT_IDS = {
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
-const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulders', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
+const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [215166, 211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
   'hands': [213319, 211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
   'neck': [213344, 209817, 20444, 209673, 209825, 209422],
   'waist': [215115, 211457, 209421, 6719, 6468, 7107, 211466, 4249, 3429, 14567, 14755, 4707],
-  'shoulders': [213304, 209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
+  'shoulder': [213304, 209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
   'legs': [213332, 209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
   'back': [213307, 2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
   'feet': [9637, 211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
@@ -512,6 +512,7 @@ async function loadItemData() {
     // TODO: of the tiger etc, striking
 
     Items[`${id}`] = obj;
+  
   }
   ITEMS = Items;
 }
@@ -532,7 +533,8 @@ function addEventListeners() {
 
     document.body.addEventListener('click', function(event) {
         // Check if the clicked element is not part of the dropdown
-        if (!event.target.closest('.gear-slot')) {
+        // if (!event.target.closest('.gear-slot')) {
+        if (!event.target.closest('.dropdown-content')) {
             ITEM_SLOTS.forEach(slot => {
               hideItemDropdown(slot);
             });
@@ -598,63 +600,123 @@ function hideEnchantDropdown(slot) {
     dropdown.style.display = 'none';
 }
 
+function generateGearList(slot) {
+  const dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
+  const dropdownList = document.getElementById(slot + '-dropdown-gear-list');
+  dropdownList.innerHTML = ''; // Reset current list if any
+
+  // Filters
+  const allowedSlots = [];
+  const filterSlots = ['twohand', 'onehand', 'mainhand', 'offhand'];
+  filterSlots.forEach(filter => {
+    if (document.getElementById(slot + '-filter-' + filter) && document.getElementById(slot + '-filter-' + filter).checked)
+      allowedSlots.push(filter);
+  });
+
+  const bannedTypes = [];
+  const filterTypes = ['Shield', 'Plate', 'Mail', 'Leather'];
+  filterTypes.forEach(filter => {
+    if (document.getElementById(slot + '-filter-' + filter) && !document.getElementById(slot + '-filter-' + filter).checked) {
+      bannedTypes.push(filter);
+    }
+  });
+
+  let filterString;
+  if (document.getElementById(slot + '-dropdown-search'))
+    filterString = document.getElementById(slot + '-dropdown-search').value;
+
+
+  // Add an Unequip option
+  var unequip = document.createElement('a');
+  unequip.href = '#';
+  unequip.id = '0';
+  var span = document.createElement('span');
+  var spanText = document.createTextNode('Unequip');
+  span.appendChild(spanText);
+  unequip.appendChild(span);
+  unequip.addEventListener('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    selectItem('0', slot);
+    hideItemDropdown(slot);
+    let globals = updateStats();
+    updateRotation(globals);
+  });
+  dropdownList.appendChild(unequip);
+
+  let slotFilter = slot
+  if (slot == 'finger1' || slot == 'finger2')
+    slotFilter = 'finger';
+  if (slot == 'trinket1' || slot == 'trinket2')
+    slotFilter = 'trinket';
+  if (!(document.getElementById(slot + '-filter-' + slotFilter) && !document.getElementById(slot + '-filter-' + slotFilter).checked))
+    allowedSlots.push(slotFilter);
+
+  // Create a link for each id in the array
+  let allowShields = document.getElementById(slot + '-filter-Shield') && document.getElementById(slot + '-filter-Shield').checked;
+  let slotItemIDs = []
+  Object.keys(ITEMS).forEach(id => {
+    if (!allowedSlots.includes(ITEMS[`${id}`].slot)) {
+      if (!(ITEMS[`${id}`].type == 'Shield' && allowShields)) { // If it's a shield, only filter if the type Shield is banned. Otherwise slot offhand removes both oh weps and shields
+        return;
+      }
+    }
+    if (bannedTypes.includes(ITEMS[`${id}`].type))
+      return;
+    if (filterString != null)
+      if (!ITEMS[`${id}`].name.toLowerCase().includes(filterString.toLowerCase()))
+        return;
+    slotItemIDs.push(id);
+  });
+
+  slotItemIDs.sort((a, b) => ITEMS[`${b}`].ilvl - ITEMS[`${a}`].ilvl);
+  slotItemIDs.forEach(id => {
+      const link = document.createElement('a');
+      link.href = `https://www.wowhead.com/classic/item=${id}`;
+      
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        selectItem(id, slot);
+        hideItemDropdown(slot);
+        let globals = updateStats();
+        updateRotation(globals);
+      })
+      dropdownList.appendChild(link);
+  });
+  dropdownContent.appendChild(dropdownList);
+  refreshLinks();
+}
+
 function showItemDropdown(event, slot) {
     event.preventDefault();
     event.stopPropagation();
     var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
-
-    // Clear any existing content
-    dropdownContent.innerHTML = '';
-
-    // Add an Unequip option
-    var unequip = document.createElement('a');
-    unequip.href = '#';
-    unequip.id = '0';
-    var span = document.createElement('span');
-    var spanText = document.createTextNode('Unequip');
-    span.appendChild(spanText);
-    unequip.appendChild(span);
-    unequip.addEventListener('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      selectItem('0', slot);
-      hideItemDropdown(slot);
-      let globals = updateStats();
-      updateRotation(globals);
-    });
-    dropdownContent.appendChild(unequip);
-
-    // Create a link for each id in the array
-    let slotItemIDs = []
-    Object.keys(ITEMS).forEach(id => {
-
-      let slotFilter = slot
-      if (slot == 'finger1' || slot == 'finger2')
-        slotFilter = 'finger';
-      if (slot == 'trinket1' || slot == 'trinket2')
-        slotFilter = 'trinket';
-
-      // TODO: Add filters here
-      if (ITEMS[`${id}`].slot != slotFilter)
-        return;
-      slotItemIDs.push(id);
-    });
-    // ITEM_IDS[slot].forEach(id => {
-    slotItemIDs.sort((a, b) => ITEMS[`${b}`].ilvl - ITEMS[`${a}`].ilvl);
-    slotItemIDs.forEach(id => {
-        const link = document.createElement('a');
-        link.href = `https://www.wowhead.com/classic/item=${id}`;
-        
-        link.addEventListener('click', function(event) {
-          event.preventDefault();
-          event.stopPropagation();
-          selectItem(id, slot);
-          hideItemDropdown(slot);
-          let globals = updateStats();
-          updateRotation(globals);
-        })
-        dropdownContent.appendChild(link);
-    });
+    
+    dropdownContent.innerHTML = `<input type="text" class="gear-dropdown-search" id="${slot}-dropdown-search" oninput="generateGearList('${slot}')" placeholder="Search..."></input>`;
+    if (slot == "mainhand") 
+      dropdownContent.innerHTML += `
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-twohand" checked="true" onclick="generateGearList('${slot}')">Twohand</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-mainhand" checked="true" onclick="generateGearList('${slot}')">Mainhand</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-onehand" checked="true" onclick="generateGearList('${slot}')">Onehand</input>
+        `
+    else if (slot == "offhand")
+      dropdownContent.innerHTML += `
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-offhand" checked="true" onclick="generateGearList('${slot}')">Offhand</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-onehand" checked="true" onclick="generateGearList('${slot}')">Onehand</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-Shield" checked="true" onclick="generateGearList('${slot}')">Shield</input>
+        `;
+    else if (['head', 'shoulder', 'chest', 'wrist', 'legs', 'feet', 'hands', 'waist'].includes(slot))
+      dropdownContent.innerHTML += `
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-Leather" checked="true" onclick="generateGearList('${slot}')">Leather</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-Mail" checked="true" onclick="generateGearList('${slot}')">Mail</input>
+        <input type="checkbox" class="dropdown-filter-checkbox" id="${slot}-filter-Plate" checked="true" onclick="generateGearList('${slot}')">Plate</input>
+        `;
+    const dropdownList = document.createElement('div');
+    dropdownList.classList.add('gear-dropdown-list');
+    dropdownList.setAttribute('id', slot+'-dropdown-gear-list')
+    dropdownContent.appendChild(dropdownList);
+    generateGearList(slot);
     
     const dropdown = document.getElementById(slot + '-slot-dropdown-content');
     const dropdowns = document.getElementsByClassName('dropdown-content')
@@ -663,7 +725,6 @@ function showItemDropdown(event, slot) {
       dropdowns.item(i).style.display = 'none';
     }
     dropdown.style.display = 'block';
-    refreshLinks();
 }
 
 function hideItemDropdown(slot) {
@@ -671,7 +732,7 @@ function hideItemDropdown(slot) {
     dropdown.style.display = 'none';
 }
 
-const GEAR_ROWS = [['head', 'hands'], ['neck', 'waist'], ['shoulders', 'legs'], ['back', 'feet'], ['chest', 'finger1'], ['wrist', 'finger2'], ['mainhand', 'trinket1'], ['offhand', 'trinket2'], ['ranged']];
+const GEAR_ROWS = [['head', 'hands'], ['neck', 'waist'], ['shoulder', 'legs'], ['back', 'feet'], ['chest', 'finger1'], ['wrist', 'finger2'], ['mainhand', 'trinket1'], ['offhand', 'trinket2'], ['ranged']];
 const RIGHT_SLOTS = ['hands', 'waist', 'legs', 'feet', 'finger1', 'finger2', 'trinket1', 'trinket2'];
 function createGearRows() {
   const gearSelect = document.getElementById('gear-select');
@@ -742,7 +803,6 @@ function selectEnchant(id, slot) {
   slotText.setAttribute('enchantID', `${id}`)
   slotText.innerHTML = ENCHANT_DATA[`${id}`].description;
   refreshLinks();
-  // window.$WowheadPower.refreshLinks(); // Needed?
 }
 
 function selectItem(id, slot) {
@@ -758,7 +818,6 @@ function selectItem(id, slot) {
 
     const element = document.getElementById(slot + '-slot');
     element.setAttribute('itemid', `${id}`);
-    // element.style.display = 'flex';
     const textElement = document.getElementById(slot + '-slot-text');
     textElement.style.display = 'flex';
     const iconElement = document.getElementById(slot + '-slot-icon');
@@ -791,7 +850,6 @@ function selectItem(id, slot) {
       
     const element = document.getElementById(slot + '-slot');
     element.setAttribute('itemid', `${id}`);
-    // element.style.display = 'none';
     const textElement = document.getElementById(slot + '-slot-text');
     textElement.style.display = 'none';
     const iconElement = document.getElementById(slot + '-slot-icon');
@@ -801,51 +859,10 @@ function selectItem(id, slot) {
     slotImg.style.display = 'flex';
   }
   refreshLinks();
-  // window.$WowheadPower.refreshLinks(); // Needed?
 }
 
+// TODO: Remove
 function createLinks() {
-  // ITEM_SLOTS.forEach(slot => {
-  //   var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
-
-  //   // Clear any existing content
-  //   dropdownContent.innerHTML = '';
-
-  //   // Add an Unequip option
-  //   var unequip = document.createElement('a');
-  //   unequip.href = '#';
-  //   unequip.id = '0';
-  //   var span = document.createElement('span');
-  //   var spanText = document.createTextNode('Unequip');
-  //   span.appendChild(spanText);
-  //   unequip.appendChild(span);
-  //   unequip.addEventListener('click', function(event) {
-  //     event.preventDefault();
-  //     event.stopPropagation();
-  //     selectItem('0', slot);
-  //     hideItemDropdown(slot);
-  //     let globals = updateStats();
-  //     updateRotation(globals);
-  //   });
-  //   dropdownContent.appendChild(unequip);
-
-  //   // Create a link for each id in the array
-  //   ITEM_IDS[slot].forEach(id => {
-  //       const link = document.createElement('a');
-  //       link.href = `https://www.wowhead.com/classic/item=${id}`;
-        
-  //       link.addEventListener('click', function(event) {
-  //         event.preventDefault();
-  //         event.stopPropagation();
-  //         selectItem(id, slot);
-  //         hideItemDropdown(slot);
-  //         let globals = updateStats();
-  //         updateRotation(globals);
-  //       })
-  //       dropdownContent.appendChild(link);
-  //   });
-  // }); 
-
   refreshLinks();
 }
 
@@ -960,7 +977,7 @@ function loadProfile(profile)
       "hands": "209568",
       "neck": "209673",
       "waist": "211457",
-      "shoulders": "209692",
+      "shoulder": "209692",
       "legs": "209566",
       "back": "213087",
       "feet": "209581",
@@ -1013,7 +1030,7 @@ function loadProfile(profile)
     },
     "enchants": {
       "head-enchant-id": 3780,
-      "shoulders-enchant-id": 0,
+      "shoulder-enchant-id": 0,
       "back-enchant-id": 13882,
       "chest-enchant-id": 13626,
       "wrist-enchant-id": 13501,
@@ -1106,7 +1123,7 @@ function loadProfile(profile)
     'hands': 209568,
     'neck': 209673,
     'waist': 211457,
-    'shoulders': 209692,
+    'shoulder': 209692,
     'legs': 209566,
     'back': 213087,
     'feet': 209581,

@@ -10,7 +10,21 @@ html, body {
   height: 100%;
   width: 100%;
 }
-
+/* scroll bar shenanigans */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+/* Firefox */
+body {
+  scrollbar-width: thin;
+}
+body::-webkit-scrollbar-thumb {
+  background-color: #888;
+}
 
 .gear-row {
   display: flex;
@@ -99,11 +113,10 @@ html, body {
 .dropdown-content {
     display: none;
     position: absolute;
-    max-height: 400px;
-    overflow-y: auto;
     background-color: #222629;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     z-index: 1;
+    border: 1px solid grey;
 }
 
 .dropdown-content a {
@@ -118,6 +131,26 @@ html, body {
     background-color: #929292;
 }
 
+.gear-dropdown-list {
+    max-height: 400px;
+    overflow-y: auto;
+    min-width: 300px;
+    margin-top: 8px;
+}
+
+.gear-dropdown-search {
+  width: 95%;
+  margin: 6px;
+  height: 24px;
+  font-size: large;
+
+  border: none;
+  outline: none;
+}
+
+.dropdown-filter-checkbox {
+  margin: 6px;
+}
 
 /*** talents ***/
 .talent-tree-container {
