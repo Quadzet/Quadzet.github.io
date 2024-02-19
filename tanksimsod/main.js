@@ -304,14 +304,14 @@ function getType(cl, subcl) {
   if (cl == 2) {
     switch(subcl) {
       case 0: return "Axe";
-      case 1: return "Axe";
+      case 1: return "Two-handed Axe";
       case 2: return "Bows";
       case 3: return "Guns";
       case 4: return "Mace";
-      case 5: return "Mace";
+      case 5: return "Two-handed Mace";
       case 6: return "Polearm";
       case 7: return "Sword";
-      case 8: return "Sword";
+      case 8: return "Two-handed Sword";
       case 10: return "Staff";
       case 13: return "Fist";
       case 14: return "Miscellaneous";
@@ -448,11 +448,15 @@ async function loadItemData() {
               obj.defense = parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 != 95 && e.EffectMiscValue_0 != 226 && e.EffectMiscValue_0 != 393 && e.EffectMiscValue_0 != 45 && e.EffectMiscValue_0 != 46) {
               obj.skill = parseInt(e.EffectBasePoints) + 1;
-              // TODO: Staff, Mace, enabling multiple skilltypes if more items than edgies has it
-              if (item.ID == 14551) obj.skilltype = ["Axe", "Dagger", "Sword"];
-              else if (e.EffectMiscValue_0 == 44) obj.skilltype = ["Axe"];
-              else if (e.EffectMiscValue_0 == 173) obj.skilltype = ["Dagger"];
-              else if (e.EffectMiscValue_0 == 43) obj.skilltype = ["Sword"];
+              // TODO: remaining wep types
+              if (obj.skilltype == null)
+                obj.skilltype = [];
+              else if (e.EffectMiscValue_0 == 44) obj.skilltype.push("Axe");
+              else if (e.EffectMiscValue_0 == 173) obj.skilltype.push("Dagger");
+              else if (e.EffectMiscValue_0 == 43) obj.skilltype.push("Sword");
+              else if (e.EffectMiscValue_0 == 172) obj.skilltype.push("Two-handed Axe");
+              else if (e.EffectMiscValue_0 == 55) obj.skilltype.push("Two-handed Sword");
+              else if (e.EffectMiscValue_0 == 160) obj.skilltype.push("Two-handed Mace");
               else delete obj.skilltype;
             }
           });

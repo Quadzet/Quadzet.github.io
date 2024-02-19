@@ -82,7 +82,7 @@ let races = {
     blockvalue: 0,
 
     skill: 5,
-    skilltype: ["Sword", "Mace"],
+    skilltype: ["Sword", "Mace", "Two-handed Sword", "Two-handed Mace"],
 },
     "Night Elf": {
     strength: 51,
@@ -122,7 +122,7 @@ let races = {
     blockvalue: 0,
 
     skill: 5,
-    skilltype: ["Axe"]
+    skilltype: ["Axe", "Two-handed Axe"]
 },
     "Tauren": {
     strength: 59,
