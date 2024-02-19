@@ -66,7 +66,7 @@ async function updateProgressbar(progressPerc) {
 
 // TODO: move this to a data file
 const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wildstrikes', 'lion', 'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
-              'ogre', 'defense', 'fort-elixir', 'coarse', 'bfdstone', 'rumsey',
+              'ogre', 'defense', 'fort-elixir', 'solid', 'dense', 'shadow-oil', 'rumsey', 'oh-solid', 'oh-dense', 'oh-shadow-oil',
               'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
               'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor', 'agi', 'giants', 'spark-of-inspiration', 'dark-desire', 'stam-food', 'agi-food', 'str-scroll',
               'leader-of-the-pack', 'trueshot'];
@@ -809,6 +809,18 @@ function selectEnchant(id, slot) {
   refreshLinks();
 }
 
+function toggleOffhandBuffs(show) {
+  const ohStones = document.getElementById('oh-wep-buffs');
+  const ohHeader = document.getElementById('oh-wep-buffs-header');
+  if (show) {
+    ohStones.style.display = 'flex';
+    ohHeader.style.display = 'block';
+  } else {
+    ohStones.style.display = 'none';
+    ohHeader.style.display = 'none';
+  }
+}
+
 function selectItem(id, slot) {
   if (id != 0) {
     // set text
@@ -835,11 +847,16 @@ function selectItem(id, slot) {
       selectEnchant(0, 'offhand');
     }
     if (slot == "offhand") {
-      var mhElement = document.getElementById('mainhand-slot');
-      var mhitemid = mhElement.getAttribute('itemid');
+      const mhElement = document.getElementById('mainhand-slot');
+      const mhitemid = mhElement.getAttribute('itemid');
       if (ITEMS[mhitemid].slot == "twohand") {
         selectItem(0, 'mainhand');
         selectEnchant(0, 'mainhand');
+      }
+      if (ITEMS[id].type == "Shield") {
+        toggleOffhandBuffs(false);
+      } else {
+        toggleOffhandBuffs(true);
       }
     }
   } else {
@@ -861,6 +878,10 @@ function selectItem(id, slot) {
 
     const slotImg = document.getElementById(slot + '-slot-img');
     slotImg.style.display = 'flex';
+
+    if (slot == "offhand") {
+      toggleOffhandBuffs(false);
+    }
   }
   refreshLinks();
 }

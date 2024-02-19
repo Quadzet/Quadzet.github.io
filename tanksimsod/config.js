@@ -426,9 +426,14 @@ function updateStats()
 
     armor *= checkAuraToggle("loh") ? 1.3 : 1;
     // Buffs
-    mhmin += checkAuraToggle('coarse') ? 3 : 0;
-    mhmax += checkAuraToggle('coarse') ? 3 : 0;
-    hit += checkAuraToggle('bfdstone') ? 2 : 0;
+    mhmin += checkAuraToggle('solid') ? 6 : 0;
+    mhmax += checkAuraToggle('solid') ? 6 : 0;
+    ohmin += checkAuraToggle('oh-solid') ? 6 : 0;
+    ohmax += checkAuraToggle('oh-solid') ? 6 : 0;
+    mhmin += checkAuraToggle('dense') ? 8 : 0;
+    mhmax += checkAuraToggle('dense') ? 8 : 0;
+    ohmin += checkAuraToggle('oh-dense') ? 8 : 0;
+    ohmax += checkAuraToggle('oh-dense') ? 8 : 0;
 
     strength += checkAuraToggle('giants') ? 8 : 0;
     strength += checkAuraToggle('ogre') ? 8 : 0;
@@ -705,6 +710,8 @@ function updateStats()
                 // threatenchant: document.getElementById("handenchant").value == "Threat",
                 // berserking: document.getElementById("berserking").checked,
                 // goa: document.getElementById("goa").checked,
+                mhoil: checkAuraToggle('shadow-oil'),
+                ohoil: checkAuraToggle('oh-shadow-oil'),
 
                 // windfury: document.querySelector("#windfury").checked,
                 wildStrikes: checkAuraToggle("wildstrikes"),

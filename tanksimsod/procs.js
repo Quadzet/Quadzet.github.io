@@ -146,12 +146,22 @@ class WeaponProc extends Proc {
     this.ppm = proc.ppm;
     this.procChance = proc.procChance;
     this.magic = proc.magic;
+    this.spellCoeff = proc.spellCoeff == null ? 0 : proc.spellCoeff;
+    this.ICD = proc.ICD == null ? 0 : proc.ICD;
+    this.offhand = proc.offhand == null ? false : proc.offhand;
+
+    this.cooldown = 0;
     this.trigger = false; // Don't trigger additional procs
   }
   handleEvent(source, target, event, reactiveEvents, futureEvents) {
     if (event.type == "damage" && event.trigger && source.name == event.source && landedHits.includes(event.hit)) {
+      if (this.offhand && event.name != "OH Swing")
+        return;
+      if (event.timestamp < this.cooldown)
+        return;
       let rng = Math.random();
       if (rng < this.procChance) {
+        this.cooldown = event.timestamp + this.ICD;
         if (this.damage > 0) {
           let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false);
           damageEvent.name = this.name;
@@ -182,6 +192,9 @@ class WeaponProc extends Proc {
       }
     }
   }
+  reset() {
+    this.cooldown = 0;
+  }
 }
 
 function getTankProcs(globals) {
@@ -195,6 +208,28 @@ function getTankProcs(globals) {
         ret.push(
             new WildStrikesProc()
         )
+    }
+
+    if (globals.tankStats.bonuses.ohoil) {
+      ret.push(new WeaponProc({
+        name: "Shadow Oil",
+        dmg: 56,
+        spellCoeff: 0.56,
+        procChance: 0.15,
+        magic: true,
+        offhand: true,
+      }));
+    }
+
+    if (globals.tankStats.bonuses.mhoil) {
+      ret.push(new WeaponProc({
+        name: "Shadow Oil",
+        dmg: 56,
+        spellCoeff: 0.56,
+        procChance: 0.15,
+        magic: true,
+        offhand: false,
+      }));
     }
 
     if(globals.tankStats.bonuses.windfury) {

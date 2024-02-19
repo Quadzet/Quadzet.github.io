@@ -452,6 +452,10 @@ body::-webkit-scrollbar-thumb {
   padding: 0px 10px 0px 10px;
 }
 
+#oh-wep-buffs {
+  display: none;
+}
+
 .rune-row {
   flex-wrap: nowrap;
 }

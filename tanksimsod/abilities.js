@@ -279,7 +279,7 @@ class OHSwing extends Ability {
         // damageEvent.threat = 0;
         // damageEvent.threat = this.threatCalculator(damageEvent, source);
         // damageEvent.name = this.name;
-        damageEvent.trigger = false;
+        damageEvent.trigger = true; // Triggers OH weapon procs
         this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents);
         // reactiveEvents.push(damageEvent)
         let futureEvent = {
