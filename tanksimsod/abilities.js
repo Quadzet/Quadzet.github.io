@@ -745,13 +745,14 @@ class Rend extends Ability {
         super("Rend", 0, 10 - rageReduction, true)
     }
     use(timestamp, source, target, reactiveEvents, futureEvents) {
-        let damage = 0;
-        let damageEvent = rollAttack(source, target, damage, true);
-        if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
-        damageEvent.rank = this.rank(source.stats.level);
-        damageEvent.trigger = false;
-        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+      let damage = 0;
+      let damageEvent = rollAttack(source, target, damage, true);
+      if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
+      damageEvent.rank = this.rank(source.stats.level);
+      damageEvent.trigger = false;
+      this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
 
+      if (damageEvent.hit == "hit") {
         for (let i = 0; i < this.duration(this.rank(source.stats.level))/3000; i++) { 
 
           let impRendMult = 1;
@@ -775,6 +776,7 @@ class Rend extends Ability {
           futureEvents.push(dotEvent);
         }
       }
+    }
     rank(level) {
       if (level < 4) return -1;
       else if (level < 10) return 1;
