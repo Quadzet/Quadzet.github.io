@@ -348,7 +348,7 @@ function updateStats()
         if (itemStats) {
           if(itemStats.skilltype.includes(mhweapontype))
             mhwepskill += itemStats.skill;
-          if(itemStats.skilltype.includes(mhweapontype))
+          if(itemStats.skilltype.includes(ohweapontype))
             ohwepskill += itemStats.skill;
         }
       }
