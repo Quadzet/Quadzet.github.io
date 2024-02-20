@@ -694,33 +694,16 @@ function updateStats()
                 msaOH: offhand == "Misplaced Servo Arm",
             },
 
-            // trinkets: {
-            //     kots: (trinketone == "Kiss of the Spider") || (trinkettwo == "Kiss of the Spider"),
-            //     earthstrike: (trinketone == "Earthstrike") || (trinkettwo == "Earthstrike"),
-            //     diamondflask: (trinketone == "Diamond Flask") || (trinkettwo == "Diamond Flask"),
-            //     jomgabbar: (trinketone == "Jom Gabbar") || (trinkettwo == "Jom Gabbar"),
-            //     slayerscrest: (trinketone == "Slayer's Crest") || (trinkettwo == "Slayer's Crest"),
-            //     hoj: (trinketone == "Hand of Justice") || (trinkettwo == "Hand of Justice"),
-            // },
-
+            // TODO: make these procs..?
             bonuses: {
-                // twoPieceDreadnaught: document.querySelector("#twoPieceDreadnaught").checked,
-                // threePieceConqueror: document.getElementById("threePieceConqueror").checked,
-                // fivePieceWrath: document.querySelector("#fivePieceWrath").checked,
-                // threatenchant: document.getElementById("handenchant").value == "Threat",
-                // berserking: document.getElementById("berserking").checked,
-                // goa: document.getElementById("goa").checked,
                 mhoil: checkAuraToggle('shadow-oil'),
                 ohoil: checkAuraToggle('oh-shadow-oil'),
+                mhDismantle: Number(document.getElementById('mainhand-enchant').getAttribute('enchantID')) == 435481,
+                ohDismantle: Number(document.getElementById('offhand-enchant').getAttribute('enchantID')) == 435481,
 
-                // windfury: document.querySelector("#windfury").checked,
                 wildStrikes: checkAuraToggle("wildstrikes"),
                 wcb: checkAuraToggle('wcb'),
                 dmf: checkAuraToggle("dmf"),
-                // crusaderMH: mhwepenchant == "Crusader",
-                // crusaderOH: ohwepenchant == "Crusader",
-                // windfuryAP: document.getElementById("impweptotems").checked ? 410 : 315,
-                // mrp: _mrp,
             },
             procs: stats.procs,
             runes: {

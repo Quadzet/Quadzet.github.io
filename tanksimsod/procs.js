@@ -210,6 +210,26 @@ function getTankProcs(globals) {
         )
     }
 
+    if (globals.tankStats.bonuses.ohDismantle) {
+      ret.push(new WeaponProc({
+        name: "Dismantle",
+        dmg: 75,
+        procChance: 0.15,
+        magic: true,
+        offhand: true,
+      }));
+    }
+
+    if (globals.tankStats.bonuses.mhDismantle) {
+      ret.push(new WeaponProc({
+        name: "Dismantle",
+        dmg: 75,
+        procChance: 0.15,
+        magic: true,
+        offhand: false,
+      }));
+    }
+
     if (globals.tankStats.bonuses.ohoil) {
       ret.push(new WeaponProc({
         name: "Shadow Oil",
@@ -231,6 +251,9 @@ function getTankProcs(globals) {
         offhand: false,
       }));
     }
+
+
+
 
     if(globals.tankStats.bonuses.windfury) {
         ret.push(
