@@ -388,6 +388,8 @@ async function loadItemData() {
       skill: 0,
       skilltype: [],
     };
+    if (id == 215161) 
+      var x = 15;
     let item = itemData[`${id}`];
     let itemSparse = itemSparseData[`${id}`];
     let missing = false;
@@ -402,6 +404,7 @@ async function loadItemData() {
     }
     if (missing)
       continue;
+
 
     obj.type = getType(item.ClassID, item.SubclassID);
     obj.slot = getSlot(item.InventoryType); // Not needed atm, but useful if I ever merge the item ID arrays
@@ -509,6 +512,9 @@ async function loadItemData() {
         
         // Glowing Gneuro-Linked Cowl 'procs' itself and does dmg to boss...
         if (id == 215166) delete obj.proc;
+        if (id == 215114) delete obj.proc;
+        if (id == 215161) delete obj.proc;
+        
         }
       }
     )}
@@ -660,6 +666,8 @@ function generateGearList(slot) {
   let allowShields = document.getElementById(slot + '-filter-Shield') && document.getElementById(slot + '-filter-Shield').checked;
   let slotItemIDs = []
   Object.keys(ITEMS).forEach(id => {
+    if (id == 215161)
+      var x = 15;
     if (!allowedSlots.includes(ITEMS[`${id}`].slot)) {
       if (!(ITEMS[`${id}`].type == 'Shield' && allowShields)) { // If it's a shield, only filter if the type Shield is banned. Otherwise slot offhand removes both oh weps and shields
         return;

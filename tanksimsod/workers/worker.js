@@ -6,7 +6,7 @@ self.addEventListener('message', function(e) {
     let globals = e.data.globals;
     let iterations = e.data.iterations;
 
-    importScripts('../logging.js', '../abilities.js', '../rotation.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
+    importScripts('../stats.js', '../logging.js', '../abilities.js', '../rotation.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
 
     let TankProcs = getTankProcs(globals);
     let BossProcs = getBossProcs(globals);
@@ -16,10 +16,8 @@ self.addEventListener('message', function(e) {
     function handleEvent(event, futureEvents)
     {
       let newEvents = [];
-      // let newFutureEvents = []; 
       let reactiveEvents = [event]; // slightly inefficient
       do {
-        // event = reactiveEvents.pop();
         event = reactiveEvents.shift();
         if(event.type == "combatStart") {
           let source = Actors["Tank"];
@@ -90,8 +88,8 @@ self.addEventListener('message', function(e) {
     }
 
     Actors = {
-        "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
-        "Boss": new Actor("Boss", globals.bossStats, BossAbilities, BossProcs, BossAuras(globals)),
+        "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats.gear), TankProcs, TankAuras(globals)),
+        "Boss": new Actor("Boss", globals.bossStats, BossAbilities, [], BossProcs, BossAuras(globals)),
     }
     Actors["Tank"].target = Actors["Boss"];
     Actors["Boss"].target = Actors["Tank"];
@@ -135,6 +133,10 @@ self.addEventListener('message', function(e) {
             if (event.source == "Boss") {
               if (event.amount && event.type == "damage") damageTaken += event.amount
             } else if ("threat" in event) { 
+              if (event.name == "Hyperconductive Shock") {
+                console.log('hyperconductive event: ');
+                console.log(event);
+              }
               threat += event.threat
               if (event.type == "damage") {
                 if (event.amount) damage += event.amount

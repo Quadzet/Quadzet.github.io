@@ -23,15 +23,15 @@
 
 */
 
-let races = {
+const races = {
     "Dwarf": {
-    strength: 56,
-    stamina: 53,
-    agility: 35,
+    strength: 81, //56,
+    stamina: 75, //53,
+    agility: 50, //35,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -45,13 +45,13 @@ let races = {
     skilltype: 'none'
 },
     "Gnome": {
-    strength: 49,
-    stamina: 49,
-    agility: 42,
+    strength: 74,//49,
+    stamina: 71,//49,
+    agility: 57,//42,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -65,13 +65,13 @@ let races = {
     skilltype: 'none'
 },
     "Human": {
-    strength: 54,
-    stamina: 50,
-    agility: 39,
+    strength: 79,//54,
+    stamina: 72,//50,
+    agility: 54,//39,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -85,13 +85,13 @@ let races = {
     skilltype: ["Sword", "Mace", "Two-handed Sword", "Two-handed Mace"],
 },
     "Night Elf": {
-    strength: 51,
-    stamina: 49,
-    agility: 44,
+    strength: 76, //51,
+    stamina: 71, //49,
+    agility: 59, //44,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -105,13 +105,13 @@ let races = {
     skilltype: 'none'
 },
     "Orc": {
-    strength: 57,
-    stamina: 52,
-    agility: 36,
+    strength: 57 + 25,
+    stamina: 52 + 22,
+    agility: 36 + 15,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -125,13 +125,13 @@ let races = {
     skilltype: ["Axe", "Two-handed Axe"]
 },
     "Tauren": {
-    strength: 59,
-    stamina: 52,
-    agility: 34,
+    strength: 59 + 25,
+    stamina: 52 + 22,
+    agility: 34 + 15,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -145,13 +145,13 @@ let races = {
     skilltype: 'none'
 },
     "Troll": {
-    strength: 55,
-    stamina: 51,
-    agility: 41,
+    strength: 55 + 25,
+    stamina: 51 + 22,
+    agility: 41 + 15,
 
     hit: 0,
     crit: 0,
-    attackpower: 55,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
@@ -165,9 +165,9 @@ let races = {
     skilltype: 'none'
 },
     "Undead": {
-    strength: 119,
-    stamina: 111,
-    agility: 78,
+    strength: 119 + 25,
+    stamina: 111 + 22,
+    agility: 78 + 15,
 
     hit: 0,
     crit: 0,
@@ -187,7 +187,7 @@ let races = {
 
 }
 
-let ENCHANT_DATA = {
+const ENCHANT_DATA = {
     0: {
        "name": "None",
        "description": "Add Enchant",
@@ -1342,3 +1342,48 @@ let ENCHANT_DATA = {
        "ppm": 0,
     },
 } 
+
+const onUseData = {
+  215114: {
+    name: "Hyperconductive Shock",
+    cooldown: 600000,
+
+    maxDuration: 10000,
+    hastePerc: 20,
+  },
+  215161: {
+    name: "Intense Concentration",
+    cooldown: 600000,
+
+    maxDuration: 10000,
+    hastePerc: 20,
+  },
+  213105: {
+    name: "Spicy!",
+    cooldown: 120000,
+
+    maxDuration: 30000,
+    hastePerc: 4,
+  },
+  213348: {
+    name: "Gyromatic Experiment 420b",
+    cooldown: 1800000,
+
+    maxDuration: 20000,
+    hastePerc: 5,
+  },
+  9449: {
+    name: "Haste",
+    cooldown: 1800000,
+
+    maxDuration: 30000,
+    hastePerc: 50,
+  },
+  210741: {
+    name: "Haste",
+    cooldown: 1800000,
+
+    maxDuration: 30000,
+    hastePerc: 50,
+  },
+}

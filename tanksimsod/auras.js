@@ -450,7 +450,7 @@ class BloodsurgeAura extends Aura {
       name: "Bloodsurge",
     
       maxDuration: 15000,
-    })
+    });
   }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
     
@@ -549,6 +549,29 @@ class DeepWoundsAura extends Aura {
   }
 }
 
+class OnUseAura extends Aura {
+  constructor(data) {
+    super(data)
+  }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    
+    if (event.type == "spellCast" && event.name == this.name) {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+    }
+  }
+}
+
+
+function getOnUseAuras(gear) {
+  let ret = [];
+  Object.keys(gear).forEach(slot => {
+    let id = gear[slot];
+    if (onUseData[id] != null) {
+      ret.push(new OnUseAura(onUseData[id])); 
+    }
+  });
+  return ret;
+}
 
 // Globals
 let Debuffs = {
@@ -581,6 +604,7 @@ function TankAuras(globals) {
     ret.push(new DeathWishAura());
   if (!globals.tankStats.dualWield && !globals.tankStats.twohand)
     ret.push(new ShieldBlockAura(globals.tankStats.talents.impSB));
+  ret = ret.concat(getOnUseAuras(globals.tankStats.gear))
 
   return ret;
 }

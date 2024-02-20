@@ -22,6 +22,11 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
             let y = 15;
           }
         }
+        source.onUseAbilities.forEach(onUse => {
+          if (onUse.isUsable(timestamp, source)) {
+            onUse.use(timestamp, source, Actors["Tank"], reactiveEvents, futureEvents);
+          }
+        });
         if(!source.onGCD) {
             if(!holdAbilities && source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
                 source.abilities["Death Wish"].use(timestamp, source, Actors["Boss"], reactiveEvents, futureEvents);
@@ -87,12 +92,33 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
 function handleCombatStart(source, target, reactiveEvents, futureEvents) {
     source.inCombat = true;
     if(source.name == "Tank") {
-        source.abilities["MH Swing"].use(0, source, target, reactiveEvents, futureEvents)
-        if (source.stats.dualWield)
-          source.abilities["OH Swing"].use(0, source, target, reactiveEvents, futureEvents)
         performAction(0, source, target, reactiveEvents, futureEvents)
+        futureEvents.push({
+            type: "swingTimer",
+            source: source.name,
+            target: target.name,
+            name: "MH Swing",
+            timestamp: 0,
+            swingStart: 0,
+        });
+        if (source.stats.dualWield)
+          futureEvents.push({
+              type: "swingTimer",
+              source: source.name,
+              target: target.name,
+              name: "OH Swing",
+              timestamp: 0,
+              swingStart: 0,
+          });
     } else if (source.name == "Boss") {
-        source.abilities["MH Swing"].use(0, source, target, reactiveEvents, futureEvents)
+          futureEvents.push({
+              type: "swingTimer",
+              source: source.name,
+              target: target.name,
+              name: "MH Swing",
+              timestamp: 0,
+              swingStart: 0,
+          });
     }
     
 }

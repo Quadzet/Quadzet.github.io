@@ -1,11 +1,12 @@
 "use strict";
 class Actor {
     // constructor(name, target, abilities, stats, procs) {
-    constructor(name, stats, abilities, procs, auras) {
-        this.name = name
-        this.stats = stats
-        this.abilities = abilities
-        this.rotation = stats.rotation
+    constructor(name, stats, abilities, onUseAbilities, procs, auras) {
+        this.name = name;
+        this.stats = stats;
+        this.abilities = abilities;
+        this.onUseAbilities = onUseAbilities;
+        this.rotation = stats.rotation;
         this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
 
         this.threatMod = stats.threatMod
@@ -19,7 +20,7 @@ class Actor {
         this.crit = stats.crit
         this.hit = stats.hit
         this.block = stats.block
-        this.GCD = 0
+        this.GCD = 0     
         this.onGCD = false
         this.inCombat = false
         this.rage = stats.startRage
@@ -138,10 +139,13 @@ class Actor {
         for(let ability in this.abilities) {
             this.abilities[`${ability}`].cooldownReady = -90000;
         }
+        this.onUseAbilities.forEach(ability => {
+            ability.cooldownReady = -90000;
+        });
         this.auras.forEach(aura => {
           aura.duration = 0;
           aura.stacks = 0;
-        })
+        });
         this.procs.forEach(proc => proc.reset())
         this.buffs = {}
         this.debuffs = {}

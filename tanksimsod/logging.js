@@ -13,10 +13,10 @@ const LOG_LEVEL = {
     prefix: "[e] "
   },
 }
-const LOG_LEVEL_CUTOFF = LOG_LEVEL.WARNING;
+const LOG_LEVEL_CUTOFF = LOG_LEVEL.INFO;
 
 function log_message(level, message) {
-  let log_level = LOG_LEVEL[`${level}`];
+  let log_level = level.level;
   if (log_level != null && log_level.level >= LOG_LEVEL_CUTOFF.level)
     console.log(log_level.prefix + message)
 }

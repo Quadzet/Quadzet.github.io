@@ -810,6 +810,36 @@ class Rend extends Ability {
     }
 }
 
+class OnUseAbility extends Ability {
+  constructor(data) {
+    super(data.name, data.cooldown, 0, false);
+  }
+  use(timestamp, source, target, reactiveEvents, futureEvents) {
+    let spellCastEvent = {
+        type: "spellCast",
+        name: this.name,
+        source: source.name,
+        timestamp: timestamp,
+    }
+    this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
+  }
+  threatCalculator(event, source) {
+    return 0;
+  }
+}
+
+
+function getOnUseAbilities(gear) {
+  let ret = [];
+  Object.keys(gear).forEach(slot => {
+    let id = gear[slot];
+    if (onUseData[id] != null) {
+      ret.push(new OnUseAbility(onUseData[id])); 
+    }
+  });
+  return ret;
+}
+
 // TODO: Make this a vector with priorities on each ability, like
 // [
 //    {prio: 1, ability: new Devastate()}

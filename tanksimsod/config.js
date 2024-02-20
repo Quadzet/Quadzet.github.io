@@ -245,10 +245,12 @@ function updateStats()
 
       procs: [],
     };
+    let gear = {};
     ITEM_SLOTS.forEach(slot => {
       let element = document.getElementById(`${slot}-slot`)
       let itemID = element.getAttribute('itemid');
       if (itemID != null && itemID != 0) {
+        gear[`${slot}`] = itemID;
         let itemStats = ITEMS[`${itemID}`];
 
         stats.armor       += itemStats.armor;
@@ -345,7 +347,7 @@ function updateStats()
       let itemID = element.getAttribute('itemid');
       if (itemID && itemID != 0) {
         let itemStats = ITEMS[`${itemID}`];
-        if (itemStats) {
+        if (itemStats.skilltype) {
           if(itemStats.skilltype.includes(mhweapontype))
             mhwepskill += itemStats.skill;
           if(itemStats.skilltype.includes(ohweapontype))
@@ -379,10 +381,12 @@ function updateStats()
     }
 
     // *** Get Enchant Bonuses *** //
+    let enchants = {};
     ENCHANT_SLOTS.forEach(slot => {
       const element = document.getElementById(slot + '-enchant');
       let id = Number(element.getAttribute('enchantID'));
       let enchant = ENCHANT_DATA[id];
+      enchants[`${slot}`] = id;
 
         extrahp += enchant.health;
         strength += enchant.strength;
@@ -656,6 +660,9 @@ function updateStats()
             agilityMultiplier: agilityMultiplier,
 
             rotation: rotation,
+
+            gear: gear,
+            enchants: enchants,
 
             talents: {
                 deathwish: getTalentValue("death-wish") > 0,
