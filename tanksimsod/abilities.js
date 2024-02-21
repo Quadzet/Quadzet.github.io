@@ -869,7 +869,7 @@ function TankAbilities(tankStats) {
   if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
       abilities["Shield Slam"] = new ShieldSlam(focusedRage);
   if (tankStats.talents.bloodthirst)
-      abilities["Bloodthirst"] = new Bloodthirst(focusedRage);
+      abilities["Bloodthirst"] = new Bloodthirst(2*focusedRage); // BT gets double effect from FR for some reason
   if (tankStats.talents.mortalStrike)
       abilities["Mortal Strike"] = new MortalStrike(focusedRage);
   if (tankStats.talents.deathwish)

@@ -335,7 +335,7 @@ function updateStats()
     let ohweapontype = offhand.type == undefined ? "" : offhand.type; // eg "Sword"
     let twohand = mainhand.slot == 'twohand';
     let _dualWield = ohwep != "0" && ohweapontype != 'Shield' && !twohand;
-    if (mhweapontype == "Axe")
+    if (mhweapontype == "Axe" || mhweapontype == "Two-handed Axe")
       crit += getTalentValue('axe-specialization');
     if (mhweapontype == "Polearm")
       crit += getTalentValue('polearm-specialization');
