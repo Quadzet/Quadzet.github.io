@@ -84,9 +84,9 @@ const ENCHANT_IDS = {
   'hands': [0, 13815, 13887, 10487, 3780], // 13948 minor haste
   'legs': [0, 10487, 3780],
   'feet': [0, 13637, 7867, 7863, 10487, 3780],
-  'mainhand': [0, 7788, 13503, 13639, 435481],
+  'mainhand': [0, 13693, 13503, 7788, 435481],
   'twohand': [20030, 13937, 435481],
-  'shield': [0, 13817, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
+  'shield': [0, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
 const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
