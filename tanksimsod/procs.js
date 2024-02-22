@@ -160,7 +160,8 @@ class WeaponProc extends Proc {
       if (event.timestamp < this.cooldown)
         return;
       let rng = Math.random();
-      if (rng < this.procChance) {
+      let procChance = this.procChance != null ? this.procChance : this.ppm * (this.offhand ? source.stats.OHSwing : source.stats.MHSwing) / 60000;
+      if (rng < procChance) {
         this.cooldown = event.timestamp + this.ICD;
         if (this.damage > 0) {
           let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false);
@@ -214,7 +215,7 @@ function getTankProcs(globals) {
       ret.push(new WeaponProc({
         name: "Dismantle",
         dmg: 75,
-        procChance: 0.15,
+        ppm: 2,
         magic: true,
         offhand: true,
       }));
@@ -224,7 +225,7 @@ function getTankProcs(globals) {
       ret.push(new WeaponProc({
         name: "Dismantle",
         dmg: 75,
-        procChance: 0.15,
+        ppm: 2,
         magic: true,
         offhand: false,
       }));
