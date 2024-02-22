@@ -1239,6 +1239,7 @@ function loadProfile(profile)
   let buffs = profile.buffs == null ? {} : profile.buffs;
   BUFFS.forEach(buff => {
     let element = document.getElementById(`${buff}-aura-img`);
+    element.classList.remove('aura-toggle-active');
     if (buffs[`${buff}`])
       element.classList.add('aura-toggle-active');
   });
@@ -1284,6 +1285,8 @@ function processJson() {
       const jsonInput = document.getElementById('jsonInput').value;
       const parsedJson = JSON.parse(jsonInput);
       loadProfile(parsedJson);
+      let globals = updateStats();
+      updateRotation(globals);
   } catch (error) {
       alert('Invalid JSON format. Please check your input.');
   }
