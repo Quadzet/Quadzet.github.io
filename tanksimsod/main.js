@@ -1445,16 +1445,16 @@ async function main() {
           let result = {tps: 0, dps: 0, casts: 0, hits: 0};
           if (sortedResults[i]) {
             result = sortedResults[i][1].reduce((accumulator, element) => {
-              accumulator.tps     += element.tps;
-              accumulator.dps     += element.dps;
-              accumulator.casts   += element.casts;
-              accumulator.hits    += element.hits;
-              accumulator.crits   += element.crits;
-              accumulator.misses  += element.misses;
-              accumulator.dodges  += element.dodges;
-              accumulator.parries += element.parries;
-              accumulator.blocks  += element.blocks;
-              accumulator.glances += element.glances;
+              accumulator.tps     += element.tps != null ? element.tps : 0;
+              accumulator.dps     += element.dps != null ? element.dps : 0;
+              accumulator.casts   += element.casts != null ? element.casts : 0;
+              accumulator.hits    += element.hits != null ? element.hits : 0;
+              accumulator.crits   += element.crits != null ? element.crits : 0;
+              accumulator.misses  += element.misses != null ? element.misses : 0;
+              accumulator.dodges  += element.dodges != null ? element.dodges : 0;
+              accumulator.parries += element.parries != null ? element.parries : 0;
+              accumulator.blocks  += element.blocks != null ? element.blocks : 0;
+              accumulator.glances += element.glances != null ? element.glances : 0;
               return accumulator;
             }, { tps: 0, dps: 0, hits: 0, casts: 0, crits: 0, glances: 0, misses: 0, dodges: 0, parries: 0, blocks: 0});
           }
@@ -1506,7 +1506,6 @@ async function main() {
         <tr><td>DTPS: </td><td>${Math.round(average(dtps)*100)/100}</td></tr>
         </table>
         `
-        // document.getElementById("resultsHeader").innerHTML = `<h2>Results</h2>`
         document.getElementById("generalStats").innerHTML = generalTable;
         document.getElementById("tpsTable").innerHTML = resultTable;
         document.getElementById("statistics").innerHTML = statsTable;
