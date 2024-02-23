@@ -527,9 +527,9 @@ function updateStats()
     stamina *= checkAuraToggle("zandalar") ? 1.15 : 1;
     agility *= checkAuraToggle("zandalar") ? 1.15 : 1;
     strength *= checkAuraToggle("zandalar") ? 1.15 : 1;
-    stamina *= checkAuraToggle("kings") ? 1.1 : 1;
-    agility *= checkAuraToggle("kings") ? 1.1 : 1;
-    strength *= checkAuraToggle("kings") ? 1.1 : 1;
+    stamina *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
+    agility *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
+    strength *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
 
     armor += agility*2;
     armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
@@ -538,9 +538,9 @@ function updateStats()
     armor += checkAuraToggle("defense") ? 250 : 0;
     armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
 
-    let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1)*(checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
-    let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
-    let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*(checkAuraToggle("kings") ? 1.1 : 1)
+    let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1)*(checkAuraToggle("zandalar") ? 1.15 : 1)*((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
+    let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
+    let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1)*((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
 
     extrastamina *= staminaMultiplier;
     extrastrength *= strengthMultiplier;
