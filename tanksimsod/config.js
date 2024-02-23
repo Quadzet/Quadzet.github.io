@@ -92,6 +92,15 @@ function getHomunArmor(level) {
   return 1550;//1025; // TODO: other levels I guess lol
 }
 
+function getSAArmor(level) {
+  if (level < 10) return 0;
+  else if (level < 22) return 450; 
+  else if (level < 34) return 900; 
+  else if (level < 46) return 1350; 
+  else if (level < 58) return 1800; 
+  else return 2250;
+}
+
 // Note: Only with 2/2 imp expose
 function getIEAArmor(level) {
   if (level < 14) return 0;
@@ -102,13 +111,14 @@ function getIEAArmor(level) {
   else return 2550;
 }
 
-function getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, armor) {
+function getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, homunculi, armor) {
   armor = armor ? armor : 0;
   if (CoR) armor -= getCoRArmor(level);
   if (faerieFire) armor -= getFFArmor(level);
-  if (IEA && homunculi) armor -= Math.max(getHomunArmor(level), getIEAArmor(level));
-  else if (IEA) armor -= getIEAArmor(level);
-  else if (homunculi) armor -= getHomunArmor(level);
+  let SAArmor = SA ? getSAArmor(level) : 0;
+  let IEAArmor = IEA ? getIEAArmor(level) : 0;
+  let homunArmor = homunculi ? getHomunArmor(level) : 0;
+  armor -= Math.max(SAArmor, IEAArmor, homunArmor);
   armor = Math.max(0, armor);
   return armor;
 }
@@ -590,12 +600,13 @@ function updateStats()
     ohwepskill += extraohskill;
 
     let bossLevel = Number(document.querySelector("#level").value) + Number(document.querySelector("#bossLevel").value)
+    let SA = checkAuraToggle("sunder");
     let CoR = checkAuraToggle("cor");
     let IEA = checkAuraToggle("iea");
     let faerieFire = checkAuraToggle("faeriefire");
     let homunculi = checkAuraToggle("degrade");
     let bossArmor = Number(document.querySelector("#bossArmor").value);
-    bossArmor = getBossArmor(level, bossLevel, CoR, faerieFire, IEA, homunculi, bossArmor);
+    bossArmor = getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, homunculi, bossArmor);
 
     let rotation = [];
     ABILITIES.forEach(ability => {
