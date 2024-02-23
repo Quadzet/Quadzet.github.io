@@ -453,8 +453,7 @@ function updateStats()
     strength += checkAuraToggle('ogre') ? 8 : 0;
     strength += checkAuraToggle('str-scroll') ? 13 : 0;
     agility += checkAuraToggle('agi') ? 15 : 0;
-    stamina += checkAuraToggle('stam-food') ? 8 : 0;
-    agility += checkAuraToggle('agi-food') ? 10 : 0;
+    stamina += checkAuraToggle('stam-food') ? 12 : 0;
     stamina += checkAuraToggle('rumsey') ? 15 : 0;
     hit     += checkAuraToggle('dark-desire') ? 2 : 0;
 
