@@ -165,13 +165,13 @@ const races = {
     skilltype: 'none'
 },
     "Undead": {
-    strength: 119 + 25,
-    stamina: 111 + 22,
-    agility: 78 + 15,
+    strength: 78,
+    stamina: 73,
+    agility: 52,
 
     hit: 0,
     crit: 0,
-    attackpower: 160,
+    attackpower: 100,
     haste: 0,
 
     armor: 0,
