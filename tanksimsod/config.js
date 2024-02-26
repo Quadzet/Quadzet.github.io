@@ -610,7 +610,8 @@ function updateStats()
     let rotation = [];
     ABILITIES.forEach(ability => {
       let obj = {};
-      let use = document.getElementById('use-' + ability).checked;
+      const element = document.getElementById('use-' + ability);
+      let use = element.checked && element.style != 'none';
       use = use ? use : false;
       let rage = 0;
       if (!['raging-blow', 'death-wish'].includes(ability))
@@ -620,7 +621,7 @@ function updateStats()
       rotation[`${ability}`] = obj;
     });
     rotation.cbrStacks = 0;
-    if (document.getElementById('use-cbr-stop-rage').checked)
+    if (document.getElementById('use-cbr-stop-rage').checked && document.getElementById('rotation-consumed-by-rage').style.display != 'none')
         rotation.cbrStacks = Number(document.getElementById('cbr-stacks').value);
 
 

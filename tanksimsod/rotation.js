@@ -15,13 +15,8 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
         // TODO: use spell id, now it gets conflated with the talent Enrage
         source.auras.forEach(aura => { if (aura.name == "Enrage" && aura.duration > 0) cbrStacks = aura.stacks; });
         let holdAbilities = cbrStacks < source.rotation.cbrStacks && source.rage < 80;
+        
         // Tank GCD action priority list, TODO: Make this smarter, don't have to check the other onGCD if we have jus tused an ability
-        if (holdAbilities) {
-          let x = 15;
-          if (timestamp > 0) {
-            let y = 15;
-          }
-        }
         source.onUseAbilities.forEach(onUse => {
           if (onUse.isUsable(timestamp, source)) {
             onUse.use(timestamp, source, Actors["Tank"], reactiveEvents, futureEvents);
