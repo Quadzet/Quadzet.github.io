@@ -1285,9 +1285,37 @@ const ENCHANT_DATA = {
        "proc": 0,
        "ppm": 0,
     },
-    0: {
-       "name": "None",
-       "description": "Add Enchant",
+    19058: {
+       "name": "Rugged Armor Kit",
+       "description": "+40 armor",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 40,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 0,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13695: {
+       "name": "Impact",
+       "description": "+5 damage",
        "health": 0,
        "strength": 0,
        "stamina": 0,
@@ -1308,7 +1336,35 @@ const ENCHANT_DATA = {
        "skill": 0,
        "skilltype": [],
 
-       "damage": 0,
+       "damage": 5,
+
+       "proc": 0,
+       "ppm": 0,
+    },
+    13529: {
+       "name": "Lesser Impact",
+       "description": "+3 damage",
+       "health": 0,
+       "strength": 0,
+       "stamina": 0,
+       "agility": 0,
+       "armor": 0,
+
+       "crit": 0,
+       "hit": 0,
+       "attackpower": 0,
+       "haste": 0,
+
+       "dodge": 0,
+       "block": 0,
+       "blockvalue": 0,
+       "defense": 0,
+       "parry": 0,
+
+       "skill": 0,
+       "skilltype": [],
+
+       "damage": 3,
 
        "proc": 0,
        "ppm": 0,
