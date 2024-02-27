@@ -444,10 +444,10 @@ function updateStats()
     mhmax += checkAuraToggle('solid') ? 6 : 0;
     ohmin += checkAuraToggle('oh-solid') ? 6 : 0;
     ohmax += checkAuraToggle('oh-solid') ? 6 : 0;
-    mhmin += checkAuraToggle('dense') ? 8 : 0;
-    mhmax += checkAuraToggle('dense') ? 8 : 0;
-    ohmin += checkAuraToggle('oh-dense') ? 8 : 0;
-    ohmax += checkAuraToggle('oh-dense') ? 8 : 0;
+    // mhmin += checkAuraToggle('dense') ? 8 : 0;
+    // mhmax += checkAuraToggle('dense') ? 8 : 0;
+    // ohmin += checkAuraToggle('oh-dense') ? 8 : 0;
+    // ohmax += checkAuraToggle('oh-dense') ? 8 : 0;
 
     strength += checkAuraToggle('giants') ? 8 : 0;
     strength += checkAuraToggle('ogre') ? 8 : 0;
