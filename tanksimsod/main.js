@@ -111,6 +111,7 @@ const ITEM_IDS = {
   'ranged': [9426, 209830, 209688, 3021, 209563],
 };
 var ITEMS = {};
+var ITEM_SETS = [];
 
 function updateRotation(globals) {
   let element = document.getElementById('rotation-death-wish');
@@ -337,6 +338,7 @@ async function loadItemData() {
   // const ids = [].concat(...Object.values(ITEM_IDS));
   
   var Items = {};
+  const itemSets = {};
   const itemDataCSV = await fetchTable('ItemPruned');
   const itemSparseDataCSV = await fetchTable('ItemSparsePruned');
   const itemEffectData = await fetchTable('ItemEffectPruned');
@@ -345,6 +347,8 @@ async function loadItemData() {
   const spellMiscData = await fetchTable('SpellMiscPruned'); // TODO prune
   const spellDurationData = await fetchTable('SpellDurationPruned'); // TODO Prune
   const spellNameData = await fetchTable('SpellNamePruned'); // TODO prune
+  const itemSetData = await fetchTable('ItemSet'); // TODO prune
+  const itemSetSpell = await fetchTable('ItemSetSpell'); // TODO prune
 
   // Transform into a JSON object
   const itemSparseData = itemSparseDataCSV.reduce((result, row) => {
@@ -358,6 +362,69 @@ async function loadItemData() {
     return result;
   }, {});
 
+  // itemsets
+  for(let row of itemSetData) {
+    let setObj = {
+      setID: row['ID'],
+      itemIDs: [],
+      name: row['Name_lang'],
+      bonuses: [],
+    };
+    let setID = row['ID']
+    for (let i = 0; i <= 16; i++) {
+      if (row['ItemID_' + i] != 0)
+        setObj.itemIDs.push(row['ItemID_' + i]);
+    }
+    let spells = getRows(itemSetSpell, 'ItemSetID', setID);
+    if (spells.length) {
+      spells.forEach(spell => {
+        let bonus = {
+          requires: spell.Threshold
+        }
+        let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
+
+        effects.forEach(e => {
+          // Effect == 6 means apply_aura
+          // TODO: str/agi/stam/armor/health etc(?)
+          if (e.Effect == 6 && e.EffectAura == 99)
+            bonus.attackpower = (bonus.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 102 && e.EffectMiscValue_0 & 32)
+            bonus.attackpower = (bonus.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 54)
+            bonus.hit = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 52)
+            bonus.crit = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 49)
+            bonus.dodge = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 47)
+            bonus.parry = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 51)
+            bonus.block = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 158)
+            bonus.blockvalue = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 == 95)
+            bonus.defense = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 != 95 && e.EffectMiscValue_0 != 226 && e.EffectMiscValue_0 != 393 && e.EffectMiscValue_0 != 45 && e.EffectMiscValue_0 != 46) {
+            bonus.skill = parseInt(e.EffectBasePoints) + 1;
+            // TODO: remaining wep types
+            if (bonus.skilltype == null)
+              bonus.skilltype = [];
+            else if (e.EffectMiscValue_0 == 44) bonus.skilltype.push("Axe");
+            else if (e.EffectMiscValue_0 == 173) bonus.skilltype.push("Dagger");
+            else if (e.EffectMiscValue_0 == 43) bonus.skilltype.push("Sword");
+            else if (e.EffectMiscValue_0 == 172) bonus.skilltype.push("Two-handed Axe");
+            else if (e.EffectMiscValue_0 == 55) bonus.skilltype.push("Two-handed Sword");
+            else if (e.EffectMiscValue_0 == 160) bonus.skilltype.push("Two-handed Mace");
+            else delete bonus.skilltype;
+          }
+        });
+        setObj.bonuses.push(bonus);
+      });
+    }
+    ITEM_SETS.push(setObj);
+  }
+  
+  // Items
   const ids = getValues(itemDataCSV, 'ID');
   for (let id of ids) {
     let obj = {
@@ -422,10 +489,10 @@ async function loadItemData() {
     if (parseInt(itemSparse.MinDamage_1)) obj.mindmg += parseInt(itemSparse.MinDamage_1);
     if (parseInt(itemSparse.MaxDamage_1)) obj.maxdmg += parseInt(itemSparse.MaxDamage_1);
 
+
     let spells = getRows(itemEffectData, 'ParentItemID', item.ID);
     if (spells.length) {
       spells.forEach((spell, index) => {
-
         let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
 
         if (spell.TriggerType == "1") { // Only care about on_equip
