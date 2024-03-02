@@ -413,9 +413,11 @@ async function loadItemData() {
             if (e.EffectMiscValue_0 == 44) bonus.skilltype.push("Axe");
             else if (e.EffectMiscValue_0 == 173) bonus.skilltype.push("Dagger");
             else if (e.EffectMiscValue_0 == 43) bonus.skilltype.push("Sword");
+            else if (e.EffectMiscValue_0 == 54) bonus.skilltype.push("Mace");
             else if (e.EffectMiscValue_0 == 172) bonus.skilltype.push("Two-handed Axe");
             else if (e.EffectMiscValue_0 == 55) bonus.skilltype.push("Two-handed Sword");
             else if (e.EffectMiscValue_0 == 160) bonus.skilltype.push("Two-handed Mace");
+            else if (e.EffectMiscValue_0 == 162) bonus.skilltype.push("Fist");
             else delete bonus.skilltype;
           }
         });
@@ -529,9 +531,11 @@ async function loadItemData() {
               else if (e.EffectMiscValue_0 == 44) obj.skilltype.push("Axe");
               else if (e.EffectMiscValue_0 == 173) obj.skilltype.push("Dagger");
               else if (e.EffectMiscValue_0 == 43) obj.skilltype.push("Sword");
+              else if (e.EffectMiscValue_0 == 54) obj.skilltype.push("Mace");
               else if (e.EffectMiscValue_0 == 172) obj.skilltype.push("Two-handed Axe");
               else if (e.EffectMiscValue_0 == 55) obj.skilltype.push("Two-handed Sword");
               else if (e.EffectMiscValue_0 == 160) obj.skilltype.push("Two-handed Mace");
+              else if (e.EffectMiscValue_0 == 162) obj.skilltype.push("Fist");
               else delete obj.skilltype;
             }
           });
