@@ -386,7 +386,7 @@ async function loadItemData() {
         effects.forEach(e => {
           // Effect == 6 means apply_aura
           // TODO: str/agi/stam/armor/health etc(?)
-          if (e.Effect == 6 && e.EffectAura == 99)
+          if (e.Effect == 6 && e.EffectAura == 99 && e.EffectDieSides == 1)
             bonus.attackpower = (bonus.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 102 && e.EffectMiscValue_0 & 32)
             bonus.attackpower = (bonus.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
@@ -394,6 +394,8 @@ async function loadItemData() {
             bonus.hit = parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 52)
             bonus.crit = parseInt(e.EffectBasePoints) + 1;
+          if (e.Effect == 6 && e.EffectAura == 22 && e.EffectMiscValue_0 == 1)
+            bonus.armor = parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 49)
             bonus.dodge = parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 47)
@@ -409,7 +411,7 @@ async function loadItemData() {
             // TODO: remaining wep types
             if (bonus.skilltype == null)
               bonus.skilltype = [];
-            else if (e.EffectMiscValue_0 == 44) bonus.skilltype.push("Axe");
+            if (e.EffectMiscValue_0 == 44) bonus.skilltype.push("Axe");
             else if (e.EffectMiscValue_0 == 173) bonus.skilltype.push("Dagger");
             else if (e.EffectMiscValue_0 == 43) bonus.skilltype.push("Sword");
             else if (e.EffectMiscValue_0 == 172) bonus.skilltype.push("Two-handed Axe");
@@ -500,7 +502,7 @@ async function loadItemData() {
         if (spell.TriggerType == "1") { // Only care about on_equip
           effects.forEach(e => {
             // Effect == 6 means apply_aura
-            if (e.Effect == 6 && e.EffectAura == 99)
+            if (e.Effect == 6 && e.EffectAura == 99 && e.EffectDieSides == 1)
               obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 102 && e.EffectMiscValue_0 & 32)
               obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
@@ -508,6 +510,8 @@ async function loadItemData() {
               obj.hit = parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 52)
               obj.crit = parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && e.EffectAura == 22 && e.EffectMiscValue_0 == 1)
+              bonus.armor = parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 49)
               obj.dodge = parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 47)
@@ -926,7 +930,7 @@ function selectItem(id, slot) {
     if (slot == "offhand") {
       const mhElement = document.getElementById('mainhand-slot');
       const mhitemid = mhElement.getAttribute('itemid');
-      if (ITEMS[mhitemid].slot == "twohand") {
+      if (parseInt(mhitemid) != 0 && ITEMS[mhitemid].slot == "twohand") {
         selectItem(0, 'mainhand');
         selectEnchant(0, 'mainhand');
       }
