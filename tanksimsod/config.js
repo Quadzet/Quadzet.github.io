@@ -280,6 +280,7 @@ function updateStats()
           stats.procs.push(itemStats.proc);
       }
     });
+
     // Talents
     let deflection = getTalentValue("deflection");
     let cruelty = getTalentValue("cruelty");
@@ -378,6 +379,36 @@ function updateStats()
     let ohmin = 0;
     let ohmax = 0;
     let ohswing = 0;
+
+    // set bonuses
+    const equippedIDs = Object.values(gear).map(value => parseInt(value, 10));
+    ITEM_SETS.forEach(set => {
+      let n_equipped = set.itemIDs.filter(element => equippedIDs.includes(element)).length;
+      if (n_equipped > 0) {
+        set.bonuses.forEach(bonus => {
+          if (bonus.requires > n_equipped)
+            return;
+          stats.armor       += (bonus.armor ? bonus.armor : 0);
+          stats.agility     += (bonus.agility ? bonus.agility  : 0);
+          stats.strength    += (bonus.strength ? bonus.strength  : 0);
+          stats.stamina     += (bonus.stamina ? bonus.stamina  : 0);
+          stats.crit        += (bonus.crit ? bonus.crit  : 0);
+          stats.hit         += (bonus.hit ? bonus.hit  : 0);
+          stats.attackpower += (bonus.attackpower ? bonus.attackpower  : 0);
+          stats.defense     += (bonus.defense ? bonus.defense  : 0);
+          stats.parry       += (bonus.parry ? bonus.parry  : 0);
+          stats.dodge       += (bonus.dodge ? bonus.dodge  : 0);
+          stats.block       += (bonus.block ? bonus.block  : 0);
+          stats.blockvalue  += (bonus.blockvalue ? bonus.blockvalue  : 0);
+          if (bonus.skilltype) {
+            if(bonus.skilltype.includes(mhweapontype))
+              mhwepskill += bonus.skill;
+            if(bonus.skilltype.includes(ohweapontype))
+              ohwepskill += bonus.skill;
+        }
+        });
+      }
+    });
 
     // Update the procchance based on mh wep swingtimer
     stats.procs.forEach(proc => {
