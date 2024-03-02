@@ -338,7 +338,6 @@ async function loadItemData() {
   // const ids = [].concat(...Object.values(ITEM_IDS));
   
   var Items = {};
-  const itemSets = {};
   const itemDataCSV = await fetchTable('ItemPruned');
   const itemSparseDataCSV = await fetchTable('ItemSparsePruned');
   const itemEffectData = await fetchTable('ItemEffectPruned');
