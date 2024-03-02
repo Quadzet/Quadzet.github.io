@@ -472,10 +472,12 @@ async function loadItemData() {
     if (missing)
       continue;
 
-
     obj.type = getType(item.ClassID, item.SubclassID);
     obj.slot = getSlot(item.InventoryType); // Not needed atm, but useful if I ever merge the item ID arrays
     obj.armor = parseInt(itemSparse.Resistances_0) ? itemSparse.Resistances_0 : 0;
+    if (obj.type == "Shield") {
+      obj.blockvalue = ShieldBlockValue[`${itemSparse.OverallQualityID}`][`${itemSparse.ItemLevel}`];
+    }
 
     obj.strength = getStat(itemSparse, 4);
     obj.agility = getStat(itemSparse, 3);
