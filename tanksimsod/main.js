@@ -89,7 +89,7 @@ const ENCHANT_IDS = {
   'shield': [0, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
 };
 const RUNES = ['devastate', 'endless-rage', 'consumed-by-rage', 'furious-thunder', 'raging-blow', 'flagellation', 'blood-frenzy', 'precise-timing', 'focused-rage', 'single-minded-fury', 'bloodsurge', 'frenzied-assault', 'quick-strike'];
-const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike"];
+const ABILITIES = ["slam", "death-wish", "revenge", "raging-blow", "rend", "devastate", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "quick-strike", "mortal-strike", "thunder-clap"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 const ITEM_IDS = {
   'head': [215166, 211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
@@ -132,6 +132,12 @@ function updateRotation(globals) {
   else
     element.style.display = 'none';
     
+  element = document.getElementById('rotation-thunder-clap');
+  if (checkRuneToggle('furious-thunder'))
+    element.style.display = 'flex';
+  else
+    element.style.display = 'none';
+
   element = document.getElementById('rotation-mortal-strike');
   if (getTalentValue('mortal-strike') > 0)
     element.style.display = 'flex';

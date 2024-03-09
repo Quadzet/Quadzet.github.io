@@ -260,7 +260,7 @@ function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = 
     else if (attacker.stats.type == "boss" && defender.stats.type == "tank") return rollBossTankTable(attacker, defender, damage, yellow);
 }
 
-function rollSpellAttack(attacker, defender, damage, isDot) {
+function rollSpellAttack(attacker, defender, damage, isDot, isPhys) {
   let miss = spellMiss(defender.stats.level - attacker.stats.level);
   let spellCrit = attacker.stats.spellCrit || 0;
   spellCrit += 0.02; // Around 2% at lvl 25 with no buffs TODO: Actually get the correct amount, int per crit at 25: 31.8, base: 3.18%
@@ -289,7 +289,7 @@ function rollSpellAttack(attacker, defender, damage, isDot) {
                       0.5 * netResistance / resistCap;
 
   let resistAmount = 0;
-  if (Math.random() < resistChance) resistAmount = damage * avgResist / resistChance;
+  if (!isPhys && (Math.random() < resistChance)) resistAmount = damage * avgResist / resistChance;
   // Source: Zephan warlock spreadsheet
   // let mitigation = netResistance > defender.stats.level * 10 / 3 ? 
   //         0.5625 * netResistance / (defender.stats.level * 5) + 0.5 : 

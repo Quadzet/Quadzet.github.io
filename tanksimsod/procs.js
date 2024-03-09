@@ -164,7 +164,7 @@ class WeaponProc extends Proc {
       if (rng < procChance) {
         this.cooldown = event.timestamp + this.ICD;
         if (this.damage > 0) {
-          let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false);
+          let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false, !this.magic);
           damageEvent.name = this.name;
           damageEvent.timestamp = event.timestamp;
           damageEvent.threat = damageEvent.amount * source.stats.threatMod;
@@ -173,7 +173,7 @@ class WeaponProc extends Proc {
         }
         if (this.tick > 0) {
           clearFutureTicks(this.name, futureEvents);
-          let damageEvent = rollSpellAttack(source, target, this.tick * source.getSpellDamageMod(), true);
+          let damageEvent = rollSpellAttack(source, target, this.tick * source.getSpellDamageMod(), true, !this.magic);
           damageEvent.name = this.name;
           damageEvent.timestamp = event.timestamp;
           damageEvent.threat = damageEvent.amount * source.stats.threatMod;

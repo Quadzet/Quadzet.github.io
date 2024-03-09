@@ -740,6 +740,46 @@ class QuickStrike extends Ability {
     }
 }
 
+class ThunderClap extends Ability {
+    constructor(rageReduction, furiousThunder) {
+        super("Thunder Clap", 4000, 20 - rageReduction, true)
+        this.furiousThunder = furiousThunder;
+    }
+    use(timestamp, source, target, reactiveEvents, futureEvents) {
+        let damage = this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+        damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
+        let damageEvent = rollSpellAttack(source, target, damage, false, true);
+        damageEvent.trigger = false;
+
+        this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    }
+    rank(level) {
+      if (level < 6) return -1;
+      else if (level < 18) return 1;
+      else if (level < 28) return 2;
+      else if (level < 38) return 3;
+      else if (level < 48) return 4;
+      else if (level < 58) return 5;
+      else return 4;
+    }
+    damage(rank) {
+      if (rank == 1) return 10 * (this.furiousThunder ? 2 : 1);
+      else if (rank == 2) return 23 * (this.furiousThunder ? 2 : 1);
+      else if (rank == 3) return 37 * (this.furiousThunder ? 2 : 1);
+      else if (rank == 4) return 55 * (this.furiousThunder ? 2 : 1);
+      else if (rank == 5) return 82 * (this.furiousThunder ? 2 : 1);
+      else if (rank == 6) return 103 * (this.furiousThunder ? 2 : 1);
+      else 
+      {
+        console.log("Error: invalid rank for " + this.name + ": " + rank)
+        return 0;
+      }
+    }
+    threatModifier(rank) {
+      return 2.5 * (this.furiousThunder ? 1.5 : 1);
+    }
+}
+
 class Rend extends Ability {
     constructor(rageReduction) {
         super("Rend", 0, 10 - rageReduction, true)
@@ -860,6 +900,8 @@ function TankAbilities(tankStats) {
     abilities["Raging Blow"] = new RagingBlow();
   if (tankStats.runes.quickStrike && tankStats.twohand)
     abilities["Quick Strike"] = new QuickStrike(focusedRage + tankStats.talents.impHS);
+  if (tankStats.runes.furiousThunder)
+    abilities["Thunder Clap"] = new ThunderClap(focusedRage + tankStats.talents.impTC, tankStats.runes.furiousThunder);
   if (tankStats.runes.preciseTiming || tankStats.runes.bloodsurge)
     abilities["Slam"] = new Slam(focusedRage, tankStats.runes.preciseTiming, tankStats.runes.bloodsurge);
   if (tankStats.runes.devastate && !tankStats.dualWield && !tankStats.twohand)

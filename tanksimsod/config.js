@@ -722,6 +722,7 @@ function updateStats()
                 impHS: impHS,
                 impSA: impSA,
                 impSB: getTalentValue("improved-shield-block"),
+                impTC: getTalentValue("improved-thunderclap"),
                 impRend: impRend,
                 defiance: defiance,
                 impale: impale,
