@@ -465,8 +465,9 @@ class DeathWish extends Ability {
 }
 
 class HeroicStrike extends Ability {
-    constructor() {
+    constructor(rageCost) {
         super("Heroic Strike", 0, 0, false)
+        this.actualRageCost = rageCost;
     }
 
     use(timestamp, source, target, reactiveEvents, futureEvents) {
@@ -481,7 +482,7 @@ class HeroicStrike extends Ability {
         source.isHeroicStrikeQueued = true
     }
     isUsable(timestamp, source) {
-        return (source.isHeroicStrikeQueued == false && source.rage > this.rageCost);
+        return (source.isHeroicStrikeQueued == false && source.rage > this.actualRageCost);
     }
     threatCalculator(event, source) {
       return 0;
@@ -890,7 +891,7 @@ function TankAbilities(tankStats) {
   let abilities = {
     "MH Swing": new Autoattack(),
     "Revenge": new Revenge(focusedRage),
-    "Heroic Strike": new HeroicStrike(),
+    "Heroic Strike": new HeroicStrike(15 - focusedRage - tankStats.talents.impHS),
     "Bloodrage": new Bloodrage(),
     "Rend": new Rend(focusedRage),
   }
