@@ -25,13 +25,13 @@
 
 const races = {
     "Dwarf": {
-    strength: 81, //56,
-    stamina: 75, //53,
-    agility: 50, //35,
+    strength: 81 + 19, 
+    stamina: 75 + 18, 
+    agility: 50 + 12, 
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -45,13 +45,13 @@ const races = {
     skilltype: 'none'
 },
     "Gnome": {
-    strength: 74,//49,
-    stamina: 71,//49,
-    agility: 57,//42,
+    strength: 74 + 19,
+    stamina: 71 + 18,
+    agility: 57 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -65,13 +65,13 @@ const races = {
     skilltype: 'none'
 },
     "Human": {
-    strength: 79,//54,
-    stamina: 72,//50,
-    agility: 54,//39,
+    strength: 79 + 19,
+    stamina: 72 + 18,
+    agility: 54 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -85,13 +85,13 @@ const races = {
     skilltype: ["Sword", "Mace", "Two-handed Sword", "Two-handed Mace"],
 },
     "Night Elf": {
-    strength: 76, //51,
-    stamina: 71, //49,
-    agility: 59, //44,
+    strength: 76 + 19, 
+    stamina: 71 + 18, 
+    agility: 59 + 12, 
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -105,13 +105,13 @@ const races = {
     skilltype: 'none'
 },
     "Orc": {
-    strength: 57 + 25,
-    stamina: 52 + 22,
-    agility: 36 + 15,
+    strength: 57 + 25 + 19,
+    stamina: 52 + 22 + 18,
+    agility: 36 + 15 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -125,13 +125,13 @@ const races = {
     skilltype: ["Axe", "Two-handed Axe"]
 },
     "Tauren": {
-    strength: 59 + 25,
-    stamina: 52 + 22,
-    agility: 34 + 15,
+    strength: 59 + 25 + 19,
+    stamina: 52 + 22 + 18,
+    agility: 34 + 15 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -145,13 +145,13 @@ const races = {
     skilltype: 'none'
 },
     "Troll": {
-    strength: 55 + 25,
-    stamina: 51 + 22,
-    agility: 41 + 15,
+    strength: 55 + 25 + 19,
+    stamina: 51 + 22 + 18,
+    agility: 41 + 15 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
@@ -165,13 +165,13 @@ const races = {
     skilltype: 'none'
 },
     "Undead": {
-    strength: 78,
-    stamina: 73,
-    agility: 52,
+    strength: 78 + 19,
+    stamina: 73 + 18,
+    agility: 52 + 12,
 
     hit: 0,
     crit: 0,
-    attackpower: 100,
+    attackpower: 100 + 18,
     haste: 0,
 
     armor: 0,
