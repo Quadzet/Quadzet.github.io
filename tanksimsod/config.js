@@ -518,6 +518,7 @@ function updateStats()
     let damageMod = 0.9; // Def stance
     damageMod *= checkAuraToggle("dmf") ? 1.1 : 1; 
     damageMod *= checkAuraToggle("ashcry") ? 1.05 : 1; 
+    damageMod *= checkRuneToggle("shield-mastery") && ohweapontype == 'Shield' ? 1.1 : 1; 
     crit += checkAuraToggle("botbf") ? 2 : 0;
     attackpower += checkAuraToggle("botbf") ? 20 : 0;
     attackpower += checkAuraToggle("dragonslayer") ? 140 : 0;
@@ -763,6 +764,7 @@ function updateStats()
               furiousThunder: checkRuneToggle("furious-thunder"),
               flagellation: checkRuneToggle("flagellation"),
               ragingBlow: checkRuneToggle("raging-blow"),
+              shieldMastery: checkRuneToggle("shield-mastery"),
               bloodFrenzy: checkRuneToggle("blood-frenzy"),
               preciseTiming: checkRuneToggle("precise-timing"),
               bloodsurge: checkRuneToggle("bloodsurge"),
