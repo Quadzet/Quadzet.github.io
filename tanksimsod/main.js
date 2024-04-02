@@ -67,7 +67,7 @@ async function updateProgressbar(progressPerc) {
 // TODO: move this to a data file
 const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wildstrikes', 'lion', 'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
               'ogre', 'defense', 'fort-elixir', 'solid', 'shadow-oil', 'rumsey', 'oh-solid', 'oh-shadow-oil',
-              'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
+              'fotte', 'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
               'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor', 'agi', 'giants', 'spark-of-inspiration', 'dark-desire', 'stam-food', 'str-scroll',
               'leader-of-the-pack', 'trueshot'];
 const TANK_SETTINGS = ['level', 'race', 'startRage'];

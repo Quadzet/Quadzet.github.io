@@ -520,6 +520,7 @@ function updateStats()
     damageMod *= checkAuraToggle("ashcry") ? 1.05 : 1; 
     damageMod *= checkRuneToggle("shield-mastery") && ohweapontype == 'Shield' ? 1.1 : 1; 
     crit += checkAuraToggle("botbf") ? 2 : 0;
+    crit += checkAuraToggle("fotte") ? 5 : 0;
     attackpower += checkAuraToggle("botbf") ? 20 : 0;
     attackpower += checkAuraToggle("dragonslayer") ? 140 : 0;
     crit += checkAuraToggle("dragonslayer") ? 5 : 0;
@@ -559,6 +560,9 @@ function updateStats()
     stamina *= checkAuraToggle("zandalar") ? 1.15 : 1;
     agility *= checkAuraToggle("zandalar") ? 1.15 : 1;
     strength *= checkAuraToggle("zandalar") ? 1.15 : 1;
+    stamina *= checkAuraToggle("fotte") ? 1.08 : 1;
+    agility *= checkAuraToggle("fotte") ? 1.08 : 1;
+    strength *= checkAuraToggle("fotte") ? 1.08 : 1;
     stamina *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
     agility *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
     strength *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
