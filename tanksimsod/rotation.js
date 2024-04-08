@@ -1,5 +1,57 @@
-
 "use strict";
+
+let ACTIONS = [];
+let EXECUTE_ACTIONS = [];
+let PREPULL_ACTIONS = [];
+
+class ActionRequirement {
+  constructor(input) {
+    this.rage = input.rage;
+    this.rageOperator = input.rageOperator;
+
+    this.timestamp = input.timestamp;
+    this.timestampOperator = input.timestampOperator;
+
+    this.auraNames = input.auraNames;
+    this.auraOwners = input.auraOwners;
+    this.auraDurations = input.auraDurations;
+    this.auraOperators = input.auraOperators;
+
+    this.abilityNames = input.abilityNames;
+    this.abilityCDs = input.abilityCDs;
+    this.abilityOperators = input.abilityOperators;
+
+    this.runesActive = input.runesActive;
+    this.runesInactive = input.runesInactive;
+
+    this.talentsActive = input.talentsActive;
+    this.talentsInactive = input.talentsInactive;
+  }
+  checkRequirement(timestamp, source, target) {
+    return true; // :)
+  }
+  checkValid(source, target) {
+    return null; // or string with error
+  }
+}
+class Action {
+  constructor(input) {
+    this.name = input.name;
+
+    this.requirements = input.requirements;
+    this.rage = input.rage;
+
+
+
+  }
+}
+
+
+
+
+
+
+
 
 function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {
   // if (event.ability)...
