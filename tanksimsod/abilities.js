@@ -614,15 +614,18 @@ class ShieldSlam extends Ability {
       }
     }
     staticThreat(rank) {
-      if (rank == 1) return 178;
-      else if (rank == 2) return 203;
-      else if (rank == 3) return 229;
-      else if (rank == 4) return 254;
+      if (rank == 1) return 178 * 2;
+      else if (rank == 2) return 203 * 2;
+      else if (rank == 3) return 229 * 2;
+      else if (rank == 4) return 254 * 2;
       else 
       {
         console.log("Error: invalid rank for " + this.name + ": " + rank)
         return 0;
       }
+    }
+    threatModifier(rank) {
+      return 2;
     }
 }
 
