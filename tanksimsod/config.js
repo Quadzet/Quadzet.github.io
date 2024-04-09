@@ -698,7 +698,8 @@ function updateStats()
             baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
             
             threatMod: 1.3 * (1 + 0.03*defiance),
-            critMod: 2 + impale*0.1,
+            abilityCritMod: 1 + impale*0.1,
+            critMod: 1,
 
             startRage: _startRage,
 
@@ -774,6 +775,7 @@ function updateStats()
               bloodsurge: checkRuneToggle("bloodsurge"),
               focusedRage: checkRuneToggle("focused-rage"),
               quickStrike: checkRuneToggle("quick-strike"),
+              wreckingCrew: checkRuneToggle("wrecking-crew"),
             }
             
         },
@@ -802,7 +804,8 @@ function updateStats()
             defense: bossLevel * 5,
             baseArmor: bossArmor, 
             
-            critMod: 2,
+            abilityCritMod: 2,
+            critMod: 1,
             threatMod: 0,
             startRage: 0,
 
