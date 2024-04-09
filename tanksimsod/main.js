@@ -354,6 +354,7 @@ async function loadItemData() {
   const spellNameData = await fetchTable('SpellNamePruned'); // TODO prune
   const itemSetData = await fetchTable('ItemSet'); // TODO prune
   const itemSetSpell = await fetchTable('ItemSetSpell'); // TODO prune
+  const shieldBlockValue = await fetchTable('ShieldBlockPruned');
 
   // Transform into a JSON object
   const itemSparseData = itemSparseDataCSV.reduce((result, row) => {
@@ -407,7 +408,7 @@ async function loadItemData() {
             bonus.parry = parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 51)
             bonus.block = parseInt(e.EffectBasePoints) + 1;
-          if (e.Effect == 6 && e.EffectAura == 158)
+          if (e.Effect == 6 && (e.EffectAura == 158 || e.EffectAura == 564))
             bonus.blockvalue = parseInt(e.EffectBasePoints) + 1;
           if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 == 95)
             bonus.defense = parseInt(e.EffectBasePoints) + 1;
@@ -485,7 +486,9 @@ async function loadItemData() {
     obj.slot = getSlot(item.InventoryType); // Not needed atm, but useful if I ever merge the item ID arrays
     obj.armor = parseInt(itemSparse.Resistances_0) ? itemSparse.Resistances_0 : 0;
     if (obj.type == "Shield") {
-      obj.blockvalue = ShieldBlockValue[`${itemSparse.OverallQualityID}`][`${itemSparse.ItemLevel}`];
+      let shieldblock = getRows(shieldBlockValue, 'Rarity', itemSparse.ItemLevel)[0];
+      let blockvalue = shieldblock[itemSparse.OverallQualityID];
+      obj.blockvalue = parseInt(blockvalue);
     }
 
     obj.strength = getStat(itemSparse, 4);
@@ -512,25 +515,25 @@ async function loadItemData() {
             if (e.Effect == 6 && e.EffectAura == 99 && e.EffectDieSides == 1)
               obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 102 && e.EffectMiscValue_0 & 32)
-              obj.attackpower = (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
+              obj.attackpower += (obj.attackpower || 0) + parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 54)
-              obj.hit = parseInt(e.EffectBasePoints) + 1;
+              obj.hit += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 52)
-              obj.crit = parseInt(e.EffectBasePoints) + 1;
+              obj.crit += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 22 && e.EffectMiscValue_0 == 1)
-              bonus.armor = parseInt(e.EffectBasePoints) + 1;
+              bonus.armor += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 49)
-              obj.dodge = parseInt(e.EffectBasePoints) + 1;
+              obj.dodge += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 47)
-              obj.parry = parseInt(e.EffectBasePoints) + 1;
+              obj.parry += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 51)
-              obj.block = parseInt(e.EffectBasePoints) + 1;
-            if (e.Effect == 6 && e.EffectAura == 158)
-              obj.blockvalue = parseInt(e.EffectBasePoints) + 1;
+              obj.block += parseInt(e.EffectBasePoints) + 1;
+            if (e.Effect == 6 && (e.EffectAura == 158 || e.EffectAura == 564))
+              obj.blockvalue += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 == 95)
-              obj.defense = parseInt(e.EffectBasePoints) + 1;
+              obj.defense += parseInt(e.EffectBasePoints) + 1;
             if (e.Effect == 6 && e.EffectAura == 30 && e.EffectMiscValue_0 != 95 && e.EffectMiscValue_0 != 226 && e.EffectMiscValue_0 != 393 && e.EffectMiscValue_0 != 45 && e.EffectMiscValue_0 != 46) {
-              obj.skill = parseInt(e.EffectBasePoints) + 1;
+              obj.skill += parseInt(e.EffectBasePoints) + 1;
               // TODO: remaining wep types
               if (obj.skilltype == null)
                 obj.skilltype = [];

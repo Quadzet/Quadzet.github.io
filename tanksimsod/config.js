@@ -589,12 +589,12 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
-    crit = crit + agility * 0.610 /*0.0758*/ + (mhwepskill-(level * 5))*0.04 + cruelty;
+    crit = crit + agility * 0.0610 /*0.0758*/ + (mhwepskill-(level * 5))*0.04 + cruelty;
 
-    parry += 5 + defense*0.04 + deflection;
-    dodge += agility * 0.610 /*0.0758*/ + defense*0.04
-    block += 5 + defense*0.04 + shieldspec;
-    blockvalue += strength/20
+    parry += 5 + defense * 0.04 + deflection;
+    dodge += agility * 0.0610 /*0.0758*/ + defense*0.04
+    block += 5 + defense * 0.04 + shieldspec;
+    blockvalue += strength / 20;
 
     block = (_dualWield || twohand) ? 0 : block
     blockvalue = (_dualWield || twohand) ? 0 : blockvalue
