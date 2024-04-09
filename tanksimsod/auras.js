@@ -19,7 +19,8 @@ class Aura {
         if (!input.APMod) this.APMod = 0; else this.APMod = input.APMod; // additive
         if (!input.APMultMod) this.APMultMod = 1; else this.APMultMod = input.APMultMod; // multiplicative
         if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
-        if (!input.critMod) this.critMod = 0; else this.critMod = input.critMod; // percentage
+        if (!input.abilityCritMod) this.abilityCritMod = 0; else this.abilityCritMod = input.abilityCritMod; // percentage
+        if (!input.critMod) this.critMod = 1; else this.critMod = input.critMod; // multiplicative
         if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
         if (!input.physDamageMod) this.physDamageMod = 1; else this.physDamageMod = input.physDamageMod; // multiplicative
         if (!input.hastePerc) this.hastePerc = 0; else this.hastePerc = input.hastePerc; // percentage
@@ -52,6 +53,7 @@ class Aura {
         owner.damageMod *= this.damageMod;
         owner.physDamageMod *= this.physDamageMod;
         owner.APMultMod *= this.APMultMod;
+        owner.critMod *= this.critMod;
 
         let applyEvent = { 
             type: "auraApply",
@@ -102,6 +104,7 @@ class Aura {
               owner.damageMod *= this.damageMod
               owner.physDamageMod /= this.physDamageMod;
               owner.APMultMod *= this.APMultMod;
+              owner.critMod *= this.critMod;
           }
         }
         else {
@@ -146,6 +149,7 @@ class Aura {
                 owner.damageMod /= this.damageMod;
                 owner.physDamageMod /= this.physDamageMod;
                 owner.APMultMod /= this.APMultMod;
+                owner.critMod /= this.critMod;
             }
         }
     }
@@ -161,6 +165,7 @@ class Aura {
         owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
         owner.physDamageMod /= this.physDamageMod * (this.scalingStacks ? this.stacks : 1)
         owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);
+        owner.critMod /= this.critMod * (this.scalingStacks ? this.stacks : 1);
         event.stacks = this.stacks;
         this.stacks = 0
         this.duration = 0;
@@ -358,6 +363,26 @@ class EnrageAura extends Aura {
       this.expire(event, owner, reactiveEvents, futureEvents, false)
     }
 
+  }
+}
+
+class WreckingCrewAura extends Aura {
+  constructor() {
+    super({
+      type: "buff",
+      name: "Wrecking Crew",
+    
+      maxDuration: 6000,
+      critMod: 1.1,
+    })
+  }
+  handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+    if (event.type == "damage" && ["crit", "crit block"].includes(event.hit) && ["MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst", "Shield Slam", "Raging Blow", "Slam", "Execute", "Quickstrike", "Whirlwind", "Devastate", "Mortal Strike"].includes(event.name) && event.source == owner.name) {
+      this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+    }
+    if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+      this.expire(event, owner, reactiveEvents, futureEvents, false)
+    }
   }
 }
 
@@ -596,6 +621,8 @@ function TankAuras(globals) {
     ret.push(new BloodsurgeAura());
   if (globals.tankStats.runes.flagellation)
     ret.push(new FlagellationAura());
+  if (globals.tankStats.runes.wreckingCrew)
+    ret.push(new WreckingCrewAura());
   if (globals.tankStats.bonuses.wildStrikes)
     ret.push(new WildStrikesAura());
   if (globals.tankStats.talents.flurry > 0)

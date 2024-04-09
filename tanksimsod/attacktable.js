@@ -110,7 +110,7 @@ function twoRollTankBossTable(attacker, defender, damage) {
         let crit_roll = 100*Math.random();
         let block_roll = 100*Math.random();
         if (crit_roll < crit && block_roll < block) {
-            damage = Math.max(0, damage*attacker.stats.critMod - blockValue); // Impale
+            damage = Math.max(0, damage*attacker.stats.abilityCritMod*attacker.getCritMod() - blockValue); // Impale
             type = 'crit block';
         }
         else if (block_roll < block) {
@@ -118,7 +118,7 @@ function twoRollTankBossTable(attacker, defender, damage) {
             type = 'block';
         }
         else if (crit_roll < crit) {
-            damage = damage*attacker.stats.critMod; // Impale
+            damage = damage*attacker.stats.abilityCritMod * attacker.getCritMod(); // Impale
             type = 'crit';
         }
     }
@@ -178,7 +178,8 @@ function rollTankBossTable(attacker, defender, damage, yellow = false, dualWield
         type = "glance";
     }
     else if ((!yellow && rng < miss + parry + dodge + block + glance + crit) || (rng < miss + parry + dodge + block + crit)) {
-        damage = damage*(yellow ? attacker.stats.critMod : 2); // Impale
+        damage = damage*(yellow ? attacker.stats.abilityCritMod : 2); // Impale
+        damage *= attacker.getCritMod(); // e.g. wrecking crew
         type = "crit";
     }
     else type = "hit";

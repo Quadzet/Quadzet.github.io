@@ -589,12 +589,12 @@ function updateStats()
     strength = Math.floor(strength)
     stamina = Math.floor(stamina)
 
-    crit = crit + agility * 0.0758 + (mhwepskill-(level * 5))*0.04 + cruelty;
+    crit = crit + agility * 0.0610 /*0.0758*/ + (mhwepskill-(level * 5))*0.04 + cruelty;
 
-    parry += 5 + defense*0.04 + deflection;
-    dodge += agility * 0.0758 + defense*0.04
-    block += 5 + defense*0.04 + shieldspec;
-    blockvalue += strength/20
+    parry += 5 + defense * 0.04 + deflection;
+    dodge += agility * 0.0610 /*0.0758*/ + defense*0.04
+    block += 5 + defense * 0.04 + shieldspec;
+    blockvalue += strength / 20;
 
     block = (_dualWield || twohand) ? 0 : block
     blockvalue = (_dualWield || twohand) ? 0 : blockvalue
@@ -698,7 +698,8 @@ function updateStats()
             baseHealth: (stamina*10 + extrahp)*(document.getElementById("race").value == "Tauren" ? 1.05 : 1),
             
             threatMod: 1.3 * (1 + 0.03*defiance),
-            critMod: 2 + impale*0.1,
+            abilityCritMod: 1 + impale*0.1,
+            critMod: 1,
 
             startRage: _startRage,
 
@@ -774,6 +775,7 @@ function updateStats()
               bloodsurge: checkRuneToggle("bloodsurge"),
               focusedRage: checkRuneToggle("focused-rage"),
               quickStrike: checkRuneToggle("quick-strike"),
+              wreckingCrew: checkRuneToggle("wrecking-crew"),
             }
             
         },
@@ -802,7 +804,8 @@ function updateStats()
             defense: bossLevel * 5,
             baseArmor: bossArmor, 
             
-            critMod: 2,
+            abilityCritMod: 2,
+            critMod: 1,
             threatMod: 0,
             startRage: 0,
 

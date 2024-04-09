@@ -117,6 +117,14 @@ class Actor {
         return AP;
     }
 
+    getCritMod() {
+        let critMod = this.stats.critMod;
+        this.auras.forEach(aura => {
+          if (aura.duration > 0)
+            critMod *= aura.critMod;
+        })
+        return critMod;
+    }
     getBlockValue() {
         let blockValue = this.stats.blockValue;
         return blockValue;
