@@ -804,7 +804,7 @@ function updateStats()
             defense: bossLevel * 5,
             baseArmor: bossArmor, 
             
-            abilityCritMod: 2,
+            abilityCritMod: 1,
             critMod: 1,
             threatMod: 0,
             startRage: 0,
