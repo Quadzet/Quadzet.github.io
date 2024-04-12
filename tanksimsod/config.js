@@ -776,6 +776,7 @@ function updateStats()
               focusedRage: checkRuneToggle("focused-rage"),
               quickStrike: checkRuneToggle("quick-strike"),
               wreckingCrew: checkRuneToggle("wrecking-crew"),
+              swordAndBoard: checkRuneToggle("sword-and-board"),
             }
             
         },

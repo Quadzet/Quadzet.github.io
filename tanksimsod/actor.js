@@ -117,6 +117,20 @@ class Actor {
         return AP;
     }
 
+    auraActive(name) {
+      let active = false;
+      this.auras.forEach(aura => {
+        if (aura.name == name && aura.duration > 0)
+          active = true;
+      })
+      return active;
+    }
+
+    resetCooldown(name) {
+      if (this.abilities[name] != null)
+        this.abilities[name].cooldownReady = 0; // Should be timestamp realistically but should not matter
+    }
+
     getCritMod() {
         let critMod = this.stats.critMod;
         this.auras.forEach(aura => {
