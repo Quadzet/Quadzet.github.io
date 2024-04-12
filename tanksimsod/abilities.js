@@ -91,7 +91,7 @@ class Ability {
         reactiveEvents.push(damageEvent)
 
         this.cooldownReady = timestamp + this.baseCooldown
-        if (!(damageEvent.ability == "Shield Slam" && source.auraActive('Sword and Board'))) {
+        if (!(damageEvent.name == "Shield Slam" && source.auraActive('Sword and Board'))) {
           let rageEvent = generateRageEventFromCast(source, target, damageEvent, this.rageCost, false);
           if (rageEvent !== undefined)
             reactiveEvents.push(rageEvent);
