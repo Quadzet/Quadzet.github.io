@@ -568,19 +568,23 @@ class DeepWoundsAura extends Aura {
       // Generate new ticks with 1/3 the total dmg
       // Note double dipping dmg mods
       let totalDmg = owner.stats.bleedBonus * source.stats.talents.deepWounds * 0.2 * source.getPhysDamageMod() * source.getPhysDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing/14000)/2;
+      let startTime;
       while (true) {
         let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == this.name)})
         if(index >= 0) {
+          startTime = futureEvents[index].timestamp; // Last should be the closest one
           totalDmg += futureEvents[index].amount;
           futureEvents.splice(index, 1)
         }
         else 
           break;
       }
+      if (startTime == null)
+        startTime = event.timestamp + 3000;
       for (let i = 0; i < 4; i++) {
         futureEvents.push(
         {
-            timestamp: event.timestamp + (i+1)*3000,
+            timestamp: startTime + i * 3000,
             type: "damage",
             source: source.name,
             target: event.target,
