@@ -1,0 +1,8 @@
+- buff tooltips depending on level
+- wep skill incorrect
+
+- essence of the red
+
+
+- icons
+- grilled squid, blessed sunfruit, chimaerok chops, smoked desert dumplings

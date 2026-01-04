@@ -1,0 +1,50 @@
+
+HP: 8
+Alchemist
+ - Healing Potion [ ] [ ]
+ - Corrosive Potion [ ] [ ]
+ - Purging Potion [ ] [ ]
+ - Potency Potion [ ] [ ]
+ - Unstable Concoction [ ] [ ]
+ - Smoke Bomb [ ]
+
+Healing pot - Heal party member for x
+Corrosive pot - Deal X dmg, double against shield
+Purging potion - Remove any negative affect from a party member
+Potency Pot - Increase effectiveness of party member's next attack
+Unstable conc - Deal X damage to all enemies
+Smoke Bomb - Party becomes hidden for one turn
+
+HP: 6
+Occultist
+ - Blood Shield
+ - Black Orb
+ - Mind Control
+ - Vampiric Touch
+ - Sacrifice
+
+Reg 1 hp
+
+Blood shield: cost 2 hp, protect ally from harm
+Black orb - channel orb dealing hp spent * d6 dmg (max 3hp spent)
+Mind control - cost 2 hp, force minion to attack a target of your choice, or interrupt channel
+Vampiric Touch - Mark an enemy, the next attack against the target will heal the attacker for X
+Sacrifice - Die, divide health between party members
+
+
+Gargoyle
+
+- Fly
+- Bombardment - Deal 3 dmg to entire party
+- Harden Skin - Gain a shield for 20 amount of health, deal double dmg while it's up
+
+HP: 100 -> 96 -> 95 -> 85 -> 80 -> 78 -> 68 -> 67 -> 64 -> 53 -> 44 -> 36 -> 24 -> 10 -> 0
+HP: 87 -> 82 -> 70 -> 69 -> 54 -> 43 -> 37 -> 36 -> 26 -> 21 -> 18 -> 4 -> 3 -> 0
+shield: 0
+
+Brittle
+    Takes double crit dmg
+- Hyper beam - Deal 10 damage to the target
+- Charge up - Each time this is cast, double the amount of target hit by hyper beam
+
+HP:

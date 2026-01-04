@@ -1,0 +1,1 @@
+CALL "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe" --disable-web-security --user-data-dir=C:\temp\brave-test-profile E:\Code\PullSimIO\TankSimDev\index.html
