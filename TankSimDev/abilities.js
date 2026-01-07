@@ -618,7 +618,7 @@ class Rend extends Ability {
         let impRendMult = 1;
         if (source.stats.talents.impRend)
           impRendMult += 0.05 + 0.1 * source.stats.talents.impRend;
-        let dotDamage = statRound(this.damage(damageEvent.rank) * target.stats.bleedBonus * impRendMult);
+        let dotDamage = statRound(this.damage(damageEvent.rank) * impRendMult);
         let dotEvent =
         {
           timestamp: damageEvent.timestamp + (i + 1) * 3000,

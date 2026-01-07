@@ -81,9 +81,6 @@ function getCoRArmor(level) {
   else if (level < 56) return 465;
   else return 640;
 }
-function getHomunArmor(level) {
-  return 1550;//1025; // TODO: other levels I guess lol
-}
 
 function getSAArmor(level) {
   if (level < 10) return 0;
@@ -104,14 +101,13 @@ function getIEAArmor(level) {
   else return 2550;
 }
 
-function getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, homunculi, armor) {
+function getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, armor) {
   armor = armor ? armor : 0;
   if (CoR) armor -= getCoRArmor(level);
   if (faerieFire) armor -= getFFArmor(level);
   let SAArmor = SA ? getSAArmor(level) : 0;
   let IEAArmor = IEA ? getIEAArmor(level) : 0;
-  let homunArmor = homunculi ? getHomunArmor(level) : 0;
-  armor -= Math.max(SAArmor, IEAArmor, homunArmor);
+  armor -= Math.max(SAArmor, IEAArmor);
   armor = Math.max(0, armor);
   return armor;
 }
@@ -469,17 +465,14 @@ function updateStats() {
 
   armor *= checkAuraToggle("loh") ? 1.3 : 1;
   // Buffs
+  // TODO: Base these on level
   mhmin += checkAuraToggle('stone') ? 6 : 0;
   mhmax += checkAuraToggle('stone') ? 6 : 0;
   ohmin += checkAuraToggle('oh-stone') ? 6 : 0;
   ohmax += checkAuraToggle('oh-stone') ? 6 : 0;
-  // mhmin += checkAuraToggle('dense') ? 8 : 0;
-  // mhmax += checkAuraToggle('dense') ? 8 : 0;
-  // ohmin += checkAuraToggle('oh-dense') ? 8 : 0;
-  // ohmax += checkAuraToggle('oh-dense') ? 8 : 0;
 
   strength += checkAuraToggle('giants') ? 8 : 0;
-  strength += checkAuraToggle('ogre') ? 8 : 0;
+  strength += checkAuraToggle('str') ? 8 : 0;
   strength += checkAuraToggle('str-scroll') ? 13 : 0;
   agility += checkAuraToggle('agi') ? 15 : 0;
   stamina += checkAuraToggle('stam-food') ? 12 : 0;
@@ -502,11 +495,7 @@ function updateStats() {
   let impBShout = true; // TODO
   attackpower += checkAuraToggle('battleshout') ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0;
   attackpower += checkAuraToggle('trueshot') ? Math.floor(getTrueshotAP(level)) : 0;
-  agility += checkAuraToggle('horn') ? 17 : 0;
-  strength += checkAuraToggle('horn') ? 17 : 0;
-  crit += checkAuraToggle('leader-of-the-pack') ? 3 : 0;
-
-  let bleedBonus = (checkAuraToggle('mangle') ? 1.3 : 1) * (1 - document.getElementById('bleed-resistance').value / 100);
+  crit += checkAuraToggle('leader') ? 3 : 0;
 
   let impFort = true; // TODO
   stamina += checkAuraToggle('fort') ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
@@ -515,10 +504,6 @@ function updateStats() {
 
   let damageMod = 0.9; // Def stance
   damageMod *= checkAuraToggle("dmf") ? 1.1 : 1;
-  damageMod *= checkAuraToggle("ashcry") ? 1.05 : 1;
-  crit += checkAuraToggle("botbf") ? 2 : 0;
-  crit += checkAuraToggle("fotte") ? 5 : 0;
-  attackpower += checkAuraToggle("botbf") ? 20 : 0;
   attackpower += checkAuraToggle("dragonslayer") ? 140 : 0;
   crit += checkAuraToggle("dragonslayer") ? 5 : 0;
   attackpower += checkAuraToggle("fengus") ? 200 : 0;
@@ -530,7 +515,6 @@ function updateStats() {
   spellcrit += checkAuraToggle("dragonslayer") ? 10 : 0;
   spellcrit += checkAuraToggle("slipkik") ? 3 : 0;
   spellcrit += checkAuraToggle("songflower") ? 5 : 0;
-  spellcrit += checkAuraToggle("spark-of-inspiration") ? 4 : 0;
 
   let enhTotems = true; // TODO
   strength += checkAuraToggle("strtotem") ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
@@ -557,12 +541,9 @@ function updateStats() {
   stamina *= checkAuraToggle("zandalar") ? 1.15 : 1;
   agility *= checkAuraToggle("zandalar") ? 1.15 : 1;
   strength *= checkAuraToggle("zandalar") ? 1.15 : 1;
-  stamina *= checkAuraToggle("fotte") ? 1.08 : 1;
-  agility *= checkAuraToggle("fotte") ? 1.08 : 1;
-  strength *= checkAuraToggle("fotte") ? 1.08 : 1;
-  stamina *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
-  agility *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
-  strength *= (checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1;
+  stamina *= checkAuraToggle("kings") ? 1.1 : 1;
+  agility *= checkAuraToggle("kings") ? 1.1 : 1;
+  strength *= checkAuraToggle("kings") ? 1.1 : 1;
 
   armor += agility * 2;
   armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
@@ -571,9 +552,9 @@ function updateStats() {
   armor += checkAuraToggle("defense") ? 250 : 0;
   armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
 
-  let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1) * (checkAuraToggle("zandalar") ? 1.15 : 1) * ((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
-  let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * ((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
-  let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * ((checkAuraToggle("kings") || checkAuraToggle('lion')) ? 1.1 : 1)
+  let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1) * (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
+  let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
+  let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
 
   extrastamina *= staminaMultiplier;
   extrastrength *= strengthMultiplier;
@@ -596,7 +577,7 @@ function updateStats() {
   block = (_dualWield || twohand) ? 0 : block
   blockvalue = (_dualWield || twohand) ? 0 : blockvalue
 
-  let hastePerc = (checkAuraToggle('wcb') ? 15 : 0) + (twohand && (checkAuraToggle("spark-of-inspiration") ? 10 : 0));
+  let hastePerc = checkAuraToggle('wcb') ? 15 : 0;
 
   document.getElementById("playerhp").innerHTML = `${Math.round((stamina * 10 + extrahp) * (document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
   document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
@@ -636,9 +617,8 @@ function updateStats() {
   let CoR = checkAuraToggle("cor");
   let IEA = checkAuraToggle("iea");
   let faerieFire = checkAuraToggle("faeriefire");
-  let homunculi = checkAuraToggle("degrade");
   let bossArmor = Number(document.querySelector("#bossArmor").value);
-  bossArmor = getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, homunculi, bossArmor);
+  bossArmor = getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, false, bossArmor);
 
   let rotation = [];
   ABILITIES.forEach(ability => {
@@ -750,7 +730,6 @@ function updateStats() {
         mhDismantle: Number(document.getElementById('mainhand-enchant').getAttribute('enchantID')) == 435481,
         ohDismantle: Number(document.getElementById('offhand-enchant').getAttribute('enchantID')) == 435481,
 
-        wildStrikes: checkAuraToggle("wildstrikes"),
         wcb: checkAuraToggle('wcb'),
         dmf: checkAuraToggle("dmf"),
       },
@@ -768,8 +747,7 @@ function updateStats() {
       MHWepSkill: bossLevel * 5,
       damageMod: 0.9, // Defensive Stance
       physDamageMod: 1,
-      bleedBonus: bleedBonus,
-      additivePhysBonus: checkAuraToggle('cov') ? 2 : 0,
+      additivePhysBonus: 0,
       hastePerc: 0,
       AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
       crit: 5,
@@ -787,7 +765,7 @@ function updateStats() {
       startRage: 0,
 
       bonuses: {
-        armorDebuff: IEA || homunculi,
+        armorDebuff: IEA,
       },
     },
     // Calc Settings and other globals

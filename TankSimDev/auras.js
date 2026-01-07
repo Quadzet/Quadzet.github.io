@@ -446,28 +446,6 @@ class BloodrageAura extends Aura {
     }
 }
 
-class WildStrikesAura extends Aura {
-    constructor() {
-        super({
-            type: "buff",
-            name: "Wild Strikes",
-
-            maxDuration: 1500,
-            APMultMod: 1.2,
-        })
-    }
-    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-
-        if (event.type == "extra attack" && event.name == "Wild Strikes") {
-            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-        }
-
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-            this.expire(event, owner, reactiveEvents, futureEvents, false)
-        }
-    }
-}
-
 class SwordAndBoardAura extends Aura {
     constructor() {
         super({
@@ -567,7 +545,7 @@ class DeepWoundsAura extends Aura {
             // Add the new additional dmg to the DW pool
             // Generate new ticks with 1/3 the total dmg
             // Note double dipping dmg mods
-            let totalDmg = owner.stats.bleedBonus * source.stats.talents.deepWounds * 0.2 * source.getPhysDamageMod() * source.getPhysDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing / 14000) / 2;
+            let totalDmg = source.stats.talents.deepWounds * 0.2 * source.getPhysDamageMod() * source.getPhysDamageMod() * (source.stats.MHMin + source.stats.MHMax + 2 * source.getAP() * source.stats.MHSwing / 14000) / 2;
             let startTime;
             while (true) {
                 let index = futureEvents.findIndex(e => { return (e.type == "damage" && e.name == this.name) })
@@ -647,8 +625,6 @@ function TankAuras(globals) {
     ]
     if (globals.tankStats.talents.enrage > 0)
         ret.push(new EnrageAura());
-    if (globals.tankStats.bonuses.wildStrikes)
-        ret.push(new WildStrikesAura());
     if (globals.tankStats.talents.flurry > 0)
         ret.push(new FlurryAura(globals.tankStats.talents.flurry));
     if (globals.tankStats.talents.deathwish)

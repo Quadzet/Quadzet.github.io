@@ -65,15 +65,22 @@ async function updateProgressbar(progressPerc) {
 }
 
 // TODO: move this to a data file
-const BUFFS = ['battleshout', 'motw', 'kings', 'might', 'horn', 'strtotem', 'wildstrikes', 'lion', 'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
-  'ogre', 'defense', 'fort-elixir', 'solid', 'shadow-oil', 'rumsey', 'oh-solid', 'oh-shadow-oil',
-  'fotte', 'botbf', 'ashcry', 'dmf', 'wcb', 'zandalar', 'dragonslayer', 'moldar', 'fengus', 'slipkik', 'songflower',
-  'mangle', 'cov', 'sunder', 'iea', 'degrade', 'faeriefire', 'cor', 'agi', 'giants', 'spark-of-inspiration', 'dark-desire', 'stam-food', 'str-scroll',
-  'leader-of-the-pack', 'trueshot'];
+const BUFFS = [
+  'battleshout', 'motw', 'kings', 'might', 'strtotem',
+  'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str', 'defense',
+  'fort-elixir', 'shadow-oil', 'rumsey', 'oh-shadow-oil',
+  'dmf', 'wcb', 'zandalar', 'dragonslayer',
+  'moldar', 'fengus', 'slipkik', 'songflower', 'sunder', 'iea',
+  'faeriefire', 'cor', 'agi', 'giants',
+  'dark-desire', 'stam-food', 'str-scroll', 'leader', 'trueshot'];
 const TANK_SETTINGS = ['player-level', 'race', 'startRage'];
 const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
-const TALENTS = ['deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS', 'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-const ENCHANT_SLOTS = ['head', 'shoulder', 'back', 'chest', 'wrist', 'hands', 'legs', 'feet', 'mainhand', 'offhand'];
+const TALENTS = [
+  'deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS',
+  'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
+const ENCHANT_SLOTS = [
+  'head', 'shoulder', 'back', 'chest', 'wrist', 'hands',
+  'legs', 'feet', 'mainhand', 'offhand'];
 const ENCHANT_IDS = {
   'head': [0],
   'shoulder': [0],
@@ -604,14 +611,17 @@ function createAuraRows() {
   let element = document.getElementById("aura-row-buffs")
   element.innerHTML = createAuraRow(BUFF_DATA, level)
 
-  element = document.getElementById("aura-row-world-buffs")
-  element.innerHTML = createAuraRow(WORLD_BUFF_DATA, level)
-
   element = document.getElementById("aura-row-oh-wep-buffs")
   element.innerHTML = createAuraRow(OH_BUFF_DATA, level)
 
   element = document.getElementById("aura-row-consumes")
   element.innerHTML = createAuraRow(CONSUMES_DATA, level)
+
+  element = document.getElementById("aura-row-world-buffs")
+  element.innerHTML = createAuraRow(WORLD_BUFF_DATA, level)
+
+  element = document.getElementById("aura-row-debuffs")
+  element.innerHTML = createAuraRow(DEBUFF_DATA, level)
 }
 
 function showEnchantDropdown(event, slot) {
@@ -1046,7 +1056,7 @@ function saveInput() {
 }
 
 function loadProfile(profile) {
-  const DEFAULT_PROFILE = { "version": "1.0.0", "gear": { "head": "22418", "hands": "21581", "neck": "22732", "waist": "22422", "shoulder": "22419", "legs": "22417", "back": "23045", "feet": "22420", "chest": "22416", "wrist": "22423", "finger1": "23059", "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054", "offhand": "236336", "ranged": "236322" }, "rotation": { "slam": { "use": false, "rage": 60 }, "death-wish": { "use": false, "rage": 0 }, "revenge": { "use": true, "rage": 60 }, "raging-blow": { "use": false, "rage": 0 }, "rend": { "use": false, "rage": 60 }, "devastate": { "use": false, "rage": 70 }, "heroic-strike": { "use": false, "rage": 85 }, "shield-block": { "use": false, "rage": 90 }, "shield-slam": { "use": true, "rage": 60 }, "bloodthirst": { "use": false, "rage": 60 }, "quick-strike": { "use": false, "rage": 60 }, "mortal-strike": { "use": false, "rage": 60 }, "thunder-clap": { "use": false, "rage": 60 }, "cbrUse": false, "cbrStacks": 0 }, "tankSettings": { "level": 50, "race-ix": 0, "startRage": "70" }, "enchants": { "head-enchant-id": 0, "shoulder-enchant-id": 0, "back-enchant-id": 0, "chest-enchant-id": 0, "wrist-enchant-id": 0, "hands-enchant-id": 0, "legs-enchant-id": 0, "feet-enchant-id": 0, "mainhand-enchant-id": 0, "offhand-enchant-id": 0 }, "talents": { "cruelty": 2, "shield-specialization": 5, "improved-bloodrage": 2, "toughness": 5, "last-stand": 1, "improved-shield-block": 1, "improved-revenge": 3, "defiance": 5, "improved-sunder-armor": 3, "concussion-blow": 1, "one-handed-specialization": 5, "shield-slam": 1 }, "buffs": { "battleshout": false, "motw": false, "kings": false, "might": false, "horn": false, "strtotem": false, "wildstrikes": false, "lion": false, "fort": false, "bloodpact": false, "devo": false, "loh": false, "inspiration": false, "ogre": false, "defense": false, "fort-elixir": false, "solid": false, "shadow-oil": false, "rumsey": false, "oh-solid": false, "oh-shadow-oil": false, "fotte": false, "botbf": false, "ashcry": false, "dmf": false, "wcb": false, "zandalar": false, "dragonslayer": false, "moldar": false, "fengus": false, "slipkik": false, "songflower": false, "mangle": false, "cov": false, "sunder": false, "iea": false, "degrade": false, "faeriefire": false, "cor": false, "agi": false, "giants": false, "spark-of-inspiration": false, "dark-desire": false, "stam-food": false, "str-scroll": false, "leader-of-the-pack": false, "trueshot": false }, "bossSettings": { "bossLevel": 0, "swingMax": "4000", "swingMin": "4000", "swingTimer": "2", "bossArmor": "3731", "bleed-resistance": "20" }, "calcSettings": { "iterations": "10000", "fightLength": "20" } };
+  const DEFAULT_PROFILE = { "version": "1.0.0", "gear": { "head": "22418", "hands": "21581", "neck": "22732", "waist": "22422", "shoulder": "22419", "legs": "22417", "back": "23045", "feet": "22420", "chest": "22416", "wrist": "22423", "finger1": "23059", "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054", "offhand": "236336", "ranged": "236322" }, "rotation": { "slam": { "use": false, "rage": 60 }, "death-wish": { "use": false, "rage": 0 }, "revenge": { "use": true, "rage": 60 }, "raging-blow": { "use": false, "rage": 0 }, "rend": { "use": false, "rage": 60 }, "devastate": { "use": false, "rage": 70 }, "heroic-strike": { "use": false, "rage": 85 }, "shield-block": { "use": false, "rage": 90 }, "shield-slam": { "use": true, "rage": 60 }, "bloodthirst": { "use": false, "rage": 60 }, "quick-strike": { "use": false, "rage": 60 }, "mortal-strike": { "use": false, "rage": 60 }, "thunder-clap": { "use": false, "rage": 60 }, "cbrUse": false, "cbrStacks": 0 }, "tankSettings": { "level": 50, "race-ix": 0, "startRage": "70" }, "enchants": { "head-enchant-id": 0, "shoulder-enchant-id": 0, "back-enchant-id": 0, "chest-enchant-id": 0, "wrist-enchant-id": 0, "hands-enchant-id": 0, "legs-enchant-id": 0, "feet-enchant-id": 0, "mainhand-enchant-id": 0, "offhand-enchant-id": 0 }, "talents": { "cruelty": 2, "shield-specialization": 5, "improved-bloodrage": 2, "toughness": 5, "last-stand": 1, "improved-shield-block": 1, "improved-revenge": 3, "defiance": 5, "improved-sunder-armor": 3, "concussion-blow": 1, "one-handed-specialization": 5, "shield-slam": 1 }, "buffs": { "battleshout": false, "motw": false, "kings": false, "might": false, "horn": false, "strtotem": false, "fort": false, "bloodpact": false, "devo": false, "loh": false, "inspiration": false, "defense": false, "fort-elixir": false, "shadow-oil": false, "rumsey": false, "oh-shadow-oil": false, "dmf": false, "wcb": false, "zandalar": false, "dragonslayer": false, "moldar": false, "fengus": false, "slipkik": false, "songflower": false, "sunder": false, "iea": false, "faeriefire": false, "cor": false, "agi": false, "giants": false, "dark-desire": false, "stam-food": false, "str-scroll": false, "leader": false, "trueshot": false }, "bossSettings": { "bossLevel": 0, "swingMax": "4000", "swingMin": "4000", "swingTimer": "2", "bossArmor": "3731", "bleed-resistance": "20" }, "calcSettings": { "iterations": "10000", "fightLength": "20" } };
   profile = profile == null ? DEFAULT_PROFILE : profile;
 
   // Deprecated with the addition of default json profile

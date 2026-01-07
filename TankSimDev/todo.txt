@@ -1,8 +1,12 @@
+## General
+- Add documention
+- Buffs give the wrong stats in config.js eg str-scroll
+- Search for TODO :)
+
+
+## Specific
 - buff tooltips depending on level
 - wep skill incorrect
-
 - essence of the red
-
-
-- icons
+- icons of eg str pot should change with levels (ogre, giants etc)
 - grilled squid, blessed sunfruit, chimaerok chops, smoked desert dumplings

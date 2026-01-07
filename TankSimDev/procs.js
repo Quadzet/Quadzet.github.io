@@ -66,39 +66,12 @@ class WindfuryProc extends Proc {
     }
 }
 
-class WildStrikesProc extends Proc {
-    constructor() {
-        super("Wild Strikes");
-        this.ICDTimer = 0;
-    }
-    
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
-        // TODO: make damage event flag "direct/dot/etc" and make this only proc from direct dmg, note ranks might not work?
-        if (event.type == "damage" && event.source == source.name && ["MH Swing", "Bloodthirst", "Raging Blow", "Quickstrike", "Devastate", "Sunder Armor", "Heroic Strike", "Revenge", "Mortal Strike", "Slam"].includes(event.name) && landedHits.includes(event.hit) && event.timestamp >= this.ICDTimer) {
-            let rng = Math.random()
-            if (rng < 0.2) {
-                let procEvent = {
-                    "type": "extra attack",
-                    "source": event.source,
-                    "name": this.name,
-                    "timestamp": event.timestamp,
-                }
-                this.ICDTimer = event.timestamp + 1500;
-                reactiveEvents.push(procEvent);
-            }
-        }
-    }
-    reset() {
-      this.ICDTimer = 0;
-    }
-}
-
 class SwordSpecialization extends Proc {
     constructor(points) {
         super("Sword Specialization");
         this.procChance = 0.01 * points;
     }
-    
+
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
         if (event.type == "damage" && event.source == source.name && event.trigger && landedHits.includes(event.hit)) {
             let rng = Math.random()
@@ -204,12 +177,6 @@ function getTankProcs(globals) {
     globals.tankStats.procs.forEach(proc => {
       ret.push(new WeaponProc(proc))
     });
-
-    if(globals.tankStats.bonuses.wildStrikes) {
-        ret.push(
-            new WildStrikesProc()
-        )
-    }
 
     if (globals.tankStats.bonuses.ohDismantle) {
       ret.push(new WeaponProc({
