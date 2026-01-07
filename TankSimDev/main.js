@@ -1262,7 +1262,7 @@ async function main() {
   let numWorkersDone = 0;
   let progressPerc = 0;
   for (var i = 0; i < numWorkers; i++) {
-    var worker = new Worker('./workers/worker.js');
+    var worker = new Worker('./workers/worker.js', { type: 'module' });
     let iterations = i == 0 ? Math.floor(globals.config.iterations / numWorkers) + remainderIterations : Math.floor(globals.config.iterations / numWorkers);
     if (iterations <= 0) {
       numWorkersDone++;

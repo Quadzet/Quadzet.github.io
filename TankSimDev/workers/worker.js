@@ -1,3 +1,13 @@
+import '../stats.js';
+import '../logging.js';
+import '../abilities.js';
+import '../rotation.js';
+import '../actor.js';
+import '../attacktable.js';
+import '../auras.js';
+import '../procs.js';
+import '../eventHelpFuncs.js';
+
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
 
@@ -5,8 +15,6 @@ const range = (length) =>
 self.addEventListener('message', function(e) {
     let globals = e.data.globals;
     let iterations = e.data.iterations;
-
-    importScripts('../stats.js', '../logging.js', '../abilities.js', '../rotation.js', '../actor.js', '../attacktable.js', '../auras.js', '../procs.js', '../eventHelpFuncs.js');
 
     let TankProcs = getTankProcs(globals);
     let BossProcs = getBossProcs(globals);
