@@ -9,8 +9,6 @@ function average(array) {
   if (array) return array.reduce((a, b) => a + b) / array.length;
   else return 0;
 };
-// const range = (length) =>
-//   Array.from({ length }, (_, i) => i)
 
 function linspace(start, end, length = Math.max(Math.round(end - start) + 1, 1)) {
   if (length < 2) { return length === 1 ? [start] : []; }
@@ -62,7 +60,7 @@ function refreshLinks() {
 
 // Fill the progressbar
 async function updateProgressbar(progressPerc) {
-  document.querySelector("#progressBar").style.width = `${progressPerc}%`
+  document.querySelector("#progressBar").style.width = `${progressPerc}%`;
   await sleep(0);
 }
 
@@ -92,25 +90,7 @@ const ENCHANT_IDS = {
 };
 const ABILITIES = ["death-wish", "revenge", "rend", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
 const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
-const ITEM_IDS = {
-  'head': [215166, 211843, 211505, 209690, 6971, 211510, 209682, 4724, 211789],
-  'hands': [213319, 211423, 1978, 209568, 6397, 6974, 3485, 14754, 4254, 4253, 720],
-  'neck': [213344, 209817, 20444, 209673, 209825, 209422],
-  'waist': [215115, 211457, 209421, 6719, 6468, 7107, 211466, 4249, 3429, 14567, 14755, 4707],
-  'shoulder': [213304, 209824, 13131, 209692, 209676, 2264, 210773, 4835, 4833, 4705, 3231, 3481],
-  'legs': [213332, 209566, 13114, 13010, 10410, 6973, 4831, 6386, 2545, 6087, 4800, 14727, 3048],
-  'back': [213307, 2059, 5193, 213087, 10518, 2953, 6751, 5971, 209680, 6449, 6340, 6314],
-  'feet': [9637, 211511, 209581, 1955, 7754, 209689, 19969, 3484, 6752, 12982, 211506, 4051, 6666, 2910, 10658, 6459, 3045],
-  'chest': [213313, 1717, 211504, 209418, 210794, 6972, 3416, 14744, 3049, 2870],
-  'wrist': [19581, 211463, 204804, 3228, 6387, 7003, 13012, 6722, 6675, 5943, 4438, 14750, 897, 3212],
-  'finger1': [213284, 19512, 12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
-  'finger2': [213284, 19512, 12985, 2039, 2933, 211467, 209565, 1076, 20439, 6748, 4535, 1491, 4998, 6321, 13097],
-  'trinket1': [213348, 21568, 211451, 211449, 211420, 18854],
-  'trinket2': [213348, 21568, 211451, 211449, 211420, 18854],
-  'mainhand': [216495, 213286, 212583, 211456, 2941, 20443, 7786, 6194, 3414, 209560, 4454, 2194, 4826, 3400, 935, 4445, 2878, 1935, 1454, 212582, 1493, 3413, 1483, 209818, 20440, 2807, 209822, 2011, 1292, 9488, 209525, 209436, 209579, 6220, 1482],
-  'offhand': [216496, 211460, 6223, 13079, 7002, 6320, 209424, 13245, 12997, 4064, 6676, 15891, 5443, 3656, 212583],
-  'ranged': [9426, 209830, 209688, 3021, 209563],
-};
+
 var ITEMS = {};
 var ITEM_SETS = [];
 
@@ -410,8 +390,6 @@ async function loadItemData() {
       skill: 0,
       skilltype: [],
     };
-    if (id == 215161)
-      var x = 15;
     let item = itemData[`${id}`];
     let itemSparse = itemSparseData[`${id}`];
     let missing = false;
@@ -451,7 +429,7 @@ async function loadItemData() {
 
     let spells = getRows(itemEffectData, 'ParentItemID', item.ID);
     if (spells.length) {
-      spells.forEach((spell, index) => {
+      spells.forEach((spell, _) => {
         let effects = getRows(spellEffectData, 'SpellID', spell.SpellID);
 
         if (spell.TriggerType == "1") { // Only care about on_equip
@@ -591,13 +569,7 @@ function addEventListeners() {
     }
   })
 }
-/*
-<div class="aura-toggle" id="battleshout-aura">
-  <a href="https://classic.wowhead.com/spell=11549" data-wh-rename-link="false" onclick="toggleAura(event, 'battleshout')">
-    <img class="aura-toggle-default" src="img/battleshout.jpg" id="battleshout-aura-img" active="false">
-  </a>
-</div>
-*/
+
 function get_index(buff, level) {
   let ix = -1;
   for (let i = 0; i < buff['levels'].length; i++) {
@@ -610,7 +582,7 @@ function get_index(buff, level) {
 }
 
 function createAuraRow(data, level) {
-  let aura_row = ''//`<div class="aura-row">`
+  let aura_row = ''
   Object.keys(data).forEach(buff => {
     let ix = get_index(data[`${buff}`], level)
 
@@ -746,8 +718,6 @@ function generateGearList(slot) {
   let allowShields = document.getElementById(slot + '-filter-Shield') && document.getElementById(slot + '-filter-Shield').checked;
   let slotItemIDs = []
   Object.keys(ITEMS).forEach(id => {
-    if (id == 215161)
-      var x = 15;
     if (!allowedSlots.includes(ITEMS[`${id}`].slot)) {
       if (!(ITEMS[`${id}`].type == 'Shield' && allowShields)) { // If it's a shield, only filter if the type Shield is banned. Otherwise slot offhand removes both oh weps and shields
         return;
@@ -1100,6 +1070,7 @@ function loadProfile(profile) {
     'ranged': 209688,
   };
   let gear = profile.gear ? profile.gear : {};
+  // TODO: Just use GEARSLOTS list? [sic]
   Object.keys(defaultGear).forEach(slot => {
     let element = document.getElementById(slot + '-slot');
     let itemID = gear[`${slot}`] !== undefined ? gear[`${slot}`] : defaultGear[`${slot}`];
