@@ -1,7 +1,7 @@
 "use strict";
 
 import { BUFF_DATA, DEBUFF_DATA, WORLD_BUFF_DATA, CONSUMES_DATA, OH_BUFF_DATA } from './buffs.js';
-import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, ENCHANT_IDS} from './constants.js';
+import { ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, ENCHANT_IDS} from './constants.js';
 import { ENCHANT_DATA } from './stats.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { formatEvent } from './eventHelpFuncs.js';
@@ -86,9 +86,6 @@ const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossA
 const TALENTS = [
   'deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS',
   'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-
-export var ITEMS = {};
-export var ITEM_SETS = [];
 
 export function updateRotation(globals) {
   let element = document.getElementById('rotation-death-wish');
@@ -538,7 +535,9 @@ async function loadItemData() {
     Items[`${id}`] = obj;
 
   }
-  ITEMS = Items;
+
+  // Copy all properties from Items to ITEMS (cannot reassign imported variable)
+  Object.assign(ITEMS, Items);
 }
 
 function addEventListeners() {

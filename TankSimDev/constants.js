@@ -1,4 +1,5 @@
-// Constants used throughout the app
+export var ITEMS = {};
+export var ITEM_SETS = [];
 
 export const ABILITIES = ["death-wish", "revenge", "rend", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
 export const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];

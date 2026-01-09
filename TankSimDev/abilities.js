@@ -2,7 +2,7 @@
 
 import { getParryHastedSwingEnd } from './attacktable.js';
 import { sortDescending, generateDamageEvent, clearFutureTicks } from './eventHelpFuncs.js';
-import { rollAttack, rollSpellAttack } from './attacktable.js';
+import { rollAttack, rollSpellAttack, armorReduction } from './attacktable.js';
 import { onUseData } from './stats.js';
 
 export function handleParryHaste(event, target, futureEvents) {

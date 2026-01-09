@@ -1,5 +1,6 @@
 import { LOG_LEVEL, log_message } from './logging.js';
 import { onUseData } from './stats.js'
+import { sortDescending } from './eventHelpFuncs.js'
 
 export class Aura {
     constructor(input) {

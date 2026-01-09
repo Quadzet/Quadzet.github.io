@@ -8,7 +8,7 @@ import { TankAuras, BossAuras } from '../auras.js';
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
 
-export let Actors; // Will be initialized in the worker
+let Actors; // Will be initialized in the worker
 
 self.addEventListener('message', function(e) {
     let globals = e.data.globals;

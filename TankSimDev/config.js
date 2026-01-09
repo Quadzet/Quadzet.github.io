@@ -1,8 +1,7 @@
 "use strict";
 // TODO: Remove weaponlists, update*list()
 
-import { ITEMS, ITEM_SETS } from './main.js'
-import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS } from './constants.js'
+import { ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS } from './constants.js'
 import { levelstats } from './levelstats.js'
 import { races } from './stats.js'
 import { LOG_LEVEL, log_message } from './logging.js'
