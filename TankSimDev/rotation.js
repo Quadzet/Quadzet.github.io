@@ -1,9 +1,11 @@
 "use strict";
-let ACTIONS = [];
-let EXECUTE_ACTIONS = [];
-let PREPULL_ACTIONS = [];
+import { Actors } from '../worker.js';
 
-class ActionRequirement {
+export let ACTIONS = [];
+export let EXECUTE_ACTIONS = [];
+export let PREPULL_ACTIONS = [];
+
+export class ActionRequirement {
   constructor(input) {
     this.rage = input.rage;
     this.rageOperator = input.rageOperator;
@@ -30,7 +32,7 @@ class ActionRequirement {
     return null; // or string with error
   }
 }
-class Action {
+export class Action {
   constructor(input) {
     this.name = input.name;
 
@@ -49,14 +51,14 @@ class Action {
 
 
 
-function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {
+export function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {
   // if (event.ability)...
   if (source.abilities[`${event.ability}`] != null && source.abilities[`${event.ability}`].isUsable(event.timestamp, source)) {
     source.abilities[`${event.ability}`].use(event.timestamp, source, target, reactiveEvents, futureEvents);
   }
 }
 
-function performAction(timestamp, source, target, reactiveEvents, futureEvents) {
+export function performAction(timestamp, source, target, reactiveEvents, futureEvents) {
   if (!source.inCombat) return; // Don't take non-scheduled actions out of combat
   if (source.name == "Tank") {
     // Tank GCD action priority list, TODO: Make this smarter, don't have to check the other onGCD if we have jus tused an ability
@@ -115,7 +117,7 @@ function performAction(timestamp, source, target, reactiveEvents, futureEvents) 
 }
 
 // TODO: Prepull stuff like potions and trinkets etc.. or put it all in FutureEvents?
-function handleCombatStart(source, target, reactiveEvents, futureEvents) {
+export function handleCombatStart(source, target, reactiveEvents, futureEvents) {
   source.inCombat = true;
   if (source.name == "Tank") {
     performAction(0, source, target, reactiveEvents, futureEvents)

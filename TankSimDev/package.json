@@ -1,0 +1,12 @@
+{
+  "name": "tanksim",
+  "version": "2.0.0",
+  "description": "World of Warcraft tank DPS simulator",
+  "type": "module",
+  "scripts": {
+    "dev": "npx -y http-server -p 8080 -c-1"
+  },
+  "dependencies": {
+    "papaparse": "^5.4.1"
+  }
+}

@@ -1,6 +1,8 @@
 "use strict";
 
-class Proc {
+import { LOG_LEVEL, log_message } from './logging.js';
+
+export class Proc {
 
     constructor(name) {
         this.name = name;
@@ -19,9 +21,9 @@ class Proc {
 
 }
 
-let landedHits = ["hit", "crit", "block", "crit block", "glance"];
+export const landedHits = ["hit", "crit", "block", "crit block", "glance"];
 
-class GiftofArthasProc extends Proc {
+export class GiftofArthasProc extends Proc {
     
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
@@ -44,7 +46,7 @@ class GiftofArthasProc extends Proc {
 
 }
 
-class WindfuryProc extends Proc {
+export class WindfuryProc extends Proc {
     constructor() {
         super("Windfury")
     }
@@ -66,7 +68,7 @@ class WindfuryProc extends Proc {
     }
 }
 
-class SwordSpecialization extends Proc {
+export class SwordSpecialization extends Proc {
     constructor(points) {
         super("Sword Specialization");
         this.procChance = 0.01 * points;
@@ -88,7 +90,7 @@ class SwordSpecialization extends Proc {
     }
 }
 
-class BloodFrenzyProc extends Proc {
+export class BloodFrenzyProc extends Proc {
   constructor() {
     super("Blood Frenzy");
   }
@@ -109,7 +111,7 @@ class BloodFrenzyProc extends Proc {
   }
 }
 
-class WeaponProc extends Proc {
+export class WeaponProc extends Proc {
   constructor(proc) {
     super(proc.name);
     this.duration = proc.duration;
@@ -171,7 +173,7 @@ class WeaponProc extends Proc {
   }
 }
 
-function getTankProcs(globals) {
+export function getTankProcs(globals) {
     let ret = []
 
     globals.tankStats.procs.forEach(proc => {
@@ -240,7 +242,7 @@ function getTankProcs(globals) {
     return ret;
 }
 
-function getBossProcs(globals) {
+export function getBossProcs(globals) {
     let ret = [];
     if(globals.tankStats.bonuses.goa) {
         ret.push(

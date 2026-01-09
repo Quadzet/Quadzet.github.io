@@ -1,3 +1,6 @@
+import { updateStats } from './config.js'
+import { updateRotation } from './main.js'
+
 function talentPointCap() {
   return Number(document.querySelector("#player-level").value) - 9;
 }
@@ -433,7 +436,7 @@ function getTree(name) {
 }
 
 function getTreeName(talentName) {
-  ret = '';
+  let ret = '';
   ARMS_TALENTS.forEach(talent => {
     if (talent.name == talentName)
       ret = 'arms';
@@ -543,7 +546,7 @@ function addTalentFooter() {
 }
 
 // *** INIT *** //
-function createTalentTrees() {
+export function createTalentTrees() {
   createTalentTree(ARMS_TALENTS, 'arms');
   createTalentTree(FURY_TALENTS, 'fury');
   createTalentTree(PROT_TALENTS, 'prot');
@@ -556,7 +559,7 @@ function createTalentTrees() {
 // *** RUNTIME *** //
 
 function getTalentData(treeName, name) {
-  ret = {};
+  let ret = {};
   getTree(treeName).forEach(talent => {
     if (talent.name == name)
       ret = talent;
@@ -848,7 +851,7 @@ function resetTalents() {
   updateRotation(globals);
 }
 
-function loadTalents(talents) {
+export function loadTalents(talents) {
   resetTalents();
   Object.keys(talents).forEach(talentName => {
     const treeName = getTreeName(talentName);
@@ -875,7 +878,7 @@ function getTalentsFromTree(tree) {
   return ret;
 }
 
-function getTalents() {
+export function getTalents() {
   let ret = {
     ...getTalentsFromTree(ARMS_TALENTS),
     ...getTalentsFromTree(FURY_TALENTS),

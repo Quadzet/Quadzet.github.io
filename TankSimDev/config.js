@@ -1,12 +1,12 @@
 "use strict";
+// TODO: Remove weaponlists, update*list()
 
-/*  TODOS 
-<option value="Felstriker">Felstriker</option>
-<option value="Arlokk's Grasp">Arlokk's Grasp</option>
-<option value="Thekal's Grasp">Thekal's Grasp</option>
-<option value="Eskhandar's Left Claw">Eskhandar's Left Claw</option>
-<option value="Teebu's Blazing Longsword">Teebu's Blazing Longsword</option>
-*/
+import { ITEMS, ITEM_SETS } from './main.js'
+import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS } from './constants.js'
+import { levelstats } from './levelstats.js'
+import { races } from './stats.js'
+import { LOG_LEVEL, log_message } from './logging.js'
+import { ENCHANT_DATA } from './stats.js'
 
 let weaponlists = {
   "Shields": `<option value="None">None</option>
@@ -217,12 +217,12 @@ function getBlockValue(itemID) {
   }
 }
 
-function getTalentValue(name) {
+export function getTalentValue(name) {
   const element = document.getElementById(`${name}`);
   return Number(element.getAttribute('value'));
 }
 
-function updateStats() {
+export function updateStats() {
   let level = document.querySelector("#player-level").value
   var output = document.getElementById("player-level-span");
   output.innerHTML = level;

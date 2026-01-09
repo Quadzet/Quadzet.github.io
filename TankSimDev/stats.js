@@ -23,7 +23,7 @@
 
 */
 
-const races = {
+export const races = {
    "Dwarf": {
       strength: 81 + 19,
       stamina: 75 + 18,
@@ -187,7 +187,7 @@ const races = {
 
 }
 
-const ENCHANT_DATA = {
+export const ENCHANT_DATA = {
    0: {
       "name": "None",
       "description": "Add Enchant",
@@ -1399,7 +1399,7 @@ const ENCHANT_DATA = {
    },
 }
 
-const onUseData = {
+export const onUseData = {
    215114: {
       name: "Hyperconductive Shock",
       cooldown: 600000,

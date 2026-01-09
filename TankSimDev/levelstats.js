@@ -1,5 +1,5 @@
 // level,str,agi,sta,int,spi
-var levelstats = {
+export const levelstats = {
     "Human": [
         "1,23,20,22,20,21",
         "2,24,21,23,20,21",

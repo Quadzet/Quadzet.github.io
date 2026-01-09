@@ -1,6 +1,11 @@
 "use strict";
 
-function handleParryHaste(event, target, futureEvents) {
+import { getParryHastedSwingEnd } from './attacktable.js';
+import { sortDescending, generateDamageEvent, clearFutureTicks } from './eventHelpFuncs.js';
+import { rollAttack, rollSpellAttack } from './attacktable.js';
+import { onUseData } from './stats.js';
+
+export function handleParryHaste(event, target, futureEvents) {
   futureEvents.forEach(e => {
     if (e.type == "swingTimer" && e.source == target.name) {
       e.timestamp = getParryHastedSwingEnd(e.swingStart, e.timestamp, event.timestamp)
@@ -9,7 +14,7 @@ function handleParryHaste(event, target, futureEvents) {
   sortDescending(futureEvents)
 }
 
-function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
+export function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
   let rageEvent = {
     timestamp: event.timestamp,
     type: "rage",
@@ -41,7 +46,7 @@ function generateRageEventFromDamage(tank, target, event, isWhiteHit) {
     return;
 }
 
-function generateRageEventFromCast(source, target, event, rageCost) {
+export function generateRageEventFromCast(source, target, event, rageCost) {
   let rageEvent = {
     timestamp: event.timestamp,
     type: "rage",
@@ -72,7 +77,7 @@ function generateRageEventFromCast(source, target, event, rageCost) {
     return;
 }
 
-class Ability {
+export class Ability {
   constructor(name, baseCooldown, rageCost, onGCD) {
     this.name = name
     this.baseCooldown = baseCooldown
@@ -154,7 +159,7 @@ class Ability {
   }
 }
 
-class Autoattack extends Ability {
+export class Autoattack extends Ability {
   constructor() {
     super("MH Swing", 0, 0, false)
   }
@@ -260,7 +265,7 @@ class Autoattack extends Ability {
   }
 }
 
-class OHSwing extends Ability {
+export class OHSwing extends Ability {
   constructor() {
     super("OH Swing", 0, 0, false)
   }
@@ -288,7 +293,7 @@ class OHSwing extends Ability {
   }
 }
 
-class Bloodthirst extends Ability {
+export class Bloodthirst extends Ability {
   constructor(rageReduction = 0) {
     super("Bloodthirst", 6000, 30 - rageReduction, true)
   }
@@ -302,7 +307,7 @@ class Bloodthirst extends Ability {
   }
 }
 
-class Revenge extends Ability {
+export class Revenge extends Ability {
   constructor(rageReduction = 0) {
     super("Revenge", 5000, 5 - rageReduction, true)
   }
@@ -361,7 +366,7 @@ class Revenge extends Ability {
   }
 }
 
-class ShieldBlock extends Ability {
+export class ShieldBlock extends Ability {
   constructor() {
     super("Shield Block", 6000, 10, false)
   }
@@ -379,7 +384,7 @@ class ShieldBlock extends Ability {
   }
 }
 
-class SunderArmor extends Ability {
+export class SunderArmor extends Ability {
   constructor(rageReduction = 0) {
     super("Sunder Armor", 0, 15 - rageReduction, true)
   }
@@ -414,7 +419,7 @@ class SunderArmor extends Ability {
   }
 }
 
-class Bloodrage extends Ability {
+export class Bloodrage extends Ability {
   constructor() {
     super("Bloodrage", 60000, -10, false) // "cost" is negative 10 rage, ie you gain 10 rage
   }
@@ -436,7 +441,7 @@ class Bloodrage extends Ability {
   }
 }
 
-class DeathWish extends Ability {
+export class DeathWish extends Ability {
   constructor() {
     super("Death Wish", 180000, 10, true)
   }
@@ -455,7 +460,7 @@ class DeathWish extends Ability {
   }
 }
 
-class HeroicStrike extends Ability {
+export class HeroicStrike extends Ability {
   constructor(rageCost) {
     super("Heroic Strike", 0, 0, false)
     this.actualRageCost = rageCost;
@@ -480,7 +485,7 @@ class HeroicStrike extends Ability {
   }
 }
 
-class BattleShout extends Ability {
+export class BattleShout extends Ability {
   constructor() {
     super("Battle Shout", 10, 0, true)
   }
@@ -525,7 +530,7 @@ class BattleShout extends Ability {
   }
 }
 
-class ShieldSlam extends Ability {
+export class ShieldSlam extends Ability {
   constructor(rageReduction = 0) {
     super("Shield Slam", 6000, 20 - rageReduction, true)
   }
@@ -569,7 +574,7 @@ class ShieldSlam extends Ability {
   }
 }
 
-class MortalStrike extends Ability {
+export class MortalStrike extends Ability {
   constructor(rageReduction) {
     super("Mortal Strike", 6000, 30 - rageReduction, true)
   }
@@ -600,7 +605,7 @@ class MortalStrike extends Ability {
   }
 }
 
-class Rend extends Ability {
+export class Rend extends Ability {
   constructor(rageReduction = 0) {
     super("Rend", 0, 10 - rageReduction, true)
   }
@@ -670,7 +675,7 @@ class Rend extends Ability {
   }
 }
 
-class OnUseAbility extends Ability {
+export class OnUseAbility extends Ability {
   constructor(data) {
     super(data.name, data.cooldown, 0, false);
   }
@@ -689,7 +694,7 @@ class OnUseAbility extends Ability {
 }
 
 
-function getOnUseAbilities(gear) {
+export function getOnUseAbilities(gear) {
   let ret = [];
   Object.keys(gear).forEach(slot => {
     let id = gear[slot];
@@ -705,7 +710,7 @@ function getOnUseAbilities(gear) {
 //    {prio: 1, ability: new Devastate()}
 // ]
 // Then we sort the vector wrt prio, and use TankAbilities[1].ability.name/use etc
-function TankAbilities(tankStats) {
+export function TankAbilities(tankStats) {
   let abilities = {
     "MH Swing": new Autoattack(),
     "Revenge": new Revenge(),
@@ -729,6 +734,6 @@ function TankAbilities(tankStats) {
   return abilities;
 }
 
-let BossAbilities = {
+export const BossAbilities = {
   "MH Swing": new Autoattack(),
 }

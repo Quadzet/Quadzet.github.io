@@ -1,5 +1,13 @@
 "use strict";
 
+import { BUFF_DATA, DEBUFF_DATA, WORLD_BUFF_DATA, CONSUMES_DATA, OH_BUFF_DATA } from './buffs.js';
+import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, ENCHANT_IDS} from './constants.js';
+import { ENCHANT_DATA } from './stats.js';
+import { LOG_LEVEL, log_message } from './logging.js';
+import { formatEvent } from './eventHelpFuncs.js';
+import { createTalentTrees, loadTalents, getTalents } from './talents.js';
+import { getTalentValue, updateStats } from './config.js';
+
 function sleep(ms) {
   return new Promise((r) =>
     setTimeout(r, ms));
@@ -78,30 +86,11 @@ const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossA
 const TALENTS = [
   'deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS',
   'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
-const ENCHANT_SLOTS = [
-  'head', 'shoulder', 'back', 'chest', 'wrist', 'hands',
-  'legs', 'feet', 'mainhand', 'offhand'];
-const ENCHANT_IDS = {
-  'head': [0],
-  'shoulder': [0],
-  'back': [0, 13882, 13421, 13746],
-  'chest': [0, 13700, 13626, 7857, 19058, 10487, 3780],
-  'wrist': [0, 7428, 13646, 7779, 13536, 13501, 13661],
-  'wrist': [0, 13661, 7428, 13646, 7779, 13536, 13501],
-  'hands': [0, 13815, 13887, 19058, 10487, 3780], // 13948 minor haste
-  'legs': [0, 19058, 10487, 3780],
-  'feet': [0, 13637, 7867, 7863, 19058, 10487, 3780],
-  'mainhand': [0, 13693, 13503, 7788, 435481],
-  'twohand': [0, 13695, 13529, 435481], // 20030, 13937, +9, +7 damage
-  'shield': [0, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
-};
-const ABILITIES = ["death-wish", "revenge", "rend", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
-const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
 
-var ITEMS = {};
-var ITEM_SETS = [];
+export var ITEMS = {};
+export var ITEM_SETS = [];
 
-function updateRotation(globals) {
+export function updateRotation(globals) {
   let element = document.getElementById('rotation-death-wish');
   if (getTalentValue('death-wish') > 0)
     element.style.display = 'flex';
@@ -150,12 +139,21 @@ function toggleAura(event, id, exclusives) {
 async function fetchTable(tableName) {
   let parsedData = [];
   try {
+    // Check if Papa Parse is available
+    if (typeof window.Papa === 'undefined') {
+      console.error('Papa Parse is not loaded yet');
+      return parsedData;
+    }
+
     const response = await fetch('./data/' + tableName + '.csv');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status} for ${tableName}.csv`);
+    }
     const csvData = await response.text();
 
-    // Parse the CSV content
+    // Parse the CSV content using window.Papa to ensure we get the global
     parsedData = await new Promise((resolve, reject) => {
-      Papa.parse(csvData, {
+      window.Papa.parse(csvData, {
         header: true,
         dynamicTyping: true,
         complete: function(results) {
@@ -168,7 +166,7 @@ async function fetchTable(tableName) {
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error(`Error loading ${tableName}:`, error);
   }
   return parsedData;
 }
@@ -1430,3 +1428,29 @@ async function calc() {
   disableCalc();
   await main();
 }
+
+// Attach functions to window for HTML event handlers
+window.calc = calc;
+window.changeSection = changeSection;
+window.showProfiles = showProfiles;
+window.hideProfiles = hideProfiles;
+window.loadProfile = loadProfile;
+window.copyToClipboard = copyToClipboard;
+window.processJson = processJson;
+window.updateBleedResistance = updateBleedResistance;
+
+function initWhenReady() {
+  if (typeof window.Papa === 'undefined') {
+    console.log('Waiting for Papa Parse to load...');
+    setTimeout(initWhenReady, 50);
+    return;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onLoadPage);
+  } else {
+    onLoadPage();
+  }
+}
+
+initWhenReady();

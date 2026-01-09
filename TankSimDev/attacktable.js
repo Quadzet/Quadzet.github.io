@@ -1,8 +1,11 @@
 "use strict";
+
+import { LOG_LEVEL, log_message } from './logging.js';
+
 // We don't consider actors other than lvl 60 players and lvl 63 bosses.
 
 // https://github.com/magey/classic-warrior/wiki/Parry-haste
-function getParryHastedSwingEnd(start, end, current) {
+export function getParryHastedSwingEnd(start, end, current) {
     let remaining = 1 - (current-start)/(end-start)
     if(remaining > 0.6)
         return start + (end - start)/1.4
@@ -12,17 +15,17 @@ function getParryHastedSwingEnd(start, end, current) {
         return end
 }
 
-function getParryHastedSwing(current, base) {
+export function getParryHastedSwing(current, base) {
     if (current/base > 0.6) return current/1.4;
     else if (current/base > 0.2) return current/(1 + current/base - 0.2);
     else return current;
 }
 
-function armorReduction(atkLvl, armor) {
+export function armorReduction(atkLvl, armor) {
     return Math.min(0.75, armor/(armor + 400 + (atkLvl*85)));
 }
 
-const spellMissTable = {
+export const spellMissTable = {
   '-3': 0.01,
   '-2': 0.02,
   '-1': 0.03,
@@ -39,7 +42,7 @@ const spellMissTable = {
   '10': 0.9,
 };
 
-function spellMiss(levelDiff) {
+export function spellMiss(levelDiff) {
   let ret = spellMissTable[levelDiff];
   if (ret != null)
     return ret;
@@ -49,11 +52,11 @@ function spellMiss(levelDiff) {
 
 
 // Player hitting boss
-function getGlanceMod(wepSkill, defense) {
+export function getGlanceMod(wepSkill, defense) {
     return Math.max(Math.min(0.95, 0.65 + (wepSkill + 15 - defense)*0.04), 0.65);
 }
 
-function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
+export function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
     let baseMissChance = 0;
     if (defSkill - atkSkill <= 10) {
         baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.1)
@@ -73,7 +76,7 @@ function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
 }
 
 // Tank hitting the boss
-function twoRollTankBossTable(attacker, defender, damage) {
+export function twoRollTankBossTable(attacker, defender, damage) {
     let wepSkill = attacker.stats.MHWepSkill;
     let defense = defender.defense;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, false);
@@ -133,7 +136,7 @@ function twoRollTankBossTable(attacker, defender, damage) {
 }
 
 // Tank hitting the boss
-function rollTankBossTable(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false) {
+export function rollTankBossTable(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false) {
     let wepSkill = attacker.stats.MHWepSkill;
     let defense = defender.defense;
     if (OHSwing) wepSkill = attacker.stats.OHWepSkill;
@@ -194,7 +197,7 @@ function rollTankBossTable(attacker, defender, damage, yellow = false, dualWield
 }
 
 // Boss hitting the tank
-function rollBossTankTable(attacker, defender, damage, yellow = false) {
+export function rollBossTankTable(attacker, defender, damage, yellow = false) {
     let wepSkill = attacker.stats.MHWepSkill;
     let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense));
     let parry = defender.stats.parry - 0.04 * (wepSkill - defender.defense);
@@ -251,17 +254,17 @@ function rollBossTankTable(attacker, defender, damage, yellow = false) {
     return damageEvent
 }
 // TODO
-function rollDpsBossTable(stats, damage, yellow = false) {
+export function rollDpsBossTable(stats, damage, yellow = false) {
     return;
 }
 
-function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false, meleeSpell = false) {
+export function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false, meleeSpell = false) {
     if (meleeSpell == true) return twoRollTankBossTable(attacker, defender, damage);
     else if (attacker.stats.type == "tank" && defender.stats.type == "boss") return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
     else if (attacker.stats.type == "boss" && defender.stats.type == "tank") return rollBossTankTable(attacker, defender, damage, yellow);
 }
 
-function rollSpellAttack(attacker, defender, damage, isDot, isPhys) {
+export function rollSpellAttack(attacker, defender, damage, isDot, isPhys) {
   let miss = spellMiss(defender.stats.level - attacker.stats.level);
   let spellCrit = attacker.stats.spellCrit || 0;
   spellCrit += 0.02; // Around 2% at lvl 25 with no buffs TODO: Actually get the correct amount, int per crit at 25: 31.8, base: 3.18%

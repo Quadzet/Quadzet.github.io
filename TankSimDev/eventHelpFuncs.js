@@ -1,6 +1,8 @@
 "use strict";
 
-function formatEvent(event) {
+import { LOG_LEVEL, log_message } from './logging.js';
+
+export function formatEvent(event) {
     let output = `${(Math.round(event["timestamp"])/1000).toFixed(3)}:\t`
     let name = event.name;
     if (event.rank != null && event.rank > 0)
@@ -57,12 +59,12 @@ function formatEvent(event) {
     return output
 }
 
-function getAmount(event, ability, type) {
+export function getAmount(event, ability, type) {
     if (event[`${type}`] && event.ability == ability) return event[`${type}`];
     else return 0;
 }
 
-function statRound(val) {
+export function statRound(val) {
   let floor_val = Math.floor(val);
   let remainder = val - floor_val;
   let rng = Math.random();
@@ -72,12 +74,12 @@ function statRound(val) {
     return floor_val;
   }
 }
-function checkInput(name, val, suffix) {
+export function checkInput(name, val, suffix) {
   if (!val)
     log_message(LOG_LEVEL.WARNING, "Missing " + name + suffix);
 }
 
-function clearFutureTicks(name, futureEvents) {
+export function clearFutureTicks(name, futureEvents) {
   while (true) {
     let index = futureEvents.findIndex(e => {return (e.type == "damage" && e.name == name)})
     if(index >= 0) {
@@ -88,7 +90,7 @@ function clearFutureTicks(name, futureEvents) {
   }
 }
 
-function generateDamageEvent(input) {
+export function generateDamageEvent(input) {
   let name = input.name || "Unknown";
   let suffix = " when generating damage_event for " + name + ".";
   checkInput('name', input.name, suffix);
@@ -103,7 +105,7 @@ function generateDamageEvent(input) {
   return input; 
 }
 
-function generateTickEvents(input) {
+export function generateTickEvents(input) {
   let name = input.name || "Unknown";
   let suffix = " when generating damage_event for " + name + ".";
   checkInput('timestamp', input.timestamp, suffix);
@@ -120,12 +122,12 @@ function generateTickEvents(input) {
   return events;
 }
 
-function sortDescending(futureEvents) {
+export function sortDescending(futureEvents) {
     futureEvents.sort( (a,b) => b.timestamp - a.timestamp )
 }
 
 
-function registerFutureEvents(events, futureEvents) {
+export function registerFutureEvents(events, futureEvents) {
   events.forEach(event => {
     futureEvents.push(event)
   });

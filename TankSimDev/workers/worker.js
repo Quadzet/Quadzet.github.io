@@ -1,16 +1,14 @@
-import '../stats.js';
-import '../logging.js';
-import '../abilities.js';
-import '../rotation.js';
-import '../actor.js';
-import '../attacktable.js';
-import '../auras.js';
-import '../procs.js';
-import '../eventHelpFuncs.js';
+import { getTankProcs, getBossProcs } from '../procs.js';
+import { handleCombatStart, handleScheduledEvent, performAction } from '../rotation.js';
+import { handleParryHaste, TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js';
+import { sortDescending } from '../eventHelpFuncs.js';
+import { Actor } from '../actor.js';
+import { TankAuras, BossAuras } from '../auras.js';
 
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
 
+export let Actors; // Will be initialized in the worker
 
 self.addEventListener('message', function(e) {
     let globals = e.data.globals;
@@ -78,7 +76,7 @@ self.addEventListener('message', function(e) {
         if (event.type == "damage" && event.hit == "parry") {
           handleParryHaste(event, Actors[event.target], futureEvents)
         }
-        
+
         newEvents.push(event);
       } while (reactiveEvents.length > 0)
 
@@ -101,8 +99,8 @@ self.addEventListener('message', function(e) {
     }
     Actors["Tank"].target = Actors["Boss"];
     Actors["Boss"].target = Actors["Tank"];
-    
-    exampleList = []
+
+    let exampleList = []
     let results = {
         tps: [],
         dps: [],

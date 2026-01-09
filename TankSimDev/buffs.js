@@ -1,4 +1,4 @@
-let BUFF_DATA = {
+export const BUFF_DATA = {
   "battleshout": {
     "type": "SPELL",
     "ids": [6673, 5242, 6192, 11549, 11550, 11551, 28289],
@@ -61,7 +61,7 @@ let BUFF_DATA = {
   },
 }
 
-let WORLD_BUFF_DATA = {
+export const WORLD_BUFF_DATA = {
   "dmf": {
     "type": "SPELL",
     "ids": ["23768"],
@@ -104,7 +104,7 @@ let WORLD_BUFF_DATA = {
   },
 }
 
-let DEBUFF_DATA = {
+export const DEBUFF_DATA = {
   "sunder": {
     "type": "SPELL",
     "ids": [7386, 7405, 8380, 11596, 11597],
@@ -128,7 +128,7 @@ let DEBUFF_DATA = {
 }
 
 
-let CONSUMES_DATA = {
+export const CONSUMES_DATA = {
   "agi": {
     "type": "ITEM",
     "ids": [2457, 3390, 8949, 9187],
@@ -206,7 +206,7 @@ let CONSUMES_DATA = {
   },
 }
 
-let OH_BUFF_DATA = {
+export const OH_BUFF_DATA = {
   "oh-stone": {
     "type": "ITEM",
     "ids": [2863, 7964, 2871, 12404],

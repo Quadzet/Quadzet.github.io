@@ -1,4 +1,7 @@
-class Aura {
+import { LOG_LEVEL, log_message } from './logging.js';
+import { onUseData } from './stats.js'
+
+export class Aura {
     constructor(input) {
         if (!input.type) this.type = "aura"; else this.type = input.type;
         if (!input.name) this.name = "unknown"; else this.name = input.name;
@@ -191,7 +194,7 @@ class Aura {
 }
 
 
-class SunderArmorAura extends Aura {
+export class SunderArmorAura extends Aura {
     constructor() {
         super({
             type: "debuff",
@@ -210,7 +213,7 @@ class SunderArmorAura extends Aura {
 }
 
 
-class DefensiveState extends Aura {
+export class DefensiveState extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -238,7 +241,7 @@ class DefensiveState extends Aura {
     }
 }
 
-class ShieldBlockAura extends Aura {
+export class ShieldBlockAura extends Aura {
     constructor(impSB) {
         super({
             type: "buff",
@@ -269,7 +272,7 @@ class ShieldBlockAura extends Aura {
     }
 }
 
-class FlagellationAura extends Aura {
+export class FlagellationAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -294,7 +297,7 @@ class FlagellationAura extends Aura {
     }
 }
 
-class FlurryAura extends Aura {
+export class FlurryAura extends Aura {
     constructor(points) {
         super({
             type: "buff",
@@ -319,7 +322,7 @@ class FlurryAura extends Aura {
     }
 }
 
-class EnrageAura extends Aura {
+export class EnrageAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -366,7 +369,7 @@ class EnrageAura extends Aura {
     }
 }
 
-class WreckingCrewAura extends Aura {
+export class WreckingCrewAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -386,7 +389,7 @@ class WreckingCrewAura extends Aura {
     }
 }
 
-class DeathWishAura extends Aura {
+export class DeathWishAura extends Aura {
     constructor() {
         super({
             type: "debuff",
@@ -411,7 +414,7 @@ class DeathWishAura extends Aura {
     }
 }
 
-class BloodrageAura extends Aura {
+export class BloodrageAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -446,7 +449,7 @@ class BloodrageAura extends Aura {
     }
 }
 
-class SwordAndBoardAura extends Aura {
+export class SwordAndBoardAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -472,7 +475,7 @@ class SwordAndBoardAura extends Aura {
     }
 }
 
-class BloodsurgeAura extends Aura {
+export class BloodsurgeAura extends Aura {
     constructor() {
         super({
             type: "buff",
@@ -496,7 +499,7 @@ class BloodsurgeAura extends Aura {
         }
     }
 }
-class RendAura extends Aura {
+export class RendAura extends Aura {
     constructor() {
         super({
             type: "debuff",
@@ -527,7 +530,7 @@ class RendAura extends Aura {
     }
 }
 
-class DeepWoundsAura extends Aura {
+export class DeepWoundsAura extends Aura {
     constructor() {
         super({
             type: "debuff",
@@ -582,7 +585,7 @@ class DeepWoundsAura extends Aura {
     }
 }
 
-class OnUseAura extends Aura {
+export class OnUseAura extends Aura {
     constructor(data) {
         super(data)
     }
@@ -595,7 +598,7 @@ class OnUseAura extends Aura {
 }
 
 
-function getOnUseAuras(gear) {
+export function getOnUseAuras(gear) {
     let ret = [];
     Object.keys(gear).forEach(slot => {
         let id = gear[slot];
@@ -607,18 +610,18 @@ function getOnUseAuras(gear) {
 }
 
 // Globals
-let Debuffs = {
+export const Debuffs = {
     "Sunder Armor": new SunderArmorAura(),
 }
 
-let Buffs = {
+export const Buffs = {
     "Defensive State": new DefensiveState(),
     "Shield Block": new ShieldBlockAura(),
     "Enrage": new EnrageAura(),
     "Bloodrage": new BloodrageAura(),
 }
 
-function TankAuras(globals) {
+export function TankAuras(globals) {
     let ret = [
         new DefensiveState(),
         new BloodrageAura(),
@@ -636,7 +639,7 @@ function TankAuras(globals) {
     return ret;
 }
 
-function BossAuras(globals) {
+export function BossAuras(globals) {
 
     let ret = [
         new SunderArmorAura(),
