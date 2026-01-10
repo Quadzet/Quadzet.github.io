@@ -6,6 +6,7 @@ import { levelstats } from './levelstats.js'
 import { races } from './stats.js'
 import { LOG_LEVEL, log_message } from './logging.js'
 import { ENCHANT_DATA } from './stats.js'
+import { getTalentValue } from './talents.js';
 
 let weaponlists = {
   "Shields": `<option value="None">None</option>
@@ -214,11 +215,6 @@ function getBlockValue(itemID) {
       log_message(LOG_LEVEL.WARNING, 'Unknown shield item id: ' + itemID + '. Could not fetch block value.')
       return 0;
   }
-}
-
-export function getTalentValue(name) {
-  const element = document.getElementById(`${name}`);
-  return Number(element.getAttribute('value'));
 }
 
 export function updateStats() {

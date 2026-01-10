@@ -8,6 +8,7 @@
 
 
 ## Specific
+- [ ] Migrate console.log -> log_message
 - [ ] Move gear functions to separate file
 - [ ] Move profile functions to separate file
 - [ ] Move data loading to separate file

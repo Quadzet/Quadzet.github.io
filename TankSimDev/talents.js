@@ -1,5 +1,5 @@
 import { updateStats } from './config.js'
-import { updateRotation } from './main.js'
+import { updateRotation } from './rotation.js'
 
 function talentPointCap() {
   return Number(document.querySelector("#player-level").value) - 9;
@@ -557,6 +557,11 @@ export function createTalentTrees() {
 
 
 // *** RUNTIME *** //
+
+export function getTalentValue(name) {
+  const element = document.getElementById(`${name}`);
+  return Number(element.getAttribute('value'));
+}
 
 function getTalentData(treeName, name) {
   let ret = {};
