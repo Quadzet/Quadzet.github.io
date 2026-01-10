@@ -1,11 +1,11 @@
 "use strict";
 
 import { BUFF_DATA, DEBUFF_DATA, WORLD_BUFF_DATA, CONSUMES_DATA, OH_BUFF_DATA } from './buffs.js';
-import { ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, ENCHANT_IDS} from './constants.js';
+import { ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, ENCHANT_IDS, BUFFS, TANK_SETTINGS, BOSS_SETTINGS } from './constants.js';
 import { ENCHANT_DATA } from './stats.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { formatEvent } from './eventHelpFuncs.js';
-import { createTalentTrees, loadTalents, getTalents } from './talents.js';
+import { createTalentTrees, loadTalents, getTalents, selectTalent, deselectTalent } from './talents.js';
 import { getTalentValue, updateStats } from './config.js';
 
 function sleep(ms) {
@@ -18,39 +18,12 @@ function average(array) {
   else return 0;
 };
 
-function linspace(start, end, length = Math.max(Math.round(end - start) + 1, 1)) {
-  if (length < 2) { return length === 1 ? [start] : []; }
-  var i, ret = Array(length);
-  length--;
-  for (i = length; i >= 0; i--) { ret[i] = (i * end + (length - i) * start) / length; }
-  return ret;
-}
-
-const asc = arr => arr.sort((a, b) => a - b);
-
 // sample standard deviation
 const std = (arr) => {
   const mu = average(arr);
   const diffArr = arr.map(a => (a - mu) ** 2);
   return Math.sqrt(diffArr.reduce((a, b) => a + b) / (arr.length - 1));
 };
-
-const quantile = (arr, q) => {
-  const sorted = asc(arr);
-  const pos = (sorted.length - 1) * q;
-  const base = Math.floor(pos);
-  const rest = pos - base;
-  if (sorted[base + 1] !== undefined) {
-    return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-  } else {
-    return sorted[base];
-  }
-};
-
-function getAmount(event, ability, type) {
-  if (event[`${type}`] && event.ability == ability) return event[`${type}`];
-  else return 0;
-}
 
 function refreshLinks() {
   let links = document.getElementsByTagName('a');
@@ -71,21 +44,6 @@ async function updateProgressbar(progressPerc) {
   document.querySelector("#progressBar").style.width = `${progressPerc}%`;
   await sleep(0);
 }
-
-// TODO: move this to a data file
-const BUFFS = [
-  'battleshout', 'motw', 'kings', 'might', 'strtotem',
-  'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str', 'defense',
-  'fort-elixir', 'shadow-oil', 'rumsey', 'oh-shadow-oil',
-  'dmf', 'wcb', 'zandalar', 'dragonslayer',
-  'moldar', 'fengus', 'slipkik', 'songflower', 'sunder', 'iea',
-  'faeriefire', 'cor', 'agi', 'giants',
-  'dark-desire', 'stam-food', 'str-scroll', 'leader', 'trueshot'];
-const TANK_SETTINGS = ['player-level', 'race', 'startRage'];
-const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
-const TALENTS = [
-  'deflection', 'cruelty', 'anticipation', 'shield-spec', 'toughness', 'impHS',
-  'impSA', 'impRend', 'impale', 'defiance', 'enrage', 'deep-wounds'];
 
 export function updateRotation(globals) {
   let element = document.getElementById('rotation-death-wish');
@@ -119,7 +77,7 @@ export function updateRotation(globals) {
     element.style.display = 'none';
 }
 
-function toggleAura(event, id, exclusives) {
+export function toggleAura(event, id, exclusives) {
   event.preventDefault();
   const element = document.getElementById(id + '-aura-img');
   element.classList.toggle('aura-toggle-active');
@@ -526,8 +484,7 @@ async function loadItemData() {
           if (id == 215161) delete obj.proc;
 
         }
-      }
-      )
+      })
     }
 
     // TODO: of the tiger etc, striking
@@ -536,7 +493,6 @@ async function loadItemData() {
 
   }
 
-  // Copy all properties from Items to ITEMS (cannot reassign imported variable)
   Object.assign(ITEMS, Items);
 }
 
@@ -621,7 +577,7 @@ function createAuraRows() {
   element.innerHTML = createAuraRow(DEBUFF_DATA, level)
 }
 
-function showEnchantDropdown(event, slot) {
+export function showEnchantDropdown(event, slot) {
   event.preventDefault();
   event.stopPropagation();
   const dropdown = document.getElementById(slot + '-enchant-dropdown-content');
@@ -757,7 +713,7 @@ function generateGearList(slot) {
   refreshLinks();
 }
 
-function showItemDropdown(event, slot) {
+export function showItemDropdown(event, slot) {
   event.preventDefault();
   event.stopPropagation();
   var dropdownContent = document.getElementById(slot + '-slot-dropdown-content');
@@ -951,12 +907,6 @@ function selectItem(id, slot) {
   refreshLinks();
 }
 
-function updateBleedResistance() {
-  var slider = document.getElementById("bleed-resistance");
-  var output = document.getElementById("bleed-resistance-span");
-  output.innerHTML = slider.value + '%';
-}
-
 // TODO: Remove
 function createLinks() {
   refreshLinks();
@@ -1031,7 +981,6 @@ function generateProfile() {
     else
       bossSettings[`${setting}`] = element.value;
   });
-  bossSettings['bleed-resistance'] = document.getElementById('bleed-resistance').value;
   profile.bossSettings = bossSettings;
 
   // Calc Settings
@@ -1053,7 +1002,7 @@ function saveInput() {
 }
 
 function loadProfile(profile) {
-  const DEFAULT_PROFILE = { "version": "1.0.0", "gear": { "head": "22418", "hands": "21581", "neck": "22732", "waist": "22422", "shoulder": "22419", "legs": "22417", "back": "23045", "feet": "22420", "chest": "22416", "wrist": "22423", "finger1": "23059", "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054", "offhand": "236336", "ranged": "236322" }, "rotation": { "slam": { "use": false, "rage": 60 }, "death-wish": { "use": false, "rage": 0 }, "revenge": { "use": true, "rage": 60 }, "raging-blow": { "use": false, "rage": 0 }, "rend": { "use": false, "rage": 60 }, "devastate": { "use": false, "rage": 70 }, "heroic-strike": { "use": false, "rage": 85 }, "shield-block": { "use": false, "rage": 90 }, "shield-slam": { "use": true, "rage": 60 }, "bloodthirst": { "use": false, "rage": 60 }, "quick-strike": { "use": false, "rage": 60 }, "mortal-strike": { "use": false, "rage": 60 }, "thunder-clap": { "use": false, "rage": 60 }, "cbrUse": false, "cbrStacks": 0 }, "tankSettings": { "level": 50, "race-ix": 0, "startRage": "70" }, "enchants": { "head-enchant-id": 0, "shoulder-enchant-id": 0, "back-enchant-id": 0, "chest-enchant-id": 0, "wrist-enchant-id": 0, "hands-enchant-id": 0, "legs-enchant-id": 0, "feet-enchant-id": 0, "mainhand-enchant-id": 0, "offhand-enchant-id": 0 }, "talents": { "cruelty": 2, "shield-specialization": 5, "improved-bloodrage": 2, "toughness": 5, "last-stand": 1, "improved-shield-block": 1, "improved-revenge": 3, "defiance": 5, "improved-sunder-armor": 3, "concussion-blow": 1, "one-handed-specialization": 5, "shield-slam": 1 }, "buffs": { "battleshout": false, "motw": false, "kings": false, "might": false, "horn": false, "strtotem": false, "fort": false, "bloodpact": false, "devo": false, "loh": false, "inspiration": false, "defense": false, "fort-elixir": false, "shadow-oil": false, "rumsey": false, "oh-shadow-oil": false, "dmf": false, "wcb": false, "zandalar": false, "dragonslayer": false, "moldar": false, "fengus": false, "slipkik": false, "songflower": false, "sunder": false, "iea": false, "faeriefire": false, "cor": false, "agi": false, "giants": false, "dark-desire": false, "stam-food": false, "str-scroll": false, "leader": false, "trueshot": false }, "bossSettings": { "bossLevel": 0, "swingMax": "4000", "swingMin": "4000", "swingTimer": "2", "bossArmor": "3731", "bleed-resistance": "20" }, "calcSettings": { "iterations": "10000", "fightLength": "20" } };
+  const DEFAULT_PROFILE = { "version": "1.0.0", "gear": { "head": "22418", "hands": "21581", "neck": "22732", "waist": "22422", "shoulder": "22419", "legs": "22417", "back": "23045", "feet": "22420", "chest": "22416", "wrist": "22423", "finger1": "23059", "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054", "offhand": "236336", "ranged": "236322" }, "rotation": { "slam": { "use": false, "rage": 60 }, "death-wish": { "use": false, "rage": 0 }, "revenge": { "use": true, "rage": 60 }, "raging-blow": { "use": false, "rage": 0 }, "rend": { "use": false, "rage": 60 }, "devastate": { "use": false, "rage": 70 }, "heroic-strike": { "use": false, "rage": 85 }, "shield-block": { "use": false, "rage": 90 }, "shield-slam": { "use": true, "rage": 60 }, "bloodthirst": { "use": false, "rage": 60 }, "quick-strike": { "use": false, "rage": 60 }, "mortal-strike": { "use": false, "rage": 60 }, "thunder-clap": { "use": false, "rage": 60 }, "cbrUse": false, "cbrStacks": 0 }, "tankSettings": { "level": 50, "race-ix": 0, "startRage": "70" }, "enchants": { "head-enchant-id": 0, "shoulder-enchant-id": 0, "back-enchant-id": 0, "chest-enchant-id": 0, "wrist-enchant-id": 0, "hands-enchant-id": 0, "legs-enchant-id": 0, "feet-enchant-id": 0, "mainhand-enchant-id": 0, "offhand-enchant-id": 0 }, "talents": { "cruelty": 2, "shield-specialization": 5, "improved-bloodrage": 2, "toughness": 5, "last-stand": 1, "improved-shield-block": 1, "improved-revenge": 3, "defiance": 5, "improved-sunder-armor": 3, "concussion-blow": 1, "one-handed-specialization": 5, "shield-slam": 1 }, "buffs": { "battleshout": false, "motw": false, "kings": false, "might": false, "horn": false, "strtotem": false, "fort": false, "bloodpact": false, "devo": false, "loh": false, "inspiration": false, "defense": false, "fort-elixir": false, "shadow-oil": false, "rumsey": false, "oh-shadow-oil": false, "dmf": false, "wcb": false, "zandalar": false, "dragonslayer": false, "moldar": false, "fengus": false, "slipkik": false, "songflower": false, "sunder": false, "iea": false, "faeriefire": false, "cor": false, "agi": false, "giants": false, "dark-desire": false, "stam-food": false, "str-scroll": false, "leader": false, "trueshot": false }, "bossSettings": { "bossLevel": 0, "swingMax": "4000", "swingMin": "4000", "swingTimer": "2", "bossArmor": "3731" }, "calcSettings": { "iterations": "10000", "fightLength": "20" } };
   profile = profile == null ? DEFAULT_PROFILE : profile;
 
   // Deprecated with the addition of default json profile
@@ -1142,10 +1091,6 @@ function loadProfile(profile) {
         document.getElementById(setting).value = bossSettings[`${setting}`];
     }
   });
-  if (bossSettings['bleed-resistance'] != null) {
-    document.getElementById('bleed-resistance').value = bossSettings['bleed-resistance'];
-    updateBleedResistance();
-  }
 
   // Calc Settings
   let calcSettings = profile.calcSettings == null ? {} : profile.calcSettings;
@@ -1428,6 +1373,7 @@ async function calc() {
   await main();
 }
 
+// TODO: Use setEventHandler instead
 // Attach functions to window for HTML event handlers
 window.calc = calc;
 window.changeSection = changeSection;
@@ -1436,7 +1382,11 @@ window.hideProfiles = hideProfiles;
 window.loadProfile = loadProfile;
 window.copyToClipboard = copyToClipboard;
 window.processJson = processJson;
-window.updateBleedResistance = updateBleedResistance;
+window.selectTalent = selectTalent;
+window.deselectTalent = deselectTalent;
+window.updateStats = updateStats;
+window.showItemDropdown = showItemDropdown
+window.showEnchantDropdown = showEnchantDropdown
 
 function initWhenReady() {
   if (typeof window.Papa === 'undefined') {

@@ -2,10 +2,13 @@ export var ITEMS = {};
 export var ITEM_SETS = [];
 
 export const ABILITIES = ["death-wish", "revenge", "rend", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
+
 export const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
+
 export const ENCHANT_SLOTS = [
   'head', 'shoulder', 'back', 'chest', 'wrist', 'hands',
   'legs', 'feet', 'mainhand', 'offhand'];
+
 export const ENCHANT_IDS = {
   'head': [0],
   'shoulder': [0],
@@ -20,3 +23,17 @@ export const ENCHANT_IDS = {
   'twohand': [0, 13695, 13529, 435481], // 20030, 13937, +9, +7 damage
   'shield': [0, 13817, 13689, 13464, 13378], //, 6042], TODO: Shield Spike
 };
+
+export const BUFFS = [
+    'battleshout', 'motw', 'kings', 'might', 'strtotem',
+    'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str', 'defense',
+    'fort-elixir', 'shadow-oil', 'rumsey', 'oh-shadow-oil',
+    'dmf', 'wcb', 'zandalar', 'dragonslayer',
+    'moldar', 'fengus', 'slipkik', 'songflower', 'sunder', 'iea',
+    'faeriefire', 'cor', 'agi', 'giants',
+    'dark-desire', 'stam-food', 'str-scroll', 'leader', 'trueshot'];
+
+export const TANK_SETTINGS = ['player-level', 'race', 'startRage'];
+
+export const BOSS_SETTINGS = ['bossLevel', 'swingMax', 'swingMin', 'swingTimer', 'bossArmor'];
+

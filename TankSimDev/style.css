@@ -685,10 +685,6 @@ pre {
   background-color: #474b4f;
   color: #C8CED1
 }
-#bleed-resistance {
-  width: 100px;
-  margin-left: 10px;
-}
 #playerstats input {margin-left:4px; width:40px}
 #playerstats .playerstats {margin-left:auto; margin-right: 20px}
 #levelSelect select {width:50px}

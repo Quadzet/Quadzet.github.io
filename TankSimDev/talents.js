@@ -787,7 +787,7 @@ function resetCounters() {
   remainingCounter.innerHTML = `${talentPointCap()}`;
 }
 
-function deselectTalent(event, name) {
+export function deselectTalent(event, name) {
   event.preventDefault();
   let treeName = getTreeName(name);
   let data = getTalentData(treeName, name);
@@ -808,7 +808,7 @@ function deselectTalent(event, name) {
   updateRotation(globals);
 }
 
-function selectTalent(event, name) {
+export function selectTalent(event, name) {
   event.preventDefault();
   if (getTotalTalentsSpent() >= talentPointCap())
     return;
