@@ -104,16 +104,11 @@ export class Actor {
 
     // *** old *** 
     getArmor() {
-        // if(this.name == "Tank" && this.armor < 10)
-        //     console.log(this.armor)
         return Math.max(0, this.armor * this.percArmorMod);
     }
 
     getAP() {
         let AP = this.stats.AP;
-        // if (this.windfury) {
-        //     AP += this.stats.bonuses.windfuryAP
-        // }
         this.auras.forEach(aura => {
           if (aura.duration > 0)
             AP *= aura.APMultMod;

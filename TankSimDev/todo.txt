@@ -9,7 +9,7 @@
 
 ## Specific
 - [x] Use Modules instead of global scope for everything
-- [ ] Migrate console.log -> log_message
+- [x] Migrate console.log -> log_message
 - [x] Move gear functions to separate file
 - [x] Move profile functions to separate file
 - [x] Move data loading to separate file

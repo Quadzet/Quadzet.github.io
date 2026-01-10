@@ -1,8 +1,9 @@
 "use strict";
 
+import { LOG_LEVEL, log_message } from './logging.js'
 import { getParryHastedSwingEnd } from './attacktable.js';
-import { sortDescending, generateDamageEvent, clearFutureTicks } from './eventHelpFuncs.js';
-import { rollAttack, rollSpellAttack, armorReduction } from './attacktable.js';
+import { sortDescending } from './eventHelpFuncs.js';
+import { rollAttack, armorReduction } from './attacktable.js';
 import { onUseData } from './stats.js';
 
 export function handleParryHaste(event, target, futureEvents) {
@@ -151,7 +152,7 @@ export class Ability {
 
   // This function needs to be implemented in the sub classes!
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    console.log(`Internal Error: Use function not implemented for ability ${this.name}!`);
+    log_message(LOG_LEVEL.ERROR, `Internal Error: Use function not implemented for ability ${this.name}!`);
   }
 
   isUsable(timestamp, source) {
@@ -244,7 +245,7 @@ export class Autoattack extends Ability {
     else if (rank == 8) return 138; // TODO: Used at 60 without skill book
     else if (rank == 9) return 157;
     else {
-      console.log("Error: invalid rank for Heroic Strike: " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for Heroic Strike: " + rank)
       return 0;
     }
   }
@@ -259,7 +260,7 @@ export class Autoattack extends Ability {
     else if (rank == 8) return 145; // TODO: Used at 60 without skill book
     else if (rank == 9) return 175;
     else {
-      console.log("Error: invalid rank for Heroic Strike: " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for Heroic Strike: " + rank)
       return 0;
     }
   }
@@ -345,7 +346,7 @@ export class Revenge extends Ability {
     else if (rank == 5) return Math.random() * 14 + 64;
     else if (rank == 6) return Math.random() * 18 + 81;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -357,7 +358,7 @@ export class Revenge extends Ability {
     else if (rank == 5) return 243;
     else if (rank == 6) return 273;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -413,7 +414,7 @@ export class SunderArmor extends Ability {
     else if (rank == 4) return 207; // NEEDS TESTING
     else if (rank == 5) return 261;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -524,7 +525,7 @@ export class BattleShout extends Ability {
     else if (rank == 6) return 52;
     else if (rank == 7) return 60;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -555,7 +556,7 @@ export class ShieldSlam extends Ability {
     else if (rank == 3) return Math.random() * 14 + 303;
     else if (rank == 4) return Math.random() * 16 + 342;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -565,7 +566,7 @@ export class ShieldSlam extends Ability {
     else if (rank == 3) return 229 * 2;
     else if (rank == 4) return 254 * 2;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }
@@ -599,7 +600,7 @@ export class MortalStrike extends Ability {
     else if (rank == 3) return 135;
     else if (rank == 4) return 160;
     else {
-      console.log("Error: invalid rank for " + this.name + ": " + rank)
+      log_message(LOG_LEVEL.ERROR, "Error: invalid rank for " + this.name + ": " + rank)
       return 0;
     }
   }

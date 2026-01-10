@@ -139,10 +139,6 @@ self.addEventListener('message', function(e) {
             if (event.source == "Boss") {
               if (event.amount && event.type == "damage") damageTaken += event.amount
             } else if ("threat" in event) { 
-              if (event.name == "Hyperconductive Shock") {
-                console.log('hyperconductive event: ');
-                console.log(event);
-              }
               threat += event.threat
               if (event.type == "damage") {
                 if (event.amount) damage += event.amount
