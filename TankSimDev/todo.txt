@@ -8,10 +8,11 @@
 
 
 ## Specific
+- [x] Use Modules instead of global scope for everything
 - [ ] Migrate console.log -> log_message
-- [ ] Move gear functions to separate file
-- [ ] Move profile functions to separate file
-- [ ] Move data loading to separate file
+- [x] Move gear functions to separate file
+- [x] Move profile functions to separate file
+- [x] Move data loading to separate file
 - [ ] buff tooltips depending on level
 - [ ] Buff exclusives don't seem to work (double food)
 - [ ] Race has no effect on stats
@@ -22,3 +23,4 @@
 - [ ] essence of the red
 - [ ] icons of eg str pot should change with levels (ogre, giants etc)
 - [ ] grilled squid, blessed sunfruit, chimaerok chops, smoked desert dumplings
+- [ ] Fix profile functions performance, and console warnings
