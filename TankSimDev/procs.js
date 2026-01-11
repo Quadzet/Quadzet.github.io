@@ -135,7 +135,7 @@ export class WeaponProc extends Proc {
       if (event.timestamp < this.cooldown)
         return;
       let rng = Math.random();
-      let procChance = this.procChance != null ? this.procChance : this.ppm * (this.offhand ? source.stats.OHSwing : source.stats.MHSwing) / 60000;
+      let procChance = this.procChance != null ? this.procChance : this.ppm * (this.offhand ? source.stats.offhand.swingtimer : source.stats.mainhand.swingtimer) / 60000;
       if (rng < procChance) {
         this.cooldown = event.timestamp + this.ICD;
         if (this.damage > 0) {
@@ -180,26 +180,6 @@ export function getTankProcs(globals) {
       ret.push(new WeaponProc(proc))
     });
 
-    if (globals.tankStats.bonuses.ohDismantle) {
-      ret.push(new WeaponProc({
-        name: "Dismantle",
-        dmg: 75,
-        ppm: 2,
-        magic: true,
-        offhand: true,
-      }));
-    }
-
-    if (globals.tankStats.bonuses.mhDismantle) {
-      ret.push(new WeaponProc({
-        name: "Dismantle",
-        dmg: 75,
-        ppm: 2,
-        magic: true,
-        offhand: false,
-      }));
-    }
-
     if (globals.tankStats.bonuses.ohoil) {
       ret.push(new WeaponProc({
         name: "Shadow Oil",
@@ -222,9 +202,6 @@ export function getTankProcs(globals) {
       }));
     }
 
-
-
-
     if(globals.tankStats.bonuses.windfury) {
         ret.push(
             new WindfuryProc()
@@ -238,7 +215,7 @@ export function getTankProcs(globals) {
             )
         )
     }
-    
+
     return ret;
 }
 

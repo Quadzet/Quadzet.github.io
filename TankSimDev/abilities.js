@@ -145,8 +145,8 @@ export class Ability {
   }
   weaponSwingRoll(attacker) {
     return (
-      Math.random() * (attacker.stats.MHMax - attacker.stats.MHMin) +
-      attacker.stats.MHMin + attacker.getAP() * attacker.stats.MHSwing /
+      Math.random() * (attacker.stats.mainhand.maxdmg - attacker.stats.mainhand.mindmg) +
+      attacker.stats.mainhand.mindmg + attacker.getAP() * attacker.stats.mainhand.swingtimer /
       (14 * 1000));
   }
 
@@ -170,7 +170,7 @@ export class Autoattack extends Ability {
     let rageEvent = {};
     // Heroic Strike
     if (source.isHeroicStrikeQueued && source.rage > (15 - source.stats.talents.impHS)) {
-      let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+      let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level));
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
       damageEvent = rollAttack(source, target, damage, true);
       damageEvent.threat = this.threatCalculator(damageEvent, source);
@@ -187,7 +187,7 @@ export class Autoattack extends Ability {
     }
     // White Swing
     else {
-      let damage = this.weaponSwingRoll(source) + target.additivePhysBonus;
+      let damage = this.weaponSwingRoll(source);
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
       damageEvent = rollAttack(source, target, damage, false, source.stats.dualWield);
       damageEvent.threat = this.threatCalculator(damageEvent, source);
@@ -272,16 +272,12 @@ export class OHSwing extends Ability {
   }
 
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    let damage = Math.random() * (source.stats.OHMax - source.stats.OHMin) + source.stats.OHMin + source.getAP() * source.stats.OHSwing / (14 * 1000);
-    damage = damage * (0.5 + 0.025 * source.stats.talents.dwspec) + target.additivePhysBonus;
+    let damage = Math.random() * (source.stats.offhand.maxdmg - source.stats.offhand.mindmg) + source.stats.offhand.mindmg + source.getAP() * source.stats.offhand.swingtimer / (14 * 1000);
+    damage = damage * (0.5 + 0.025 * source.stats.talents.dwspec);
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
     let damageEvent = rollAttack(source, target, damage, false, !source.isHeroicStrikeQueued, true);
-    // damageEvent.threat = 0;
-    // damageEvent.threat = this.threatCalculator(damageEvent, source);
-    // damageEvent.name = this.name;
     damageEvent.trigger = true; // Triggers OH weapon procs
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents);
-    // reactiveEvents.push(damageEvent)
     let futureEvent = {
       type: "swingTimer",
       source: source.name,
@@ -299,7 +295,7 @@ export class Bloodthirst extends Ability {
     super("Bloodthirst", 6000, 30 - rageReduction, true)
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    let damage = 0.45 * source.getAP() + target.additivePhysBonus;
+    let damage = 0.45 * source.getAP();
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
     let damageEvent = rollAttack(source, target, damage, true, false, false, true);
     damageEvent.trigger = true;
@@ -313,7 +309,7 @@ export class Revenge extends Ability {
     super("Revenge", 5000, 5 - rageReduction, true)
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    let damage = this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+    let damage = this.damage(this.rank(source.stats.level));
     damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
     let damageEvent = rollAttack(source, target, damage, true, false, false, true);
@@ -536,7 +532,7 @@ export class ShieldSlam extends Ability {
     super("Shield Slam", 6000, 20 - rageReduction, true)
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() * 2 + target.additivePhysBonus;
+    let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() * 2;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
     let damageEvent = rollAttack(source, target, damage, true, false, false, true);
     damageEvent.trigger = false;
@@ -580,7 +576,7 @@ export class MortalStrike extends Ability {
     super("Mortal Strike", 6000, 30 - rageReduction, true)
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
-    let damage = (source.stats.MHMin + Math.random() * (source.stats.MHMax - source.stats.MHMin) + source.getAP() * source.stats.playerNormSwing / (14 * 1000)) + this.damage(this.rank(source.stats.level)) + target.additivePhysBonus;
+    let damage = (source.stats.mainhand.mindmg + Math.random() * (source.stats.mainhand.maxdmg - source.stats.mainhand.mindmg) + source.getAP() * source.stats.normSwing / (14 * 1000)) + this.damage(this.rank(source.stats.level));
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
     let damageEvent = rollAttack(source, target, damage, true, false, false, true);
     damageEvent.trigger = true;

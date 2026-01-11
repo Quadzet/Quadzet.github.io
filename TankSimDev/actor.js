@@ -16,9 +16,8 @@ export class Actor {
         this.threatMod = stats.threatMod
         this.damageMod = stats.damageMod
         this.physDamageMod = stats.physDamageMod
-        this.additivePhysBonus = stats.additivePhysBonus
         this.hastePerc = stats.hastePerc
-        this.armor = stats.baseArmor
+        this.armor = stats.armor
         this.percArmorMod = 1
         this.defense = stats.defense
         this.crit = stats.crit
@@ -96,10 +95,10 @@ export class Actor {
     }
 
     getSwingTimer() {
-        return this.stats.MHSwing/(1+this.hastePerc/100)
+        return this.stats.mainhand.swingtimer/(1+this.hastePerc/100)
     }
     getOHSwingTimer() {
-        return this.stats.OHSwing/(1+this.hastePerc/100)
+        return this.stats.offhand.swingtimer/(1+this.hastePerc/100)
     }
 
     // *** old *** 
@@ -179,10 +178,9 @@ export class Actor {
         this.physDamageMod = this.stats.physDamageMod
         this.hastePerc = this.stats.hastePerc
         this.defense = this.stats.defense
-        this.additivePhysBonus = this.stats.additivePhysBonus 
         this.rageGained = 0
         this.rageSpent = 0
-        this.armor = this.stats.baseArmor
+        this.armor = this.stats.armor
         this.percArmorMod = 1
         this.uptimes = {}
 

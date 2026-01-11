@@ -1,198 +1,255 @@
-export const BUFF_DATA = {
+export const AURA_DATA = {
   "battleshout": {
     "type": "SPELL",
+    "group": "attackpower",
     "ids": [6673, 5242, 6192, 11549, 11550, 11551, 28289],
     "levels": [1, 12, 22, 32, 42, 52, 60],
+    "attackpower": [20, 40, 60, 94, 139, 194, 232],
   },
   "trueshot": {
     "type": "SPELL",
     "ids": [19506, 20905, 20906],
     "levels": [40, 50, 60],
+    "attackpower": [50, 75, 100],
   },
   "motw": {
     "type": "SPELL",
     "ids": [1126, 5232, 6756, 5234, 8907, 9884, 9885],
     "levels": [1, 10, 20, 30, 40, 50, 60],
+    "bonusArmor": [25, 65, 105, 150, 195, 240, 285],
+    "agility": [0, 2, 4, 6, 8, 10, 12],
+    "strength": [0, 2, 4, 6, 8, 10, 12],
+    "stamina": [0, 2, 4, 6, 8, 10, 12],
   },
   "leader": {
     "type": "SPELL",
     "ids": [17007],
     "levels": [40],
+    "crit": [3],
   },
   "kings": {
     "type": "SPELL",
     "ids": [20217],
     "levels": [20],
+    "staminaMod": [0.1],
+    "strengthMod": [0.1],
+    "agilityMod": [0.1],
   },
   "might": {
     "type": "SPELL",
+    "group": "attackpower",
     "ids": [19740, 19836, 19835, 19836, 19837, 19838, 25291],
     "levels": [4, 12, 22, 32, 42, 52, 60],
+    "attackpower": [20, 35, 55, 85, 115, 155, 185],
   },
   "strtotem": {
     "type": "SPELL",
     "ids": [8075, 8160, 8161, 10442, 25361],
     "levels": [10, 24, 38, 52, 60],
+    "strength": [10, 20, 36, 61, 77],
   },
   "fort": {
     "type": "SPELL",
     "ids": [1243, 1244, 1245, 2791, 10937, 10938],
     "levels": [1, 12, 24, 36, 48, 60],
+    "stamina": [3, 8, 20, 32, 43, 54],
   },
   "bloodpact": {
     "type": "SPELL",
     "ids": [6307, 7804, 7805, 11766, 11767],
     "levels": [4, 14, 26, 38, 50],
+    "stamina": [3, 9, 19, 30, 42],
   },
   "devo": {
     "type": "SPELL",
     "ids": [465, 10290, 643, 10291, 1032, 10292, 10293],
     "levels": [1, 10, 20, 30, 40, 50, 60],
+    "bonusArmor": [55, 160, 275, 390, 505, 620, 735],
   },
   "loh": {
     "type": "SPELL",
     "ids": [20235],
     "levels": [20],
+    "armorMod": [0.3], // Applies to armor from items.
   },
   "inspiration": {
     "type": "SPELL",
     "ids": [15363],
     "levels": [20],
+    "armorMod": [0.25], // Applies to all armor(?)
   },
-}
 
-export const WORLD_BUFF_DATA = {
+  // *** WORLD BUFFS ***
   "dmf": {
     "type": "SPELL",
-    "ids": ["23768"],
+    "ids": [23768],
     "levels": [1],
+    "damageMod": [0.1],
   },
   "wcb": {
     "type": "SPELL",
-    "ids": ["16609"],
+    "ids": [16609],
     "levels": [1],
+    "haste": [15],
+    "health": [300],
   },
   "zandalar": {
     "type": "SPELL",
-    "ids": ["24425"],
+    "ids": [24425],
     "levels": [1],
+    "staminaMod": [0.15],
+    "strengthMod": [0.15],
+    "agilityMod": [0.15],
   },
   "dragonslayer": {
     "type": "SPELL",
-    "ids": ["22888"],
+    "ids": [22888],
     "levels": [1],
+    "crit": [5],
+    "attackpower": [140],
+    "spellcrit": [10],
   },
   "moldar": {
     "type": "SPELL",
-    "ids": ["22818"],
+    "ids": [22818],
     "levels": [50],
+    "staminaMod": [0.15],
   },
   "fengus": {
     "type": "SPELL",
-    "ids": ["22817"],
+    "ids": [22817],
     "levels": [50],
+    "attackpower": [200],
   },
   "slipkik": {
     "type": "SPELL",
-    "ids": ["22820"],
+    "ids": [22820],
     "levels": [50],
+    "spellcrit": [3],
   },
   "songflower": {
     "type": "SPELL",
-    "ids": ["15366"],
+    "ids": [15366],
     "levels": [50],
+    "crit": [5],
+    "spellcrit": [5],
+    "strength": [15],
+    "stamina": [15],
+    "agility": [15],
   },
-}
 
-export const DEBUFF_DATA = {
+  // *** DEBUFFS ***
   "sunder": {
     "type": "SPELL",
+    "group": "sunder",
     "ids": [7386, 7405, 8380, 11596, 11597],
     "levels": [10, 22, 34, 46, 58],
+    "bonusArmor": [-450, -900, -1350, -1800, -2250],
   },
   "iea": {
     "type": "SPELL",
+    "group": "sunder",
     "ids": [8647, 8649, 8650, 11197, 11198],
     "levels": [14, 26, 36, 46, 56],
+    "bonusArmor": [-600, -1087, -1525, -2012, -2550],
   },
   "faeriefire": {
     "type": "SPELL",
     "ids": [770, 778, 9749, 9907],
     "levels": [18, 30, 42, 54],
+    "bonusArmor": [-175, -285, -395, -505],
   },
   "cor": {
     "type": "SPELL",
     "ids": [704, 7658, 7659, 11717],
     "levels": [14, 28, 42, 56],
+    "bonusArmor": [-140, -290, -465, -640],
+    "attackpower": [20, 45, 65, 90],
   },
-}
 
-
-export const CONSUMES_DATA = {
-  "agi": {
+  // *** CONSUMES ***
+  "agi-elixir": {
     "type": "ITEM",
     "ids": [2457, 3390, 8949, 9187],
-    "levels": [2, 18, 27, 38], // 4, 8, 15, 25 agi
+    "levels": [2, 18, 27, 38],
+    "img": ["minor-agility", "lesser-agility", "agility", "greater-agility"],
+    "agility": [4, 8, 15, 25],
   },
-  "str": {
+  "str-elixir": {
     "type": "ITEM",
     "ids": [2454, 3391, 9206],
-    "levels": [4, 20, 38],
+    "levels": [1, 20, 38],
+    "img": ["lion-strength", "ogre-strength", "giants"],
+    "strength": [4, 8, 25],
   },
-  "giants": {
+  "giant-growth": {
     "type": "ITEM",
     "ids": [6662],
     "levels": [8],
+    "strength": [8],
   },
   "str-scroll": {
     "type": "ITEM",
     "ids": [954, 2289, 4426, 10310],
     "levels": [10, 25, 40, 55],
+    "strength": [5, 9, 13, 17],
   },
   "fort-elixir": {
     "type": "ITEM",
     "ids": [3825],
     "levels": [25],
+    "health": [120],
   },
   "defense": {
     "type": "ITEM",
     "ids": [5997, 3389, 8951, 13445],
-    "levels": [5, 16, 29, 43], // 50, 150, 250, 450 armor
+    "levels": [5, 16, 29, 43],
+    "img": ["minor-defense", "defense", "greater-defense", "superior-defense"],
+    "bonusArmor": [50, 150, 250, 450],
   },
   "stam-food": {
     "type": "ITEM",
     "ids": [21023],
-    "levels": [55], // 25 stam
+    "levels": [55],
+    "stamina": [25],
   },
   "str-food": {
     "type": "ITEM",
     "ids": [20452],
-    "levels": [45], // 20 str
+    "levels": [45],
+    "strength": [20],
   },
   "agi-food": {
     "type": "ITEM",
     "ids": [13928],
-    "levels": [35], // 10 agi
+    "levels": [35],
+    "agility": [10],
   },
   "dark-desire": {
     "type": "ITEM",
     "ids": [22237],
     "levels": [1],
+    "hit": [2],
   },
   "stone": {
     "type": "ITEM",
     "ids": [2863, 7964, 2871, 12404],
-    "levels": [5, 15, 25, 35], // 3, 4, 6, 8
+    "levels": [5, 15, 25, 35],
+    "img": ["coarse", "heavy", "solid", "dense"],
+    "mhmin": [3, 4, 6, 8],
+    "mhmax": [3, 4, 6, 8],
   },
   "elemental-stone": {
     "type": "ITEM",
     "ids": [18262],
-    "levels": [50], // 2% crit
+    "levels": [50],
+    "crit": [2],
   },
   "consecrated-stone": {
     "type": "ITEM",
     "ids": [23122],
-    "levels": [50], // 100ap
+    "levels": [50],
+    "attackpower": [100],
   },
   "shadow-oil": {
     "type": "ITEM",
@@ -203,19 +260,23 @@ export const CONSUMES_DATA = {
     "type": "ITEM",
     "ids": [21151],
     "levels": [1],
+    "stamina": [15],
   },
-}
 
-export const OH_BUFF_DATA = {
+  // *** OH BUFFS ***
   "oh-stone": {
     "type": "ITEM",
-    "ids": [2863, 7964, 2871, 12404],
-    "levels": [5, 15, 25, 35], // 3, 4, 6, 8
+    "ids": [2863, 2871, 7964, 12404],
+    "levels": [5, 15, 25, 35],
+    "ohmin": [3, 4, 6, 8],
+    "ohmax": [3, 4, 6, 8],
+    "img": ["coarse", "heavy", "solid", "dense"],
   },
   "oh-shadow-oil": {
     "type": "ITEM",
     "ids": [3824],
     "levels": [24],
+    "img": ["shadow-oil"],
   },
 }
 

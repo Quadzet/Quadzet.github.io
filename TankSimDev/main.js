@@ -1,16 +1,19 @@
 "use strict";
 
-import { BUFF_DATA, DEBUFF_DATA, WORLD_BUFF_DATA, CONSUMES_DATA, OH_BUFF_DATA } from './buffs.js';
-import { ITEM_SLOTS, ENCHANT_SLOTS } from './constants.js';
+import { AURA_DATA } from './buffs.js';
+import { ITEM_SLOTS, ENCHANT_SLOTS, BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES,
+  OH_BUFFS } from './constants.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { formatEvent } from './eventHelpFuncs.js';
 import { createTalentTrees, selectTalent, deselectTalent } from './talents.js';
-import { updateStats } from './config.js';
+import { updateStats, getIndex } from './config.js';
 import { loadItemData } from './loadData.js'
-import { generateGearList, createGearRows, showEnchantDropdown, hideEnchantDropdown, showItemDropdown, hideItemDropdown } from './gear.js'
+import { generateGearList, createGearRows, showEnchantDropdown,
+  hideEnchantDropdown, showItemDropdown, hideItemDropdown } from './gear.js'
 import { refreshLinks } from './wowhead.js'
 import { updateRotation } from './rotation.js'
-import { saveInput, loadProfile, loadLocalstorage, processJson, copyToClipboard } from './profiles.js'
+import { saveInput, loadProfile, loadLocalstorage, processJson,
+  copyToClipboard } from './profiles.js'
 
 function sleep(ms) {
   return new Promise((r) =>
@@ -22,14 +25,12 @@ function average(array) {
   else return 0;
 };
 
-// sample standard deviation
 const std = (arr) => {
   const mu = average(arr);
   const diffArr = arr.map(a => (a - mu) ** 2);
   return Math.sqrt(diffArr.reduce((a, b) => a + b) / (arr.length - 1));
 };
 
-// Fill the progressbar
 async function updateProgressbar(progressPerc) {
   document.querySelector("#progressBar").style.width = `${progressPerc}%`;
   await sleep(0);
@@ -39,6 +40,7 @@ export function toggleAura(event, id, exclusives) {
   event.preventDefault();
   const element = document.getElementById(id + '-aura-img');
   element.classList.toggle('aura-toggle-active');
+  // TODO: Fix this behaviour using groups.
   if (exclusives != null && element.classList.contains('aura-toggle-active')) {
     exclusives.forEach(name => {
       var exElement = document.getElementById(name + '-aura-img');
@@ -83,51 +85,44 @@ function addEventListeners() {
   })
 }
 
-function get_index(buff, level) {
-  let ix = -1;
-  for (let i = 0; i < buff['levels'].length; i++) {
-    if (buff['levels'][i] < level)
-      ix = i
-    else
-      break
-  }
-  return ix
-}
+function createAuraRow(auras, level) {
+  let aura_row = '';
+  auras.forEach(aura => {
+    let ix = getIndex(AURA_DATA[`${aura}`], level);
 
-function createAuraRow(data, level) {
-  let aura_row = ''
-  Object.keys(data).forEach(buff => {
-    let ix = get_index(data[`${buff}`], level)
+    let type = AURA_DATA[`${aura}`]['type'].toLowerCase();
+    let id = AURA_DATA[`${aura}`]['ids'][ix];
+    let img = aura;
+    if (AURA_DATA[`${aura}`]['img'])
+      img = AURA_DATA[`${aura}`][ix];
 
-    let type = data[`${buff}`]['type'].toLowerCase()
-    let id = data[`${buff}`]['ids'][ix]
     aura_row += `
-          <div class="aura-toggle" id="${data}-aura">
-            <a href="https://classic.wowhead.com/${type}=${id}" data-wh-rename-link="false" onclick="toggleAura(event, '${buff}')">
-              <img class="aura-toggle-default" src="img/${buff}.jpg" id="${buff}-aura-img" active="false">
+          <div class="aura-toggle" id="${aura}-aura">
+            <a href="https://classic.wowhead.com/${type}=${id}" data-wh-rename-link="false" onclick="toggleAura(event, '${aura}')">
+              <img class="aura-toggle-default" src="img/${img}.jpg" id="${aura}-aura-img" active="false">
             </a>
           </div>`
-  })
-  return aura_row
+  });
+  return aura_row;
 }
 
 function createAuraRows() {
   let level = document.getElementById("player-level").value
 
   let element = document.getElementById("aura-row-buffs")
-  element.innerHTML = createAuraRow(BUFF_DATA, level)
+  element.innerHTML = createAuraRow(BUFFS, level)
 
   element = document.getElementById("aura-row-oh-wep-buffs")
-  element.innerHTML = createAuraRow(OH_BUFF_DATA, level)
+  element.innerHTML = createAuraRow(OH_BUFFS, level)
 
   element = document.getElementById("aura-row-consumes")
-  element.innerHTML = createAuraRow(CONSUMES_DATA, level)
+  element.innerHTML = createAuraRow(CONSUMES, level)
 
   element = document.getElementById("aura-row-world-buffs")
-  element.innerHTML = createAuraRow(WORLD_BUFF_DATA, level)
+  element.innerHTML = createAuraRow(WORLD_BUFFS, level)
 
   element = document.getElementById("aura-row-debuffs")
-  element.innerHTML = createAuraRow(DEBUFF_DATA, level)
+  element.innerHTML = createAuraRow(DEBUFFS, level)
 }
 
 // TODO: Remove
@@ -386,10 +381,11 @@ window.updateStats = updateStats;
 window.showItemDropdown = showItemDropdown;
 window.showEnchantDropdown = showEnchantDropdown;
 window.generateGearList = generateGearList;
+window.toggleAura = toggleAura;
 
 function initWhenReady() {
   if (typeof window.Papa === 'undefined') {
-    console.log('Waiting for Papa Parse to load...');
+    log_message(LOG_LEVEL.INFO, 'Waiting for Papa Parse to load...');
     setTimeout(initWhenReady, 50);
     return;
   }

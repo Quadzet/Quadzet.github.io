@@ -137,9 +137,9 @@ export function twoRollTankBossTable(attacker, defender, damage) {
 
 // Tank hitting the boss
 export function rollTankBossTable(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false) {
-    let wepSkill = attacker.stats.MHWepSkill;
+    let wepSkill = attacker.stats.mhskill;
     let defense = defender.defense;
-    if (OHSwing) wepSkill = attacker.stats.OHWepSkill;
+    if (OHSwing) wepSkill = attacker.stats.ohskill;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, dualWieldMiss);
     let parry = defender.stats.level == attacker.stats.level + 3 ? 14 : defender.stats.parry + 0.1*(defense - wepSkill);
     let dodge = defender.stats.dodge + 0.1 * (defense - wepSkill);
@@ -198,7 +198,7 @@ export function rollTankBossTable(attacker, defender, damage, yellow = false, du
 
 // Boss hitting the tank
 export function rollBossTankTable(attacker, defender, damage, yellow = false) {
-    let wepSkill = attacker.stats.MHWepSkill;
+    let wepSkill = attacker.stats.mhskill;
     let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense));
     let parry = defender.stats.parry - 0.04 * (wepSkill - defender.defense);
     let dodge = defender.stats.dodge - 0.04 * (wepSkill - defender.defense);

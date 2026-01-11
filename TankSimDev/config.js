@@ -1,65 +1,47 @@
 "use strict";
 // TODO: Remove weaponlists, update*list()
 
-import { ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS } from './constants.js'
+import {
+  ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES,
+  ENCHANT_SLOTS, ATTRIBUTES, Wield, ActorType,
+  DEBUFFS,
+} from './constants.js'
+import { AURA_DATA } from './buffs.js'
 import { levelstats } from './levelstats.js'
 import { races } from './stats.js'
 import { LOG_LEVEL, log_message } from './logging.js'
 import { ENCHANT_DATA } from './stats.js'
 import { getTalentValue } from './talents.js';
 
-let weaponlists = {
-  "Shields": `<option value="None">None</option>
-    <option value="Commander's Crest">Commander's Crest</option>`,
 
-  "Axes": `
-    `,
-
-  "Daggers": `
-    `,
-
-  "Fists": `
-    `,
-
-  "Maces": `
-    `,
-
-  "Swords": `<option value="None">None</option>
-    <option value="Legionnaire's Sword">Legionnaire's Sword</option>`,
-}
-
-let ohenchantlist = {
-  weapon: `<option value="None">None</option>
-    `,
-
-  shield: `<option value="None">None</option>
-    <option value="Minor Stamina">Minor Stamina</option>
-    `,
-}
-
-function updateMHWeaponList(doUpdateStats) {
-  let mhselect = document.getElementById("mainhand")
-  let weapontype = document.getElementById("mhweptypelist").value
-
-  mhselect.innerHTML = weaponlists[weapontype]
-  if (doUpdateStats) updateStats();
-}
-function updateOHWeaponList(doUpdateStats) {
-  let ohselect = document.getElementById("offhand")
-  let ohtype = document.getElementById("ohweptypelist").value
-
-  ohselect.innerHTML = weaponlists[ohtype]
-
-  let ohenchantselect = document.getElementById("ohwepenchant")
-  let index = ohenchantselect.selectedIndex
-  if (ohtype == "Shields") {
-    ohenchantselect.innerHTML = ohenchantlist.shield
-  } else {
-    ohenchantselect.innerHTML = ohenchantlist.weapon
+export function getIndex(buff, level) {
+  let ix = -1;
+  for (let i = 0; i < buff['levels'].length; i++) {
+    if (buff['levels'][i] < level)
+      ix = i;
+    else
+      break;
   }
-  if (index < ohenchantselect.length) ohenchantselect.selectedIndex = index
+  return ix;
+}
 
-  if (doUpdateStats) updateStats();
+function writePlayerStats(stats) {
+  document.getElementById("playerhp").innerHTML = `${Math.round(stats.health)}`;
+  document.getElementById("playerstrength").innerHTML = `${Math.round(stats.strength)}`;
+  document.getElementById("playerstamina").innerHTML = `${Math.round(stats.stamina)}`;
+  document.getElementById("playeragility").innerHTML = `${Math.round(stats.agility)}`;
+  document.getElementById("playerhit").innerHTML = `${stats.hit}`;
+  document.getElementById("playercrit").innerHTML = `${Math.round(stats.crit * 10) / 10}`;
+  document.getElementById("playerattackpower").innerHTML = `${Math.round(stats.attackpower)}`;
+  document.getElementById("playerarmor").innerHTML = `${Math.round(stats.armor)}`;
+  document.getElementById("playerblock").innerHTML = `${Math.round((stats.block) * 100) / 100}`;
+  document.getElementById("playerblockvalue").innerHTML = `${Math.round(stats.blockvalue)}`;
+  document.getElementById("playerparry").innerHTML = `${Math.round((stats.parry) * 100) / 100}`;
+  document.getElementById("playerdodge").innerHTML = `${Math.round((stats.dodge) * 100) / 100}`;
+  document.getElementById("playerdefense").innerHTML = `${stats.defense}`;
+  document.getElementById("playermhskill").innerHTML = `${stats.mhskill}`;
+  document.getElementById("playerohskill").innerHTML = `${stats.ohskill}`;
+  document.getElementById("playerhaste").innerHTML = `${stats.haste}`;
 }
 
 function checkAuraToggle(name) {
@@ -67,133 +49,41 @@ function checkAuraToggle(name) {
   return element.classList.contains('aura-toggle-active');
 }
 
-function getFFArmor(level) {
-  if (level < 18) return 0;
-  else if (level < 30) return 175;
-  else if (level < 42) return 285;
-  else if (level < 54) return 395;
-  else return 505;
-}
-function getCoRArmor(level) {
-  if (level < 14) return 0;
-  else if (level < 28) return 140;
-  else if (level < 42) return 290;
-  else if (level < 56) return 465;
-  else return 640;
+function applyMultMods(stats) {
+  stats.stamina *= stats.staminaMod;
+  stats.strength *= stats.strengthMod;
+  stats.agility *= stats.agilityMod;
+  stats.armor *= stats.armorMod;
 }
 
-function getSAArmor(level) {
-  if (level < 10) return 0;
-  else if (level < 22) return 450;
-  else if (level < 34) return 900;
-  else if (level < 46) return 1350;
-  else if (level < 58) return 1800;
-  else return 2250;
+function applyExtraStats(stats) {
+
+  ATTRIBUTES.forEach(attribute => {
+    let element = document.getElementById(`playerextra${attribute}`);
+    if (element == null)
+      return;
+    let extraStat = Number(element.value);
+    stats[`${attribute}`] += extraStat;
+  });
+
+  let extramhskill = Number(document.getElementById("playerextramhskill").value);
+  let extraohskill = Number(document.getElementById("playerextraohskill").value);
+  stats.mhskill += extramhskill;
+  stats.ohskill += extraohskill;
 }
 
-// Note: Only with 2/2 imp expose
-function getIEAArmor(level) {
-  if (level < 14) return 0;
-  else if (level < 26) return 600;
-  else if (level < 36) return 1087.5;
-  else if (level < 46) return 1575;
-  else if (level < 56) return 2062.5;
-  else return 2550;
-}
+function addAuraStats(stats, level) {
 
-function getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, armor) {
-  armor = armor ? armor : 0;
-  if (CoR) armor -= getCoRArmor(level);
-  if (faerieFire) armor -= getFFArmor(level);
-  let SAArmor = SA ? getSAArmor(level) : 0;
-  let IEAArmor = IEA ? getIEAArmor(level) : 0;
-  armor -= Math.max(SAArmor, IEAArmor);
-  armor = Math.max(0, armor);
-  return armor;
-}
-
-function getDevoArmor(level) {
-  if (level < 10) return 55;
-  else if (level < 20) return 160;
-  else if (level < 30) return 275;
-  else if (level < 40) return 390;
-  else if (level < 50) return 505;
-  else if (level < 60) return 620;
-  else return 735;
-}
-
-function getMOTWArmor(level) {
-  if (level < 10) return 25;
-  else if (level < 20) return 65;
-  else if (level < 30) return 105;
-  else if (level < 40) return 150;
-  else if (level < 50) return 195;
-  else if (level < 60) return 240;
-  else return 285;
-}
-
-function getMOTWStats(level) {
-  if (level < 10) return 0;
-  else if (level < 20) return 2;
-  else if (level < 30) return 4;
-  else if (level < 40) return 6;
-  else if (level < 50) return 8;
-  else if (level < 60) return 10;
-  else return 12;
-}
-
-function getMightAP(level) {
-  if (level < 4) return 0;
-  else if (level < 12) return 20;
-  else if (level < 22) return 35;
-  else if (level < 32) return 55;
-  else if (level < 42) return 85;
-  else if (level < 52) return 115;
-  else if (level < 60) return 155;
-  else return 185;
-}
-
-function getBShoutAP(level) {
-  if (level < 12) return 20;
-  else if (level < 22) return 40;
-  else if (level < 32) return 60;
-  else if (level < 42) return 94;
-  else if (level < 52) return 139;
-  else if (level < 60) return 193;
-  else return 232;
-}
-
-function getTrueshotAP(level) {
-  if (level < 50) return 50;
-  else if (level < 60) return 75;
-  else return 100;
-}
-
-function getFortStam(level) {
-  if (level < 12) return 3;
-  else if (level < 24) return 8;
-  else if (level < 36) return 20;
-  else if (level < 48) return 32;
-  else if (level < 60) return 43;
-  else return 54;
-}
-
-function getPactStam(level) {
-  if (level < 4) return 0;
-  else if (level < 14) return 3;
-  else if (level < 26) return 9;
-  else if (level < 38) return 19;
-  else if (level < 50) return 30;
-  else return 42;
-}
-
-function getEarthStr(level) {
-  if (level < 10) return 0;
-  else if (level < 24) return 10;
-  else if (level < 38) return 20;
-  else if (level < 52) return 36;
-  else if (level < 60) return 61;
-  else return 77;
+  for (const [aura, data] of Object.entries(AURA_DATA)) {
+    const element = document.getElementById(aura + '-aura-img');
+    if (element.classList.contains('aura-toggle-active')) {
+      let ix = getIndex(AURA_DATA[`${aura}`], level);
+      for (const attribute of ATTRIBUTES) {
+        if (data[`${attribute}`])
+          stats[`${attribute}`] += data[`${attribute}`][ix];
+      }
+    }
+  }
 }
 
 function getBlockValue(itemID) {
@@ -217,31 +107,57 @@ function getBlockValue(itemID) {
   }
 }
 
-export function updateStats() {
-  let level = document.querySelector("#player-level").value
-  var output = document.getElementById("player-level-span");
-  output.innerHTML = level;
+// TODO: Use correct agi-crit/dodge conversion based on level.
+function applyStatEffects(stats, level) {
+  let hpMod = document.getElementById("race").value == "Tauren" ? 1.05 : 1;
+  stats.health += stats.stamina * 10 * hpMod;
+  stats.armor += stats.agility * 2;
+  stats.crit = stats.crit + stats.agility * 0.05 + (stats.mhskill - (level * 5)) * 0.04;
+  stats.attackpower += stats.strength * 2;
+  stats.dodge += 5 + stats.agility * 0.05 + stats.defense * 0.04;
+  stats.blockvalue += stats.strength / 20;
+  stats.parry += 5 + stats.defense * 0.04;
+  stats.block += 5 + stats.defense * 0.04;
+  if (stats.wield != Wield.SHIELD) {
+    stats.block = 0;
+    stats.blockvalue = 0;
+  }
+}
 
-  // Gear
-  let stats = {
-    armor: 0,
-    agility: 0,
-    strength: 0,
-    stamina: 0,
+function addTalentStats(stats) {
 
-    crit: 0,
-    hit: 0,
-    attackpower: 0,
+  let twohand = stats.mainhand.slot == 'twohand';
+  let anticipation = getTalentValue("anticipation");
+  let toughness = getTalentValue("toughness");
+  let cruelty = getTalentValue("cruelty");
+  let impale = getTalentValue("impale");
+  let defiance = getTalentValue("defiance");
 
-    defense: 0,
-    parry: 0,
-    dodge: 0,
-    block: 0,
-    blockvalue: 0,
+  stats.armorMod += Math.round(0.02 * stats.talents.toughness);
+  stats.defense += Math.round(2 * stats.talents.anticipation);
+  stats.crit += Number(cruelty);
+  stats.parry += Number(stats.talents.deflection);
+  stats.block += Number(stats.talents.shieldspec);
+  stats.abilityCritMod += Number(stats.talents.impale) * 0.1;
+  stats.threadMod += 0.03 * Number(stats.talents.defiance);
 
-    procs: [],
-  };
-  let gear = {};
+  if (stats.wield == Wield.TWOHAND)
+    stats.physDamageMod += 0.01 * getTalentValue('two-handed-weapon-specialization');
+  else
+    stats.physDamageMod += 0.02 * getTalentValue('one-handed-specialization');
+
+  let mhweapontype = stats.mainhand.type == undefined ? "" : stats.mainhand.type;
+  if (mhweapontype == "Axe" || mhweapontype == "Two-handed Axe")
+    stats.crit += Number(stats.talents.axeSpec);
+  if (mhweapontype == "Polearm")
+    stats.crit += Number(stats.talents.poleSpec);
+}
+
+function addGearStats(stats, level) {
+
+  let gear = {};  // For tracking set bonuses.
+
+  // Add raw gear stats.
   ITEM_SLOTS.forEach(slot => {
     let element = document.getElementById(`${slot}-slot`)
     let itemID = element.getAttribute('itemid');
@@ -267,60 +183,12 @@ export function updateStats() {
     }
   });
 
-  // Talents
-  let deflection = getTalentValue("deflection");
-  let cruelty = getTalentValue("cruelty");
-  let anticipation = getTalentValue("anticipation");
-  let shieldspec = getTalentValue("shield-specialization");
-  let impHS = getTalentValue("improved-heroic-strike");
-  let impSA = getTalentValue("improved-sunder-armor");
-  let impRend = getTalentValue("improved-rend");
-  let defiance = getTalentValue("defiance");
-  let impale = getTalentValue("impale");
-  let toughness = getTalentValue("toughness");
-  stats.armor *= (1 + 0.02 * toughness); // Only applies to armor from gear
-
-  let race = document.querySelector("#race").value
-  for (let l of levelstats[race]) {
-    let v_l = l.split(',');
-    if (l[0] == level) {
-      stats.strength += parseInt(v_l[1]);
-      stats.agility += parseInt(v_l[2]);
-      stats.stamina += parseInt(v_l[3]);
-      stats.attackpower += level * 3 - 20;
-    }
-  }
-  stats.hit += races[race].hit;
-  stats.crit += races[race].crit;
-  stats.armor += races[race].armor;
-  stats.parry += races[race].parry;
-  stats.dodge += races[race].dodge;
-  stats.defense += races[race].defense;
-  stats.block += races[race].block;
-  stats.blockvalue += races[race].blockvalue;
-
-  let strength = 0;
-  let stamina = 0;
-  let agility = 0;
-  let hit = 0;
-  let crit = 0;
-  let spellcrit = 0;
-  let attackpower = 0;
-  let armor = 0;
-  let parry = 0;
-  let dodge = 0;
-  let defense = 0 + Math.round(anticipation * 2);
-  let block = 0;
-  let blockvalue = 0;
-  let extrahp = 94; // Base hp for all races
-
-  let mainhand = {};
-  let offhand = {};
+  // Get weapon stats.
   let mhwep = document.getElementById('mainhand-slot').getAttribute('itemid');
   if (mhwep != undefined && mhwep != "0") {
-    mainhand = ITEMS[`${mhwep}`];
+    stats.mainhand = ITEMS[`${mhwep}`];
   } else {
-    mainhand = {
+    stats.mainhand = {
       mindmg: 0,
       maxdmg: 0,
       swingtimer: 2000,
@@ -329,19 +197,36 @@ export function updateStats() {
   }
   let ohwep = document.getElementById('offhand-slot').getAttribute('itemid');
   if (ohwep != undefined && ohwep != "0") {
-    offhand = ITEMS[`${ohwep}`];
+    stats.offhand = ITEMS[`${ohwep}`];
   }
-  let mhweapontype = mainhand.type == undefined ? "" : mainhand.type; // eg "Sword"
-  let ohweapontype = offhand.type == undefined ? "" : offhand.type; // eg "Sword"
-  let twohand = mainhand.slot == 'twohand';
-  let _dualWield = ohwep != "0" && ohweapontype != 'Shield' && !twohand;
-  if (mhweapontype == "Axe" || mhweapontype == "Two-handed Axe")
-    crit += getTalentValue('axe-specialization');
-  if (mhweapontype == "Polearm")
-    crit += getTalentValue('polearm-specialization');
-  let mhwepskill = level * 5;
-  let ohwepskill = _dualWield ? level * 5 : 0;
-  if (!_dualWield && !twohand) blockvalue += getBlockValue(Number(ohwep));
+
+  let mhweapontype = stats.mainhand.type == undefined ? "" : stats.mainhand.type;
+  let ohweapontype = stats.offhand.type == undefined ? "" : stats.offhand.type;
+
+  if (stats.mainhand.slot == 'twohand')
+    stats.wield = Wield.TWOHAND;
+  else if (ohwep != "0" && ohweapontype != "Shield")
+    stats.wield = Wield.DUALWIELD;
+  else if (ohweapontype == "Shield")
+    stats.wield = Wield.SHIELD;
+  else if (mhweapontype != "")
+    stats.wield = Wield.ONEHAND;
+  else
+    stats.wield = Wield.UNARMED;
+
+  stats.normSwing = mhweapontype == "Daggers" ? 1700 :
+    stats.wield == Wield.TWOHAND ? 3300 : 2400;
+
+  stats.defense += level * 5;
+  stats.mhskill += level * 5;
+  if (stats.wield == Wield.DUALWIELD)
+    stats.ohskill += level * 5;
+
+  // TODO: Get real blockvalue.
+  if (stats.wield == Wield.SHIELD)
+    stats.blockvalue += getBlockValue(Number(ohwep));
+
+  // Add weapon skill from gear.
   ITEM_SLOTS.forEach(slot => {
     let element = document.getElementById(`${slot}-slot`)
     let itemID = element.getAttribute('itemid');
@@ -355,21 +240,8 @@ export function updateStats() {
       }
     }
   });
-  if (races[race].skilltype.includes(mhweapontype))
-    mhwepskill += races[race].skill;
-  if (races[race].skilltype.includes(ohweapontype))
-    ohwepskill += races[race].skill;
 
-  let mhmin = mainhand.mindmg;
-  let mhmax = mainhand.maxdmg;
-  mhmin += document.getElementById('head-slot').getAttribute('itemid') == 215166 ? 3 : 0;
-  mhmax += document.getElementById('head-slot').getAttribute('itemid') == 215166 ? 3 : 0;
-  let mhswing = mainhand.swingtimer;
-  let ohmin = 0;
-  let ohmax = 0;
-  let ohswing = 0;
-
-  // set bonuses
+  // Add any set bonuses.
   const equippedIDs = Object.values(gear).map(value => parseInt(value, 10));
   ITEM_SETS.forEach(set => {
     let n_equipped = set.itemIDs.filter(element => equippedIDs.includes(element)).length;
@@ -399,18 +271,30 @@ export function updateStats() {
     }
   });
 
-  // Update the procchance based on mh wep swingtimer
+  // Update the procchance based on mh wep swingtimer.
   stats.procs.forEach(proc => {
-    proc.procChance = proc.ppm * mhswing / 60000;
+    proc.procChance = proc.ppm * stats.mainhand.swingtimer / 60000;
   });
+}
 
-  if (_dualWield) {
-    ohmin = offhand.mindmg;
-    ohmax = offhand.maxdmg;
-    ohswing = offhand.swingtimer;
-  }
+function addRaceStats(stats, level) {
 
-  // *** Get Enchant Bonuses *** //
+  let race = document.querySelector("#race").value
+  let v_l = levelstats[race][level - 1].split(',');
+  stats.strength += parseInt(v_l[1]);
+  stats.agility += parseInt(v_l[2]);
+  stats.stamina += parseInt(v_l[3]);
+  stats.attackpower += level * 3 - 20;
+
+  if (races[race].skilltype.includes(stats.mainhand.type))
+    stats.mhskill += races[race].skill;
+
+  if (stats.offhand && races[race].skilltype.includes(stats.offhand.type))
+    stats.ohskill += races[race].skill;
+}
+
+function addEnchantStats(stats) {
+
   let enchants = {};
   ENCHANT_SLOTS.forEach(slot => {
     const element = document.getElementById(slot + '-enchant');
@@ -418,357 +302,256 @@ export function updateStats() {
     let enchant = ENCHANT_DATA[id];
     enchants[`${slot}`] = id;
 
-    extrahp += enchant.health;
-    strength += enchant.strength;
-    stamina += enchant.stamina;
-    agility += enchant.agility;
-    hit += enchant.hit;
-    crit += enchant.crit;
-    attackpower += enchant.attackpower;
-    armor += enchant.armor;
-    parry += enchant.parry;
-    dodge += enchant.dodge;
-    defense += enchant.defense;
-    block += enchant.block;
-    blockvalue += enchant.blockvalue;
+    let mhweapontype = stats.mainhand.type == undefined ? "" : stats.mainhand.type;
+    let ohweapontype = stats.offhand.type == undefined ? "" : stats.offhand.type;
+
+    stats.health += enchant.health;
+    stats.strength += enchant.strength;
+    stats.stamina += enchant.stamina;
+    stats.agility += enchant.agility;
+    stats.hit += enchant.hit;
+    stats.crit += enchant.crit;
+    stats.attackpower += enchant.attackpower;
+    stats.armor += enchant.armor;
+    stats.parry += enchant.parry;
+    stats.dodge += enchant.dodge;
+    stats.defense += enchant.defense;
+    stats.block += enchant.block;
+    stats.blockvalue += enchant.blockvalue;
     if (enchant.skilltype !== undefined && enchant.skilltype != 'none') {
       if (enchant.skilltype.includes(mhweapontype))
-        mhwepskill += enchant.skill;
+        stats.mhskill += enchant.skill;
       if (enchant.skilltype.includes(ohweapontype))
-        ohwepskill += enchant.skill;
-      if (_dualWield) {
-        ohmin += enchant.damage;
-        ohmax += enchant.damage;
+        stats.ohskill += enchant.skill;
+      if (stats.wield == Wield.DUALWIELD) {
+        stats.offhand.mindmg += enchant.damage;
+        stats.offhand.maxdmg += enchant.damage;
       }
-      mhmin += enchant.damage;
-      mhmax += enchant.damage;
+      stats.mainhand.mindmg += enchant.damage;
+      stats.mainhand.maxdmg += enchant.damage;
     }
   });
+}
 
-  armor += stats.armor;
-  agility += stats.agility;
-  strength += stats.strength;
-  stamina += stats.stamina;
-  crit += stats.crit;
-  hit += stats.hit;
-  attackpower += stats.attackpower;
-  defense += stats.defense;
-  parry += stats.parry;
-  dodge += stats.dodge;
-  block += stats.block;
-  blockvalue += stats.blockvalue;
+function getBossStats(playerLevel) {
 
-  armor *= checkAuraToggle("loh") ? 1.3 : 1;
-  // Buffs
-  // TODO: Base these on level
-  mhmin += checkAuraToggle('stone') ? 6 : 0;
-  mhmax += checkAuraToggle('stone') ? 6 : 0;
-  ohmin += checkAuraToggle('oh-stone') ? 6 : 0;
-  ohmax += checkAuraToggle('oh-stone') ? 6 : 0;
+  let level = playerLevel + Number(document.querySelector("#bossLevel").value)
+  let armor = Number(document.querySelector("#bossArmor").value);
+  let mindmg = Number(document.querySelector("#swingMin").value);
+  let maxdmg = Number(document.querySelector("#swingMax").value);
+  let swingtimer = Number(document.querySelector("#swingTimer").value) * 1000;
+  let defense = level * 5;
+  // Not confirmed, seems to more or less match at lvl 27 and 63.
+  let blockvalue = Math.max(0, bossLevel - 15);
+  let mhskill = level * 5;
 
-  strength += checkAuraToggle('giants') ? 8 : 0;
-  strength += checkAuraToggle('str') ? 8 : 0;
-  strength += checkAuraToggle('str-scroll') ? 13 : 0;
-  agility += checkAuraToggle('agi') ? 15 : 0;
-  stamina += checkAuraToggle('stam-food') ? 12 : 0;
-  stamina += checkAuraToggle('rumsey') ? 15 : 0;
-  hit += checkAuraToggle('dark-desire') ? 2 : 0;
+  let stats = {
+    level: level,
+    type: ActorType.BOSS,
 
-  let _startRage = Number(document.querySelector("#startRage").value);
+    agility: 0,
+    strength: 0,
+    stamina: 0,
 
-  extrahp += checkAuraToggle('fort-elixir') ? 120 : 0;
-  extrahp += checkAuraToggle('wcb') ? 300 : 0;
+    crit: 5,
+    spellcrit: 0,
+    hit: 0,
+    attackpower: 0, // TODO: Implement attackpower for bosses.
+    haste: 0,
 
-  let mark = checkAuraToggle('motw'); // Assumed to be improved
-  let impMOTW = true; // TODO
-  // Should we floor..?
-  stamina += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
-  agility += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
-  strength += mark ? Math.floor(getMOTWStats(level) * (impMOTW ? 1.35 : 1)) : 0;
-  let impMight = true; // TODO
-  attackpower += checkAuraToggle('might') ? Math.floor(getMightAP(level) * (impMight ? 1.2 : 1)) : 0;
-  let impBShout = true; // TODO
-  attackpower += checkAuraToggle('battleshout') ? Math.floor(getBShoutAP(level) * (impBShout ? 1.2 : 1)) : 0;
-  attackpower += checkAuraToggle('trueshot') ? Math.floor(getTrueshotAP(level)) : 0;
-  crit += checkAuraToggle('leader') ? 3 : 0;
+    defense: defense,
+    armor: armor,
+    bonusArmor: 0,
+    parry: 5,
+    dodge: 5,
+    block: 5,
+    blockvalue: blockvalue,
+    health: 1,
 
-  let impFort = true; // TODO
-  stamina += checkAuraToggle('fort') ? Math.floor(getFortStam(level) * (impFort ? 1.3 : 1)) : 0; // Assumed improved
-  let impImp = true; // TODO
-  stamina += checkAuraToggle('bloodpact') ? Math.floor(getPactStam(level) * (impImp ? 1.3 : 1)) : 0;
+    staminaMod: 1,
+    strengthMod: 1,
+    agilityMod: 1,
+    armorMod: 1,
+    damageMod: 0.9, // TODO: Defensive Stance, implement it as a buff instead.
+    critMod: 1,
+    abilityCritMod: 1,
+    threatMod: 0,
+    physDamageMod: 1,
 
-  let damageMod = 0.9; // Def stance
-  damageMod *= checkAuraToggle("dmf") ? 1.1 : 1;
-  attackpower += checkAuraToggle("dragonslayer") ? 140 : 0;
-  crit += checkAuraToggle("dragonslayer") ? 5 : 0;
-  attackpower += checkAuraToggle("fengus") ? 200 : 0;
-  crit += checkAuraToggle("songflower") ? 5 : 0;
-  stamina += checkAuraToggle("songflower") ? 15 : 0;
-  agility += checkAuraToggle("songflower") ? 15 : 0;
-  strength += checkAuraToggle("songflower") ? 15 : 0;
+    mainhand: {
+      mindmg: mindmg,
+      maxdmg: maxdmg,
+      swingtimer: swingtimer,
+      type: "none",
+    },
+    offhand: {},
+    mhskill: mhskill,
+    ohskill: 0,
+    wield: Wield.UNARMED,
+    normSwing: 2400,
 
-  spellcrit += checkAuraToggle("dragonslayer") ? 10 : 0;
-  spellcrit += checkAuraToggle("slipkik") ? 3 : 0;
-  spellcrit += checkAuraToggle("songflower") ? 5 : 0;
+    startRage: 0,
 
-  let enhTotems = true; // TODO
-  strength += checkAuraToggle("strtotem") ? Math.floor(getEarthStr(level) * (enhTotems ? 1.15 : 1)) : 0;
+    rotation: {},
+    talents: {},
+    bonuses: {},
+    procs: [],
+  };
 
-  // Stat deltas input by user
-  let extrastrength = Number(document.getElementById("playerextrastrength").value);
-  let extrastamina = Number(document.getElementById("playerextrastamina").value);
-  let extraagility = Number(document.getElementById("playerextraagility").value);
-  let extrahit = Number(document.getElementById("playerextrahit").value);
-  let extracrit = Number(document.getElementById("playerextracrit").value);
-  let extraattackpower = Number(document.getElementById("playerextraattackpower").value);
-  let extraarmor = Number(document.getElementById("playerextraarmor").value);
-  let extrablock = Number(document.getElementById("playerextrablock").value);
-  let extrablockvalue = Number(document.getElementById("playerextrablockvalue").value);
-  let extraparry = Number(document.getElementById("playerextraparry").value);
-  let extradodge = Number(document.getElementById("playerextradodge").value);
-  let extradefense = Number(document.getElementById("playerextradefense").value);
-  let extramhskill = Number(document.getElementById("playerextramhskill").value);
-  let extraohskill = Number(document.getElementById("playerextraohskill").value);
-  let extrahaste = Number(document.getElementById("playerextrahaste").value);
+  DEBUFFS.forEach(aura => {
+    const element = document.getElementById(aura + '-aura-img');
 
-  // Multiplicative buffs last, except for armor
-  stamina *= checkAuraToggle("moldar") ? 1.15 : 1;
-  stamina *= checkAuraToggle("zandalar") ? 1.15 : 1;
-  agility *= checkAuraToggle("zandalar") ? 1.15 : 1;
-  strength *= checkAuraToggle("zandalar") ? 1.15 : 1;
-  stamina *= checkAuraToggle("kings") ? 1.1 : 1;
-  agility *= checkAuraToggle("kings") ? 1.1 : 1;
-  strength *= checkAuraToggle("kings") ? 1.1 : 1;
+    if (element.classList.contains('aura-toggle-active')) {
+      let data = AURA_DATA[`${aura}`];
+      let ix = getIndex(AURA_DATA[`${aura}`], playerLevel);
+      ATTRIBUTES.forEach(attribute => {
+        if (data[`${attribute}`])
+          stats[`${attribute}`] += data[`${attribute}`][ix];
+      });
+    }
+  });
+}
 
-  armor += agility * 2;
-  armor *= checkAuraToggle("inspiration") ? 1.25 : 1;
-  let impDevo = true; // TODO
-  armor += checkAuraToggle("devo") ? Math.floor(getDevoArmor(level) * (impDevo ? 1.25 : 1)) : 0;
-  armor += checkAuraToggle("defense") ? 250 : 0;
-  armor += mark ? Math.floor(getMOTWArmor(level) * (impMOTW ? 1.35 : 1)) : 0;
+export function updateStats() {
+  let level = document.querySelector("#player-level").value
+  var output = document.getElementById("player-level-span");
+  output.innerHTML = level;
 
-  let staminaMultiplier = (checkAuraToggle("moldar") ? 1.15 : 1) * (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
-  let strengthMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
-  let agilityMultiplier = (checkAuraToggle("zandalar") ? 1.15 : 1) * (checkAuraToggle("kings") ? 1.1 : 1)
+  let stats = {
+    level: level,
+    type: ActorType.TANK,
 
-  extrastamina *= staminaMultiplier;
-  extrastrength *= strengthMultiplier;
-  extraagility *= agilityMultiplier;
+    agility: 0,
+    strength: 0,
+    stamina: 0,
 
-  extraarmor *= checkAuraToggle("inspiration") ? 1.25 : 1;
-  extraarmor *= checkAuraToggle("loh") ? 1.3 : 1;
+    crit: 0,
+    spellcrit: 0,
+    hit: 0,
+    attackpower: 0,
+    haste: 0,
 
-  agility = Math.floor(agility)
-  strength = Math.floor(strength)
-  stamina = Math.floor(stamina)
+    defense: 0,
+    armor: 0,
+    bonusArmor: 0, // Not from agi/gear, ie not affected by mult mods.
+    parry: 0,
+    dodge: 0,
+    block: 0,
+    blockvalue: 0,
+    health: 94, // Base HP for all races.
 
-  crit = crit + agility * 0.0610 /*0.0758*/ + (mhwepskill - (level * 5)) * 0.04 + cruelty;
+    staminaMod: 1,
+    strengthMod: 1,
+    agilityMod: 1,
+    armorMod: 1,
+    damageMod: 1,
+    critMod: 1,
+    abilityCritMod: 1,
+    threatMod: 1.3, // TODO: Defensive stance, turn it into a buff.
+    physDamageMod: 1,
 
-  parry += 5 + defense * 0.04 + deflection;
-  dodge += agility * 0.0610 /*0.0758*/ + defense * 0.04
-  block += 5 + defense * 0.04 + shieldspec;
-  blockvalue += strength / 20;
+    mainhand: {},
+    offhand: {},
+    mhskill: 0,
+    ohskill: 0,
+    wield: Wield.UNARMED,
+    normSwing: 2400,
 
-  block = (_dualWield || twohand) ? 0 : block
-  blockvalue = (_dualWield || twohand) ? 0 : blockvalue
+    startRage: 0,
 
-  let hastePerc = checkAuraToggle('wcb') ? 15 : 0;
+    rotation: {},
+    talents: {},
+    bonuses: {},
+    procs: [],
+  };
 
-  document.getElementById("playerhp").innerHTML = `${Math.round((stamina * 10 + extrahp) * (document.getElementById("race").value == "Tauren" ? 1.05 : 1))}`;
-  document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
-  document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)}`;
-  document.getElementById("playeragility").innerHTML = `${Math.round(agility)}`;
-  document.getElementById("playerhit").innerHTML = `${hit}`;
-  document.getElementById("playercrit").innerHTML = `${Math.round(crit * 10) / 10}`;
-  document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower + strength * 2)}`;
-  document.getElementById("playerarmor").innerHTML = `${Math.round(armor)}`;
-  document.getElementById("playerblock").innerHTML = `${Math.round((block) * 100) / 100}`;
-  document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)}`;
-  document.getElementById("playerparry").innerHTML = `${Math.round((parry) * 100) / 100}`;
-  document.getElementById("playerdodge").innerHTML = `${Math.round((dodge) * 100) / 100}`;
-  document.getElementById("playerdefense").innerHTML = `${defense + level * 5}`;
-  document.getElementById("playermhskill").innerHTML = `${mhwepskill}`;
-  document.getElementById("playerohskill").innerHTML = `${ohwepskill}`;
-  document.getElementById("playerhaste").innerHTML = `${hastePerc}`;
 
-  // Add stat deltas to stats, note str -> ap/blockvalue interaction not accounted for.
-  strength += extrastrength;
-  stamina += extrastamina;
-  agility += extraagility;
-  hit += extrahit;
-  crit += extracrit + extraagility / 20;
-  attackpower += extraattackpower;
-  armor += extraarmor + extraagility;
-  parry += extraparry;
-  dodge += extradodge + extraagility / 20;
-  defense += extradefense;
-  block += extrablock;
-  blockvalue += extrablockvalue + extrastrength / 20;
-  mhwepskill += extramhskill;
-  ohwepskill += extraohskill;
+  stats.talents = {
+    deathwish: getTalentValue("death-wish") > 0,
+    bloodthirst: getTalentValue("bloodthirst") > 0,
+    mortalStrike: getTalentValue("mortal-strike") > 0,
+    shieldslam: getTalentValue("shield-slam") > 0,
+    flurry: getTalentValue("flurry"),
+    enrage: getTalentValue("enrage"),
+    deepWounds: getTalentValue("deep-wounds"),
+    toughness: getTalentValue("toughness"),
+    anticipation: getTalentValue("anticipation"),
+    deflection: getTalentValue("deflection"),
+    cruelty: getTalentValue("cruelty"),
+    shieldspec: getTalentValue("shield-specialization"),
+    impHS: getTalentValue("improved-heroic-strike"),
+    impSA: getTalentValue("improved-sunder-armor"),
+    impRend: getTalentValue("improved-rend"),
+    defiance: getTalentValue("defiance"),
+    impale: getTalentValue("impale"),
+    impSB: getTalentValue("improved-shield-block"),
+    impTC: getTalentValue("improved-thunderclap"),
+    dwspec: getTalentValue("dual-wield-specialization"),
+    swordSpec: getTalentValue('sword-specialization'),
+    axeSpec: getTalentValue('axe-specialization'),
+    poleSpec: getTalentValue('polearm-specialization'),
+  };
 
-  let bossLevel = Number(document.querySelector("#player-level").value) + Number(document.querySelector("#bossLevel").value)
-  let SA = checkAuraToggle("sunder");
-  let CoR = checkAuraToggle("cor");
-  let IEA = checkAuraToggle("iea");
-  let faerieFire = checkAuraToggle("faeriefire");
-  let bossArmor = Number(document.querySelector("#bossArmor").value);
-  bossArmor = getBossArmor(level, bossLevel, SA, CoR, faerieFire, IEA, false, bossArmor);
+  addGearStats(stats, level);
+  addRaceStats(stats, level);
+  addTalentStats(stats);
+  addEnchantStats(stats);
+  addAuraStats(stats, level);
+  applyExtraStats(stats, level);
+  applyStatEffects(stats, level);
+  applyMultMods(stats);
+  stats.armor += stats.bonusArmor;
+  writePlayerStats(stats);
 
-  let rotation = [];
+
+  stats.startRage = Number(document.querySelector("#startRage").value);
+  // TODO: Enable stances as buffs, as well as stance dancing (execute).
+  stats.damageMod *= 0.9;
+
+  /*let enhTotems = true; // TODO
+    let impFort = true; // TODO
+    let impImp = true; // TODO
+    let impBShout = true; // TODO
+    let impMight = true; // TODO
+    let impMOTW = true; // TODO
+    let impDevo = true; // TODO
+  */
+
   ABILITIES.forEach(ability => {
     let obj = {};
     const element = document.getElementById('use-' + ability);
     let use = element.checked && element.style != 'none';
     use = use ? use : false;
     let rage = 0;
-    if (!['raging-blow', 'death-wish'].includes(ability))
+    if (!('death-wish' == ability))
       rage = Number(document.getElementById(ability + '-rage').value);
     obj.use = use;
     obj.rage = rage;
-    rotation[`${ability}`] = obj;
+    stats.rotation[`${ability}`] = obj;
   });
 
+  // TODO: Ensure weapon procs get added, see list from old implementation.
+  // TODO: Move these settings from here.
+  stats.bonuses = {
+    mhoil: checkAuraToggle('shadow-oil'),
+    ohoil: checkAuraToggle('oh-shadow-oil'),
+    goa: false,
+    fivePieceWrath: false,
+    twoPieceDreadnaught: false,
+    windfury: false,
+  };
+
+  let bossStats = getBossStats();
+
   let globals = {
-    tankStats: {
-      type: "tank",
-      level: Number(document.querySelector("#player-level").value),
-
-      dualWield: _dualWield,
-      twohand: twohand,
-      playerNormSwing: mhweapontype == "Daggers" ? 1700 : twohand ? 3300 : 2400,
-
-      MHMin: mhmin,
-      MHMax: mhmax,
-      MHSwing: mhswing,
-
-      OHMin: ohmin,
-      OHMax: ohmax,
-      OHSwing: ohswing,
-
-      MHWepSkill: mhwepskill,
-      OHWepSkill: _dualWield ? ohwepskill : 0,
-      damageMod: damageMod,
-      physDamageMod: 1 + 0.02 * getTalentValue('one-handed-specialization') + (twohand ? getTalentValue('two-handed-weapon-specialization') * 0.01 : 0), // passive phys damage mods
-      additivePhysBonus: 0,
-      hastePerc: hastePerc,
-      AP: attackpower + strength * 2,
-      crit: crit,
-      spellcrit: spellcrit,
-      hit: hit,
-
-      parry: parry,
-      dodge: dodge,
-      block: block,
-      blockValue: blockvalue,
-      defense: level * 5 + defense,
-      baseArmor: armor,
-      baseHealth: (stamina * 10 + extrahp) * (document.getElementById("race").value == "Tauren" ? 1.05 : 1),
-
-      threatMod: 1.3 * (1 + 0.03 * defiance),
-      abilityCritMod: 1 + impale * 0.1,
-      critMod: 1,
-
-      startRage: _startRage,
-
-      staminaMultiplier: staminaMultiplier,
-      strengthMultiplier: strengthMultiplier,
-      agilityMultiplier: agilityMultiplier,
-
-      rotation: rotation,
-
-      gear: gear,
-      enchants: enchants,
-
-      talents: {
-        deathwish: getTalentValue("death-wish") > 0,
-        bloodthirst: getTalentValue("bloodthirst") > 0,
-        mortalStrike: getTalentValue("mortal-strike") > 0,
-        shieldslam: getTalentValue("shield-slam") > 0,
-        flurry: getTalentValue("flurry"),
-        enrage: getTalentValue("enrage"),
-        deepWounds: getTalentValue("deep-wounds"),
-        deflection: deflection,
-        cruelty: cruelty,
-        anticipation: anticipation,
-        toughness: toughness,
-        shieldspec: shieldspec,
-        impHS: impHS,
-        impSA: impSA,
-        impSB: getTalentValue("improved-shield-block"),
-        impTC: getTalentValue("improved-thunderclap"),
-        impRend: impRend,
-        defiance: defiance,
-        impale: impale,
-        dwspec: getTalentValue("dual-wield-specialization"),
-        swordSpec: mhweapontype == "Sword" ? getTalentValue('sword-specialization') : 0,
-      },
-      weapons: {
-        thunderfuryMH: mainhand == "Thunderfury",
-        thunderfuryOH: offhand == "Thunderfury",
-        edMH: mainhand == "Empyrean Demolisher",
-        edOH: offhand == "Empyrean Demolisher",
-        qsMH: mainhand == "Quel'Serrar",
-        perdsMH: mainhand == "Perdition's Blade",
-        perdsOH: offhand == "Perdition's Blade",
-        dbMH: mainhand == "Deathbringer",
-        dbOH: offhand == "Deathbringer",
-        eskMH: mainhand == "Eskhandar's Right Claw",
-        msaMH: mainhand == "Misplaced Servo Arm",
-        msaOH: offhand == "Misplaced Servo Arm",
-      },
-
-      // TODO: make these procs..?
-      bonuses: {
-        mhoil: checkAuraToggle('shadow-oil'),
-        ohoil: checkAuraToggle('oh-shadow-oil'),
-        mhDismantle: Number(document.getElementById('mainhand-enchant').getAttribute('enchantID')) == 435481,
-        ohDismantle: Number(document.getElementById('offhand-enchant').getAttribute('enchantID')) == 435481,
-
-        wcb: checkAuraToggle('wcb'),
-        dmf: checkAuraToggle("dmf"),
-      },
-      procs: stats.procs,
-    },
-
-    bossStats: {
-      type: "boss",
-      level: bossLevel,
-
-      MHMin: Number(document.querySelector("#swingMin").value),
-      MHMax: Number(document.querySelector("#swingMax").value),
-      MHSwing: Number(document.querySelector("#swingTimer").value) * 1000,
-
-      MHWepSkill: bossLevel * 5,
-      damageMod: 0.9, // Defensive Stance
-      physDamageMod: 1,
-      additivePhysBonus: 0,
-      hastePerc: 0,
-      AP: 0, //TODO: AP needs to scale correctly for npc vs players, add APScaling, also 270 base
-      crit: 5,
-      blockValue: Math.max(0, bossLevel - 15), // Not confirmed, seems to more or less match at lvl 27 and 63.
-
-      parry: 5,
-      dodge: 5,
-      block: 5,
-      defense: bossLevel * 5,
-      baseArmor: bossArmor,
-
-      abilityCritMod: 1,
-      critMod: 1,
-      threatMod: 0,
-      startRage: 0,
-
-      bonuses: {
-        armorDebuff: IEA,
-      },
-    },
+    tankStats: stats,
+    bossStats: bossStats,
     // Calc Settings and other globals
     config: {
-      landedHits: ["hit", "crit", "block", "crit block", "glance"],
-      simDuration: Number(document.querySelector("#fightLength").value), // Fight duration in seconds
-      iterations: Number(document.querySelector("#iterations").value), // Number of fights simulated
-
+      // Fight duration in seconds.
+      simDuration: Number(document.querySelector("#fightLength").value),
+      // Number of fights simulated.
+      iterations: Number(document.querySelector("#iterations").value),
     },
   }
   return globals;

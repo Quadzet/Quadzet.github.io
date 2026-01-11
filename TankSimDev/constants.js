@@ -1,9 +1,38 @@
 export var ITEMS = {};
 export var ITEM_SETS = [];
 
-export const ABILITIES = ["death-wish", "revenge", "rend", "heroic-strike", "shield-block", "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
+export const Wield = {
+  TWOHAND: "Twohanded",
+  SHIELD: "Sword and board",
+  ONEHAND: "One handed",
+  DUALWIELD: "Dual wield",
+  UNARMED: "Unarmed",
+};
 
-export const ITEM_SLOTS = ['head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet', 'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2', 'mainhand', 'offhand', 'ranged'];
+export const ActorType = {
+  TANK: "tank",
+  BOSS: "boss",
+};
+
+export const LANDED_HITS = ["hit", "crit", "block", "crit block", "glance"];
+
+// Attributes that can be found on buffs/debuffs/consumes.
+export const ATTRIBUTES = [
+  "armor", "agility", "strength", "stamina",
+  "crit", "hit", "attackpower", "haste",
+  "defense", "armor", "bonusArmor", "parry",
+  "dodge", "block", "blockvalue", "health",
+  "strengthMod", "staminaMod", "agilityMod", "damageMod",
+];
+
+export const ABILITIES = [
+  "death-wish", "revenge", "rend", "heroic-strike", "shield-block",
+  "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
+
+export const ITEM_SLOTS = [
+  'head', 'hands', 'neck', 'waist', 'shoulder', 'legs', 'back', 'feet',
+  'chest', 'wrist', 'finger1', 'finger2', 'trinket1', 'trinket2',
+  'mainhand', 'offhand', 'ranged'];
 
 export const ENCHANT_SLOTS = [
   'head', 'shoulder', 'back', 'chest', 'wrist', 'hands',
@@ -25,13 +54,30 @@ export const ENCHANT_IDS = {
 };
 
 export const BUFFS = [
-    'battleshout', 'motw', 'kings', 'might', 'strtotem',
-    'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str', 'defense',
-    'fort-elixir', 'shadow-oil', 'rumsey', 'oh-shadow-oil',
-    'dmf', 'wcb', 'zandalar', 'dragonslayer',
-    'moldar', 'fengus', 'slipkik', 'songflower', 'sunder', 'iea',
-    'faeriefire', 'cor', 'agi', 'giants',
-    'dark-desire', 'stam-food', 'str-scroll', 'leader', 'trueshot'];
+  'battleshout', 'motw', 'kings', 'might', 'strtotem',
+  'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
+  'leader', 'trueshot', 'stone', 'shadow-oil', 'elemental-stone',
+  'consecrated-stone',
+];
+
+export const DEBUFFS = [
+  'sunder', 'iea', 'faeriefire', 'cor'
+];
+
+export const CONSUMES = [
+  'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str-elixir', 'defense',
+  'fort-elixir', 'shadow-oil', 'rumsey', 'agi-elixir', 'giant-growth',
+  'dark-desire', 'stam-food', 'str-food', 'agi-food', 'str-scroll',
+];
+
+export const OH_BUFFS = [
+  'oh-shadow-oil', 'oh-stone'
+];
+
+export const WORLD_BUFFS = [
+  'dmf', 'wcb', 'zandalar', 'dragonslayer',
+  'moldar', 'fengus', 'slipkik', 'songflower',
+]
 
 export const TANK_SETTINGS = ['player-level', 'race', 'startRage'];
 
