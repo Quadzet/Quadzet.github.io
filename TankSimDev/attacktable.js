@@ -1,6 +1,7 @@
 "use strict";
 
 import { LOG_LEVEL, log_message } from './logging.js';
+import { ActorType } from './constants.js'
 
 // We don't consider actors other than lvl 60 players and lvl 63 bosses.
 
@@ -77,7 +78,7 @@ export function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
 
 // Tank hitting the boss
 export function twoRollTankBossTable(attacker, defender, damage) {
-    let wepSkill = attacker.stats.MHWepSkill;
+    let wepSkill = attacker.stats.mhskill;
     let defense = defender.defense;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, false);
     let parry = defender.stats.level == attacker.stats.level + 3 ? 14 : defender.stats.parry + 0.1*(defense - wepSkill);
@@ -92,7 +93,6 @@ export function twoRollTankBossTable(attacker, defender, damage) {
       crit += (baseAttackRating - defense) * 0.04;
     if (defender.stats.level - attacker.stats.level > 2)
       crit -= 1.8; // TODO: This should only remove 1.8 from crit auras...
-    // let crit = attacker.stats.crit - 0.04 * (wepSkill - attacker.stats.level * 5) - 4.8;
     let rng = 100*Math.random();
     let type = "";
     let damageEvent = {}
@@ -259,9 +259,12 @@ export function rollDpsBossTable(stats, damage, yellow = false) {
 }
 
 export function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false, meleeSpell = false) {
-    if (meleeSpell == true) return twoRollTankBossTable(attacker, defender, damage);
-    else if (attacker.stats.type == "tank" && defender.stats.type == "boss") return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
-    else if (attacker.stats.type == "boss" && defender.stats.type == "tank") return rollBossTankTable(attacker, defender, damage, yellow);
+    if (meleeSpell == true) 
+        return twoRollTankBossTable(attacker, defender, damage);
+    else if (attacker.stats.type == ActorType.TANK && defender.stats.type == ActorType.BOSS)
+        return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
+    else if (attacker.stats.type == ActorType.BOSS && defender.stats.type == ActorType.TANK)
+        return rollBossTankTable(attacker, defender, damage, yellow);
 }
 
 export function rollSpellAttack(attacker, defender, damage, isDot, isPhys) {

@@ -234,9 +234,9 @@ function addGearStats(stats, level) {
       let itemStats = ITEMS[`${itemID}`];
       if (itemStats.skilltype) {
         if (itemStats.skilltype.includes(mhweapontype))
-          mhwepskill += itemStats.skill;
+          stats.mhskill += itemStats.skill;
         if (itemStats.skilltype.includes(ohweapontype))
-          ohwepskill += itemStats.skill;
+          stats.ohskill += itemStats.skill;
       }
     }
   });
@@ -263,9 +263,9 @@ function addGearStats(stats, level) {
         stats.blockvalue += (bonus.blockvalue ? bonus.blockvalue : 0);
         if (bonus.skilltype) {
           if (bonus.skilltype.includes(mhweapontype))
-            mhwepskill += bonus.skill;
+            stats.mhskill += bonus.skill;
           if (bonus.skilltype.includes(ohweapontype))
-            ohwepskill += bonus.skill;
+            stats.ohskill += bonus.skill;
         }
       });
     }
@@ -413,6 +413,8 @@ function getBossStats(playerLevel) {
       });
     }
   });
+
+  stats.armor += stats.bonusArmor;
 
   return stats;
 }

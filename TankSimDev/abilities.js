@@ -5,6 +5,7 @@ import { getParryHastedSwingEnd } from './attacktable.js';
 import { sortDescending } from './eventHelpFuncs.js';
 import { rollAttack, armorReduction } from './attacktable.js';
 import { onUseData } from './stats.js';
+import { Wield } from './constants.js'
 
 export function handleParryHaste(event, target, futureEvents) {
   futureEvents.forEach(e => {
@@ -715,18 +716,18 @@ export function TankAbilities(tankStats) {
     "Bloodrage": new Bloodrage(),
     "Rend": new Rend(),
   }
-  if (tankStats.dualWield)
+  if (tankStats.wield == Wield.DUALWIELD)
     abilities["OH Swing"] = new OHSwing();
   abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
   if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
     abilities["Shield Slam"] = new ShieldSlam();
   if (tankStats.talents.bloodthirst)
-    abilities["Bloodthirst"] = new Bloodthirst(); // BT gets double effect from FR for some reason
+    abilities["Bloodthirst"] = new Bloodthirst();
   if (tankStats.talents.mortalStrike)
     abilities["Mortal Strike"] = new MortalStrike();
   if (tankStats.talents.deathwish)
     abilities["Death Wish"] = new DeathWish();
-  if (!tankStats.dualWield && !tankStats.twohand)
+  if (tankStats.wield == Wield.SHIELD)
     abilities["Shield Block"] = new ShieldBlock();
   return abilities;
 }

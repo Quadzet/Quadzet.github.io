@@ -1,6 +1,7 @@
 "use strict";
 
 import { getTalentValue } from './talents.js';
+import { Wield } from './constants.js'
 
 export let ACTIONS = [];
 export let EXECUTE_ACTIONS = [];
@@ -65,7 +66,7 @@ export function updateRotation(globals) {
     element.style.display = 'none';
 
   element = document.getElementById('rotation-shield-block');
-  if (!globals.tankStats.dualWield && !globals.tankStats.twohand)
+  if (globals.tankStats.wield == Wield.DUALWIELD)
     element.style.display = 'flex';
   else
     element.style.display = 'none';
@@ -155,7 +156,7 @@ export function handleCombatStart(source, target, reactiveEvents, futureEvents) 
       timestamp: 0,
       swingStart: 0,
     });
-    if (source.stats.dualWield)
+    if (source.stats.wield == Wield.DUALWIELD)
       futureEvents.push({
         type: "swingTimer",
         source: source.name,
