@@ -1,6 +1,9 @@
 "use strict";
 
 import { LOG_LEVEL, log_message } from './logging.js';
+import { LANDED_HITS } from './constants.js';
+import { rollSpellAttack } from './attacktable.js';
+import { clearFutureTicks, generateDamageEvent, generateTickEvents } from './eventHelpFuncs.js';
 
 export class Proc {
 
@@ -20,8 +23,6 @@ export class Proc {
     }
 
 }
-
-export const landedHits = ["hit", "crit", "block", "crit block", "glance"];
 
 export class GiftofArthasProc extends Proc {
     
@@ -53,7 +54,7 @@ export class WindfuryProc extends Proc {
     
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.ability != "OH Swing" && landedHits.includes(event.hit)) {
+        if (event.type == "damage" && event.ability != "OH Swing" && LANDED_HITS.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.2) {
                 let procEvent = {
@@ -75,7 +76,7 @@ export class SwordSpecialization extends Proc {
     }
 
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
-        if (event.type == "damage" && event.source == source.name && event.trigger && landedHits.includes(event.hit)) {
+        if (event.type == "damage" && event.source == source.name && event.trigger && LANDED_HITS.includes(event.hit)) {
             let rng = Math.random()
             if (rng < this.procChance) {
                 let procEvent = {
@@ -129,7 +130,7 @@ export class WeaponProc extends Proc {
     this.trigger = false; // Don't trigger additional procs
   }
   handleEvent(source, target, event, reactiveEvents, futureEvents) {
-    if (event.type == "damage" && event.trigger && source.name == event.source && landedHits.includes(event.hit)) {
+    if (event.type == "damage" && event.trigger && source.name == event.source && LANDED_HITS.includes(event.hit)) {
       if (this.offhand && event.name != "OH Swing")
         return;
       if (event.timestamp < this.cooldown)

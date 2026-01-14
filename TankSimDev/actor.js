@@ -13,37 +13,37 @@ export class Actor {
         this.rotation = stats.rotation;
         this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
 
-        this.threatMod = stats.threatMod
-        this.damageMod = stats.damageMod
-        this.physDamageMod = stats.physDamageMod
-        this.hastePerc = stats.hastePerc
-        this.armor = stats.armor
-        this.percArmorMod = 1
-        this.defense = stats.defense
-        this.crit = stats.crit
-        this.hit = stats.hit
-        this.block = stats.block
-        this.GCD = 0     
-        this.onGCD = false
-        this.inCombat = false
-        this.rage = stats.startRage
+        this.threatMod = stats.threatMod;
+        this.damageMod = stats.damageMod;
+        this.physDamageMod = stats.physDamageMod;
+        this.hastePerc = stats.haste;
+        this.armor = stats.armor;
+        this.percArmorMod = 1;
+        this.defense = stats.defense;
+        this.crit = stats.crit;
+        this.hit = stats.hit;
+        this.block = stats.block;
+        this.GCD = 0;
+        this.onGCD = false;
+        this.inCombat = false;
+        this.rage = stats.startRage;
 
-        this.procs = procs
-        this.auras = auras
-        
-        this.uptimes = {}
-        
-        this.rageGained = 0 // remove?
-        this.rageSpent = 0
-        
-        this.staminaMultiplier = stats.staminaMultiplier;
-        this.strengthMultiplier = stats.strengthMultiplier;
-        this.agilityMultiplier = stats.agilityMultiplier;
+        this.procs = procs;
+        this.auras = auras;
+
+        this.uptimes = {};
+
+        this.rageGained = 0; // remove?
+        this.rageSpent = 0;
+
+        this.staminaMultiplier = stats.staminaMultiplier;;
+        this.strengthMultiplier = stats.strengthMultiplier;;
+        this.agilityMultiplier = stats.agilityMultiplier;;
 
         // Special stuff
-        this.IEA = false
-        this.isHeroicStrikeQueued = false
-        this.windfury = false
+        this.IEA = false;
+        this.isHeroicStrikeQueued = false;
+        this.windfury = false;
     }
 
     handleEvent(event, reactiveEvents, futureEvents) {
@@ -107,7 +107,7 @@ export class Actor {
     }
 
     getAP() {
-        let AP = this.stats.AP;
+        let AP = this.stats.attackpower;
         this.auras.forEach(aura => {
           if (aura.duration > 0)
             AP *= aura.APMultMod;
@@ -137,9 +137,9 @@ export class Actor {
         })
         return critMod;
     }
+    // TODO: Add Str and blockvalue buffs.
     getBlockValue() {
-        let blockValue = this.stats.blockValue;
-        return blockValue;
+        return this.stats.blockvalue;
     }
 
     getBlock() {
@@ -166,139 +166,33 @@ export class Actor {
           aura.duration = 0;
           aura.stacks = 0;
         });
-        this.procs.forEach(proc => proc.reset())
-        this.buffs = {}
-        this.debuffs = {}
-        this.onGCD = false
-        this.inCombat = false
-        this.rage = this.stats.startRage
-        this.isHeroicStrikeQueued = false
-        this.IEA = false
-        this.damageMod = this.stats.damageMod
-        this.physDamageMod = this.stats.physDamageMod
-        this.hastePerc = this.stats.hastePerc
-        this.defense = this.stats.defense
-        this.rageGained = 0
-        this.rageSpent = 0
-        this.armor = this.stats.armor
-        this.percArmorMod = 1
-        this.uptimes = {}
+        this.procs.forEach(proc => proc.reset());
+        this.buffs = {};
+        this.debuffs = {};
+        this.onGCD = false;
+        this.inCombat = false;
+        this.rage = this.stats.startRage;
+        this.isHeroicStrikeQueued = false;
+        this.IEA = false;
+        this.damageMod = this.stats.damageMod;
+        this.physDamageMod = this.stats.physDamageMod;
+        this.hastePerc = this.stats.haste;
+        this.defense = this.stats.defense;
+        this.rageGained = 0;
+        this.rageSpent = 0;
+        this.armor = this.stats.armor;
+        this.percArmorMod = 1;
+        this.uptimes = {};
 
-        this.threatMod = this.stats.threatMod
-        this.resilience = this.stats.resilience
-        this.hit = this.stats.hit
-        this.crit = this.stats.crit
-        this.block = this.stats.block
-        this.GCD = 0
+        this.threatMod = this.stats.threatMod;
+        this.resilience = this.stats.resilience;
+        this.hit = this.stats.hit;
+        this.crit = this.stats.crit;
+        this.block = this.stats.block;
+        this.GCD = 0;
 
-        this.IEA = false
-        this.isHeroicStrikeQueued = false
-        this.windfury = false
-
+        this.IEA = false;
+        this.isHeroicStrikeQueued = false;
+        this.windfury = false;
     }
-
-
-
-
-      /*  
-    }
-    getArmor() {
-        this.armor = this.stats.baseArmor
-        let percArmorMod = 1;
-        this.auras.forEach(aura => {
-            if (aura.duration > 0) {
-                if (aura.armorMod != 0) {
-                    let multiplier = 1;
-                    if (aura.scalingStacks) multiplier = aura.stacks;
-                    this.armor += aura.armorMod * multiplier;
-                }
-                if (aura.percArmorMod != 1) percArmorMod *= (1 + aura.percArmorMod/100);
-            }
-        });
-        //if(this.name == "Boss") console.log(this.armor)
-        return Math.max(0, this.armor * percArmorMod);
-    }
-
-    getAP() {
-        let AP = this.stats.AP;
-        this.auras.forEach(aura => {
-            if (aura.duration > 0) {
-                if (aura.strMod > 0) {
-                    AP += aura.strMod * 2 * this.strengthMultiplier;
-                }
-                if (aura.APMod > 0) {
-                    if(!aura.scalingStacks) AP += aura.APMod;
-                    else AP += aura.APMod * aura.stacks;
-                }
-            }
-        });
-        return AP;
-    }
-
-    getBlockValue() {
-        let blockValue = this.stats.blockValue;
-        this.auras.forEach(aura => {
-            if(aura.duration > 0) {
-                if(aura.blockValue > 0) {
-                    blockValue += aura.blockValue;
-                }
-                if(aura.strMod > 0) {
-                    blockValue += aura.strMod/20;
-                }
-            }
-        })
-        return blockValue;
-    }
-
-    // Physical dmg mod
-    getDamageMod() {
-        let damageMod = this.damageMod
-        this.auras.forEach(aura => {
-            if (aura.duration > 0) {
-                if (aura.damageMod != 1) {
-                    let multiplier = 1;
-                    if (aura.scalingStacks) multiplier = aura.stacks;
-                    damageMod *= aura.damageMod * multiplier;
-                }
-            }
-        });
-        damageMod *= this.stats.physDmgMod;
-        return damageMod;
-    }
-
-    addRage(rage, add=false) {
-        this.rage = Math.max(0, Math.min(100, this.rage + rage))
-
-        if (this.name == "Tank" && add) {
-            if (rage > 0) this.rageGained += rage;
-            else this.rageSpent -= rage;
-        }
-    }
-
-    addParryHaste() {
-        this.abilities.forEach(ability => {
-            if (["MH Swing", "Auto Attack"].includes(ability.name))
-                ability.currentCooldown = getParryHastedSwing(ability.currentCooldown, ability.baseCooldown);
-        });
-    }
-
-    reset() {
-        this.abilities.forEach(ability => { ability.currentCooldown = 0; });
-        this.auras.forEach(aura => {
-            aura.stacks = 0;
-            aura.duration = 0;
-        })
-        this.GCD = 0
-        this.rage = this.stats.startRage
-        this.isHeroicStrikeQueued = false
-        this.IEA = false
-        this.damageMod = this.stats.damageMod
-        this.hastePerc = this.stats.hastePerc
-        this.defense = this.stats.defense
-        this.additivePhysBonus = 0
-        this.rageGained = 0
-        this.rageSpent = 0
-        this.uptimes = {}
-    }
-*/
 }

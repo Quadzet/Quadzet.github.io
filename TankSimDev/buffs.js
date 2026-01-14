@@ -170,6 +170,7 @@ export const AURA_DATA = {
   // *** CONSUMES ***
   "agi-elixir": {
     "type": "ITEM",
+    "group": "agi",
     "ids": [2457, 3390, 8949, 9187],
     "levels": [2, 18, 27, 38],
     "img": ["minor-agility", "lesser-agility", "agility", "greater-agility"],
@@ -177,10 +178,19 @@ export const AURA_DATA = {
   },
   "str-elixir": {
     "type": "ITEM",
+    "group": "str",
     "ids": [2454, 3391, 9206],
     "levels": [1, 20, 38],
     "img": ["lion-strength", "ogre-strength", "giants"],
     "strength": [4, 8, 25],
+  },
+  "mongoose": {
+    "type": "ITEM",
+    "group": "agi",
+    "ids": [13452],
+    "levels": [46],
+    "agility": [25],
+    "crit": [2],
   },
   "giant-growth": {
     "type": "ITEM",
@@ -190,6 +200,7 @@ export const AURA_DATA = {
   },
   "str-scroll": {
     "type": "ITEM",
+    "group": "str",
     "ids": [954, 2289, 4426, 10310],
     "levels": [10, 25, 40, 55],
     "strength": [5, 9, 13, 17],
@@ -209,18 +220,21 @@ export const AURA_DATA = {
   },
   "stam-food": {
     "type": "ITEM",
+    "group": "food",
     "ids": [21023],
     "levels": [55],
     "stamina": [25],
   },
   "str-food": {
     "type": "ITEM",
+    "group": "food",
     "ids": [20452],
     "levels": [45],
     "strength": [20],
   },
   "agi-food": {
     "type": "ITEM",
+    "group": "food",
     "ids": [13928],
     "levels": [35],
     "agility": [10],
@@ -233,6 +247,7 @@ export const AURA_DATA = {
   },
   "stone": {
     "type": "ITEM",
+    "group": "stone",
     "ids": [2863, 7964, 2871, 12404],
     "levels": [5, 15, 25, 35],
     "img": ["coarse", "heavy", "solid", "dense"],
@@ -241,18 +256,21 @@ export const AURA_DATA = {
   },
   "elemental-stone": {
     "type": "ITEM",
+    "group": "stone",
     "ids": [18262],
     "levels": [50],
     "crit": [2],
   },
   "consecrated-stone": {
     "type": "ITEM",
+    "group": "stone",
     "ids": [23122],
     "levels": [50],
     "attackpower": [100],
   },
   "shadow-oil": {
     "type": "ITEM",
+    "group": "stone",
     "ids": [3824],
     "levels": [24],
   },
@@ -266,6 +284,7 @@ export const AURA_DATA = {
   // *** OH BUFFS ***
   "oh-stone": {
     "type": "ITEM",
+    "group": "oh-stone",
     "ids": [2863, 2871, 7964, 12404],
     "levels": [5, 15, 25, 35],
     "ohmin": [3, 4, 6, 8],
@@ -274,9 +293,26 @@ export const AURA_DATA = {
   },
   "oh-shadow-oil": {
     "type": "ITEM",
+    "group": "oh-stone",
     "ids": [3824],
     "levels": [24],
     "img": ["shadow-oil"],
+  },
+  "oh-elemental-stone": {
+    "type": "ITEM",
+    "group": "oh-stone",
+    "ids": [18262],
+    "levels": [50],
+    "crit": [2],
+    "img": ["elemental-stone"],
+  },
+  "oh-consecrated-stone": {
+    "type": "ITEM",
+    "group": "oh-stone",
+    "ids": [23122],
+    "levels": [50],
+    "attackpower": [100],
+    "img": ["consecrated-stone"],
   },
 }
 

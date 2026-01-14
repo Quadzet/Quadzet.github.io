@@ -11,11 +11,12 @@ const range = (length) =>
 let Actors; // Will be initialized in the worker
 
 self.addEventListener('message', function(e) {
-    let globals = e.data.globals;
-    let iterations = e.data.iterations;
+    try {
+        let globals = e.data.globals;
+        let iterations = e.data.iterations;
 
-    let TankProcs = getTankProcs(globals);
-    let BossProcs = getBossProcs(globals);
+        let TankProcs = getTankProcs(globals);
+        let BossProcs = getBossProcs(globals);
 
     globals.config = globals.config;
 
@@ -110,7 +111,7 @@ self.addEventListener('message', function(e) {
         auras: {},
     }
     let progressPerc = 0;
-    // *** MAIN LOOP *** 
+    // *** MAIN LOOP ***
     for(let i in range(iterations)) {
         let eventList = [];
         let FutureEvents = [];
@@ -120,8 +121,7 @@ self.addEventListener('message', function(e) {
         while(true)
         {
             let event = FutureEvents.pop();
-            let timestamp = event.timestamp;
-            if(timestamp > globals.config.simDuration*1000)
+            if(!event || event.timestamp > globals.config.simDuration*1000)
                 break;
             let newEvents = handleEvent(event, FutureEvents);
             // TODO: Better perf to concat? Probably not
@@ -205,9 +205,18 @@ self.addEventListener('message', function(e) {
     cpm
 */
 
-    postMessage({
-        'events': exampleList,
-        'results': results,
-    });
-    close();
+        postMessage({
+            'events': exampleList,
+            'results': results,
+        });
+        close();
+    } catch(error) {
+        console.error('Worker error:', error);
+        postMessage({
+            type: 'error',
+            message: error.message,
+            stack: error.stack
+        });
+        close();
+    }
 })

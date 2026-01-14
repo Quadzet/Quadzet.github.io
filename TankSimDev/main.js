@@ -36,16 +36,23 @@ async function updateProgressbar(progressPerc) {
   await sleep(0);
 }
 
-export function toggleAura(event, id, exclusives) {
+export function toggleAura(event, aura) {
+
   event.preventDefault();
-  const element = document.getElementById(id + '-aura-img');
+  let data = AURA_DATA[`${aura}`];
+  const element = document.getElementById(aura + '-aura-img');
   element.classList.toggle('aura-toggle-active');
-  // TODO: Fix this behaviour using groups.
-  if (exclusives != null && element.classList.contains('aura-toggle-active')) {
-    exclusives.forEach(name => {
-      var exElement = document.getElementById(name + '-aura-img');
-      exElement.classList.remove('aura-toggle-active');
-    });
+
+  // Turn off any grouped (ie exlusive) auras.
+  if (data['group'] && element.classList.contains('aura-toggle-active')) {
+    for (const [l_aura, l_data] of Object.entries(AURA_DATA)) {
+      if (l_aura == aura)
+        continue;
+      if (l_data['group'] == data['group']) {
+        const groupedElement = document.getElementById(l_aura + '-aura-img');
+        groupedElement.classList.remove('aura-toggle-active');
+      }
+    }
   }
   let globals = updateStats();
   updateRotation(globals);
@@ -94,7 +101,7 @@ function createAuraRow(auras, level) {
     let id = AURA_DATA[`${aura}`]['ids'][ix];
     let img = aura;
     if (AURA_DATA[`${aura}`]['img'])
-      img = AURA_DATA[`${aura}`][ix];
+      img = AURA_DATA[`${aura}`]['img'][ix];
 
     aura_row += `
           <div class="aura-toggle" id="${aura}-aura">
@@ -221,6 +228,10 @@ async function main() {
       log_message(LOG_LEVEL.ERROR, `Line ${e.lineno} in ${e.filename}: ${e.message}`)
     })
     worker.addEventListener('message', function(e) {
+      if (e.data.type == 'error') {
+        console.error('Worker error:', e.data.message, e.data.stack);
+        return;
+      }
       if (e.data.type == 'progressUpdate') {
         progressPerc += e.data.progressPerc / numWorkers;
         updateProgressbar(progressPerc);

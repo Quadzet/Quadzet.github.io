@@ -139,7 +139,7 @@ function addTalentStats(stats) {
   stats.parry += Number(stats.talents.deflection);
   stats.block += Number(stats.talents.shieldspec);
   stats.abilityCritMod += Number(stats.talents.impale) * 0.1;
-  stats.threadMod += 0.03 * Number(stats.talents.defiance);
+  stats.threatMod += 0.03 * Number(stats.talents.defiance);
 
   if (stats.wield == Wield.TWOHAND)
     stats.physDamageMod += 0.01 * getTalentValue('two-handed-weapon-specialization');
@@ -275,6 +275,8 @@ function addGearStats(stats, level) {
   stats.procs.forEach(proc => {
     proc.procChance = proc.ppm * stats.mainhand.swingtimer / 60000;
   });
+
+  stats.gear = gear;
 }
 
 function addRaceStats(stats, level) {
@@ -335,14 +337,14 @@ function addEnchantStats(stats) {
 
 function getBossStats(playerLevel) {
 
-  let level = playerLevel + Number(document.querySelector("#bossLevel").value)
+  let level = Number(playerLevel) + Number(document.querySelector("#bossLevel").value)
   let armor = Number(document.querySelector("#bossArmor").value);
   let mindmg = Number(document.querySelector("#swingMin").value);
   let maxdmg = Number(document.querySelector("#swingMax").value);
   let swingtimer = Number(document.querySelector("#swingTimer").value) * 1000;
   let defense = level * 5;
   // Not confirmed, seems to more or less match at lvl 27 and 63.
-  let blockvalue = Math.max(0, bossLevel - 15);
+  let blockvalue = Math.max(0, level - 15);
   let mhskill = level * 5;
 
   let stats = {
@@ -392,6 +394,7 @@ function getBossStats(playerLevel) {
 
     startRage: 0,
 
+    gear: {},
     rotation: {},
     talents: {},
     bonuses: {},
@@ -410,6 +413,8 @@ function getBossStats(playerLevel) {
       });
     }
   });
+
+  return stats;
 }
 
 export function updateStats() {
@@ -459,6 +464,7 @@ export function updateStats() {
 
     startRage: 0,
 
+    gear: {},
     rotation: {},
     talents: {},
     bonuses: {},
@@ -541,7 +547,7 @@ export function updateStats() {
     windfury: false,
   };
 
-  let bossStats = getBossStats();
+  let bossStats = getBossStats(level);
 
   let globals = {
     tankStats: stats,

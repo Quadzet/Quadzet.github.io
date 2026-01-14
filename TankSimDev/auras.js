@@ -1,6 +1,7 @@
 import { LOG_LEVEL, log_message } from './logging.js';
 import { onUseData } from './stats.js'
 import { sortDescending } from './eventHelpFuncs.js'
+import { LANDED_HITS } from './constants.js'
 
 export class Aura {
     constructor(input) {
@@ -106,7 +107,7 @@ export class Aura {
                 owner.block += this.blockMod
                 owner.hastePerc += this.hastePerc;
                 owner.damageMod *= this.damageMod
-                owner.physDamageMod /= this.physDamageMod;
+                owner.physDamageMod *= this.physDamageMod;
                 owner.APMultMod *= this.APMultMod;
                 owner.critMod *= this.critMod;
             }
@@ -461,7 +462,7 @@ export class SwordAndBoardAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.source == owner.name && ['Devastate', 'Revenge'].includes(event.name) && landedHits.includes(event.hit) && Math.random() < 0.3) {
+        if (event.type == "damage" && event.source == owner.name && ['Devastate', 'Revenge'].includes(event.name) && LANDED_HITS.includes(event.hit) && Math.random() < 0.3) {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
             owner.resetCooldown('Shield Slam');
         }
@@ -487,7 +488,7 @@ export class BloodsurgeAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.source == owner.name && ['Quick Strike', 'Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && landedHits.includes(event.hit) && Math.random() < 0.3) {
+        if (event.type == "damage" && event.source == owner.name && ['Quick Strike', 'Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && LANDED_HITS.includes(event.hit) && Math.random() < 0.3) {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
 

@@ -56,8 +56,7 @@ export const ENCHANT_IDS = {
 export const BUFFS = [
   'battleshout', 'motw', 'kings', 'might', 'strtotem',
   'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
-  'leader', 'trueshot', 'stone', 'shadow-oil', 'elemental-stone',
-  'consecrated-stone',
+  'leader', 'trueshot',
 ];
 
 export const DEBUFFS = [
@@ -65,13 +64,14 @@ export const DEBUFFS = [
 ];
 
 export const CONSUMES = [
-  'fort', 'bloodpact', 'devo', 'loh', 'inspiration', 'str-elixir', 'defense',
-  'fort-elixir', 'shadow-oil', 'rumsey', 'agi-elixir', 'giant-growth',
+  'bloodpact', 'str-elixir', 'defense', 'agi-elixir', 'mongoose',
+  'fort-elixir', 'rumsey','giant-growth',
   'dark-desire', 'stam-food', 'str-food', 'agi-food', 'str-scroll',
+  'consecrated-stone', 'stone', 'shadow-oil', 'elemental-stone',
 ];
 
 export const OH_BUFFS = [
-  'oh-shadow-oil', 'oh-stone'
+  'oh-shadow-oil', 'oh-stone', 'oh-consecrated-stone', 'oh-elemental-stone'
 ];
 
 export const WORLD_BUFFS = [
