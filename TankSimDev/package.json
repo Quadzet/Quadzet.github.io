@@ -4,7 +4,10 @@
   "description": "World of Warcraft tank DPS simulator",
   "type": "module",
   "scripts": {
-    "dev": "npx -y http-server -p 8080 -c-1"
+    "dev": "npx -y http-server -p 8080 -c-1",
+    "test": "node tests/test-runner.js",
+    "test:unit": "node tests/test-runner.js unit",
+    "test:verbose": "node tests/test-runner.js --verbose"
   },
   "dependencies": {
     "papaparse": "^5.4.1"

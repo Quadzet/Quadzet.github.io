@@ -58,20 +58,21 @@ export function getGlanceMod(wepSkill, defense) {
 }
 
 export function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
+    let skilldiff = defSkill - atkSkill;
     let baseMissChance = 0;
-    if (defSkill - atkSkill <= 10) {
-        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.1)
+    if (skilldiff <= 10) {
+        baseMissChance = Math.max(0, 5 + skilldiff*0.1)
         if(dualWield) {
             return Math.max(0, baseMissChance*0.8 + 20 - hit)
         } else {
             return Math.max(0, baseMissChance - hit)
         }
     } else {
-        baseMissChance = Math.max(0, 5 + (defSkill - atkSkill)*0.2)
+        baseMissChance = Math.max(0, 5 + skilldiff*0.2)
         if(dualWield) {
-            return Math.max(0, baseMissChance*0.8 + 20 - Math.max(0, hit + 1))
+            return Math.max(0, baseMissChance*0.8 + 20 - Math.max(0, hit - skilldiff * 0.2))
         } else {
-            return Math.max(0, baseMissChance - Math.max(0, hit + 1))
+            return Math.max(0, baseMissChance - Math.max(0, hit - skilldiff * 0.2))
         }
     }
 }
