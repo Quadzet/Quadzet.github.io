@@ -16,6 +16,6 @@ export const LOG_LEVEL_CUTOFF = LOG_LEVEL.INFO;
 
 export function log_message(level, message) {
   let log_level = level.level;
-  if (log_level != null && log_level.level >= LOG_LEVEL_CUTOFF.level)
+  if (log_level != null && log_level >= LOG_LEVEL_CUTOFF.level)
     console.log(level.prefix + message);
 }
