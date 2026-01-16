@@ -90,7 +90,11 @@ async function main() {
 
   // Discover test files
   const unitTestDir = join(__dirname, 'unit');
-  let testFiles = await findTestFiles(unitTestDir);
+  const regressionTestDir = join(__dirname, 'regression');
+  let testFiles = [
+    ...await findTestFiles(unitTestDir),
+    ...await findTestFiles(regressionTestDir)
+  ];
 
   // Apply filter if specified
   if (FILTER) {

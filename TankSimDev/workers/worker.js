@@ -1,9 +1,8 @@
 import { getTankProcs, getBossProcs } from '../procs.js';
-import { handleCombatStart, handleScheduledEvent, performAction } from '../rotation.js';
-import { handleParryHaste, TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js';
-import { sortDescending } from '../eventHelpFuncs.js';
+import { TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js';
 import { Actor } from '../actor.js';
 import { TankAuras, BossAuras } from '../auras.js';
+import { handleEvent, generatePrePullEvents } from '../simulation-core.js';
 
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
@@ -19,80 +18,6 @@ self.addEventListener('message', function(e) {
         let BossProcs = getBossProcs(globals);
 
     globals.config = globals.config;
-
-    function handleEvent(event, futureEvents)
-    {
-      let newEvents = [];
-      let reactiveEvents = [event]; // slightly inefficient
-      do {
-        event = reactiveEvents.shift();
-        if(event.type == "combatStart") {
-          let source = Actors["Tank"];
-          let target = Actors["Boss"];
-
-          handleCombatStart(source, target, reactiveEvents, futureEvents);
-          handleCombatStart(target, source, reactiveEvents, futureEvents);
-        }
-        else if (event.type == "scheduledEvent") {
-          let source = Actors["Tank"];
-          let target = Actors["Boss"];
-          handleScheduledEvent(event, source, target, reactiveEvents, futureEvents);
-        }
-        else if(event.type == "swingTimer") {
-          let source = Actors[event.source];
-          let target = Actors[event.target];
-          source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents); // source and target are just names, find them in the global actor list.
-        }
-        else if(event.type == "GCD") {
-          let source = Actors[event.source];
-          let target = source.target;
-          source.onGCD = false
-          performAction(event.timestamp, source, target, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "cooldownFinish") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "auraExpire") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "auraApply") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "rage") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "extra attack") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if(event.type == "damage") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        else if (event.type == "spellCast") {
-          Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents)
-          Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents)
-        }
-        if (event.type == "damage" && event.hit == "parry") {
-          handleParryHaste(event, Actors[event.target], futureEvents)
-        }
-
-        newEvents.push(event);
-      } while (reactiveEvents.length > 0)
-
-      sortDescending(futureEvents);
-      return newEvents;
-    }
-
-    function generatePrePullEvents(Tank, Boss, eventList, FutureEvents) {
-      // Prepull Death Wish
-      if (Tank.abilities["Death Wish"] && Tank.stats.rotation['death-wish'].use)
-        FutureEvents.push({timestamp: -1500, type: "scheduledEvent", ability: "Death Wish"});
-
-      FutureEvents.push({timestamp: 0, type: "combatStart"});
-      sortDescending(FutureEvents);
-    }
 
     Actors = {
         "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats.gear), TankProcs, TankAuras(globals)),
@@ -123,7 +48,7 @@ self.addEventListener('message', function(e) {
             let event = FutureEvents.pop();
             if(!event || event.timestamp > globals.config.simDuration*1000)
                 break;
-            let newEvents = handleEvent(event, FutureEvents);
+            let newEvents = handleEvent(event, FutureEvents, Actors);
             // TODO: Better perf to concat? Probably not
             newEvents.forEach(event => {
               eventList.push(event);
