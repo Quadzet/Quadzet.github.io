@@ -42,20 +42,33 @@ async function runSuite(suite, filePath) {
   console.log(`\n${suite.name}`);
 
   for (const testCase of suite.tests) {
+    // Capture console.log output during test execution.
+    const originalLog = console.log;
+    const capturedLogs = [];
+    console.log = (...args) => capturedLogs.push(args.join(' '));
+
     try {
       await testCase.fn();
       results.passed++;
+
+      console.log = originalLog;
 
       if (VERBOSE) {
         console.log(`  [OK] ${testCase.name}`);
       }
     } catch (err) {
       results.failed++;
+
+      console.log = originalLog;
       console.log(`  [FAIL] ${testCase.name}`);
 
-      // Show error message (indent for readability)
       const errorMsg = err.message.split('\n').map(line => `    ${line}`).join('\n');
       console.log(errorMsg);
+
+      if (capturedLogs.length > 0) {
+        console.log(`    Captured logs during test:`);
+        capturedLogs.forEach(log => console.log(`      ${log}`));
+      }
 
       results.errors.push({
         suite: suite.name,

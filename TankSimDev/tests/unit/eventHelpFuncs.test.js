@@ -1,4 +1,4 @@
-import { describe, test, assertEqual, seedRandom } from '../test-utils.js';
+import { describe, test, captureConsoleLog, assertEqual, seedRandom } from '../test-utils.js';
 import {
   statRound,
   clearFutureTicks,
@@ -107,8 +107,11 @@ export const tests = describe('eventHelpFuncs.js', () => {
       trigger: true
     };
 
-    const result = generateDamageEvent(input);
-    assertEqual(result.type, 'damage', 'Should create event despite missing name');
+    let logs = [];
+    const result = captureConsoleLog(
+      () => generateDamageEvent(input),
+      logs);
+    assertEqual(result.type, 'damage', 'Should create event despite missing name', logs);
   });
 
   test('generateDamageEvent: preserves all input properties', () => {

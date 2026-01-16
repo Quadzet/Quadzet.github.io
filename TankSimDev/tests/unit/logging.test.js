@@ -1,22 +1,7 @@
-import { describe, test, assertEqual, assertTrue } from '../test-utils.js';
+import { describe, test, captureConsoleLog, assertEqual, assertTrue } from '../test-utils.js';
 import { LOG_LEVEL, LOG_LEVEL_CUTOFF, log_message } from '../../logging.js';
 
 export const tests = describe('logging.js', () => {
-
-  // Helper to capture console.log output
-  function captureConsoleLog(fn) {
-    const originalLog = console.log;
-    const logs = [];
-    console.log = (...args) => logs.push(args.join(' '));
-
-    try {
-      fn();
-    } finally {
-      console.log = originalLog;
-    }
-
-    return logs;
-  }
 
   test('LOG_LEVEL: INFO has correct properties', () => {
     assertEqual(LOG_LEVEL.INFO.level, 0, 'INFO level should be 0');
@@ -38,45 +23,50 @@ export const tests = describe('logging.js', () => {
   });
 
   test('log_message: logs INFO message', () => {
-    const logs = captureConsoleLog(() => {
+    let logs = [];
+    captureConsoleLog(() => {
       log_message(LOG_LEVEL.INFO, 'Test info message');
-    });
+    }, logs);
 
     assertEqual(logs.length, 1, 'Should log one message');
     assertEqual(logs[0], '[i] Test info message', 'Should have correct prefix and message');
   });
 
   test('log_message: logs WARNING message', () => {
-    const logs = captureConsoleLog(() => {
+    let logs = [];
+    captureConsoleLog(() => {
       log_message(LOG_LEVEL.WARNING, 'Test warning message');
-    });
+    }, logs);
 
     assertEqual(logs.length, 1, 'Should log one message');
     assertEqual(logs[0], '[w] Test warning message', 'Should have correct prefix and message');
   });
 
   test('log_message: logs ERROR message', () => {
-    const logs = captureConsoleLog(() => {
+    let logs = [];
+    captureConsoleLog(() => {
       log_message(LOG_LEVEL.ERROR, 'Test error message');
-    });
+    }, logs);
 
     assertEqual(logs.length, 1, 'Should log one message');
     assertEqual(logs[0], '[e] Test error message', 'Should have correct prefix and message');
   });
 
   test('log_message: handles empty message', () => {
-    const logs = captureConsoleLog(() => {
+    let logs = [];
+    captureConsoleLog(() => {
       log_message(LOG_LEVEL.INFO, '');
-    });
+    }, logs);
 
     assertEqual(logs.length, 1, 'Should log one message');
     assertEqual(logs[0], '[i] ', 'Should log just the prefix');
   });
 
   test('log_message: handles multiline message', () => {
-    const logs = captureConsoleLog(() => {
+    let logs = [];
+    captureConsoleLog(() => {
       log_message(LOG_LEVEL.INFO, 'Line 1\nLine 2');
-    });
+    }, logs);
 
     assertEqual(logs.length, 1, 'Should log one message');
     assertTrue(logs[0].includes('Line 1\nLine 2'), 'Should preserve newlines');
