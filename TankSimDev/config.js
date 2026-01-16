@@ -4,7 +4,7 @@
 import {
   ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES,
   ENCHANT_SLOTS, ATTRIBUTES, Wield, ActorType,
-  DEBUFFS,
+  BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS,
 } from './constants.js'
 import { AURA_DATA } from './buffs.js'
 import { levelstats } from './levelstats.js'
@@ -53,7 +53,6 @@ function applyMultMods(stats) {
   stats.stamina *= stats.staminaMod;
   stats.strength *= stats.strengthMod;
   stats.agility *= stats.agilityMod;
-  stats.armor *= stats.armorMod;
 }
 
 function applyExtraStats(stats) {
@@ -73,11 +72,11 @@ function applyExtraStats(stats) {
 }
 
 function addAuraStats(stats, level) {
-
-  for (const [aura, data] of Object.entries(AURA_DATA)) {
+  for (const aura of BUFFS.concat(WORLD_BUFFS, CONSUMES, OH_BUFFS)) {
     const element = document.getElementById(aura + '-aura-img');
+    const data = AURA_DATA[`${aura}`];
     if (element.classList.contains('aura-toggle-active')) {
-      let ix = getIndex(AURA_DATA[`${aura}`], level);
+      let ix = getIndex(data, level);
       for (const attribute of ATTRIBUTES) {
         if (data[`${attribute}`])
           stats[`${attribute}`] += data[`${attribute}`][ix];
@@ -506,8 +505,9 @@ export function updateStats() {
   addEnchantStats(stats);
   addAuraStats(stats, level);
   applyExtraStats(stats, level);
-  applyStatEffects(stats, level);
   applyMultMods(stats);
+  applyStatEffects(stats, level);
+  stats.armor *= stats.armorMod;
   stats.armor += stats.bonusArmor;
   writePlayerStats(stats);
 

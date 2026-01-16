@@ -22,7 +22,7 @@ export const ATTRIBUTES = [
   "crit", "hit", "attackpower", "haste",
   "defense", "armor", "bonusArmor", "parry",
   "dodge", "block", "blockvalue", "health",
-  "strengthMod", "staminaMod", "agilityMod", "damageMod",
+  "strengthMod", "staminaMod", "agilityMod", "damageMod", "armorMod",
 ];
 
 export const ABILITIES = [
