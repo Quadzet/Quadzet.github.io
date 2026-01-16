@@ -3,7 +3,7 @@
 
 import {
   ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES,
-  ENCHANT_SLOTS, ATTRIBUTES, Wield, ActorType,
+  ENCHANT_SLOTS, MULT_ATTRIBUTES, ATTRIBUTES, Wield, ActorType,
   BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS,
 } from './constants.js'
 import { AURA_DATA } from './buffs.js'
@@ -78,8 +78,12 @@ function addAuraStats(stats, level) {
     if (element.classList.contains('aura-toggle-active')) {
       let ix = getIndex(data, level);
       for (const attribute of ATTRIBUTES) {
-        if (data[`${attribute}`])
-          stats[`${attribute}`] += data[`${attribute}`][ix];
+        if (data[`${attribute}`]) {
+          if (MULT_ATTRIBUTES.includes(attribute))
+            stats[`${attribute}`] *= data[`${attribute}`][ix];
+          else
+            stats[`${attribute}`] += data[`${attribute}`][ix];
+        }
       }
     }
   }

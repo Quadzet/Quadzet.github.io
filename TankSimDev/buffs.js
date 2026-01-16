@@ -31,9 +31,9 @@ export const AURA_DATA = {
     "type": "SPELL",
     "ids": [20217],
     "levels": [20],
-    "staminaMod": [0.1],
-    "strengthMod": [0.1],
-    "agilityMod": [0.1],
+    "staminaMod": [1.1],
+    "strengthMod": [1.1],
+    "agilityMod": [1.1],
   },
   "might": {
     "type": "SPELL",
@@ -70,13 +70,13 @@ export const AURA_DATA = {
     "type": "SPELL",
     "ids": [20235],
     "levels": [20],
-    "armorMod": [0.3], // Applies to armor from items.
+    "armorMod": [1.3], // Applies to armor from items.
   },
   "inspiration": {
     "type": "SPELL",
     "ids": [15363],
     "levels": [20],
-    "armorMod": [0.25], // Applies to all armor(?)
+    "armorMod": [1.25], // Applies to all armor(?)
   },
 
   // *** WORLD BUFFS ***
@@ -84,7 +84,7 @@ export const AURA_DATA = {
     "type": "SPELL",
     "ids": [23768],
     "levels": [1],
-    "damageMod": [0.1],
+    "damageMod": [1.1],
   },
   "wcb": {
     "type": "SPELL",
@@ -97,9 +97,9 @@ export const AURA_DATA = {
     "type": "SPELL",
     "ids": [24425],
     "levels": [1],
-    "staminaMod": [0.15],
-    "strengthMod": [0.15],
-    "agilityMod": [0.15],
+    "staminaMod": [1.15],
+    "strengthMod": [1.15],
+    "agilityMod": [1.15],
   },
   "dragonslayer": {
     "type": "SPELL",
@@ -113,7 +113,7 @@ export const AURA_DATA = {
     "type": "SPELL",
     "ids": [22818],
     "levels": [50],
-    "staminaMod": [0.15],
+    "staminaMod": [1.15],
   },
   "fengus": {
     "type": "SPELL",

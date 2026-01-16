@@ -25,6 +25,10 @@ export const ATTRIBUTES = [
   "strengthMod", "staminaMod", "agilityMod", "damageMod", "armorMod",
 ];
 
+export const MULT_ATTRIBUTES = [
+  "strengthMod", "staminaMod", "agilityMod", "damageMod", "armorMod",
+];
+
 export const ABILITIES = [
   "death-wish", "revenge", "rend", "heroic-strike", "shield-block",
   "shield-slam", "bloodthirst", "mortal-strike", "sunder-armor"];
