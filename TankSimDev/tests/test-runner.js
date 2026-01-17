@@ -91,9 +91,11 @@ async function main() {
   // Discover test files
   const unitTestDir = join(__dirname, 'unit');
   const regressionTestDir = join(__dirname, 'regression');
+  const integrationTestDir = join(__dirname, 'integration');
   let testFiles = [
     ...await findTestFiles(unitTestDir),
-    ...await findTestFiles(regressionTestDir)
+    ...await findTestFiles(regressionTestDir),
+    ...await findTestFiles(integrationTestDir)
   ];
 
   // Apply filter if specified

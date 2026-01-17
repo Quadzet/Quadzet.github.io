@@ -9,7 +9,8 @@
     "test:unit": "node tests/test-runner.js unit",
     "test:verbose": "node tests/test-runner.js --verbose"
   },
-  "dependencies": {
-    "papaparse": "^5.4.1"
+  "devDependencies": {
+    "jsdom": "^27.4.0",
+    "papaparse": "^5.5.3"
   }
 }
