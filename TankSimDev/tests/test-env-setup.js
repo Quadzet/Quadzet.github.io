@@ -36,18 +36,19 @@ export function cleanupFullTestEnv() {
 
 async function createAuraElements(document) {
   const constants = await import('../constants.js');
-  const { BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS } = constants;
+  const { BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS, IMP_BUFFS } = constants;
 
   const allAuras = [
     ...BUFFS,
     ...DEBUFFS,
     ...WORLD_BUFFS,
     ...CONSUMES,
-    ...OH_BUFFS
+    ...OH_BUFFS,
+    ...IMP_BUFFS
   ];
 
   ['aura-row-buffs', 'aura-row-oh-wep-buffs', 'aura-row-consumes',
-   'aura-row-world-buffs', 'aura-row-debuffs'].forEach(rowId => {
+   'aura-row-world-buffs', 'aura-row-debuffs', 'aura-row-imp-auras'].forEach(rowId => {
     let row = document.getElementById(rowId);
     if (!row) {
       row = document.createElement('div');

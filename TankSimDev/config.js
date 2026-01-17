@@ -46,7 +46,7 @@ function writePlayerStats(stats) {
 
 function checkAuraToggle(name) {
   let element = document.getElementById(`${name}-aura-img`);
-  return element.classList.contains('aura-toggle-active');
+  return element && element.classList.contains('aura-toggle-active');
 }
 
 function applyMultMods(stats) {
@@ -75,20 +75,22 @@ function addAuraStats(stats, level) {
   for (const aura of BUFFS.concat(WORLD_BUFFS, CONSUMES, OH_BUFFS)) {
     const element = document.getElementById(aura + '-aura-img');
     const data = AURA_DATA[`${aura}`];
-    if (element.classList.contains('aura-toggle-active')) {
+    if (element && element.classList.contains('aura-toggle-active')) {
       let factor = 1
       // Check if the aura has an improvement active.
       for (const impAura of IMP_BUFFS) {
         let impData = AURA_DATA[`${impAura}`];
         if (impData['aura'] == aura) {
           const impElement = document.getElementById(impAura + '-aura-img');
-          if (impElement.classList.contains('aura-toggle-active'))
+          if (impElement && impElement.classList.contains('aura-toggle-active'))
             factor = impData['factor'];
           break;
         }
       }
 
       let ix = getIndex(data, level);
+      if (ix == -1)
+        continue; // We are too low level for this buff.
       // TODO: Check if rounding should be done here.
       for (const attribute of ATTRIBUTES) {
         if (data[`${attribute}`]) {
@@ -420,9 +422,11 @@ function getBossStats(playerLevel) {
   DEBUFFS.forEach(aura => {
     const element = document.getElementById(aura + '-aura-img');
 
-    if (element.classList.contains('aura-toggle-active')) {
+    if (element && element.classList.contains('aura-toggle-active')) {
       let data = AURA_DATA[`${aura}`];
       let ix = getIndex(AURA_DATA[`${aura}`], playerLevel);
+      if (ix == -1)
+        return; // We are too low level for this debuff.
       ATTRIBUTES.forEach(attribute => {
         if (data[`${attribute}`])
           stats[`${attribute}`] += data[`${attribute}`][ix];

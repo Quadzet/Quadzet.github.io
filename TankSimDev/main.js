@@ -5,7 +5,7 @@ import { ITEM_SLOTS, ENCHANT_SLOTS, BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES,
   OH_BUFFS, IMP_BUFFS } from './constants.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { formatEvent } from './eventHelpFuncs.js';
-import { createTalentTrees, selectTalent, deselectTalent } from './talents.js';
+import { createTalentTrees, selectTalent, deselectTalent, resetTalents } from './talents.js';
 import { updateStats, getIndex } from './config.js';
 import { loadItemData } from './loadData.js'
 import { generateGearList, createGearRows, showEnchantDropdown,
@@ -96,6 +96,8 @@ function createAuraRow(auras, level) {
   let aura_row = '';
   auras.forEach(aura => {
     let ix = getIndex(AURA_DATA[`${aura}`], level);
+    if (ix == -1)
+      return; // We are too low level for this aura.
 
     let type = AURA_DATA[`${aura}`]['type'].toLowerCase();
     let id = AURA_DATA[`${aura}`]['ids'][ix];
@@ -133,12 +135,60 @@ function createAuraRows() {
 
   element = document.getElementById("aura-row-imp-auras")
   element.innerHTML = createAuraRow(IMP_BUFFS, level)
-
 }
 
-// TODO: Remove
-function createLinks() {
-  refreshLinks();
+function updateAuraRows() {
+  let level = document.getElementById("player-level").value
+
+  updateAuraRow(BUFFS, level, "aura-row-buffs");
+  updateAuraRow(OH_BUFFS, level, "aura-row-oh-wep-buffs");
+  updateAuraRow(CONSUMES, level, "aura-row-consumes");
+  updateAuraRow(WORLD_BUFFS, level, "aura-row-world-buffs");
+  updateAuraRow(DEBUFFS, level, "aura-row-debuffs");
+  updateAuraRow(IMP_BUFFS, level, "aura-row-imp-auras");
+}
+
+function updateAuraRow(auras, level, rowId) {
+  const container = document.getElementById(rowId);
+
+  auras.forEach(aura => {
+    let ix = getIndex(AURA_DATA[`${aura}`], level);
+    let auraDiv = document.getElementById(`${aura}-aura`);
+    let auraImg = document.getElementById(`${aura}-aura-img`);
+
+    if (ix == -1) {
+      // Remove unavailable aura elements.
+      if (auraDiv) {
+        auraDiv.style.display = 'none';
+      }
+      return;
+    }
+
+    let type = AURA_DATA[`${aura}`]['type'].toLowerCase();
+    let id = AURA_DATA[`${aura}`]['ids'][ix];
+    let img = aura;
+    if (AURA_DATA[`${aura}`]['img'])
+      img = AURA_DATA[`${aura}`]['img'][ix];
+
+    // Update existing aura element.
+    if (auraDiv && auraImg) {
+      auraDiv.style.display = '';
+      auraImg.src = `img/${img}.jpg`;
+      const link = auraDiv.querySelector('a');
+      if (link) {
+        link.href = `https://classic.wowhead.com/${type}=${id}`;
+      }
+    } else { // Create missing aura element.
+      const newAuraDiv = document.createElement('div');
+      newAuraDiv.className = 'aura-toggle';
+      newAuraDiv.id = `${aura}-aura`;
+      newAuraDiv.innerHTML = `
+        <a href="https://classic.wowhead.com/${type}=${id}" data-wh-rename-link="false" onclick="toggleAura(event, '${aura}')">
+          <img class="aura-toggle-default" src="img/${img}.jpg" id="${aura}-aura-img" active="false">
+        </a>`;
+      container.appendChild(newAuraDiv);
+    }
+  });
 }
 
 const SECTIONS = ['gear', 'settings', 'results'];
@@ -168,11 +218,23 @@ function disableCalc() {
   document.getElementById("calcBtn").disabled = true;
 }
 
+export function onLevelChange() {
+  const level = document.querySelector("#player-level").value;
+  const output = document.getElementById("player-level-span");
+  output.innerHTML = level;
+
+  resetTalents(false);
+  updateAuraRows();
+  let globals = updateStats();
+  updateRotation(globals);
+  refreshLinks();
+}
+
 async function onLoadPage() {
   disableCalc();
   createGearRows();
   createAuraRows()
-  createLinks();
+  refreshLinks();
   addEventListeners();
   createTalentTrees();
   await loadItemData();
@@ -184,10 +246,8 @@ async function onLoadPage() {
 
 async function main() {
 
-  // Cache the user input locally
+  // Cache the user input locally.
   saveInput();
-  // Fetch and set all user input settings
-  //fetchSettings()
   const globals = updateStats();
 
   document.getElementById("errorContainer").innerHTML = ""
@@ -397,6 +457,7 @@ window.showItemDropdown = showItemDropdown;
 window.showEnchantDropdown = showEnchantDropdown;
 window.generateGearList = generateGearList;
 window.toggleAura = toggleAura;
+window.onLevelChange = onLevelChange;
 
 function initWhenReady() {
   if (typeof window.Papa === 'undefined') {

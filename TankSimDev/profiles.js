@@ -1,6 +1,6 @@
 "use strict";
-import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS, BUFFS, DEBUFFS, WORLD_BUFFS,
-  CONSUMES, OH_BUFFS, TANK_SETTINGS, BOSS_SETTINGS } from './constants.js';
+import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS,
+  TANK_SETTINGS, BOSS_SETTINGS } from './constants.js';
 import { AURA_DATA } from './buffs.js'
 import { selectItem, selectEnchant } from './gear.js'
 import { loadTalents, getTalents } from './talents.js';
@@ -103,7 +103,7 @@ function generateProfile() {
   });
   profile.enchants = enchants;
 
-  // Talents 
+  // Talents
   profile.talents = getTalents();
 
   // Buffs
@@ -200,6 +200,8 @@ export function loadProfile(profile) {
   let buffs = profile.buffs == null ? {} : profile.buffs;
   Object.keys(AURA_DATA).forEach(aura => {
     let element = document.getElementById(`${aura}-aura-img`);
+    if (!element)
+      return; // Aura might be missing from DOM due to level requirements.
     element.classList.remove('aura-toggle-active');
     if (buffs[`${aura}`])
       element.classList.add('aura-toggle-active');

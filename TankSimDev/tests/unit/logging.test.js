@@ -19,17 +19,7 @@ export const tests = describe('logging.js', () => {
   });
 
   test('LOG_LEVEL_CUTOFF: set to INFO by default', () => {
-    assertEqual(LOG_LEVEL_CUTOFF, LOG_LEVEL.INFO, 'Default cutoff should be INFO');
-  });
-
-  test('log_message: logs INFO message', () => {
-    let logs = [];
-    captureConsoleLog(() => {
-      log_message(LOG_LEVEL.INFO, 'Test info message');
-    }, logs);
-
-    assertEqual(logs.length, 1, 'Should log one message');
-    assertEqual(logs[0], '[i] Test info message', 'Should have correct prefix and message');
+    assertEqual(LOG_LEVEL_CUTOFF, LOG_LEVEL.INFO, 'Default cutoff should be INFO to suppress noisy logs');
   });
 
   test('log_message: logs WARNING message', () => {

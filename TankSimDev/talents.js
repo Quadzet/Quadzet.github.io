@@ -2,7 +2,7 @@ import { updateStats } from './config.js'
 import { updateRotation } from './rotation.js'
 
 function talentPointCap() {
-  return Number(document.querySelector("#player-level").value) - 9;
+  return Number(Math.max(0, document.querySelector("#player-level").value) - 9);
 }
 
 const ARMS_TALENTS = [
@@ -646,7 +646,7 @@ function talentActive(treeName, row) {
 }
 
 function canRemoveTalentPoint(treeName, row, name) {
-  // Need to check for each row above the row we are trying to deselect on
+  // Need to check for each row above the row we are trying to deselect on.
   for (let r_check = 7; r_check > row; r_check--) {
     if (!talentActive(treeName, r_check))
       continue;
@@ -655,12 +655,12 @@ function canRemoveTalentPoint(treeName, row, name) {
     for (let r_count = 1; r_count < r_check; r_count++) {
       talentsSpent += getTalentPointsSpentInRow(treeName, r_count);
     }
-    // If removing the talent point would put us below the threshold, don't allow it
+    // If removing the talent point would put us below the threshold, don't allow it.
     if (talentsSpent - 1 < (r_check - 1) * 5)
       return false;
   }
 
-  // We are pointing at something that has points spent in it
+  // We are pointing at something that has points spent in it.
   let ret = true;
   ARROW_REQS.forEach(arrow => {
     if (name == arrow.requires) {
@@ -676,8 +676,6 @@ function setUnavailable(talentName) {
   const element = document.getElementById(`${talentName}`);
   if (Number(element.getAttribute('value')) == 0)
     element.classList.add('talent-unavailable');
-  // else
-  //   element.classList.add('talent-maxed'); // eg when you have 2/3 and spend all your points elsewhere
 }
 
 function setAvailable(talentName) {
@@ -690,11 +688,11 @@ function setAvailable(talentName) {
     element.classList.add('talent-maxed');
   } else {
     element.classList.remove('talent-unavailable');
-    element.classList.remove('talent-maxed'); // eg when you have 2/3 and spend all your points elsewhere
+    element.classList.remove('talent-maxed'); // eg when you have 2/3 and spend all your points elsewhere.
   }
 }
 
-function requirementsMet(tree, talent) {
+function requirementsMet(talent) {
   let pointsSpent = 0;
   let treeName = getTreeName(talent.name);
   for (let row = 1; row < talent.row; row++) {
@@ -734,7 +732,7 @@ function updateTalentTreeAvailability(tree) {
   tree.forEach(talent => {
     if (pointsSpent < (talent.row - 1) * 5) {
       setUnavailable(talent.name);
-    } else if (requirementsMet(tree, talent)) {
+    } else if (requirementsMet(talent)) {
       setAvailable(talent.name);
     } else {
       setUnavailable(talent.name);
@@ -788,7 +786,6 @@ function resetCounters() {
   protCounter.innerHTML = `${0}`;
 
   const remainingCounter = document.getElementById('talent-points-remaining');
-  let currentRemaining = parseInt(remainingCounter.innerHTML);
   remainingCounter.innerHTML = `${talentPointCap()}`;
 }
 
@@ -836,7 +833,7 @@ export function selectTalent(event, name) {
   updateRotation(globals);
 }
 
-function resetTalents() {
+export function resetTalents(updateGlobals = true) {
   ARMS_TALENTS.forEach(talent => {
     const data = getTalentData('arms', talent.name);
     setTalentPointCount(talent.name, 0, data);
@@ -852,8 +849,10 @@ function resetTalents() {
 
   resetCounters();
   updateTalentAvailability();
-  let globals = updateStats();
-  updateRotation(globals);
+  if (updateGlobals) {
+    let globals = updateStats();
+    updateRotation(globals);
+  }
 }
 
 export function loadTalents(talents) {
@@ -864,7 +863,7 @@ export function loadTalents(talents) {
     setTalentPointCount(talentName, talents[`${talentName}`], data);
     updateCounters(treeName, talents[`${talentName}`]);
   });
-  // Need this to activate the talents, before potentially shutting the off..
+  // Need this to activate the talents, before potentially shutting them off..
   updateTalentTreeAvailability(ARMS_TALENTS);
   updateTalentTreeAvailability(FURY_TALENTS);
   updateTalentTreeAvailability(PROT_TALENTS);
