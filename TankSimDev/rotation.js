@@ -98,7 +98,7 @@ export function performAction(timestamp, source, target, reactiveEvents, futureE
       if (source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
         source.abilities["Death Wish"].use(timestamp, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
+      if (source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.rage > source.rotation["shield-slam"].rage && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
         source.abilities["Shield Slam"].use(timestamp, source, target, reactiveEvents, futureEvents);
       }
       if (source.abilities["Bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["Bloodthirst"].isUsable(timestamp, source)) {
