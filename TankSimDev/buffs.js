@@ -151,7 +151,7 @@ export const AURA_DATA = {
     "group": "sunder",
     "ids": [8647, 8649, 8650, 11197, 11198],
     "levels": [14, 26, 36, 46, 56],
-    "bonusArmor": [-600, -1087, -1525, -2012, -2550],
+    "bonusArmor": [-400, -725, -1050, -1375, -1700],
   },
   "faeriefire": {
     "type": "SPELL",
@@ -165,6 +165,34 @@ export const AURA_DATA = {
     "levels": [14, 28, 42, 56],
     "bonusArmor": [-140, -290, -465, -640],
     "attackpower": [20, 45, 65, 90],
+  },
+  "thunderclap": {
+    "type": "SPELL",
+    "group": "haste-debuff",
+    "ids": [6343],
+    "levels": [6],
+    "haste": [-10],
+  },
+  "thunderfury": {
+    "type": "SPELL",
+    "group": "haste-debuff",
+    "ids": [21992],
+    "levels": [60],
+    "haste": [-20],
+  },
+  "demo-roar": {
+    "type": "SPELL",
+    "group": "demo",
+    "ids": [99, 1735, 9490, 9747, 11556],
+    "levels": [10, 20, 32, 42, 52],
+    "attackpower": [-40, -60, -75, -110, -138],
+  },
+  "demo-shout": {
+    "type": "SPELL",
+    "group": "demo",
+    "ids": [1160, 6190, 11554, 11555, 11556],
+    "levels": [14, 24, 34, 44, 54],
+    "attackpower": [-45, -65, -80, -115, -146],
   },
 
   // *** CONSUMES ***
@@ -371,6 +399,34 @@ export const AURA_DATA = {
     'aura': ['bloodpact'],
     'factor': 1.3,
     'ids': [18696],
+  },
+  'imp-thunderclap': {
+    'type': 'SPELL',
+    'levels': [60],
+    'aura': ['thunderclap'],
+    'factor': 1.5,
+    'ids': [26110],
+  },
+  'imp-demo-shout': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['demo-shout'],
+    'factor': 1.4,
+    'ids': [12879],
+  },
+  'imp-demo-roar': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['demo-roar'],
+    'factor': 1.4,
+    'ids': [16862],
+  },
+  'imp-iea': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['iea'],
+    'factor': 1.5,
+    'ids': [14169],
   },
 };
 

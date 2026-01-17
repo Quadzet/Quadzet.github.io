@@ -110,6 +110,8 @@ function generateProfile() {
   let auras = {};
   Object.keys(AURA_DATA).forEach(aura => {
     let element = document.getElementById(`${aura}-aura-img`);
+    if (!element)
+      return;
     auras[`${aura}`] = element.classList.contains('aura-toggle-active');
   });
   profile.buffs = auras;

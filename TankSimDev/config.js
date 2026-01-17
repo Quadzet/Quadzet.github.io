@@ -427,9 +427,21 @@ function getBossStats(playerLevel) {
       let ix = getIndex(AURA_DATA[`${aura}`], playerLevel);
       if (ix == -1)
         return; // We are too low level for this debuff.
+
+      let factor = 1
+      // Check if the aura has an improvement active.
+      for (const impAura of IMP_BUFFS) {
+        let impData = AURA_DATA[`${impAura}`];
+        if (impData['aura'] == aura) {
+          const impElement = document.getElementById(impAura + '-aura-img');
+          if (impElement && impElement.classList.contains('aura-toggle-active'))
+            factor = impData['factor'];
+          break;
+        }
+      }
       ATTRIBUTES.forEach(attribute => {
         if (data[`${attribute}`])
-          stats[`${attribute}`] += data[`${attribute}`][ix];
+          stats[`${attribute}`] += factor * data[`${attribute}`][ix];
       });
     }
   });

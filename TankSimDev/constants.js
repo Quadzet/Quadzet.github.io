@@ -65,11 +65,13 @@ export const BUFFS = [
 
 export const IMP_BUFFS = [
   'imp-battleshout', 'imp-motw', 'imp-might', 'imp-totems',
-  'imp-fort', 'imp-devo', 'imp-bloodpact', 'imp-stoneskin'
+  'imp-fort', 'imp-devo', 'imp-bloodpact', 'imp-stoneskin',
+  'imp-iea', 'imp-demo-shout', 'imp-demo-roar', 'imp-thunderclap',
 ];
 
 export const DEBUFFS = [
-  'sunder', 'iea', 'faeriefire', 'cor'
+  'sunder', 'iea', 'faeriefire', 'cor', 'thunderclap', 'thunderfury',
+  'demo-roar', 'demo-shout',
 ];
 
 export const CONSUMES = [
