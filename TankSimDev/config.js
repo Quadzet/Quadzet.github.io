@@ -17,7 +17,7 @@ import { getTalentValue } from './talents.js';
 export function getIndex(buff, level) {
   let ix = -1;
   for (let i = 0; i < buff['levels'].length; i++) {
-    if (buff['levels'][i] < level)
+    if (buff['levels'][i] <= level)
       ix = i;
     else
       break;

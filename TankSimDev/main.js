@@ -50,7 +50,8 @@ export function toggleAura(event, aura) {
         continue;
       if (l_data['group'] == data['group']) {
         const groupedElement = document.getElementById(l_aura + '-aura-img');
-        groupedElement.classList.remove('aura-toggle-active');
+        if (groupedElement)
+          groupedElement.classList.remove('aura-toggle-active');
       }
     }
   }
