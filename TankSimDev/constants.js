@@ -63,12 +63,17 @@ export const BUFFS = [
   'leader', 'trueshot',
 ];
 
+export const IMP_BUFFS = [
+  'imp-battleshout', 'imp-motw', 'imp-might', 'imp-totems',
+  'imp-fort', 'imp-devo', 'imp-bloodpact', 'imp-stoneskin'
+];
+
 export const DEBUFFS = [
   'sunder', 'iea', 'faeriefire', 'cor'
 ];
 
 export const CONSUMES = [
-  'bloodpact', 'str-elixir', 'defense', 'agi-elixir', 'mongoose',
+  'str-elixir', 'defense', 'agi-elixir', 'mongoose',
   'fort-elixir', 'rumsey','giant-growth',
   'dark-desire', 'stam-food', 'str-food', 'agi-food', 'str-scroll',
   'consecrated-stone', 'stone', 'shadow-oil', 'elemental-stone',

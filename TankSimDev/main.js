@@ -2,7 +2,7 @@
 
 import { AURA_DATA } from './buffs.js';
 import { ITEM_SLOTS, ENCHANT_SLOTS, BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES,
-  OH_BUFFS } from './constants.js';
+  OH_BUFFS, IMP_BUFFS } from './constants.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { formatEvent } from './eventHelpFuncs.js';
 import { createTalentTrees, selectTalent, deselectTalent } from './talents.js';
@@ -130,6 +130,10 @@ function createAuraRows() {
 
   element = document.getElementById("aura-row-debuffs")
   element.innerHTML = createAuraRow(DEBUFFS, level)
+
+  element = document.getElementById("aura-row-imp-auras")
+  element.innerHTML = createAuraRow(IMP_BUFFS, level)
+
 }
 
 // TODO: Remove

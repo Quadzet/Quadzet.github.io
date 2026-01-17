@@ -314,5 +314,63 @@ export const AURA_DATA = {
     "attackpower": [100],
     "img": ["consecrated-stone"],
   },
-}
+
+  // *** IMPROVED AURAS ***
+  'imp-battleshout': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['battleshout'],
+    'factor': 1.25,
+    'ids': [12861],
+  },
+  'imp-motw': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['motw'],
+    'factor': 1.35,
+    'ids': [17055],
+  },
+  'imp-might': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['might'],
+    'factor': 1.2,
+    'ids': [20048],
+  },
+  'imp-totems': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['strtotem', 'agitotem'],
+    'factor': 1.15,
+    'ids': [16295],
+  },
+  'imp-stoneskin': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['stoneskin'],
+    'factor': 1.2,
+    'ids': [16293],
+  },
+  'imp-fort': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['fort'],
+    'factor': 1.3,
+    'ids': [14767],
+  },
+  'imp-devo': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['devo'],
+    'factor': 1.25,
+    'ids': [20142],
+  },
+  'imp-bloodpact': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['bloodpact'],
+    'factor': 1.3,
+    'ids': [18696],
+  },
+};
 

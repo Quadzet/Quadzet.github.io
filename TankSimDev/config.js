@@ -4,7 +4,7 @@
 import {
   ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES,
   ENCHANT_SLOTS, MULT_ATTRIBUTES, ATTRIBUTES, Wield, ActorType,
-  BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS,
+  BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS, IMP_BUFFS,
 } from './constants.js'
 import { AURA_DATA } from './buffs.js'
 import { levelstats } from './levelstats.js'
@@ -76,13 +76,26 @@ function addAuraStats(stats, level) {
     const element = document.getElementById(aura + '-aura-img');
     const data = AURA_DATA[`${aura}`];
     if (element.classList.contains('aura-toggle-active')) {
+      let factor = 1
+      // Check if the aura has an improvement active.
+      for (const impAura of IMP_BUFFS) {
+        let impData = AURA_DATA[`${impAura}`];
+        if (impData['aura'] == aura) {
+          const impElement = document.getElementById(impAura + '-aura-img');
+          if (impElement.classList.contains('aura-toggle-active'))
+            factor = impData['factor'];
+          break;
+        }
+      }
+
       let ix = getIndex(data, level);
+      // TODO: Check if rounding should be done here.
       for (const attribute of ATTRIBUTES) {
         if (data[`${attribute}`]) {
           if (MULT_ATTRIBUTES.includes(attribute))
-            stats[`${attribute}`] *= data[`${attribute}`][ix];
+            stats[`${attribute}`] *= factor * data[`${attribute}`][ix];
           else
-            stats[`${attribute}`] += data[`${attribute}`][ix];
+            stats[`${attribute}`] += factor * data[`${attribute}`][ix];
         }
       }
     }
