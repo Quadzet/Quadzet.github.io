@@ -132,7 +132,7 @@ export function twoRollTankBossTable(attacker, defender, damage) {
     damageEvent.source = attacker.name
     damageEvent.target = defender.name
     if(type == "block")
-        damageEvent.blockAmount = defender.getBlockValue()
+        damageEvent.blockAmount = blockValue
     return damageEvent
 }
 

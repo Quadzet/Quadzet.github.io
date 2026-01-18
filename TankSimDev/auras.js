@@ -1,43 +1,127 @@
 import { LOG_LEVEL, log_message } from './logging.js';
 import { onUseData } from './stats.js'
-import { sortDescending } from './eventHelpFuncs.js'
-import { LANDED_HITS } from './constants.js'
+import { sortDescending, clearFutureTicks } from './eventHelpFuncs.js'
+import { LANDED_HITS, ATTRIBUTES, MULT_ATTRIBUTES, EventType, HitType } from './constants.js'
+import { checkAuraToggle } from './config.js'
+
+
+function applyAuraStack(owner, aura) {
+
+    // TODO: Check if rounding should be done here.
+    // TODO: E.g. strength is not affected by owner.strengthMod here.
+
+    // No need to take scalingStacks into consideration
+    // since we apply one stack at a time.
+    for (const attribute of ATTRIBUTES) {
+        if (aura[`${attribute}`]) {
+            if (MULT_ATTRIBUTES.includes(attribute))
+                owner[`${attribute}`] *= aura[`${attribute}`];
+            else
+                owner[`${attribute}`] += aura[`${attribute}`];
+        }
+    }
+}
+
+function removeAuraStack(owner, aura) {
+
+    // TODO: Check if rounding should be done here.
+    // TODO: E.g. strength is not affected by owner.strengthMod here.
+
+    // No need to take scalingStacks into consideration
+    // since we apply one stack at a time.
+    for (const attribute of ATTRIBUTES) {
+        if (aura[`${attribute}`]) {
+            if (MULT_ATTRIBUTES.includes(attribute))
+                owner[`${attribute}`] /= aura[`${attribute}`];
+            else
+                owner[`${attribute}`] -= aura[`${attribute}`];
+        }
+    }
+}
+
+function expireAura(owner, aura) {
+
+    // TODO: Check if rounding should be done here.
+    // TODO: E.g. strength is not affected by owner.strengthMod here.
+    let factor = 1;
+    if (aura.scalingStacks)
+        factor = aura.stacks;
+    for (const attribute of ATTRIBUTES) {
+        if (aura[`${attribute}`]) {
+            if (MULT_ATTRIBUTES.includes(attribute))
+                owner[`${attribute}`] /= factor * aura[`${attribute}`];
+            else
+                owner[`${attribute}`] -= factor * aura[`${attribute}`];
+        }
+    }
+}
+
+function updateEventLists(type, owner, aura, timestamp, reactiveEvents, futureEvents) {
+
+    let event = {
+        type: type,
+        name: aura.name,
+        owner: owner.name,
+        source: aura.source,
+        stacks: aura.stacks,
+        auraType: aura.type,
+        timestamp: timestamp,
+    };
+
+    if (type == EventType.AURA_EXPIRE) {
+
+        let index = futureEvents.findIndex(e => {
+            return (e.type == type && e.name == aura.name && e.owner == owner.name)
+        });
+        if (index >= 0)
+            futureEvents.splice(index, 1);
+        event.timestamp += aura.maxDuration;
+        futureEvents.push(event);
+    } else if ([EventType.AURA_APPLY, EventType.AURA_REFRESH].includes(type)) {
+        event.threat = aura.threat;
+        reactiveEvents.push(event)
+    } else {
+        reactiveEvents.push(event)
+    }
+}
 
 export class Aura {
-    constructor(input) {
-        if (!input.type) this.type = "aura"; else this.type = input.type;
-        if (!input.name) this.name = "unknown"; else this.name = input.name;
-        if (!input.target) this.target = "unknown"; else this.target = input.target;
-        if (!input.source) this.source = "unknown"; else this.source = input.source;
-        if (!input.trackUptime) this.trackUptime = false; else this.trackUptime = input.trackUptime;
+    constructor(input = {}) {
+        Object.assign(this, {
+            damage: 0,
+            threat: 0,
+            duration: 0,
+            maxDuration: 0,
+            stacks: 0,
+            startStacks: 1,
+            maxStacks: -1,
+            scalingStacks: false,
+            trackUptime: false,
+            ...input
+        });
+        this.validate();
+    }
 
-        if (!input.damage) this.damage = 0; else this.damage = input.damage;
+    validate() {
+        const required = [
+            'type', 'name', 'target', 'source', 'maxStacks', 'duration',
+            'maxDuration', 'damage', 'scalingStacks', 'trackUptime',
+            'startStacks', 'stacks', 'threat',
+        ];
 
-        if (!input.duration) this.duration = 0; else this.duration = input.duration;
-        if (!input.maxDuration) this.maxDuration = 0; else this.maxDuration = input.maxDuration;
+        const missing = required.filter(field =>
+            this[field] === undefined || this[field] === null || this[field] === ''
+        );
 
-        if (!input.stacks) this.stacks = 0; else this.stacks = input.stacks;
-        if (!input.startStacks) this.startStacks = 1; else this.startStacks = input.startStacks;
-        if (!input.maxStacks) this.maxStacks = -1; else this.maxStacks = input.maxStacks;
-        if (!input.scalingStacks) this.scalingStacks = false; else this.scalingStacks = input.scalingStacks;
-
-        if (!input.APMod) this.APMod = 0; else this.APMod = input.APMod; // additive
-        if (!input.APMultMod) this.APMultMod = 1; else this.APMultMod = input.APMultMod; // multiplicative
-        if (!input.strMod) this.strMod = 0; else this.strMod = input.strMod; // additive
-        if (!input.abilityCritMod) this.abilityCritMod = 0; else this.abilityCritMod = input.abilityCritMod; // percentage
-        if (!input.critMod) this.critMod = 1; else this.critMod = input.critMod; // multiplicative
-        if (!input.damageMod) this.damageMod = 1; else this.damageMod = input.damageMod; // multiplicative
-        if (!input.physDamageMod) this.physDamageMod = 1; else this.physDamageMod = input.physDamageMod; // multiplicative
-        if (!input.hastePerc) this.hastePerc = 0; else this.hastePerc = input.hastePerc; // percentage
-        if (!input.percArmorMod) this.percArmorMod = 1; else this.percArmorMod = input.percArmorMod; // percentage
-        if (!input.armorMod) this.armorMod = 0; else this.armorMod = input.armorMod; // additive
-        if (!input.defenseMod) this.defenseMod = 0; else this.defenseMod = input.defenseMod; // additive
-        if (!input.blockMod) this.blockMod = 0; else this.blockMod = input.blockMod; // additive
+        if (missing.length > 0) {
+            log_message(LOG_LEVEL.WARNING,
+                `Aura validation failed: ${this.name}: missing or empty fields: ${missing.join(', ')}.`)
+            return false;
+        }
+        return true;
     }
 
     apply(timestamp, owner, source, reactiveEvents, futureEvents) {
-        // owner.auras[this.name] = this
-
         if (this.duration > 0) {
             this.refresh(timestamp, owner, reactiveEvents, futureEvents);
             return;
@@ -46,86 +130,38 @@ export class Aura {
         if (this.maxStacks > 0)
             this.stacks = this.startStacks;
         this.duration = this.maxDuration;
+        this.source = source; // TODO: Why is this needed?
 
-        // this.owner = owner
-        this.source = source
-
-        // Add all modifiers here
-        owner.armor += this.armorMod;
-        owner.percArmorMod *= this.percArmorMod;
-        owner.block += this.blockMod;
-        owner.hastePerc += this.hastePerc;
-        owner.damageMod *= this.damageMod;
-        owner.physDamageMod *= this.physDamageMod;
-        owner.APMultMod *= this.APMultMod;
-        owner.critMod *= this.critMod;
-
-        let applyEvent = {
-            type: "auraApply",
-            name: this.name,
-            owner: owner.name,
-            source: this.source,
-            stacks: this.stacks,
-            auraType: this.type,
-            timestamp: timestamp,
-        }
-        reactiveEvents.push(applyEvent);
-
-        // Remove and update any coming auraExpires from this aura
-        let index = futureEvents.findIndex(e => { return (e.type == "auraExpire" && e.name == this.name && e.owner == owner.name) })
-        if (index >= 0)
-            futureEvents.splice(index, 1);
-        let futureEvent = {
-            type: "auraExpire",
-            name: this.name,
-            owner: owner.name,
-            source: this.source,
-            stacks: this.stacks,
-            auraType: this.type,
-            timestamp: timestamp + this.maxDuration,
-        }
-        futureEvents.push(futureEvent);
+        applyAuraStack(owner, this);
+        updateEventLists(
+            EventType.AURA_APPLY, owner, this,
+            timestamp, reactiveEvents, futureEvents);
+        updateEventLists(
+            EventType.AURA_EXPIRE, owner, this,
+            timestamp, reactiveEvents, futureEvents);
     }
 
     refresh(timestamp, owner, reactiveEvents, futureEvents) {
         if (this.stacks < this.maxStacks) {
             // Either add one stack, such as for sunder, or set to max stacks, such as for flurry/consumed by rage
             this.stacks = Math.min(Math.max(this.stacks + 1, this.startStacks), this.maxStacks);
-            reactiveEvents.push({
-                type: "auraApply",
-                name: this.name,
-                owner: owner.name,
-                source: this.source,
-                stacks: this.stacks,
-                auraType: this.type,
-                timestamp: timestamp,
-            })
-            // Add all modifiers here
-            if (this.scalingStacks) {
-                owner.armor += this.armorMod
-                owner.percArmorMod *= this.percArmorMod;
-                owner.block += this.blockMod
-                owner.hastePerc += this.hastePerc;
-                owner.damageMod *= this.damageMod
-                owner.physDamageMod *= this.physDamageMod;
-                owner.APMultMod *= this.APMultMod;
-                owner.critMod *= this.critMod;
-            }
-        }
-        else {
-            reactiveEvents.push({
-                type: "auraRefresh",
-                name: this.name,
-                owner: owner.name,
-                source: this.source,
-                stacks: this.stacks,
-                auraType: this.type,
-                timestamp: timestamp,
-            })
+            updateEventLists(
+                EventType.AURA_APPLY, owner, this,
+                timestamp, reactiveEvents, futureEvents);
+
+            // TODO: Only applies one stack, some auras have scaling stacks
+            // and also startStacks > 1?
+            if (this.scalingStacks)
+                applyAuraStack(owner, this);
+
+        } else {
+            updateEventLists(
+                EventType.AURA_REFRESH, owner, this,
+                timestamp, reactiveEvents, futureEvents);
         }
         futureEvents.forEach(e => {
-            if (e.type == "auraExpire" && e.name == this.name)
-                e.timestamp = timestamp + this.maxDuration
+            if (e.type == EventType.AURA_EXPIRE && e.name == this.name)
+                e.timestamp = timestamp + this.maxDuration;
         })
         sortDescending(futureEvents)
     }
@@ -136,25 +172,13 @@ export class Aura {
         if (this.stacks == 1)
             this.expire(event, owner, reactiveEvents, futureEvents, true)
         else {
-            reactiveEvents.push({
-                type: "auraRemoveStack",
-                name: this.name,
-                owner: owner.name,
-                source: this.source,
-                stacks: this.stacks,
-                auraType: this.type,
-                timestamp: event.timestamp,
-            })
+            updateEventLists(
+                EventType.AURA_REMOVE_STACK, owner, this,
+                event.timestamp, reactiveEvents, futureEvents);
+
             this.stacks -= 1
             if (this.scalingStacks) {
-                owner.armor -= this.armorMod;
-                owner.block -= this.blockMod;
-                owner.percArmorMod /= this.percArmorMod;
-                owner.hastePerc -= this.hastePerc;
-                owner.damageMod /= this.damageMod;
-                owner.physDamageMod /= this.physDamageMod;
-                owner.APMultMod /= this.APMultMod;
-                owner.critMod /= this.critMod;
+                removeAuraStack(owner, this);
             }
         }
     }
@@ -163,24 +187,18 @@ export class Aura {
         // Add all modifiers here, remember scalingstacks
         if (this.duration == 0)
             return;
-        owner.armor -= this.armorMod * (this.scalingStacks ? this.stacks : 1)
-        owner.block -= this.blockMod * (this.scalingStacks ? this.stacks : 1)
-        owner.percArmorMod /= this.percArmorMod * (this.scalingStacks ? this.stacks : 1)
-        owner.hastePerc -= this.hastePerc * (this.scalingStacks ? this.stacks : 1)
-        owner.damageMod /= this.damageMod * (this.scalingStacks ? this.stacks : 1)
-        owner.physDamageMod /= this.physDamageMod * (this.scalingStacks ? this.stacks : 1)
-        owner.APMultMod /= this.APMultMod * (this.scalingStacks ? this.stacks : 1);
-        owner.critMod /= this.critMod * (this.scalingStacks ? this.stacks : 1);
-        event.stacks = this.stacks;
+
+        expireAura(owner, this);
+
         this.stacks = 0
         this.duration = 0;
-        delete owner.buffs[this.name]
-        let index = futureEvents.findIndex(e => { return (e.type == "auraExpire" && e.name == this.name) })
+        //TODO: This should not be needed: delete owner.buffs[this.name]
+        let index = futureEvents.findIndex(e => { return (e.type == EventType.AURA_EXPIRE && e.name == this.name) })
         if (index >= 0)
             futureEvents.splice(index, 1)
         if (addEvent)
             reactiveEvents.push({
-                type: "auraExpire",
+                type: EventType.AURA_EXPIRE,
                 name: this.name,
                 owner: owner.name,
                 source: this.source,
@@ -205,12 +223,13 @@ export class SunderArmorAura extends Aura {
             maxDuration: 30000,
             maxStacks: 5,
             scalingStacks: true,
-            armorMod: 0//-520, Apply full stacks at pull instead
+            armor: 0//-520, Apply full stacks at pull instead
         })
     }
+
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-        // TODO
-        // log_message("Error: handleEvent not implemented for aura " + this.name + ".");
+        // Here we would apply the the debuff on Sunder Armor spellcast.
+        // But it is not used at the moment.
     }
 }
 
@@ -224,19 +243,20 @@ export class DefensiveState extends Aura {
             maxDuration: 5000,
         })
     }
+
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
         // Add aura after a dodge/block/parry
-        if (event.type == "damage" && event.target == owner.name && ["block", "parry", "dodge"].includes(event.hit)) {
+        if (event.type == EventType.DAMAGE && event.target == owner.name && [HitType.BLOCK, HitType.PARRY, HitType.DODGE].includes(event.hit)) {
             this.apply(event.timestamp, owner, event.target, reactiveEvents, futureEvents)
         }
 
-        // Expire after casting Revenge 
+        // Expire after casting Revenge.
         if (event.source == this.name && event.name == "Revenge") {
             this.expire(event, owner, reactiveEvents, futureEvents, true)
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
 
@@ -249,53 +269,29 @@ export class ShieldBlockAura extends Aura {
             type: "buff",
             name: "Shield Block",
 
-            maxDuration: 6000 + impSB * 0.5,
-
-            blockMod: 75,
             maxStacks: 1 + (impSB > 0 ? 1 : 0),
             startStacks: 1 + (impSB > 0 ? 1 : 0),
+            maxDuration: 6000 + impSB * 0.5,
+
+            block: 75,
         })
     }
+
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        // Add aura after Shield Block has been cast
-        if (event.type == "spellCast" && event.name == this.name) {
+        // Apply the aura after Shield Block has been cast.
+        if (event.type == EventType.SPELL_CAST && event.name == this.name) {
             this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents);
         }
 
-        //  Remove a stack after blocking
-        else if (event.type == "damage" && event.target == "Tank" && event.hit == "block") {
+        //  Remove a stack after blocking.
+        else if (event.type == EventType.DAMAGE && event.target == "Tank" && event.hit == HitType.BLOCK) {
             this.removeStack(event, owner, reactiveEvents, futureEvents)
         }
 
-        else if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        else if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false);
         }
-    }
-}
-
-export class FlagellationAura extends Aura {
-    constructor() {
-        super({
-            type: "buff",
-            name: "Flagellation",
-
-            maxDuration: 12000,
-
-            physDamageMod: 1.25,
-        })
-    }
-    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-
-        // Apply the aura after activating either bers rage or bloodrage
-        if (event.type == "auraApply" && ["Berserker Rage", "Bloodrage"].includes(event.name)) {
-            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-        }
-
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-            this.expire(event, owner, reactiveEvents, futureEvents, false)
-        }
-
     }
 }
 
@@ -309,16 +305,26 @@ export class FlurryAura extends Aura {
 
             maxStacks: 3,
             startStacks: 3,
-            hastePerc: 5 + 5 * points,
+            haste: 5 + 5 * points,
 
         })
     }
+
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && ["crit", "crit block"].includes(event.hit) && ["MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst", "Shield Slam", "Raging Blow", "Slam", "Execute", "Quickstrike", "Whirlwind", "Devastate", "Mortal Strike"].includes(event.name) && event.source == owner.name) {
+        const triggerAbilities = [
+            "MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst",
+            "Shield Slam", "Slam", "Execute", "Whirlwind", "Mortal Strike"
+        ];
+        if (event.type == EventType.DAMAGE
+                && [HitType.CRIT, HitType.CRIT_BLOCK].includes(event.hit)
+                && triggerAbilities.includes(event.name)
+                && event.source == owner.name) {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
-        if (event.type == "damage" && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.name) && event.source == owner.name) {
+        if (event.type == EventType.DAMAGE
+                && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.name)
+                && event.source == owner.name) {
             this.removeStack(event, owner, reactiveEvents, futureEvents);
         }
     }
@@ -330,64 +336,37 @@ export class EnrageAura extends Aura {
             type: "buff",
             name: "Enrage",
 
+            maxStacks: 12,
+            startStacks: 12,
             maxDuration: 12000,
 
             physDamageMod: 1.1,
-            maxStacks: 12,
-            startStacks: 12,
 
         })
     }
+
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
-        // NOTE: This relies on the implicit fact that the rage has not yet been added to the Actor
-        //       This logic might change in the future, watch out.
-        //if (event.type == "rage" && owner.rage + event.amount >= 80 && owner.rage < 80) {
-        //if (this.duration > 0 && this.stacks > 0 && this.physDamageMod > 1.1)
-        //return; // We are affected by a more powerful enrage
-        //this.expire(event, owner, reactiveEvents, futureEvents, true);
-        //this.physDamageMod = 1.1;
-        //this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-        //}
-
-        if (owner.stats.talents.enrage > 0 && event.type == "damage" && event.target == owner.name && event.hit == 'crit') {
-            if (this.duration > 0 && this.stacks > 0 && this.physDamageMod > owner.stats.talents.enrage * 0.05 + 1)
-                return; // We are affected by a more powerful enrage
+        if (owner.stats.talents.enrage > 0
+                && event.type == EventType.DAMAGE
+                && event.target == owner.name
+                && event.hit == 'crit') {
             this.expire(event, owner, reactiveEvents, futureEvents, true);
             this.physDamageMod = owner.stats.talents.enrage * 0.05 + 1;
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
 
         //  Remove a stack after successfully hitting a target
-        if (event.type == "damage" && event.source == owner.name && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend", "Raging Blow", "Revenge"].includes(event.name)) {
+        if (event.type == EventType.DAMAGE 
+            && event.source == owner.name 
+            && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend", "Revenge"].includes(event.name)) {
             this.removeStack(event, owner, reactiveEvents, futureEvents)
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
 
-    }
-}
-
-export class WreckingCrewAura extends Aura {
-    constructor() {
-        super({
-            type: "buff",
-            name: "Wrecking Crew",
-
-            maxDuration: 6000,
-            critMod: 1.1,
-        })
-    }
-    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-        if (event.type == "damage" && ["crit", "crit block"].includes(event.hit) && ["MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst", "Shield Slam", "Raging Blow", "Slam", "Execute", "Quickstrike", "Whirlwind", "Devastate", "Mortal Strike"].includes(event.name) && event.source == owner.name) {
-            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-        }
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-            this.expire(event, owner, reactiveEvents, futureEvents, false)
-        }
     }
 }
 
@@ -399,17 +378,17 @@ export class DeathWishAura extends Aura {
 
             maxDuration: 30000,
             physDamageMod: 1.2,
-            percArmorMod: 0.8,
+            armorMod: 0.8,
         })
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
         // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
-        if (event.type == "spellCast" && event.name == "Death Wish") {
+        if (event.type == EventType.SPELL_CAST && event.name == "Death Wish") {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
 
@@ -427,80 +406,29 @@ export class BloodrageAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        // Add aura after rage goes from below 80 to above 80, and the aura is not already active.
-        if (event.type == "spellCast" && event.name == "Bloodrage") {
+        if (event.type == EventType.SPELL_CAST && event.name == "Bloodrage") {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
             for (let i = 0; i < 10; i++) {
-                futureEvents.push(
-                    {
-                        timestamp: event.timestamp + (i + 1) * 1000,
-                        type: "rage",
-                        source: owner.name,
-                        name: this.name,
+                futureEvents.push({
+                    timestamp: event.timestamp + (i + 1) * 1000,
+                    type: "rage",
+                    source: owner.name,
+                    name: this.name,
 
-                        amount: 1,
-                        threat: 5, // TODO: threat even when rage-capped..
-                    });
+                    amount: 1,
+                    threat: 5, // TODO: threat even when rage-capped..
+                });
             }
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
 
     }
 }
 
-export class SwordAndBoardAura extends Aura {
-    constructor() {
-        super({
-            type: "buff",
-            name: "Sword and Board",
 
-            maxDuration: 5000,
-        });
-    }
-    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-
-        if (event.type == "damage" && event.source == owner.name && ['Devastate', 'Revenge'].includes(event.name) && LANDED_HITS.includes(event.hit) && Math.random() < 0.3) {
-            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-            owner.resetCooldown('Shield Slam');
-        }
-
-        if (event.type == "damage" && event.source == owner.name && event.name == 'Shield Slam') {
-            this.expire(event, owner, reactiveEvents, futureEvents, true);
-        }
-
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-            this.expire(event, owner, reactiveEvents, futureEvents, false);
-        }
-    }
-}
-
-export class BloodsurgeAura extends Aura {
-    constructor() {
-        super({
-            type: "buff",
-            name: "Bloodsurge",
-
-            maxDuration: 15000,
-        });
-    }
-    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
-
-        if (event.type == "damage" && event.source == owner.name && ['Quick Strike', 'Whirlwind', 'Heroic Strike', 'Bloodthirst'].includes(event.name) && LANDED_HITS.includes(event.hit) && Math.random() < 0.3) {
-            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
-        }
-
-        if (event.type == "damage" && event.source == owner.name && event.name == 'Slam') {
-            this.expire(event, owner, reactiveEvents, futureEvents, true);
-        }
-
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
-            this.expire(event, owner, reactiveEvents, futureEvents, false);
-        }
-    }
-}
 export class RendAura extends Aura {
     constructor() {
         super({
@@ -512,12 +440,12 @@ export class RendAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.name == "Rend" && event.hit == "hit") {
+        if (event.type == EventType.DAMAGE && event.name == "Rend" && event.hit == HitType.HIT) {
 
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
     }
@@ -543,49 +471,68 @@ export class DeepWoundsAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.hit == "crit" && event.target == owner.name) {
+        if (event.type == EventType.DAMAGE && event.hit == HitType.CRIT && event.target == owner.name) {
 
             this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
-            // Remove all current DW ticks in the futureEvents
-            // Add the new additional dmg to the DW pool
-            // Generate new ticks with 1/3 the total dmg
-            // Note double dipping dmg mods
-            let totalDmg = source.stats.talents.deepWounds * 0.2 * source.getPhysDamageMod() * source.getPhysDamageMod() * (source.stats.mainhand.mindmg + source.stats.mainhand.maxdmg + 2 * source.getAP() * source.stats.mainhand.swingtimer / 14000) / 2;
-            let startTime;
-            while (true) {
-                let index = futureEvents.findIndex(e => { return (e.type == "damage" && e.name == this.name) })
-                if (index >= 0) {
-                    startTime = futureEvents[index].timestamp; // Last should be the closest one
-                    totalDmg += futureEvents[index].amount;
-                    futureEvents.splice(index, 1)
-                }
-                else
-                    break;
-            }
-            if (startTime == null)
-                startTime = event.timestamp + 3000;
-            for (let i = 0; i < 4; i++) {
-                futureEvents.push(
-                    {
-                        timestamp: startTime + i * 3000,
-                        type: "damage",
-                        source: source.name,
-                        target: event.target,
-                        name: this.name,
-                        hit: "tick",
-                        threat: totalDmg * source.stats.threatMod / 4,
+            let weaponDmg = (source.stats.mainhand.mindmg + source.stats.mainhand.maxdmg) / 2;
+            weaponDmg += source.getAP() * source.stats.mainhand.swingtimer / 14000;
+            weaponDmg += source.flatDamage;
+            weaponDmg *= source.getPhysDamageMod();
+            let totalDmg = source.stats.talents.deepWounds * 0.2 * weaponDmg;
 
-                        amount: totalDmg / 4,
-                        trigger: false,
-                    });
+            clearFutureTicks(this.name, futureEvents);
+
+            // Add new Deep Wounds ticks to futureEvents.
+            for (let i = 1; i < 5; i++) {
+                futureEvents.push({
+                    timestamp: event.timestamp + i * 3000,
+                    type: EventType.DAMAGE,
+                    source: source.name,
+                    target: event.target,
+                    name: this.name,
+                    hit: "tick",
+                    threat: totalDmg * source.stats.threatMod / 4,
+
+                    amount: totalDmg / 4,
+                    trigger: false,
+                });
             }
         }
 
-        if (event.type == "auraExpire" && event.name == this.name && event.owner == owner.name) {
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
             this.expire(event, owner, reactiveEvents, futureEvents, false)
         }
     }
 }
+
+
+export class GoaAura extends Aura {
+    constructor(threatMod) {
+        super({
+            type: "debuff",
+            name: "Gift of Arthas",
+
+            maxDuration: 180000,
+
+            flatArmor: -8,
+            threat: 90 * threatMod,
+        })
+    }
+
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == EventType.DAMAGE && LANDED_HITS.includes(event.hit) && event.source == owner.name) {
+            let rng = Math.random();
+            if (rng < 0.3*0.83) // 17% chance to resist
+                this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
+        }
+
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false)
+        }
+    }
+}
+
 
 export class OnUseAura extends Aura {
     constructor(data) {
@@ -593,7 +540,7 @@ export class OnUseAura extends Aura {
     }
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
-        if (event.type == "spellCast" && event.name == this.name) {
+        if (event.type == EventType.SPELL_CAST && event.name == this.name) {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
     }
@@ -648,7 +595,10 @@ export function BossAuras(globals) {
         new RendAura(),
     ]
     if (globals.tankStats.talents.deepWounds > 0) {
-        ret.push(new DeepWoundsAura)
+        ret.push(new DeepWoundsAura())
+    }
+    if (globals.tankStats.bonuses.goa) {
+        ret.push(new GoaAura(globals.tankStats.threatMod))
     }
     return ret;
 }

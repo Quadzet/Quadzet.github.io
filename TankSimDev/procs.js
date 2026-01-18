@@ -1,4 +1,10 @@
 "use strict";
+/* The Proc classes are used to implement events that are carry-on effects of other events.
+ * This can be things like damage procs or extra attacks, effects that occur instantly.
+ * Aura procs, for example Gift of Arthas, are instead implemented as Auras, even though
+ * one could intuit that they would be Procs. This is because they behave more like auras
+ * in the code, no deeper reason that that.
+ */
 
 import { LOG_LEVEL, log_message } from './logging.js';
 import { LANDED_HITS } from './constants.js';
@@ -9,9 +15,6 @@ export class Proc {
 
     constructor(name) {
         this.name = name;
-        // if (!input.name) this.name = "unknown"; else this.name = input.name;
-        // if (!input.damage) this.damage = 0; else this.damage = input.damage;
-
     }
 
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
@@ -19,39 +22,16 @@ export class Proc {
         return;
     }
     reset() {
-
     }
 
 }
 
-export class GiftofArthasProc extends Proc {
-    
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
-
-        let rng = Math.random();
-        if (event.type == "damage" && event.source == "Boss") {
-            if (rng < 0.3*0.83) { // 17% chance to resist
-                let procEvent = {
-                    type: "proc",
-                    threat: 90*target.threatMod, // Target of the melee is the tank
-                    source: event.ability,
-                    ability: this.name,
-                    timestamp: event.timestamp,
-                }
-                reactiveEvents.push(procEvent);
-                source.auras.forEach(aura => { if (aura.name == "Gift of Arthas") aura.handleEvent(source, procEvent, reactiveEvents, config)})
-
-           }
-        }
-    }
-
-}
 
 export class WindfuryProc extends Proc {
     constructor() {
         super("Windfury")
     }
-    
+
     handleEvent(source, target, event, reactiveEvents, futureEvents) {
 
         if (event.type == "damage" && event.ability != "OH Swing" && LANDED_HITS.includes(event.hit)) {
@@ -91,43 +71,17 @@ export class SwordSpecialization extends Proc {
     }
 }
 
-export class BloodFrenzyProc extends Proc {
-  constructor() {
-    super("Blood Frenzy");
-  }
-  handleEvent(source, target, event, reactiveEvents, futureEvents) {
-    if (event.type == "damage" && ["Rend", "Deep Wounds"].includes(event.name) && event.amount > 0) {
-      let procEvent = {
-          type: "rage",
-          name: this.name,
-          source: source.name,
-
-          timestamp: event.timestamp,
-
-          amount: 3, 
-          threat: 3 * 5,
-      }
-      futureEvents.push(procEvent);
-    }
-  }
-}
-
 export class WeaponProc extends Proc {
   constructor(proc) {
     super(proc.name);
-    this.duration = proc.duration;
-    this.damage = proc.dmg;
-    this.tick = proc.tick;
-    this.interval = proc.interval;
-    this.ppm = proc.ppm;
-    this.procChance = proc.procChance;
-    this.magic = proc.magic;
-    this.spellCoeff = proc.spellCoeff == null ? 0 : proc.spellCoeff;
-    this.ICD = proc.ICD == null ? 0 : proc.ICD;
-    this.offhand = proc.offhand == null ? false : proc.offhand;
-
-    this.cooldown = 0;
-    this.trigger = false; // Don't trigger additional procs
+    Object.assign(this, {
+        spellCoeff: 0,
+        ICD: 0,
+        offhand: false,
+        cooldown: 0,
+        trigger: false, // Don't trigger additional procs.
+        ...proc
+    });
   }
   handleEvent(source, target, event, reactiveEvents, futureEvents) {
     if (event.type == "damage" && event.trigger && source.name == event.source && LANDED_HITS.includes(event.hit)) {
@@ -204,17 +158,11 @@ export function getTankProcs(globals) {
     }
 
     if(globals.tankStats.bonuses.windfury) {
-        ret.push(
-            new WindfuryProc()
-        )
+        ret.push(new WindfuryProc());
     }
 
     if(globals.tankStats.talents.swordSpec > 0) {
-        ret.push(
-            new SwordSpecialization(
-                globals.tankStats.talents.swordSpec,
-            )
-        )
+        ret.push(new SwordSpecialization(globals.tankStats.talents.swordSpec));
     }
 
     return ret;
@@ -222,13 +170,6 @@ export function getTankProcs(globals) {
 
 export function getBossProcs(globals) {
     let ret = [];
-    if(globals.tankStats.bonuses.goa) {
-        ret.push(
-            new GiftofArthasProc({
-                name: "Gift of Arthas"
-            })
-        )
-    }
     return ret;
 }
 

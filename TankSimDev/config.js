@@ -44,7 +44,7 @@ function writePlayerStats(stats) {
   document.getElementById("playerhaste").innerHTML = `${stats.haste}`;
 }
 
-function checkAuraToggle(name) {
+export function checkAuraToggle(name) {
   let element = document.getElementById(`${name}-aura-img`);
   return element && element.classList.contains('aura-toggle-active');
 }
@@ -397,6 +397,8 @@ function getBossStats(playerLevel) {
     abilityCritMod: 1,
     threatMod: 0,
     physDamageMod: 1,
+    flatArmor: 0,
+    flatDamage: 0,
 
     mainhand: {
       mindmg: mindmg,
@@ -488,6 +490,8 @@ export function updateStats() {
     abilityCritMod: 1,
     threatMod: 1.3, // TODO: Defensive stance, turn it into a buff.
     physDamageMod: 1,
+    flatArmor: 0,
+    flatDamage: 0,
 
     mainhand: {},
     offhand: {},
@@ -576,7 +580,7 @@ export function updateStats() {
   stats.bonuses = {
     mhoil: checkAuraToggle('shadow-oil'),
     ohoil: checkAuraToggle('oh-shadow-oil'),
-    goa: false,
+    goa: checkAuraToggle('goa'),
     fivePieceWrath: false,
     twoPieceDreadnaught: false,
     windfury: false,

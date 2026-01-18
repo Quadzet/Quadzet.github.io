@@ -78,6 +78,18 @@ export const AURA_DATA = {
     "levels": [20],
     "armorMod": [1.25], // Applies to all armor(?)
   },
+  "stoneskin": {
+    "type": "SPELL",
+    "ids": [8071, 8154, 8155, 10406 ,10407, 10408],
+    "levels": [4, 14, 24, 34, 44, 54],
+    "flatArmor": [4, 7, 11, 16, 22, 30],
+  },
+  "agitotem": {
+    "type": "SPELL",
+    "ids": [8835, 10627, 25359],
+    "levels": [42, 56, 60],
+    "agility": [43, 67, 77],
+  },
 
   // *** WORLD BUFFS ***
   "dmf": {
@@ -193,6 +205,12 @@ export const AURA_DATA = {
     "ids": [1160, 6190, 11554, 11555, 11556],
     "levels": [14, 24, 34, 44, 54],
     "attackpower": [-45, -65, -80, -115, -146],
+  },
+  "goa": {
+    "type": "SPELL",
+    "ids": [11374],
+    "levels": [45],
+    // Effect is added as an Aura instead of here.
   },
 
   // *** CONSUMES ***
@@ -471,4 +489,3 @@ export const AURA_DATA = {
     'ids': [14169],
   },
 };
-

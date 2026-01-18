@@ -17,7 +17,7 @@ export function formatEvent(event) {
     }
     else if(event["type"] == "damage") {
             output += `${event["source"]}'s ${name} `;
-            
+
             if (['dodge', 'parry', 'miss'].includes(event.hit)) {
               output += `${event["hit"] == "parry" ? `is parried by` : event["hit"] == "dodge" ? `is dodged by` : `misses`} ${event["target"]}!`
             } else {
@@ -37,13 +37,13 @@ export function formatEvent(event) {
               else if (event.blockAmount && event.blockAmount > 0) output += ` (${event.blockAmount.toFixed(2)} blocked)!`
               else output += '!'
             }
-    } else if(event["type"] == "auraExpire") {    
+    } else if(event["type"] == "auraExpire") {
         output += `${event.source}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} fades from ${event.owner}.`
-    } else if(event["type"] == "auraRemoveStack") {    
+    } else if(event["type"] == "auraRemoveStack") {
         output += `${event.source}'s ${event.name} on ${event.owner} loses a stack (${event.stacks}->${event.stacks - 1}).`
-    } else if(event["type"] == "auraApply") {    
+    } else if(event["type"] == "auraApply") {
         output += `${event.owner} gains ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} from ${event.source}.`
-    } else if(event["type"] == "auraRefresh") {    
+    } else if(event["type"] == "auraRefresh") {
         output += `${event.owner}'s ${event.name}${event.stacks == 0 ? "" : `(${event.stacks})`} is refreshed by ${event.source}.`
     } else if(event["type"] == "spellCast") {
         output += `${event["source"]} casts ${name}.`
@@ -85,7 +85,7 @@ export function clearFutureTicks(name, futureEvents) {
     if(index >= 0) {
       futureEvents.splice(index, 1)
     }
-    else 
+    else
       break;
   }
 }

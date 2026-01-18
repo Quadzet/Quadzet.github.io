@@ -39,6 +39,8 @@ export class Actor {
         this.staminaMultiplier = stats.staminaMultiplier;;
         this.strengthMultiplier = stats.strengthMultiplier;;
         this.agilityMultiplier = stats.agilityMultiplier;;
+        this.flatArmor = stats.flatArmor;
+        this.flatDamage = stats.flatDamage;
 
         // Special stuff
         this.IEA = false;
@@ -109,8 +111,8 @@ export class Actor {
     getAP() {
         let AP = this.stats.attackpower;
         this.auras.forEach(aura => {
-          if (aura.duration > 0)
-            AP *= aura.APMultMod;
+          if (aura.duration > 0 && aura.attackpowerMod)
+            AP *= aura.attackpowerMod;
         })
         return AP;
     }
@@ -132,7 +134,7 @@ export class Actor {
     getCritMod() {
         let critMod = this.stats.critMod;
         this.auras.forEach(aura => {
-          if (aura.duration > 0)
+          if (aura.duration > 0 && aura.critMod)
             critMod *= aura.critMod;
         })
         return critMod;
@@ -176,6 +178,8 @@ export class Actor {
         this.IEA = false;
         this.damageMod = this.stats.damageMod;
         this.physDamageMod = this.stats.physDamageMod;
+        this.flatArmor = this.stats.flatArmor;
+        this.flatDamage = this.stats.flatDamage;
         this.hastePerc = this.stats.haste;
         this.defense = this.stats.defense;
         this.rageGained = 0;

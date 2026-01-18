@@ -9,12 +9,32 @@ export const Wield = {
   UNARMED: "Unarmed",
 };
 
+// TODO: rename XyzType to just Xyz?
 export const ActorType = {
   TANK: "tank",
   BOSS: "boss",
 };
 
 export const LANDED_HITS = ["hit", "crit", "block", "crit block", "glance"];
+export const EventType = {
+  DAMAGE: 'damage',
+  SPELL_CAST: 'spellCast',
+  AURA_REFRESH: 'auraRefresh',
+  AURA_APPLY: 'auraApply',
+  AURA_EXPIRE: 'auraExpire',
+  AURA_REMOVE_STACK: 'auraRemoveStack',
+};
+export const HitType = {
+  HIT: 'hit',
+  CRIT: 'crit',
+  BLOCK: 'block',
+  CRIT_BLOCK: 'crit block',
+  GLANCE: 'glance',
+  TICK: 'tick',
+  PARRY: 'parry',
+  DODGE: 'dodge',
+  MISS: 'miss',
+};
 
 // Attributes that can be found on buffs/debuffs/consumes.
 export const ATTRIBUTES = [
@@ -23,6 +43,7 @@ export const ATTRIBUTES = [
   "defense", "armor", "bonusArmor", "parry",
   "dodge", "block", "blockvalue", "health",
   "strengthMod", "staminaMod", "agilityMod", "damageMod", "armorMod",
+  "flatArmor", "flatDamage",
 ];
 
 export const MULT_ATTRIBUTES = [
@@ -58,9 +79,10 @@ export const ENCHANT_IDS = {
 };
 
 export const BUFFS = [
-  'battleshout', 'motw', 'kings', 'might', 'strtotem',
-  'fort', 'bloodpact', 'devo', 'loh', 'inspiration',
-  'leader', 'trueshot',
+  'battleshout', 'motw', 'leader', 'trueshot',
+  'fort', 'bloodpact', 'inspiration',
+  'kings', 'might', 'devo', 'loh',
+  'strtotem', 'stoneskin', 'agitotem',
 ];
 
 export const IMP_BUFFS = [
@@ -71,7 +93,7 @@ export const IMP_BUFFS = [
 
 export const DEBUFFS = [
   'sunder', 'iea', 'faeriefire', 'cor', 'thunderclap', 'thunderfury',
-  'demo-roar', 'demo-shout',
+  'demo-roar', 'demo-shout', "goa",
 ];
 
 export const CONSUMES = [
