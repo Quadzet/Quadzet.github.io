@@ -200,7 +200,7 @@ export function rollTankBossTable(attacker, defender, damage, yellow = false, du
 // Boss hitting the tank
 export function rollBossTankTable(attacker, defender, damage, yellow = false) {
     let wepSkill = attacker.stats.mhskill;
-    let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense));
+    let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense) - attacker.hit);
     let parry = defender.stats.parry - 0.04 * (wepSkill - defender.defense);
     let dodge = defender.stats.dodge - 0.04 * (wepSkill - defender.defense);
     let blockValue = defender.getBlockValue();

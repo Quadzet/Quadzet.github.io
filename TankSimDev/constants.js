@@ -93,7 +93,7 @@ export const IMP_BUFFS = [
 
 export const DEBUFFS = [
   'sunder', 'iea', 'faeriefire', 'cor', 'thunderclap', 'thunderfury',
-  'demo-roar', 'demo-shout', "goa",
+  'demo-roar', 'demo-shout', "goa", "cow", "insect-swarm", "crystal-yield",
 ];
 
 export const CONSUMES = [

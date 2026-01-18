@@ -212,6 +212,25 @@ export const AURA_DATA = {
     "levels": [45],
     // Effect is added as an Aura instead of here.
   },
+  "cow": {
+    "type": "SPELL",
+    "ids": [702, 1108, 6205, 7646, 11707, 11708],
+    "levels": [4, 12, 22, 32, 42, 52],
+    "flatDamage": [-3, -6, -10, -15, -22, -31],
+  },
+  "insect-swarm": {
+    "type": "SPELL",
+    "ids": [24977],
+    "levels": [20],
+    "hit": [-2],
+  },
+  "crystal-yield": {
+    "type": "SPELL",
+    "ids": [15235],
+    "levels": [47],
+    "bonusArmor": [-200],
+  },
+
 
   // *** CONSUMES ***
   "agi-elixir": {
@@ -487,5 +506,12 @@ export const AURA_DATA = {
     'aura': ['iea'],
     'factor': 1.5,
     'ids': [14169],
+  },
+  'imp-cow': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['cow'],
+    'factor': 1.2,
+    'ids': [18181],
   },
 };
