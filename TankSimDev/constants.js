@@ -83,12 +83,14 @@ export const BUFFS = [
   'fort', 'bloodpact', 'inspiration',
   'kings', 'might', 'devo', 'loh',
   'strtotem', 'stoneskin', 'agitotem',
+  'thorns', 'retri',
 ];
 
 export const IMP_BUFFS = [
   'imp-battleshout', 'imp-motw', 'imp-might', 'imp-totems',
   'imp-fort', 'imp-devo', 'imp-bloodpact', 'imp-stoneskin',
   'imp-iea', 'imp-demo-shout', 'imp-demo-roar', 'imp-thunderclap',
+  'imp-thorns', 'imp-retri',
 ];
 
 export const DEBUFFS = [

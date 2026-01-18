@@ -12,6 +12,7 @@ import { races } from './stats.js'
 import { LOG_LEVEL, log_message } from './logging.js'
 import { ENCHANT_DATA } from './stats.js'
 import { getTalentValue } from './talents.js';
+import { addTankProcs } from './procs.js'
 
 
 export function getIndex(buff, level) {
@@ -453,6 +454,7 @@ function getBossStats(playerLevel) {
   return stats;
 }
 
+
 export function updateStats() {
   let level = document.querySelector("#player-level").value
   var output = document.getElementById("player-level-span");
@@ -575,15 +577,12 @@ export function updateStats() {
     stats.rotation[`${ability}`] = obj;
   });
 
-  // TODO: Ensure weapon procs get added, see list from old implementation.
+  addTankProcs(stats, level);
   // TODO: Move these settings from here.
   stats.bonuses = {
-    mhoil: checkAuraToggle('shadow-oil'),
-    ohoil: checkAuraToggle('oh-shadow-oil'),
     goa: checkAuraToggle('goa'),
     fivePieceWrath: false,
     twoPieceDreadnaught: false,
-    windfury: false,
   };
 
   let bossStats = getBossStats(level);

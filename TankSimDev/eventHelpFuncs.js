@@ -112,7 +112,7 @@ export function generateTickEvents(input) {
   checkInput('duration', input.duration, suffix);
   checkInput('interval', input.interval, suffix);
   let events = [];
-  input.hit = 'hit';  
+  input.hit = 'hit';
   let timestamp = input.timestamp;
   for (let i = 1; i < ~~(input.duration / input.interval); i++) {
     let inputCopy = { ...input };

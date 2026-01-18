@@ -4,7 +4,6 @@ import { handleScheduledEvent, performAction } from './rotation.js';
 import { generateRageEventFromDamage } from './abilities.js';
 
 export class Actor {
-    // constructor(name, target, abilities, stats, procs) {
     constructor(name, stats, abilities, onUseAbilities, procs, auras) {
         this.name = name;
         this.stats = stats;

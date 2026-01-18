@@ -5,6 +5,12 @@ import { LANDED_HITS, ATTRIBUTES, MULT_ATTRIBUTES, EventType, HitType } from './
 import { checkAuraToggle } from './config.js'
 
 
+/* The Aura class is used for runtime auras, ie those that get applied and/or
+ * removed during the course of an encounter. Auras that are permanent are
+ * implemented mainly in config.js, or using the Proc class in some cases,
+ * for example the Thorns auras.
+ */
+
 function applyAuraStack(owner, aura) {
 
     // TODO: Check if rounding should be done here.
@@ -532,7 +538,6 @@ export class GoaAura extends Aura {
         }
     }
 }
-
 
 export class OnUseAura extends Aura {
     constructor(data) {

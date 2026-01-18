@@ -1,4 +1,4 @@
-import { getTankProcs, getBossProcs } from '../procs.js';
+import { addTankProcs, getBossProcs, reconstructProcs } from '../procs.js';
 import { TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js';
 import { Actor } from '../actor.js';
 import { TankAuras, BossAuras } from '../auras.js';
@@ -14,10 +14,12 @@ self.addEventListener('message', function(e) {
         let globals = e.data.globals;
         let iterations = e.data.iterations;
 
-        let TankProcs = getTankProcs(globals);
+        // Reconstruct Proc instances from serialized data
+        // When globals is sent via postMessage, class instances become plain objects
+        let TankProcs = reconstructProcs(globals.tankStats.procs);
         let BossProcs = getBossProcs(globals);
 
-    globals.config = globals.config;
+    globals.config = globals.config; // TODO: What is this and why does it exist?
 
     Actors = {
         "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats.gear), TankProcs, TankAuras(globals)),

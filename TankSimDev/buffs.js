@@ -90,6 +90,19 @@ export const AURA_DATA = {
     "levels": [42, 56, 60],
     "agility": [43, 67, 77],
   },
+  "thorns": {
+    "type": "SPELL",
+    "ids": [467, 782, 1075, 8914, 9756, 9910],
+    "levels": [6, 14, 24, 34, 44, 54],
+    "thorns": [3, 6, 9, 12, 15, 18],
+  },
+  "retri": {
+    "type": "SPELL",
+    "ids": [7294, 10298, 10299, 10300, 10301],
+    "levels": [16, 26, 36, 46, 56],
+    "thorns": [5, 8, 12, 16, 20],
+  },
+
 
   // *** WORLD BUFFS ***
   "dmf": {
@@ -513,5 +526,19 @@ export const AURA_DATA = {
     'aura': ['cow'],
     'factor': 1.2,
     'ids': [18181],
+  },
+  'imp-thorns': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['thorns'],
+    'factor': 1.75,
+    'ids': [16840],
+  },
+  'imp-retri': {
+    'type': 'SPELL',
+    'levels': [1],
+    'aura': ['retri'],
+    'factor': 1.5,
+    'ids': [20092],
   },
 };
