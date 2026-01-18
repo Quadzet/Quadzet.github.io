@@ -308,6 +308,48 @@ export const AURA_DATA = {
     "levels": [1],
     "stamina": [15],
   },
+  "roids": {
+    "type": "ITEM",
+    "group": "blasted",
+    "ids": [8410],
+    "levels": [45],
+    "strength": [25],
+  },
+  "ground-scorpok": {
+    "type": "ITEM",
+    "group": "blasted",
+    "ids": [8412],
+    "levels": [45],
+    "agility": [25],
+  },
+  "lung-juice": {
+    "type": "ITEM",
+    "group": "blasted",
+    "ids": [8411],
+    "levels": [45],
+    "stamina": [25],
+  },
+  "juju-power": {
+    "type": "ITEM",
+    "group": "str",
+    "ids": [12451],
+    "levels": [55],
+    "strength": [30],
+  },
+  "juju-might": {
+    "type": "ITEM",
+    "group": "attackpower",
+    "ids": [12460],
+    "levels": [55],
+    "attackpower": [40],
+  },
+  "firewater": {
+    "type": "ITEM",
+    "group": "attackpower",
+    "ids": [12820],
+    "levels": [45],
+    "attackpower": [35],
+  },
 
   // *** OH BUFFS ***
   "oh-stone": {

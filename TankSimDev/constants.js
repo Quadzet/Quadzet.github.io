@@ -79,6 +79,8 @@ export const CONSUMES = [
   'fort-elixir', 'rumsey','giant-growth',
   'dark-desire', 'stam-food', 'str-food', 'agi-food', 'str-scroll',
   'consecrated-stone', 'stone', 'shadow-oil', 'elemental-stone',
+  'roids', 'ground-scorpok', 'lung-juice', 'juju-might', 'juju-power',
+  'firewater',
 ];
 
 export const OH_BUFFS = [
