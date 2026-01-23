@@ -19,6 +19,8 @@ export const LANDED_HITS = ["hit", "crit", "block", "crit block", "glance"];
 export const EventType = {
   DAMAGE: 'damage',
   SPELL_CAST: 'spellCast',
+  EXTRA_ATTACK: 'extra attack', // TODO: Change to camelCase.
+  SWING_TIMER: 'swingTimer',
   AURA_REFRESH: 'auraRefresh',
   AURA_APPLY: 'auraApply',
   AURA_EXPIRE: 'auraExpire',
@@ -82,7 +84,7 @@ export const BUFFS = [
   'battleshout', 'motw', 'leader', 'trueshot',
   'fort', 'bloodpact', 'inspiration',
   'kings', 'might', 'devo', 'loh',
-  'strtotem', 'stoneskin', 'agitotem',
+  'strtotem', 'stoneskin', 'agitotem', 'windfury',
   'thorns', 'retri',
 ];
 

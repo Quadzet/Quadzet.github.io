@@ -580,6 +580,7 @@ export function updateStats() {
   addTankProcs(stats, level);
   // TODO: Move these settings from here.
   stats.bonuses = {
+    windfury: checkAuraToggle('windfury'),
     goa: checkAuraToggle('goa'),
     fivePieceWrath: false,
     twoPieceDreadnaught: false,

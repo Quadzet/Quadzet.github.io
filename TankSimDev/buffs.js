@@ -42,12 +42,6 @@ export const AURA_DATA = {
     "levels": [4, 12, 22, 32, 42, 52, 60],
     "attackpower": [20, 35, 55, 85, 115, 155, 185],
   },
-  "strtotem": {
-    "type": "SPELL",
-    "ids": [8075, 8160, 8161, 10442, 25361],
-    "levels": [10, 24, 38, 52, 60],
-    "strength": [10, 20, 36, 61, 77],
-  },
   "fort": {
     "type": "SPELL",
     "ids": [1243, 1244, 1245, 2791, 10937, 10938],
@@ -89,6 +83,19 @@ export const AURA_DATA = {
     "ids": [8835, 10627, 25359],
     "levels": [42, 56, 60],
     "agility": [43, 67, 77],
+  },
+  "strtotem": {
+    "type": "SPELL",
+    "ids": [8075, 8160, 8161, 10442, 25361],
+    "levels": [10, 24, 38, 52, 60],
+    "strength": [10, 20, 36, 61, 77],
+  },
+  "windfury": {
+    "type": "SPELL",
+    "group": "stone",
+    "ids": [8512, 10613, 10614],
+    "levels": [32, 42, 52],
+    // The attackpower buff is added dynamically in the Aura.
   },
   "thorns": {
     "type": "SPELL",

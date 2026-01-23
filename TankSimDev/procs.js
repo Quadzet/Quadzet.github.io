@@ -20,7 +20,7 @@ export class Proc {
         this.name = name;
     }
 
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
         log_message(LOG_LEVEL.WARNING, "No event handler specified for proc " + this.name + ".");
         return;
     }
@@ -37,15 +37,15 @@ export class ThornsProc extends Proc {
         this.isHoly = isHoly;
     }
 
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
+    handleEvent(event, owner, target, reactiveEvents, futureEvents) {
 
-        if (event.type == EventType.DAMAGE && LANDED_HITS.includes(event.hit) && event.target == 'Tank') {
+        if (event.type == EventType.DAMAGE && LANDED_HITS.includes(event.hit) && event.target == owner.name) {
             let isDot = false;
             let isPhys = false;
-            let procEvent = rollSpellAttack(source, target, this.damage, isDot, isPhys, this.isHoly);
+            let procEvent = rollSpellAttack(owner, target, this.damage, isDot, isPhys, this.isHoly);
             procEvent.name = this.name;
             procEvent.timestamp = event.timestamp;
-            procEvent.threat = procEvent.amount * source.stats.threatMod;
+            procEvent.threat = procEvent.amount * owner.stats.threatMod;
             procEvent.trigger = false;
 
             reactiveEvents.push(procEvent);
@@ -57,22 +57,32 @@ export class ThornsProc extends Proc {
 export class WindfuryProc extends Proc {
     constructor() {
         super("Windfury")
+        this.reset();
     }
 
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
+    handleEvent(event, owner, target, reactiveEvents, futureEvents) {
 
-        if (event.type == "damage" && event.ability != "OH Swing" && LANDED_HITS.includes(event.hit)) {
+        if (event.timestamp >= this.lastProc + this.ICD
+                && event.source == owner.name
+                && event.type == EventType.DAMAGE
+                && !["OH Swing", "Shield Slam", "Shield Bash"].includes(event.name)
+                && LANDED_HITS.includes(event.hit)) {
             let rng = Math.random()
             if (rng < 0.2) {
                 let procEvent = {
-                    "type": "extra attack",
-                    "source": event.ability,
-                    "ability": this.name,
+                    "type": EventType.EXTRA_ATTACK,
+                    "source": event.source,
+                    "name": this.name,
                     "timestamp": event.timestamp,
-                }
+                };
                 reactiveEvents.push(procEvent);
+                this.lastProc = event.timestamp;
             }
         }
+    }
+    reset() {
+        this.lastProc = -1500;
+        this.ICD = 1500;
     }
 }
 
@@ -82,8 +92,8 @@ export class SwordSpecialization extends Proc {
         this.procChance = 0.01 * points;
     }
 
-    handleEvent(source, target, event, reactiveEvents, futureEvents) {
-        if (event.type == "damage" && event.source == source.name && event.trigger && LANDED_HITS.includes(event.hit)) {
+    handleEvent(event, owner, target, reactiveEvents, futureEvents) {
+        if (event.type == EventType.DAMAGE && event.source == owner.name && event.trigger && LANDED_HITS.includes(event.hit)) {
             let rng = Math.random()
             if (rng < this.procChance) {
                 let procEvent = {
@@ -110,49 +120,52 @@ export class WeaponProc extends Proc {
         ...proc
     });
   }
-  handleEvent(source, target, event, reactiveEvents, futureEvents) {
-    if (event.type == "damage" && event.trigger && source.name == event.source && LANDED_HITS.includes(event.hit)) {
-      if (this.offhand && event.name != "OH Swing")
-        return;
-      if (event.timestamp < this.cooldown)
-        return;
-      let rng = Math.random();
-      let procChance = this.procChance != null ? this.procChance : this.ppm * (this.offhand ? source.stats.offhand.swingtimer : source.stats.mainhand.swingtimer) / 60000;
-      if (rng < procChance) {
-        this.cooldown = event.timestamp + this.ICD;
-        if (this.damage > 0) {
-          let damageEvent = rollSpellAttack(source, target, this.damage * source.getSpellDamageMod(), false, !this.magic);
-          damageEvent.name = this.name;
-          damageEvent.timestamp = event.timestamp;
-          damageEvent.threat = damageEvent.amount * source.stats.threatMod;
-          damageEvent.trigger = false;
-          reactiveEvents.push(generateDamageEvent(damageEvent));
+    handleEvent(event, owner, target, reactiveEvents, futureEvents) {
+        if (event.type == EventType.DAMAGE
+                && event.trigger
+                && LANDED_HITS.includes(event.hit)
+                && event.source == owner.name) {
+            if (this.offhand && event.name != "OH Swing")
+                return;
+            if (event.timestamp < this.cooldown)
+                return;
+            let rng = Math.random();
+            let procChance = this.procChance != null ? this.procChance : this.ppm * (this.offhand ? owner.stats.offhand.swingtimer : owner.stats.mainhand.swingtimer) / 60000;
+            if (rng < procChance) {
+                this.cooldown = event.timestamp + this.ICD;
+                if (this.damage > 0) {
+                    let damageEvent = rollSpellAttack(owner, target, this.damage * owner.getSpellDamageMod(), false, !this.magic);
+                    damageEvent.name = this.name;
+                    damageEvent.timestamp = event.timestamp;
+                    damageEvent.threat = damageEvent.amount * owner.stats.threatMod;
+                    damageEvent.trigger = false;
+                    reactiveEvents.push(generateDamageEvent(damageEvent));
+                }
+                if (this.tick > 0) {
+                    clearFutureTicks(this.name, futureEvents);
+                    let damageEvent = rollSpellAttack(owner, target, this.tick * owner.getSpellDamageMod(), true, !this.magic);
+                    damageEvent.name = this.name;
+                    damageEvent.timestamp = event.timestamp;
+                    damageEvent.threat = damageEvent.amount * owner.stats.threatMod;
+                    damageEvent.trigger = false;
+                    damageEvent.duration = this.duration;
+                    damageEvent.interval = this.interval;
+                    damageEvent.trigger = this.trigger;
+                    if (event.hit == 'miss')
+                        futureEvents.push(generateDamageEvent(damageEvent));
+                    else {
+                        let tickEvents = generateTickEvents(damageEvent);
+                        tickEvents.forEach(event => {
+                            futureEvents.push(event);
+                        });
+                    }
+                }
+            }
         }
-        if (this.tick > 0) {
-          clearFutureTicks(this.name, futureEvents);
-          let damageEvent = rollSpellAttack(source, target, this.tick * source.getSpellDamageMod(), true, !this.magic);
-          damageEvent.name = this.name;
-          damageEvent.timestamp = event.timestamp;
-          damageEvent.threat = damageEvent.amount * source.stats.threatMod;
-          damageEvent.trigger = false;
-          damageEvent.duration = this.duration;
-          damageEvent.interval = this.interval;
-          damageEvent.trigger = this.trigger;
-          if (event.hit == 'miss')
-            futureEvents.push(generateDamageEvent(damageEvent));
-          else {
-            let tickEvents = generateTickEvents(damageEvent);
-            tickEvents.forEach(event => {
-              futureEvents.push(event);
-            });
-          }
-        }
-      }
     }
-  }
-  reset() {
-    this.cooldown = 0;
-  }
+    reset() {
+        this.cooldown = 0;
+    }
 }
 
 
@@ -185,6 +198,10 @@ export function addTankProcs(stats, level) {
         }));
     }
 
+    if (checkAuraToggle('windfury')) {
+        procs.push(new WindfuryProc());
+    }
+
     if (checkAuraToggle('thorns')) {
         let data = AURA_DATA['thorns'];
         let ix = getIndex(data, level);
@@ -204,10 +221,6 @@ export function addTankProcs(stats, level) {
             factor *= AURA_DATA['imp-retri']['factor'];
         }
         procs.push(new ThornsProc("Retribution Aura", factor * data["thorns"][ix], true));
-    }
-
-    if (checkAuraToggle('windfury')) {
-        procs.push(new WindfuryProc());
     }
 
     if (stats.talents.swordSpec > 0) {

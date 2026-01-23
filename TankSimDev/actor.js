@@ -56,15 +56,13 @@ export class Actor {
         // Auras
         this.auras.forEach(aura => {
           aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
-        })
+        });
 
         if (this.name == "Tank") {
           // Procs
-          if(this.name == "Tank") {
-            this.procs.forEach(proc => {
-              proc.handleEvent(this, this.target, event, reactiveEvents, futureEvents)
-            })
-          }
+          this.procs.forEach(proc => {
+            proc.handleEvent(event, this, this.target, reactiveEvents, futureEvents)
+          });
           // Potentially generate rage from the dmg taken/done (white swing)
           if(event.type == "damage") {
             let rageEvent = generateRageEventFromDamage(this, this.target, event, ["MH Swing", "OH Swing"].includes(event.name));

@@ -2,7 +2,8 @@ import { LOG_LEVEL, log_message } from './logging.js';
 import { onUseData } from './stats.js'
 import { sortDescending, clearFutureTicks } from './eventHelpFuncs.js'
 import { LANDED_HITS, ATTRIBUTES, MULT_ATTRIBUTES, EventType, HitType } from './constants.js'
-import { checkAuraToggle } from './config.js'
+import { AURA_DATA } from './buffs.js'
+import { getIndex } from './config.js'
 
 
 /* The Aura class is used for runtime auras, ie those that get applied and/or
@@ -182,7 +183,7 @@ export class Aura {
                 EventType.AURA_REMOVE_STACK, owner, this,
                 event.timestamp, reactiveEvents, futureEvents);
 
-            this.stacks -= 1
+            this.stacks -= 1;
             if (this.scalingStacks) {
                 removeAuraStack(owner, this);
             }
@@ -434,6 +435,45 @@ export class BloodrageAura extends Aura {
     }
 }
 
+class WindfuryAura extends Aura {
+    constructor(level) {
+        let ix = getIndex(AURA_DATA['windfury'], level);
+        let attackpower = [122, 229, 315][ix];
+        super({
+            type: "buff",
+            name: "Windfury",
+
+            maxDuration: 1500,
+            maxStacks: 2,
+            startStacks: 2,
+
+            attackpower: attackpower,
+        });
+    }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+        if (event.type == EventType.EXTRA_ATTACK && event.name == "Windfury" && event.source == owner.name) {
+            this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
+            // If procced by an MH swing, a stack is instantly removed.
+            if (["MH Swing", "Heroic Strike"].includes(event.source)) {
+                let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source)})
+                if(index >= 0)
+                    futureEvents.splice(index, 1)
+                owner.abilities["MH Swing"].use(event.timestamp, owner, owner.target, reactiveEvents, futureEvents);
+            }
+        }
+        if (event.type == EventType.DAMAGE
+                && event.source == owner.name
+                && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.name)) {
+            if (this.stacks > 0) {
+                this.removeStack(event, owner, reactiveEvents, futureEvents);
+            }
+        }
+        if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false)
+        }
+    }
+}
+
 
 export class RendAura extends Aura {
     constructor() {
@@ -580,6 +620,8 @@ export function TankAuras(globals) {
         new DefensiveState(),
         new BloodrageAura(),
     ]
+    if (globals.tankStats.bonuses.windfury)
+        ret.push(new WindfuryAura(globals.tankStats.level));
     if (globals.tankStats.talents.enrage > 0)
         ret.push(new EnrageAura());
     if (globals.tankStats.talents.flurry > 0)
