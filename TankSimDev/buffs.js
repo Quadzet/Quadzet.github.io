@@ -324,6 +324,26 @@ export const AURA_DATA = {
     "levels": [35],
     "agility": [10],
   },
+  "sunfruit": {
+    "type": "ITEM",
+    "group": "food",
+    "ids": [13810],
+    "levels": [45],
+    "strength": [10],
+  },
+  "wolf-steak": {
+    "type": "ITEM",
+    "group": "food",
+    "ids": [18045],
+    "levels": [40],
+    "stamina": [12],
+  },
+  "dragonbreath": {
+    "type": "ITEM",
+    "ids": [12217],
+    "levels": [35],
+  },
+
   "dark-desire": {
     "type": "ITEM",
     "ids": [22237],

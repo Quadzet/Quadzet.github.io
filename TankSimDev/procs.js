@@ -122,8 +122,8 @@ export class WeaponProc extends Proc {
   }
     handleEvent(event, owner, target, reactiveEvents, futureEvents) {
         if (event.type == EventType.DAMAGE
-                && event.trigger
-                && LANDED_HITS.includes(event.hit)
+                && (event.trigger === undefined || event.trigger) // Default to the damage being a trigger.
+                && LANDED_HITS.includes(event.hit) // TODO: Can misses still proc eg dragonbreath?
                 && event.source == owner.name) {
             if (this.offhand && event.name != "OH Swing")
                 return;
@@ -176,10 +176,24 @@ export function addTankProcs(stats, level) {
         procs.push(new WeaponProc(proc))
     });
 
+    if (checkAuraToggle('dragonbreath')) {
+        procs.push(new WeaponProc({
+            name: "Dragonbreath Chili",
+            damage: 60,
+            spellCoeff: 1,
+            procChance: 0.05,
+            ICD: 1500,
+            cooldown: 0,
+            magic: true,
+            offhand: false,
+            trigger: false,
+        }));
+    }
+
     if (checkAuraToggle('oh-oil')) {
         procs.push(new WeaponProc({
             name: "Shadow Oil",
-            dmg: 56,
+            damage: 56,
             spellCoeff: 0.56,
             procChance: 0.15,
             magic: true,
@@ -190,7 +204,7 @@ export function addTankProcs(stats, level) {
     if (checkAuraToggle('oil')) {
         procs.push(new WeaponProc({
             name: "Shadow Oil",
-            dmg: 56,
+            damage: 56,
             spellCoeff: 0.56,
             procChance: 0.15,
             magic: true,
@@ -253,11 +267,14 @@ export function reconstructProcs(serializedProcs) {
         else if (procData.name === "Windfury") {
             return new WindfuryProc();
         }
+        else if (procData.name === "Dragonbreath Chili") {
+            return new WeaponProc(procData);
+        }
         else if (procData.name === "Sword Specialization" && procData.procChance !== undefined) {
             const points = procData.procChance / 0.01;
             return new SwordSpecialization(points);
         }
-        else if (procData.procChance !== undefined && procData.dmg !== undefined) {
+        else if (procData.procChance !== undefined && procData.damage !== undefined) {
             return new WeaponProc(procData);
         }
         else {

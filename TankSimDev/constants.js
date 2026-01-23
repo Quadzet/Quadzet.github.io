@@ -102,8 +102,9 @@ export const DEBUFFS = [
 
 export const CONSUMES = [
   'str-elixir', 'defense', 'agi-elixir', 'mongoose',
-  'fort-elixir', 'rumsey','giant-growth',
-  'dark-desire', 'stam-food', 'str-food', 'agi-food', 'str-scroll',
+  'fort-elixir', 'rumsey','giant-growth', 'str-scroll',
+  'stam-food', 'str-food', 'agi-food', 'sunfruit', 'wolf-steak',
+  'dragonbreath', 'dark-desire',
   'consecrated-stone', 'stone', 'shadow-oil', 'elemental-stone',
   'roids', 'ground-scorpok', 'lung-juice', 'juju-might', 'juju-power',
   'firewater',
