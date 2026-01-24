@@ -601,4 +601,20 @@ export const AURA_DATA = {
     'factor': 1.5,
     'ids': [20092],
   },
+  'heroic-strike-book': {
+    'type': 'ITEM',
+    'levels': [60],
+    'ids': [21297],
+  },
+  'revenge-book': {
+    'type': 'ITEM',
+    'levels': [60],
+    'ids': [21299],
+  },
+  'battle-shout-book': {
+    'type': 'ITEM',
+    'levels': [60],
+    'ids': [21298],
+  },
+
 };

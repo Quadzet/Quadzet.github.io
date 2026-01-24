@@ -163,8 +163,9 @@ export class Ability {
 }
 
 export class Autoattack extends Ability {
-  constructor() {
-    super("MH Swing", 0, 0, false)
+  constructor(book) {
+    super("MH Swing", 0, 0, false);
+    this.book = book;
   }
 
   use(timestamp, source, target, reactiveEvents, futureEvents) {
@@ -172,7 +173,7 @@ export class Autoattack extends Ability {
     let rageEvent = {};
     // Heroic Strike
     if (source.isHeroicStrikeQueued && source.rage > (15 - source.stats.talents.impHS)) {
-      let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level));
+      let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level, this.HSBook));
       damage += source.flatDamage - target.flatArmor;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
       damageEvent = rollAttack(source, target, damage, true);
@@ -214,10 +215,9 @@ export class Autoattack extends Ability {
   }
   // Needs to be overridden since MHSwing is actually both HS and MHSwing...
   threatCalculator(dmg_event, attacker) {
-    if (
-      dmg_event.hit != "parry" &&
-      dmg_event.hit != "dodge" &&
-      dmg_event.hit != "miss") {
+    if (dmg_event.hit != "parry"
+        && dmg_event.hit != "dodge"
+        && dmg_event.hit != "miss") {
       if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - attacker.stats.talents.impHS)) {
         let rank = this.rank(attacker.stats.level);
         return ((dmg_event.amount * this.threatModifier(rank)) + this.staticThreat(rank)) * attacker.stats.threatMod;
@@ -235,7 +235,7 @@ export class Autoattack extends Ability {
     else if (level < 40) return 5;
     else if (level < 48) return 6;
     else if (level < 56) return 7;
-    else if (level < 60) return 8; // TODO: Used at 60 without skill book
+    else if (level < 60 || !this.book) return 8;
     else return 9;
   }
   damage(rank) {
@@ -246,7 +246,7 @@ export class Autoattack extends Ability {
     else if (rank == 5) return 58;
     else if (rank == 6) return 80;
     else if (rank == 7) return 111;
-    else if (rank == 8) return 138; // TODO: Used at 60 without skill book
+    else if (rank == 8) return 138;
     else if (rank == 9) return 157;
     else {
       log_message(LOG_LEVEL.ERROR, "Error: invalid rank for Heroic Strike: " + rank)
@@ -261,7 +261,7 @@ export class Autoattack extends Ability {
     else if (rank == 5) return 98;
     else if (rank == 6) return 118;
     else if (rank == 7) return 137;
-    else if (rank == 8) return 145; // TODO: Used at 60 without skill book
+    else if (rank == 8) return 145;
     else if (rank == 9) return 175;
     else {
       log_message(LOG_LEVEL.ERROR, "Error: invalid rank for Heroic Strike: " + rank)
@@ -311,8 +311,9 @@ export class Bloodthirst extends Ability {
 }
 
 export class Revenge extends Ability {
-  constructor(rageReduction = 0) {
-    super("Revenge", 5000, 5 - rageReduction, true)
+  constructor(book = false) {
+    super("Revenge", 5000, 5, true);
+    this.book = book;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = this.damage(this.rank(source.stats.level));
@@ -338,7 +339,7 @@ export class Revenge extends Ability {
     else if (level < 34) return 2;
     else if (level < 44) return 3;
     else if (level < 54) return 4;
-    else if (level < 60) return 5;
+    else if (level < 60 || !this.book) return 5;
     else return 6;
   }
   damage(rank) {
@@ -508,8 +509,9 @@ export class HeroicStrike extends Ability {
 }
 
 export class BattleShout extends Ability {
-  constructor() {
+  constructor(book) {
     super("Battle Shout", 10, 0, true)
+    this.book = book;
   }
   threatCalculator(damageEvent, attacker) {
     return attacker.stats.bshouttargets * this.staticThreat(this.rank(attacker.stats.level)) * attacker.stats.threatMod;
@@ -534,15 +536,15 @@ export class BattleShout extends Ability {
     else if (level < 32) return 3;
     else if (level < 42) return 4;
     else if (level < 52) return 5;
-    else if (level < 60) return 6;
+    else if (level < 60 || !this.book) return 6;
     else return 7;
   }
   staticThreat(rank) {
-    if (rank == 1) return 1; // NEEDS TESTING
-    else if (rank == 2) return 12; // NEEDS TESTING
-    else if (rank == 3) return 22; // NEEDS TESTING
-    else if (rank == 4) return 32; // NEEDS TESTING
-    else if (rank == 5) return 42; // NEEDS TESTING
+    if (rank == 1) return 1;
+    else if (rank == 2) return 12;
+    else if (rank == 3) return 22;
+    else if (rank == 4) return 32;
+    else if (rank == 5) return 42;
     else if (rank == 6) return 52;
     else if (rank == 7) return 60;
     else {
@@ -741,15 +743,18 @@ export function getOnUseAbilities(stats) {
 // Then we sort the vector wrt prio, and use TankAbilities[1].ability.name/use etc
 export function TankAbilities(tankStats) {
   let abilities = {
-    "MH Swing": new Autoattack(),
-    "Revenge": new Revenge(),
+    "MH Swing": new Autoattack(tankStats.bonuses.HSBook),
+    "Revenge": new Revenge(tankStats.bonuses.revengeBook),
     "Heroic Strike": new HeroicStrike(15 - tankStats.talents.impHS),
     "Bloodrage": new Bloodrage(),
     "Rend": new Rend(),
   }
   if (tankStats.wield == Wield.DUALWIELD)
     abilities["OH Swing"] = new OHSwing();
-  abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
+  if (tankStats.bonuses.iea)
+    abilities["Battle Shout"] = new BattleShout(tankStats.bonuses.battleShoutBook);
+  else
+    abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
   if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
     abilities["Shield Slam"] = new ShieldSlam();
   if (tankStats.talents.bloodthirst)

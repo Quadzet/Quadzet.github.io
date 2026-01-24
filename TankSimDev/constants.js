@@ -94,6 +94,7 @@ export const IMP_BUFFS = [
   'imp-fort', 'imp-devo', 'imp-bloodpact', 'imp-stoneskin',
   'imp-iea', 'imp-demo-shout', 'imp-demo-roar', 'imp-thunderclap',
   'imp-thorns', 'imp-retri',
+  'heroic-strike-book', 'revenge-book', 'battle-shout-book',
 ];
 
 export const DEBUFFS = [

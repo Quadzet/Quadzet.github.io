@@ -577,12 +577,16 @@ export function updateStats() {
 
   addTankProcs(stats, level);
   stats.bonuses = {
+    iea: checkAuraToggle('iea'),
     windfury: checkAuraToggle('windfury'),
     goa: checkAuraToggle('goa'),
-    fivePieceWrath: false,
-    twoPieceDreadnaught: false,
+    fivePieceWrath: false, // TODO:
+    twoPieceDreadnaught: false, // TODO:
     essenceOfTheRed: checkAuraToggle('essence-of-the-red'),
     potion: potion,
+    HSBook: checkAuraToggle('heroic-strike-book'),
+    revengeBook: checkAuraToggle('revenge-book'),
+    battleShoutBook: checkAuraToggle('battle-shout-book'),
   };
 
   let bossStats = getBossStats(level);
