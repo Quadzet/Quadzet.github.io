@@ -402,6 +402,46 @@ export class DeathWishAura extends Aura {
     }
 }
 
+export class EssenceOfTheRedAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Essence of the Red",
+
+            maxDuration: 10000,
+        })
+    }
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == "combatStart") {
+            updateEventLists(
+                EventType.AURA_APPLY, owner, this,
+                event.timestamp, reactiveEvents, futureEvents);
+            futureEvents.push({
+                timestamp: event.timestamp + 1000,
+                type: EventType.RAGE,
+                source: owner.name,
+                name: this.name,
+
+                amount: 20,
+                threat: 100, // TODO: threat even when rage-capped..
+            });
+        }
+        else if (event.type == EventType.RAGE
+                && event.name == this.name) {
+            futureEvents.push({
+                timestamp: event.timestamp + 1000,
+                type: EventType.RAGE,
+                source: owner.name,
+                name: this.name,
+
+                amount: 20,
+                threat: 100, // TODO: threat even when rage-capped..
+            });
+        }
+    }
+}
+
 export class BloodrageAura extends Aura {
     constructor() {
         super({
@@ -620,6 +660,8 @@ export function TankAuras(globals) {
         new DefensiveState(),
         new BloodrageAura(),
     ]
+    if (globals.tankStats.bonuses.essenceOfTheRed)
+        ret.push(new EssenceOfTheRedAura());
     if (globals.tankStats.bonuses.windfury)
         ret.push(new WindfuryAura(globals.tankStats.level));
     if (globals.tankStats.talents.enrage > 0)

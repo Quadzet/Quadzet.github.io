@@ -14,6 +14,8 @@ export function handleEvent(event, futureEvents, Actors) {
 
       handleCombatStart(source, target, reactiveEvents, futureEvents);
       handleCombatStart(target, source, reactiveEvents, futureEvents);
+      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
+      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
     }
     else if (event.type == "scheduledEvent") {
       let source = Actors["Tank"];

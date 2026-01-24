@@ -169,6 +169,11 @@ export const AURA_DATA = {
     "stamina": [15],
     "agility": [15],
   },
+  "essence-of-the-red": {
+    "type": "SPELL",
+    "ids": [23513],
+    "levels": [60],
+  },
 
   // *** DEBUFFS ***
   "sunder": {

@@ -584,6 +584,7 @@ export function updateStats() {
     goa: checkAuraToggle('goa'),
     fivePieceWrath: false,
     twoPieceDreadnaught: false,
+    essenceOfTheRed: checkAuraToggle('essence-of-the-red'),
   };
 
   let bossStats = getBossStats(level);

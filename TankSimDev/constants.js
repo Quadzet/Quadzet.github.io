@@ -21,6 +21,7 @@ export const EventType = {
   SPELL_CAST: 'spellCast',
   EXTRA_ATTACK: 'extra attack', // TODO: Change to camelCase.
   SWING_TIMER: 'swingTimer',
+  RAGE: "rage",
   AURA_REFRESH: 'auraRefresh',
   AURA_APPLY: 'auraApply',
   AURA_EXPIRE: 'auraExpire',
@@ -116,7 +117,7 @@ export const OH_BUFFS = [
 
 export const WORLD_BUFFS = [
   'dmf', 'wcb', 'zandalar', 'dragonslayer',
-  'moldar', 'fengus', 'slipkik', 'songflower',
+  'moldar', 'fengus', 'slipkik', 'songflower', 'essence-of-the-red'
 ]
 
 export const TANK_SETTINGS = ['player-level', 'race', 'startRage'];
