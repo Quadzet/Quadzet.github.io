@@ -432,6 +432,34 @@ export const AURA_DATA = {
     "levels": [45],
     "attackpower": [35],
   },
+  "greater-stoneshield-potion": {
+    "name": "Greater Stoneshield Potion",
+    "type": "ITEM",
+    "group": "potion",
+    "ids": [13455],
+    "levels": [46],
+  },
+  "mighty-rage-potion": {
+    "name": "Mighty Rage Potion",
+    "type": "ITEM",
+    "group": "potion",
+    "ids": [13442],
+    "levels": [46],
+  },
+  "lesser-stoneshield-potion": {
+    "name": "Lesser Stoneshield Potion",
+    "type": "ITEM",
+    "group": "potion",
+    "ids": [4623],
+    "levels": [33],
+  },
+  "great-rage-potion": {
+    "name": "Great Rage Potion",
+    "type": "ITEM",
+    "group": "potion",
+    "ids": [5633],
+    "levels": [25],
+  },
 
   // *** OH BUFFS ***
   "oh-stone": {

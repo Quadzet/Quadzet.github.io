@@ -270,6 +270,118 @@ export class DefensiveState extends Aura {
     }
 }
 
+// This is arguably not an aura, but it fits in here together with the other potion effects.
+export class GreatRageAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Great Rage",
+        });
+    }
+
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == EventType.SPELL_CAST && event.name == "Great Rage Potion") {
+            let rage = 30 + Math.floor(Math.random() * 31);
+            let rageEvent = {
+                timestamp: event.timestamp,
+                type: EventType.RAGE,
+                source: event.source,
+                name: event.name,
+
+                amount: rage,
+            };
+            reactiveEvents.push(rageEvent);
+        }
+
+        else if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false);
+        }
+    }
+}
+
+export class MightyRageAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Mighty Rage",
+
+            maxDuration: 20000,
+
+            strength: 60,
+        });
+    }
+
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == EventType.SPELL_CAST && event.name == "Mighty Rage Potion") {
+            this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents);
+            let rage = 45 + Math.floor(Math.random() * 31);
+            let rageEvent = {
+                timestamp: event.timestamp,
+                type: EventType.RAGE,
+                source: event.source,
+                name: event.name,
+
+                amount: rage,
+            };
+            reactiveEvents.push(rageEvent);
+        }
+
+        else if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false);
+        }
+    }
+}
+
+export class LesserStoneshieldAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Lesser Stoneshield",
+
+            maxDuration: 90000,
+
+            bonusArmor: 1000,
+        });
+    }
+
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == EventType.SPELL_CAST && event.name == "Lesser Stoneshield Potion") {
+            this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents);
+        }
+
+        else if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false);
+        }
+    }
+}
+
+export class GreaterStoneshieldAura extends Aura {
+    constructor() {
+        super({
+            type: "buff",
+            name: "Greater Stoneshield",
+
+            maxDuration: 120000,
+
+            bonusArmor: 2000,
+        })
+    }
+
+    handleEvent(event, owner, source, reactiveEvents, futureEvents) {
+
+        if (event.type == EventType.SPELL_CAST && event.name == "Greater Stoneshield Potion") {
+            this.apply(event.timestamp, owner, event.source, reactiveEvents, futureEvents);
+        }
+
+        else if (event.type == EventType.AURA_EXPIRE && event.name == this.name && event.owner == owner.name) {
+            this.expire(event, owner, reactiveEvents, futureEvents, false);
+        }
+    }
+}
+
 export class ShieldBlockAura extends Aura {
     constructor(impSB) {
         super({
@@ -660,6 +772,18 @@ export function TankAuras(globals) {
         new DefensiveState(),
         new BloodrageAura(),
     ]
+
+    let potion = globals.tankStats.bonuses.potion;
+    if (potion !== undefined && potion != '') {
+        if (potion == "greater-stoneshield-potion")
+            ret.push(new GreaterStoneshieldAura());
+        else if (potion == "lesser-stoneshield-potion")
+            ret.push(new LesserStoneshieldAura());
+        else if (potion == "mighty-rage-potion")
+            ret.push(new MightyRageAura());
+        else if (potion == "great-rage-potion")
+            ret.push(new GreatRageAura());
+    }
     if (globals.tankStats.bonuses.essenceOfTheRed)
         ret.push(new EssenceOfTheRedAura());
     if (globals.tankStats.bonuses.windfury)

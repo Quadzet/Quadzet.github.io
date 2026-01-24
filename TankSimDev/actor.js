@@ -15,14 +15,15 @@ export class Actor {
         this.threatMod = stats.threatMod;
         this.damageMod = stats.damageMod;
         this.physDamageMod = stats.physDamageMod;
-        this.hastePerc = stats.haste;
+        this.armorMod = stats.armorMod;
+        this.haste = stats.haste;
         this.armor = stats.armor;
-        this.percArmorMod = 1;
+        this.bonusArmor = stats.bonusArmor;
+        this.armorMod = stats.armorMod;
         this.defense = stats.defense;
         this.crit = stats.crit;
         this.hit = stats.hit;
         this.block = stats.block;
-        this.GCD = 0;
         this.onGCD = false;
         this.inCombat = false;
         this.rage = stats.startRage;
@@ -94,15 +95,15 @@ export class Actor {
     }
 
     getSwingTimer() {
-        return this.stats.mainhand.swingtimer/(1+this.hastePerc/100)
+        return this.stats.mainhand.swingtimer/(1+this.haste/100)
     }
     getOHSwingTimer() {
-        return this.stats.offhand.swingtimer/(1+this.hastePerc/100)
+        return this.stats.offhand.swingtimer/(1+this.haste/100)
     }
 
     // *** old *** 
     getArmor() {
-        return Math.max(0, this.armor * this.percArmorMod);
+        return Math.max(0, this.armor * this.armorMod + this.bonusArmor);
     }
 
     getAP() {
@@ -168,21 +169,18 @@ export class Actor {
         this.procs.forEach(proc => proc.reset());
         this.buffs = {};
         this.debuffs = {};
-        this.onGCD = false;
-        this.inCombat = false;
         this.rage = this.stats.startRage;
-        this.isHeroicStrikeQueued = false;
-        this.IEA = false;
         this.damageMod = this.stats.damageMod;
         this.physDamageMod = this.stats.physDamageMod;
         this.flatArmor = this.stats.flatArmor;
         this.flatDamage = this.stats.flatDamage;
-        this.hastePerc = this.stats.haste;
+        this.haste = this.stats.haste;
         this.defense = this.stats.defense;
         this.rageGained = 0;
         this.rageSpent = 0;
         this.armor = this.stats.armor;
-        this.percArmorMod = 1;
+        this.bonusArmor = this.stats.bonusArmor;
+        this.armorMod = this.stats.armorMod;
         this.uptimes = {};
 
         this.threatMod = this.stats.threatMod;
@@ -190,7 +188,9 @@ export class Actor {
         this.hit = this.stats.hit;
         this.crit = this.stats.crit;
         this.block = this.stats.block;
-        this.GCD = 0;
+
+        this.onGCD = false;
+        this.inCombat = false;
 
         this.IEA = false;
         this.isHeroicStrikeQueued = false;

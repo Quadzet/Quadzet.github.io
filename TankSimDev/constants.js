@@ -41,7 +41,7 @@ export const HitType = {
 
 // Attributes that can be found on buffs/debuffs/consumes.
 export const ATTRIBUTES = [
-  "armor", "agility", "strength", "stamina",
+  "agility", "strength", "stamina",
   "crit", "hit", "attackpower", "haste",
   "defense", "armor", "bonusArmor", "parry",
   "dodge", "block", "blockvalue", "health",
@@ -108,11 +108,17 @@ export const CONSUMES = [
   'dragonbreath', 'dark-desire',
   'consecrated-stone', 'stone', 'shadow-oil', 'elemental-stone',
   'roids', 'ground-scorpok', 'lung-juice', 'juju-might', 'juju-power',
-  'firewater',
+  'firewater', 'greater-stoneshield-potion', 'mighty-rage-potion',
+  'great-rage-potion', 'lesser-stoneshield-potion',
 ];
 
 export const OH_BUFFS = [
   'oh-shadow-oil', 'oh-stone', 'oh-consecrated-stone', 'oh-elemental-stone'
+];
+
+export const POTIONS = [
+  'greater-stoneshield-potion', 'mighty-rage-potion',
+  'great-rage-potion', 'lesser-stoneshield-potion',
 ];
 
 export const WORLD_BUFFS = [

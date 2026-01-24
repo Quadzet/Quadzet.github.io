@@ -75,7 +75,7 @@ export function statRound(val) {
   }
 }
 export function checkInput(name, val, suffix) {
-  if (!val)
+  if (val === undefined)
     log_message(LOG_LEVEL.WARNING, "Missing " + name + suffix);
 }
 

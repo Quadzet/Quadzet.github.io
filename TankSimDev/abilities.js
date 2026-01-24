@@ -6,6 +6,7 @@ import { sortDescending } from './eventHelpFuncs.js';
 import { rollAttack, armorReduction } from './attacktable.js';
 import { onUseData } from './stats.js';
 import { Wield } from './constants.js'
+import { AURA_DATA } from './buffs.js'
 
 export function handleParryHaste(event, target, futureEvents) {
   futureEvents.forEach(e => {
@@ -369,6 +370,24 @@ export class Revenge extends Ability {
   }
 }
 
+export class Potion extends Ability {
+  constructor(name) {
+    super(name, 120000, 0, false)
+  }
+  use(timestamp, source, target, reactiveEvents, futureEvents) {
+    let spellCastEvent = {
+      type: "spellCast",
+      name: this.name,
+      source: source.name,
+      timestamp: timestamp,
+    }
+    this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
+  }
+  threatCalculator(event, source) {
+    return 0;
+  }
+}
+
 export class ShieldBlock extends Ability {
   constructor() {
     super("Shield Block", 6000, 10, false)
@@ -507,7 +526,7 @@ export class BattleShout extends Ability {
     this.processDamageEvent(timestamp, spellCastEvent, source, target, reactiveEvents, futureEvents)
   }
   isUsable(timestamp, source) {
-    return (defender.IEA && (attacker.GCD <= 0 || this.onGCD == false) && attacker.rage > this.rageCost);
+    return (defender.IEA && (!attacker.onGCD || !this.onGCD) && attacker.rage > this.rageCost);
   }
   rank(level) {
     if (level < 12) return 1;
@@ -699,15 +718,20 @@ export class OnUseAbility extends Ability {
 }
 
 
-export function getOnUseAbilities(gear) {
+export function getOnUseAbilities(stats) {
   let ret = [];
-  Object.keys(gear).forEach(slot => {
-    let id = gear[slot];
+  Object.keys(stats.gear).forEach(slot => {
+    let id = stats.gear[slot];
     if (onUseData[id] != null) {
       ret.push(new OnUseAbility(onUseData[id]));
     }
   });
+
+  let potion = stats.bonuses.potion;
+  if (potion !== undefined && potion != '')
+      ret.push(new Potion(AURA_DATA[potion]['name']));
   return ret;
+
 }
 
 // TODO: Make this a vector with priorities on each ability, like
@@ -736,6 +760,7 @@ export function TankAbilities(tankStats) {
     abilities["Death Wish"] = new DeathWish();
   if (tankStats.wield == Wield.SHIELD)
     abilities["Shield Block"] = new ShieldBlock();
+
   return abilities;
 }
 

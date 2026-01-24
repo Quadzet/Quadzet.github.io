@@ -1405,41 +1405,41 @@ export const onUseData = {
       cooldown: 600000,
 
       maxDuration: 10000,
-      hastePerc: 20,
+      haste: 20,
    },
    215161: {
       name: "Intense Concentration",
       cooldown: 600000,
 
       maxDuration: 10000,
-      hastePerc: 20,
+      haste: 20,
    },
    213105: {
       name: "Spicy!",
       cooldown: 120000,
 
       maxDuration: 30000,
-      hastePerc: 4,
+      haste: 4,
    },
    213348: {
       name: "Gyromatic Experiment 420b",
       cooldown: 1800000,
 
       maxDuration: 20000,
-      hastePerc: 5,
+      haste: 5,
    },
    9449: {
       name: "Haste",
       cooldown: 1800000,
 
       maxDuration: 30000,
-      hastePerc: 50,
+      haste: 50,
    },
    210741: {
       name: "Haste",
       cooldown: 1800000,
 
       maxDuration: 30000,
-      hastePerc: 50,
+      haste: 50,
    },
 }

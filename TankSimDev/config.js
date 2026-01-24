@@ -2,7 +2,7 @@
 // TODO: Remove weaponlists, update*list()
 
 import {
-  ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES,
+  ITEMS, ITEM_SETS, ITEM_SLOTS, ABILITIES, POTIONS,
   ENCHANT_SLOTS, MULT_ATTRIBUTES, ATTRIBUTES, Wield, ActorType,
   BUFFS, DEBUFFS, WORLD_BUFFS, CONSUMES, OH_BUFFS, IMP_BUFFS,
 } from './constants.js'
@@ -34,7 +34,7 @@ function writePlayerStats(stats) {
   document.getElementById("playerhit").innerHTML = `${stats.hit}`;
   document.getElementById("playercrit").innerHTML = `${Math.round(stats.crit * 10) / 10}`;
   document.getElementById("playerattackpower").innerHTML = `${Math.round(stats.attackpower)}`;
-  document.getElementById("playerarmor").innerHTML = `${Math.round(stats.armor)}`;
+  document.getElementById("playerarmor").innerHTML = `${Math.round(stats.armor + stats.bonusArmor)}`;
   document.getElementById("playerblock").innerHTML = `${Math.round((stats.block) * 100) / 100}`;
   document.getElementById("playerblockvalue").innerHTML = `${Math.round(stats.blockvalue)}`;
   document.getElementById("playerparry").innerHTML = `${Math.round((stats.parry) * 100) / 100}`;
@@ -547,22 +547,12 @@ export function updateStats() {
   applyMultMods(stats);
   applyStatEffects(stats, level);
   stats.armor *= stats.armorMod;
-  stats.armor += stats.bonusArmor;
   writePlayerStats(stats);
 
 
   stats.startRage = Number(document.querySelector("#startRage").value);
   // TODO: Enable stances as buffs, as well as stance dancing (execute).
   stats.damageMod *= 0.9;
-
-  /*let enhTotems = true; // TODO
-    let impFort = true; // TODO
-    let impImp = true; // TODO
-    let impBShout = true; // TODO
-    let impMight = true; // TODO
-    let impMOTW = true; // TODO
-    let impDevo = true; // TODO
-  */
 
   ABILITIES.forEach(ability => {
     let obj = {};
@@ -577,14 +567,22 @@ export function updateStats() {
     stats.rotation[`${ability}`] = obj;
   });
 
+  let potion;
+  for (const p of POTIONS) {
+    if (checkAuraToggle(p)) {
+      potion = p;
+      break;
+    }
+  }
+
   addTankProcs(stats, level);
-  // TODO: Move these settings from here.
   stats.bonuses = {
     windfury: checkAuraToggle('windfury'),
     goa: checkAuraToggle('goa'),
     fivePieceWrath: false,
     twoPieceDreadnaught: false,
     essenceOfTheRed: checkAuraToggle('essence-of-the-red'),
+    potion: potion,
   };
 
   let bossStats = getBossStats(level);

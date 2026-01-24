@@ -22,7 +22,7 @@ self.addEventListener('message', function(e) {
     globals.config = globals.config; // TODO: What is this and why does it exist?
 
     Actors = {
-        "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats.gear), TankProcs, TankAuras(globals)),
+        "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
         "Boss": new Actor("Boss", globals.bossStats, BossAbilities, [], BossProcs, BossAuras(globals)),
     }
     Actors["Tank"].target = Actors["Boss"];
