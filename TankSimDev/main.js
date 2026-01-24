@@ -41,6 +41,9 @@ export function toggleAura(event, aura) {
   event.preventDefault();
   let data = AURA_DATA[`${aura}`];
   const element = document.getElementById(aura + '-aura-img');
+
+  // TODO: If an aura (eg battle squawk) can have multiple stacks,
+  // handle it with the 'value' attribute.
   element.classList.toggle('aura-toggle-active');
 
   // Turn off any grouped (ie exlusive) auras.

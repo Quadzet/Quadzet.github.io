@@ -86,7 +86,7 @@ export const BUFFS = [
   'fort', 'bloodpact', 'inspiration',
   'kings', 'might', 'devo', 'loh',
   'strtotem', 'stoneskin', 'agitotem', 'windfury',
-  'thorns', 'retri',
+  'thorns', 'retri', 'chicken',
 ];
 
 export const IMP_BUFFS = [

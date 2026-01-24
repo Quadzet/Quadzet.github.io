@@ -109,6 +109,12 @@ export const AURA_DATA = {
     "levels": [16, 26, 36, 46, 56],
     "thorns": [5, 8, 12, 16, 20],
   },
+  "chicken": {
+    "type": "SPELL",
+    "ids": [23060],
+    "levels": [20],
+    "haste": [5],
+  },
 
 
   // *** WORLD BUFFS ***
