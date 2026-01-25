@@ -81,7 +81,11 @@ export function generateRageEventFromCast(source, target, event, rageCost) {
 }
 
 export class Ability {
-  constructor(name, baseCooldown, rageCost, onGCD) {
+  constructor(
+      name,
+      baseCooldown,
+      rageCost,
+      onGCD) {
     this.name = name
     this.baseCooldown = baseCooldown
     this.rageCost = rageCost
@@ -176,7 +180,7 @@ export class Autoattack extends Ability {
       let damage = this.weaponSwingRoll(source) + this.damage(this.rank(source.stats.level, this.HSBook));
       damage += source.flatDamage - target.flatArmor;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-      damageEvent = rollAttack(source, target, damage, true);
+      damageEvent = rollAttack(source, target, damage, false, true, true);
       damageEvent.threat = this.threatCalculator(damageEvent, source);
       damageEvent.rank = this.rank(source.stats.level);
       damageEvent.name = "Heroic Strike";
@@ -194,7 +198,7 @@ export class Autoattack extends Ability {
       let damage = this.weaponSwingRoll(source);
       damage += source.flatDamage - target.flatArmor;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-      damageEvent = rollAttack(source, target, damage, false, source.stats.dualWield);
+      damageEvent = rollAttack(source, target, damage, false, false, false, source.stats.wield == Wield.DUALWIELD);
       damageEvent.threat = this.threatCalculator(damageEvent, source);
       damageEvent.name = "MH Swing";
       damageEvent.timestamp = timestamp
@@ -273,6 +277,8 @@ export class Autoattack extends Ability {
 export class OHSwing extends Ability {
   constructor() {
     super("OH Swing", 0, 0, false)
+    this.isMeleeSpell = false;
+    this.isWeaponBased = false;
   }
 
   use(timestamp, source, target, reactiveEvents, futureEvents) {
@@ -280,7 +286,7 @@ export class OHSwing extends Ability {
     damage = damage * (0.5 + 0.025 * source.stats.talents.dwspec);
     damage += source.flatDamage - target.flatArmor;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-    let damageEvent = rollAttack(source, target, damage, false, !source.isHeroicStrikeQueued, true);
+    let damageEvent = rollAttack(source, target, damage, true, this.isMeleeSpell, this.isWeaponBased, !source.isHeroicStrikeQueued);
     damageEvent.trigger = true; // Triggers OH weapon procs
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents);
     let futureEvent = {
@@ -298,12 +304,15 @@ export class OHSwing extends Ability {
 export class Bloodthirst extends Ability {
   constructor(rageReduction = 0) {
     super("Bloodthirst", 6000, 30 - rageReduction, true)
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = false;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = 0.45 * source.getAP();
     damage += source.flatDamage - target.flatArmor;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-    let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.trigger = true;
 
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
@@ -314,13 +323,16 @@ export class Revenge extends Ability {
   constructor(book = false) {
     super("Revenge", 5000, 5, true);
     this.book = book;
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = false;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = this.damage(this.rank(source.stats.level));
     damage += source.stats.bonuses.twoPieceDreadnaught ? 75 : 0;
     damage += source.flatDamage - target.flatArmor;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-    let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.trigger = true;
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
   }
@@ -410,11 +422,13 @@ export class ShieldBlock extends Ability {
 export class SunderArmor extends Ability {
   constructor(rageReduction = 0) {
     super("Sunder Armor", 0, 15 - rageReduction, true)
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = false;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = 0;
-    let damageEvent = rollAttack(source, target, damage, true);
-    if (damageEvent.hit == "crit" || damageEvent.hit == "block") damageEvent.hit = "hit";
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.trigger = true;
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
   }
@@ -557,12 +571,15 @@ export class BattleShout extends Ability {
 export class ShieldSlam extends Ability {
   constructor(rageReduction = 0) {
     super("Shield Slam", 6000, 20 - rageReduction, true)
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = false;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = this.damage(this.rank(source.stats.level)) + source.getBlockValue() * 2;
     damage += source.flatDamage - target.flatArmor;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-    let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.trigger = false;
 
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
@@ -602,12 +619,15 @@ export class ShieldSlam extends Ability {
 export class MortalStrike extends Ability {
   constructor(rageReduction) {
     super("Mortal Strike", 6000, 30 - rageReduction, true)
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = true;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = (source.stats.mainhand.mindmg + Math.random() * (source.stats.mainhand.maxdmg - source.stats.mainhand.mindmg) + source.getAP() * source.stats.normSwing / (14 * 1000)) + this.damage(this.rank(source.stats.level));
     damage += source.flatDamage - target.flatArmor;
     damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-    let damageEvent = rollAttack(source, target, damage, true, false, false, true);
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.trigger = true;
 
     this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
@@ -634,14 +654,16 @@ export class MortalStrike extends Ability {
 export class Rend extends Ability {
   constructor(rageReduction = 0) {
     super("Rend", 0, 10 - rageReduction, true)
+    this.isOffhand = false;
+    this.isMeleeSpell = true;
+    this.isWeaponBased = false;
   }
   use(timestamp, source, target, reactiveEvents, futureEvents) {
     let damage = 0;
-    let damageEvent = rollAttack(source, target, damage, true);
-    if (!["dodge", "miss", "parry"].includes(damageEvent.hit)) damageEvent.hit = "hit";  // TODO this can't crit...
+    let damageEvent = rollAttack(source, target, damage, this.isOffhand, this.isMeleeSpell, this.isWeaponBased);
     damageEvent.rank = this.rank(source.stats.level);
     damageEvent.trigger = false;
-    this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents)
+    this.processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents);
 
     if (damageEvent.hit == "hit") {
       for (let i = 0; i < this.duration(this.rank(source.stats.level)) / 3000; i++) {

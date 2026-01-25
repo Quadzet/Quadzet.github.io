@@ -456,7 +456,7 @@ function getBossStats(playerLevel) {
 
 
 export function updateStats() {
-  let level = document.querySelector("#player-level").value
+  let level = Number(document.querySelector("#player-level").value);
   var output = document.getElementById("player-level-span");
   output.innerHTML = level;
 

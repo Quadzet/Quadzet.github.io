@@ -78,7 +78,7 @@ export function getPlayerMissChance(atkSkill, defSkill, hit, dualWield) {
 }
 
 // Tank hitting the boss
-export function twoRollTankBossTable(attacker, defender, damage) {
+export function twoRollTankBossTable(attacker, defender, damage, isWeaponBased) {
     let wepSkill = attacker.stats.mhskill;
     let defense = defender.defense;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, false);
@@ -100,19 +100,23 @@ export function twoRollTankBossTable(attacker, defender, damage) {
     if (rng < miss) {
         damage = 0;
         type = 'miss'
-    }
-    else if (rng < miss + parry) {
+    } else if (rng < miss + parry) {
         damage = 0;
         type = 'parry';
-    }
-    else if (rng < miss + parry + dodge) {
+    } else if (rng < miss + parry + dodge) {
         damage = 0;
         type = 'dodge';
-    }
-    else {
+    } else if (damage == 0) { // Can't be a block or critical hit.
+        type = 'hit';
+    // Weapon based attacks (eg HS, MS, WW) roll block in first roll
+    // and can't be critical blocked.
+    } else if (isWeaponBased && rng < miss + parry + dodge + block) {
+        damage = Math.max(0, damage - blockValue);
+        type = 'block';
+    } else {
         type = 'hit';
         let crit_roll = 100 * Math.random();
-        let block_roll = 100 * Math.random();
+        let block_roll = isWeaponBased ? 100 : 100 * Math.random();
         if (crit_roll < crit && block_roll < block) {
             damage = Math.max(0, 2 * damage * attacker.stats.abilityCritMod * attacker.getCritMod() - blockValue);
             type = 'crit block';
@@ -131,7 +135,7 @@ export function twoRollTankBossTable(attacker, defender, damage) {
     damageEvent.amount = damage
     damageEvent.source = attacker.name
     damageEvent.target = defender.name
-    if (type == "block")
+    if (type == "block" || type == "crit block")
         damageEvent.blockAmount = blockValue
     return damageEvent
 }
@@ -254,18 +258,21 @@ export function rollBossTankTable(attacker, defender, damage, yellow = false) {
         damageEvent.blockAmount = defender.getBlockValue()
     return damageEvent
 }
-// TODO
-export function rollDpsBossTable(stats, damage, yellow = false) {
-    return;
-}
 
-export function rollAttack(attacker, defender, damage, yellow = false, dualWieldMiss = false, OHSwing = false, meleeSpell = false) {
-    if (meleeSpell == true)
-        return twoRollTankBossTable(attacker, defender, damage);
+export function rollAttack(
+        attacker,
+        defender,
+        damage,
+        isOffhand,
+        isMeleeSpell,
+        isWeaponBased,
+        dualWieldMiss = false) {
+    if (isMeleeSpell)
+        return twoRollTankBossTable(attacker, defender, damage, isWeaponBased);
     else if (attacker.stats.type == ActorType.TANK && defender.stats.type == ActorType.BOSS)
-        return rollTankBossTable(attacker, defender, damage, yellow, dualWieldMiss, OHSwing);
+        return rollTankBossTable(attacker, defender, damage, isMeleeSpell, dualWieldMiss, isOffhand);
     else if (attacker.stats.type == ActorType.BOSS && defender.stats.type == ActorType.TANK)
-        return rollBossTankTable(attacker, defender, damage, yellow);
+        return rollBossTankTable(attacker, defender, damage, isMeleeSpell);
 }
 
 export function rollSpellAttack(attacker, defender, damage, isDot, isPhys, isHoly = false) {
