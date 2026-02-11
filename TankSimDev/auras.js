@@ -111,7 +111,7 @@ export class Aura {
 
     validate() {
         const required = [
-            'type', 'name', 'target', 'source', 'maxStacks', 'duration',
+            'type', 'name', 'maxStacks', 'duration',
             'maxDuration', 'damage', 'scalingStacks', 'trackUptime',
             'startStacks', 'stacks', 'threat',
         ];
