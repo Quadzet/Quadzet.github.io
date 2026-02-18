@@ -26,19 +26,38 @@ export function getIndex(buff, level) {
   return ix;
 }
 
-function writePlayerStats(stats) {
-  document.getElementById("playerhp").innerHTML = `${Math.round(stats.health)}`;
-  document.getElementById("playerstrength").innerHTML = `${Math.round(stats.strength)}`;
-  document.getElementById("playerstamina").innerHTML = `${Math.round(stats.stamina)}`;
-  document.getElementById("playeragility").innerHTML = `${Math.round(stats.agility)}`;
+function writePlayerStats(stats, level) {
+  let stamina = stats.stamina * stats.staminaMod;
+  let strength = stats.strength * stats.strengthMod;
+  let agility = stats.agility * stats.agilityMod;
+  let armor = stats.armor * stats.armorMod + stats.bonusArmor;
+
+  let hpMod = document.getElementById("race").value == "Tauren" ? 1.05 : 1;
+  let health = (stats.health + stats.stamina * 10) * hpMod;
+  armor = stats.armor + stats.agility * 2;
+  let crit  = stats.crit + stats.agility * 0.05 + (stats.mhskill - (level * 5)) * 0.04;
+  let attackpower = stats.attackpower + stats.strength * 2;
+  let dodge = stats.dodge + 5 + stats.agility * 0.05 + stats.defense * 0.04;
+  let blockvalue = stats.blockvalue + stats.strength / 20;
+  let parry = stats.parry + 5 + stats.defense * 0.04;
+  let block = stats.block + 5 + stats.defense * 0.04;
+
+  if (stats.wield != Wield.SHIELD) {
+    stats.block = 0;
+    stats.blockvalue = 0;
+  }
+  document.getElementById("playerhp").innerHTML = `${Math.round(health)}`;
+  document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
+  document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)}`;
+  document.getElementById("playeragility").innerHTML = `${Math.round(agility)}`;
   document.getElementById("playerhit").innerHTML = `${stats.hit}`;
-  document.getElementById("playercrit").innerHTML = `${Math.round(stats.crit * 10) / 10}`;
-  document.getElementById("playerattackpower").innerHTML = `${Math.round(stats.attackpower)}`;
-  document.getElementById("playerarmor").innerHTML = `${Math.round(stats.armor + stats.bonusArmor)}`;
-  document.getElementById("playerblock").innerHTML = `${Math.round((stats.block) * 100) / 100}`;
-  document.getElementById("playerblockvalue").innerHTML = `${Math.round(stats.blockvalue)}`;
-  document.getElementById("playerparry").innerHTML = `${Math.round((stats.parry) * 100) / 100}`;
-  document.getElementById("playerdodge").innerHTML = `${Math.round((stats.dodge) * 100) / 100}`;
+  document.getElementById("playercrit").innerHTML = `${Math.round(crit * 10) / 10}`;
+  document.getElementById("playerattackpower").innerHTML = `${Math.round(attackpower)}`;
+  document.getElementById("playerarmor").innerHTML = `${Math.round(armor)}`;
+  document.getElementById("playerblock").innerHTML = `${Math.round((block) * 100) / 100}`;
+  document.getElementById("playerblockvalue").innerHTML = `${Math.round(blockvalue)}`;
+  document.getElementById("playerparry").innerHTML = `${Math.round((parry) * 100) / 100}`;
+  document.getElementById("playerdodge").innerHTML = `${Math.round((dodge) * 100) / 100}`;
   document.getElementById("playerdefense").innerHTML = `${stats.defense}`;
   document.getElementById("playermhskill").innerHTML = `${stats.mhskill}`;
   document.getElementById("playerohskill").innerHTML = `${stats.ohskill}`;
@@ -544,10 +563,10 @@ export function updateStats() {
   addEnchantStats(stats);
   addAuraStats(stats, level);
   applyExtraStats(stats, level);
-  applyMultMods(stats);
-  applyStatEffects(stats, level);
-  stats.armor *= stats.armorMod;
-  writePlayerStats(stats);
+  //applyMultMods(stats);
+  //applyStatEffects(stats, level);
+  //stats.armor *= stats.armorMod;
+  writePlayerStats(stats, level);
 
 
   stats.startRage = Number(document.querySelector("#startRage").value);

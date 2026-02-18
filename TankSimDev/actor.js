@@ -2,198 +2,268 @@
 
 import { handleScheduledEvent, performAction } from './rotation.js';
 import { generateRageEventFromDamage } from './abilities.js';
+import { log_message, LOG_LEVEL } from './logging.js';
 
 export class Actor {
-    constructor(name, stats, abilities, onUseAbilities, procs, auras) {
-        this.name = name;
-        this.stats = stats;
-        this.abilities = abilities;
-        this.onUseAbilities = onUseAbilities;
-        this.rotation = stats.rotation;
-        this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
+  constructor(name, stats, APL, abilities, onUseAbilities, procs, auras) {
+    this.name = name;
+    this.stats = stats;
+    this.APL = APL;
 
-        this.threatMod = stats.threatMod;
-        this.damageMod = stats.damageMod;
-        this.physDamageMod = stats.physDamageMod;
-        this.armorMod = stats.armorMod;
-        this.haste = stats.haste;
-        this.armor = stats.armor;
-        this.bonusArmor = stats.bonusArmor;
-        this.armorMod = stats.armorMod;
-        this.defense = stats.defense;
-        this.crit = stats.crit;
-        this.hit = stats.hit;
-        this.block = stats.block;
-        this.onGCD = false;
-        this.inCombat = false;
-        this.rage = stats.startRage;
+    this.strength = stats.strength;
+    this.stamina = stats.stamina;
+    this.agility = stats.agility;
 
-        this.procs = procs;
-        this.auras = auras;
+    this.staminaMod = stats.staminaMod;
+    this.strengthMod = stats.strengthMod;
+    this.agilityMod = stats.agilityMod;
+    this.flatArmor = stats.flatArmor;
+    this.flatDamage = stats.flatDamage;
+    this.threatMod = stats.threatMod;
+    this.damageMod = stats.damageMod;
+    this.physDamageMod = stats.physDamageMod;
+    this.armorMod = stats.armorMod;
 
-        this.uptimes = {};
+    this.attackpower = stats.attackpower;
+    this.haste = stats.haste;
+    this.armor = stats.armor;
+    this.bonusArmor = stats.bonusArmor;
+    this.armorMod = stats.armorMod;
+    this.defense = stats.defense;
+    this.crit = stats.crit;
+    this.hit = stats.hit;
+    this.blockvalue = stats.blockvalue;
+    this.block = stats.block;
+    this.health = stats.health;
 
-        this.rageGained = 0; // remove?
-        this.rageSpent = 0;
+    this.rotation = stats.rotation;
+    this.abilities = abilities;
+    this.onUseAbilities = onUseAbilities;
+    this.procs = procs;
+    this.auras = auras;
+    this.uptimes = {};
 
-        this.staminaMultiplier = stats.staminaMultiplier;;
-        this.strengthMultiplier = stats.strengthMultiplier;;
-        this.agilityMultiplier = stats.agilityMultiplier;;
-        this.flatArmor = stats.flatArmor;
-        this.flatDamage = stats.flatDamage;
+    this.rage = stats.startRage;
+    this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
+    this.rageGained = 0; // remove?
+    this.rageSpent = 0;
 
-        // Special stuff
-        this.IEA = false;
-        this.isHeroicStrikeQueued = false;
-        this.windfury = false;
+    // Special stuff
+    this.onGCD = false;
+    this.inCombat = false;
+    this.IEA = false;
+    this.isHeroicStrikeQueued = false;
+    this.windfury = false;
+  }
+
+  getAttribute(attr) {
+    switch (attr) {
+    case 'armor':
+        return this.getArmor();
+    case 'attackpower':
+        return this.getAP();
+    case 'blockvalue':
+        return this.getBlockValue();
+    case 'dodge':
+        return this.getDodge();
+    case 'swingtimer':
+        return this.getSwingTimer();
+    case 'ohswingtimer':
+        return this.getOHSwingTimer();
+    case 'stamina':
+        return this.getStamina();
+    case 'strength':
+        return this.getStrength();
+    case 'agility':
+        return this.getAgility();
+    case 'crit':
+        return this.getCrit();
+    case 'health':
+        return this.getHealth();
+    default:
+        return this[attr];
+    }
+  }
+
+  decideAction(State) {
+    return this.APL.evaluate(State, this);
+  }
+
+  // TODO: Expand this function with non-abilities, eg onUse etc.
+  actionUsable(State, abilityName) {
+    if (!(abilityName in this.abilities)) {
+      log_message(LOG_LEVEL.WARNING, `actionUsable(): Ability ${abilityName} ` +
+        `is not included in ${this.name}'s ability list.`);
+      return false;
+    }
+    return this.abilities[abilityName].isUsable(State.time, this);
+  }
+
+  performAction(action, target, State, reactiveEvents, futureEvents) {
+    if (action === null) {
+      log_message(LOG_LEVEL.DEBUG, `performAction(): Skipping null action.`)
+      return false;
+    }
+    if (!(action.ability in this.abilities)) {
+      log_message(LOG_LEVEL.WARNING, `performAction(): Ability ${action.ability} ` +
+        `is not included in ${this.name}'s ability list.`);
+      return false;
     }
 
-    handleEvent(event, reactiveEvents, futureEvents) {
-        // Scheduled events, eg prepull actions
-        if (this.name == "Tank" && event.type == "scheduledEvent") {
-          handleScheduledEvent(event, this, this.target, reactiveEvents, futureEvents);
-          return;
+    this.abilities[action.ability].use(State.time, this, target, reactiveEvents, futureEvents);
+  }
+
+
+  handleEvent(event, State, reactiveEvents, futureEvents) {
+    // Scheduled events, eg prepull actions
+    if (this.name == "Tank" && event.type == "scheduledEvent") {
+      handleScheduledEvent(event, this, this.target, reactiveEvents, futureEvents);
+      return;
+    }
+    // Auras
+    this.auras.forEach(aura => {
+      aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
+    });
+
+    if (this.name == "Tank") {
+      // Procs
+      this.procs.forEach(proc => {
+        proc.handleEvent(event, this, this.target, reactiveEvents, futureEvents)
+      });
+      // Potentially generate rage from the dmg taken/done (white swing)
+      if (event.type == "damage") {
+        let rageEvent = generateRageEventFromDamage(this, this.target, event, ["MH Swing", "OH Swing"].includes(event.name));
+        if (rageEvent !== undefined)
+          reactiveEvents.push(rageEvent);
+        // An ability came off cooldown, check if we should use it
+      } else if (event.type == "cooldownFinish" && !this.onGCD) {
+        performAction(State, this, this.target, reactiveEvents, futureEvents)
+      } else if (event.type == "rage") {
+        this.addRage(event);
+        // We might have just gotten rage to perform an action
+        performAction(State, this, this.target, reactiveEvents, futureEvents)
+      } else if (event.type == "extra attack") {
+        let index = futureEvents.findIndex(e => { return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source) })
+        if (index >= 0)
+          futureEvents.splice(index, 1)
+        this.abilities["MH Swing"].use(State.time, this, this.target, reactiveEvents, futureEvents);
+      } else {
+        // Placeholder for if we just got rage to be able to take an action
+        if (!this.onGCD) {
+          performAction(State, this, this.target, reactiveEvents, futureEvents)
         }
-        // Auras
-        this.auras.forEach(aura => {
-          aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
-        });
-
-        if (this.name == "Tank") {
-          // Procs
-          this.procs.forEach(proc => {
-            proc.handleEvent(event, this, this.target, reactiveEvents, futureEvents)
-          });
-          // Potentially generate rage from the dmg taken/done (white swing)
-          if(event.type == "damage") {
-            let rageEvent = generateRageEventFromDamage(this, this.target, event, ["MH Swing", "OH Swing"].includes(event.name));
-            if (rageEvent !== undefined)
-              reactiveEvents.push(rageEvent);
-          // An ability came off cooldown, check if we should use it
-          } else if(event.type == "cooldownFinish" && !this.onGCD) {
-            performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
-          } else if (event.type == "rage") {
-            this.addRage(event);
-            // We might have just gotten rage to perform an action
-            performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
-          } else if (event.type == "extra attack") {
-            let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source)})
-            if(index >= 0)
-                futureEvents.splice(index, 1)
-            this.abilities["MH Swing"].use(event.timestamp, this, this.target, reactiveEvents, futureEvents);
-          } else 
-          // Placeholder for if we just got rage to be able to take an action
-          if(!this.onGCD) {
-              performAction(event.timestamp, this, this.target, reactiveEvents, futureEvents)
-          }
-        }
+      }
     }
+  }
 
-    addRage(event, add=false) {
-      event.currentAmount = this.rage;
-      this.rage = Math.max(0, Math.min(100, this.rage + event.amount))
+  addRage(event, add = false) {
+    event.currentAmount = this.rage;
+    this.rage = Math.max(0, Math.min(100, this.rage + event.amount))
+  }
+
+  getSwingTimer() {
+    return this.stats.mainhand.swingtimer / (1 + this.haste / 100)
+  }
+  getOHSwingTimer() {
+    return this.stats.offhand.swingtimer / (1 + this.haste / 100)
+  }
+
+  getArmor() {
+    return Math.max(0, (this.armor + this.getAgility() / 20) * this.armorMod + this.bonusArmor);
+  }
+
+  // TODO: Rename to getAttackpower().
+  getAP() {
+    return this.attackpower + this.strength * this.strengthMod;
+  }
+
+  getStamina() {
+    return this.stamina * this.staminaMod;
+  }
+
+  getAgility() {
+    return this.agility * this.agilityMod;
+  }
+
+  getStrength() {
+    return this.strength * this.strengthMod;
+  }
+
+  getHealth() {
+    return this.health + this.getStamina() * 10;
+  }
+
+  // TODO: Scale agi correctly depending on player level.
+  getDodge() {
+    return this.dodge + this.getAgility() / 20;
+  }
+
+  getBlockValue() {
+    return this.blockvalue + this.strength / 20;
+  }
+
+  getCrit() {
+    return this.crit + this.getAgility() / 20;
+  }
+
+  getPhysDamageMod() {
+    return this.damageMod * this.physDamageMod;
+  }
+
+  auraActive(name) {
+    let active = false;
+    this.auras.forEach(aura => {
+      if (aura.name == name && aura.duration > 0)
+        active = true;
+    })
+    return active;
+  }
+
+  resetCooldown(name) {
+    if (this.abilities[name] != null)
+      this.abilities[name].cooldownReady = 0; // Should be timestamp realistically but should not matter
+  }
+
+
+  reset() {
+    for (let ability in this.abilities) {
+      this.abilities[`${ability}`].cooldownReady = -90000;
     }
+    this.onUseAbilities.forEach(ability => {
+      ability.cooldownReady = -90000;
+    });
+    this.auras.forEach(aura => {
+      aura.duration = 0;
+      aura.stacks = 0;
+    });
+    this.procs.forEach(proc => proc.reset());
+    this.buffs = {};
+    this.debuffs = {};
+    this.rage = this.stats.startRage;
+    this.damageMod = this.stats.damageMod;
+    this.physDamageMod = this.stats.physDamageMod;
+    this.flatArmor = this.stats.flatArmor;
+    this.flatDamage = this.stats.flatDamage;
+    this.haste = this.stats.haste;
+    this.defense = this.stats.defense;
+    this.rageGained = 0;
+    this.rageSpent = 0;
+    this.armor = this.stats.armor;
+    this.bonusArmor = this.stats.bonusArmor;
+    this.armorMod = this.stats.armorMod;
+    this.uptimes = {};
 
-    getSwingTimer() {
-        return this.stats.mainhand.swingtimer/(1+this.haste/100)
-    }
-    getOHSwingTimer() {
-        return this.stats.offhand.swingtimer/(1+this.haste/100)
-    }
+    this.threatMod = this.stats.threatMod;
+    this.resilience = this.stats.resilience;
+    this.hit = this.stats.hit;
+    this.crit = this.stats.crit;
+    this.block = this.stats.block;
 
-    // *** old *** 
-    getArmor() {
-        return Math.max(0, this.armor * this.armorMod + this.bonusArmor);
-    }
+    this.onGCD = false;
+    this.inCombat = false;
 
-    getAP() {
-        let AP = this.stats.attackpower;
-        this.auras.forEach(aura => {
-          if (aura.duration > 0 && aura.attackpowerMod)
-            AP *= aura.attackpowerMod;
-        })
-        return AP;
-    }
-
-    auraActive(name) {
-      let active = false;
-      this.auras.forEach(aura => {
-        if (aura.name == name && aura.duration > 0)
-          active = true;
-      })
-      return active;
-    }
-
-    resetCooldown(name) {
-      if (this.abilities[name] != null)
-        this.abilities[name].cooldownReady = 0; // Should be timestamp realistically but should not matter
-    }
-
-    getCritMod() {
-        let critMod = this.stats.critMod;
-        this.auras.forEach(aura => {
-          if (aura.duration > 0 && aura.critMod)
-            critMod *= aura.critMod;
-        })
-        return critMod;
-    }
-    // TODO: Add Str and blockvalue buffs.
-    getBlockValue() {
-        return this.stats.blockvalue;
-    }
-
-    getBlock() {
-        return this.block
-    }
-
-    getPhysDamageMod() {
-      return this.damageMod * this.physDamageMod;
-    }
-
-    getSpellDamageMod() {
-      return this.damageMod;
-    }
-
-
-    reset() {
-        for(let ability in this.abilities) {
-            this.abilities[`${ability}`].cooldownReady = -90000;
-        }
-        this.onUseAbilities.forEach(ability => {
-            ability.cooldownReady = -90000;
-        });
-        this.auras.forEach(aura => {
-          aura.duration = 0;
-          aura.stacks = 0;
-        });
-        this.procs.forEach(proc => proc.reset());
-        this.buffs = {};
-        this.debuffs = {};
-        this.rage = this.stats.startRage;
-        this.damageMod = this.stats.damageMod;
-        this.physDamageMod = this.stats.physDamageMod;
-        this.flatArmor = this.stats.flatArmor;
-        this.flatDamage = this.stats.flatDamage;
-        this.haste = this.stats.haste;
-        this.defense = this.stats.defense;
-        this.rageGained = 0;
-        this.rageSpent = 0;
-        this.armor = this.stats.armor;
-        this.bonusArmor = this.stats.bonusArmor;
-        this.armorMod = this.stats.armorMod;
-        this.uptimes = {};
-
-        this.threatMod = this.stats.threatMod;
-        this.resilience = this.stats.resilience;
-        this.hit = this.stats.hit;
-        this.crit = this.stats.crit;
-        this.block = this.stats.block;
-
-        this.onGCD = false;
-        this.inCombat = false;
-
-        this.IEA = false;
-        this.isHeroicStrikeQueued = false;
-        this.windfury = false;
-    }
+    this.IEA = false;
+    this.isHeroicStrikeQueued = false;
+    this.windfury = false;
+  }
 }

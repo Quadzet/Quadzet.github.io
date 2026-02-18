@@ -118,7 +118,7 @@ export function twoRollTankBossTable(attacker, defender, damage, isWeaponBased) 
         let crit_roll = 100 * Math.random();
         let block_roll = isWeaponBased ? 100 : 100 * Math.random();
         if (crit_roll < crit && block_roll < block) {
-            damage = Math.max(0, 2 * damage * attacker.stats.abilityCritMod * attacker.getCritMod() - blockValue);
+            damage = Math.max(0, 2 * damage * attacker.stats.abilityCritMod * attacker.stats.critMod - blockValue);
             type = 'crit block';
         }
         else if (block_roll < block) {
@@ -126,7 +126,7 @@ export function twoRollTankBossTable(attacker, defender, damage, isWeaponBased) 
             type = 'block';
         }
         else if (crit_roll < crit) {
-            damage = 2 * damage * attacker.stats.abilityCritMod * attacker.getCritMod();
+            damage = 2 * damage * attacker.stats.abilityCritMod * attacker.stats.critMod;
             type = 'crit';
         }
     }
@@ -187,7 +187,7 @@ export function rollTankBossTable(attacker, defender, damage, yellow = false, du
     }
     else if ((!yellow && rng < miss + parry + dodge + block + glance + crit) || (rng < miss + parry + dodge + block + crit)) {
         damage = 2 * damage * (yellow ? attacker.stats.abilityCritMod : 1); // Impale
-        damage *= attacker.getCritMod(); // e.g. wrecking crew
+        damage *= attacker.stats.critMod; // e.g. wrecking crew
         type = "crit";
     }
     else type = "hit";

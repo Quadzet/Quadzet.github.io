@@ -2,64 +2,64 @@ import { handleCombatStart, handleScheduledEvent, performAction } from './rotati
 import { handleParryHaste } from './abilities.js';
 import { sortDescending } from './eventHelpFuncs.js';
 
-export function handleEvent(event, futureEvents, Actors) {
+export function handleEvent(event, futureEvents, State/*Actors*/) {
   let newEvents = [];
   let reactiveEvents = [event];
 
   do {
     event = reactiveEvents.shift();
     if (event.type == "combatStart") {
-      let source = Actors["Tank"];
-      let target = Actors["Boss"];
+      let source = State.Tank;
+      let target = State.Boss;
 
-      handleCombatStart(source, target, reactiveEvents, futureEvents);
-      handleCombatStart(target, source, reactiveEvents, futureEvents);
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
-      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
+      handleCombatStart(source, target, State, reactiveEvents, futureEvents);
+      handleCombatStart(target, source, State, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "scheduledEvent") {
-      let source = Actors["Tank"];
-      let target = Actors["Boss"];
+      let source = State.Tank;
+      let target = State.Boss;
       handleScheduledEvent(event, source, target, reactiveEvents, futureEvents);
     }
     else if (event.type == "swingTimer") {
-      let source = Actors[event.source];
-      let target = Actors[event.target];
+      let source = State[event.source];
+      let target = State[event.target];
       source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents);
     }
     else if (event.type == "GCD") {
-      let source = Actors[event.source];
+      let source = State[event.source];
       let target = source.target;
       source.onGCD = false;
-      performAction(event.timestamp, source, target, reactiveEvents, futureEvents);
+      performAction(State, source, target, reactiveEvents, futureEvents);
     }
     else if (event.type == "cooldownFinish") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "auraExpire") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
-      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "auraApply") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
-      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "rage") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "extra attack") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "damage") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
-      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "spellCast") {
-      Actors["Tank"].handleEvent(event, reactiveEvents, futureEvents);
-      Actors["Boss"].handleEvent(event, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     if (event.type == "damage" && event.hit == "parry") {
-      handleParryHaste(event, Actors[event.target], futureEvents);
+      handleParryHaste(event, State[event.target], futureEvents);
     }
 
     newEvents.push(event);

@@ -1,14 +1,18 @@
 export const LOG_LEVEL = {
-  INFO: {
+  DEBUG: {
     level: 0,
+    prefix: "[d] "
+  },
+  INFO: {
+    level: 1,
     prefix: "[i] "
   },
   WARNING: {
-    level: 1,
+    level: 2,
     prefix: "[w] "
   },
   ERROR: {
-    level: 2,
+    level: 3,
     prefix: "[e] "
   },
 }

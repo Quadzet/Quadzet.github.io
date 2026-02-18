@@ -3,6 +3,7 @@ import { TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js
 import { Actor } from '../actor.js';
 import { TankAuras, BossAuras } from '../auras.js';
 import { handleEvent, generatePrePullEvents } from '../simulation-core.js';
+import { APL } from '../apl.js';
 
 const range = (length) =>
     Array.from({ length }, (_, i) => i)
@@ -21,12 +22,31 @@ self.addEventListener('message', function(e) {
 
     globals.config = globals.config; // TODO: What is this and why does it exist?
 
+    let aplScript = `
+    use "Death Wish";
+    use "Bloodthirst";
+    use "Revenge";
+    use "Heroic Strike" if player.rage > 50;
+    use "Sunder Armor" if player.rage > 60;
+    `;
+    //wait "Bloodthirst".cooldown if "Bloodthirst".cooldown < 0.5;
+
+    let TankAPL = new APL(aplScript);
+    let BossAPL = new APL('');
+
     Actors = {
-        "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
-        "Boss": new Actor("Boss", globals.bossStats, BossAbilities, [], BossProcs, BossAuras(globals)),
-    }
+        "Tank": new Actor("Tank", globals.tankStats, TankAPL, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
+        "Boss": new Actor("Boss", globals.bossStats, BossAPL, BossAbilities, [], BossProcs, BossAuras(globals)),
+    };
+
     Actors["Tank"].target = Actors["Boss"];
     Actors["Boss"].target = Actors["Tank"];
+
+    let State = {
+      Tank: Actors["Tank"],
+      Boss: Actors["Boss"],
+      time: 0.0,
+    };
 
     let exampleList = []
     let results = {
@@ -48,10 +68,12 @@ self.addEventListener('message', function(e) {
         while(true)
         {
             let event = FutureEvents.pop();
-            if(!event || event.timestamp > globals.config.simDuration*1000)
+            if(!event || event.timestamp > globals.config.simDuration * 1000)
                 break;
-            let newEvents = handleEvent(event, FutureEvents, Actors);
-            // TODO: Better perf to concat? Probably not
+            State.time = event.timestamp;
+            let newEvents = handleEvent(event, FutureEvents, State);
+            // TODO: Consider merging the new events following
+            //       some rule rather than arbitrarily.
             newEvents.forEach(event => {
               eventList.push(event);
             })

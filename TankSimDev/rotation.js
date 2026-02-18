@@ -85,32 +85,37 @@ export function handleScheduledEvent(event, source, target, reactiveEvents, futu
   }
 }
 
-export function performAction(timestamp, source, target, reactiveEvents, futureEvents) {
+export function performAction(State, source, target, reactiveEvents, futureEvents) {
   if (!source.inCombat) return; // Don't take non-scheduled actions out of combat
   if (source.name == "Tank") {
+
+    let action = source.decideAction(State);
+    source.performAction(action, target, State, reactiveEvents, futureEvents);
+    return;
+
     // Tank GCD action priority list, TODO: Make this smarter, don't have to check the other onGCD if we have jus tused an ability
     source.onUseAbilities.forEach(onUse => {
-      if (onUse.isUsable(timestamp, source)) {
-        onUse.use(timestamp, source, source, reactiveEvents, futureEvents);
+      if (onUse.isUsable(State.time, source)) {
+        onUse.use(State.time, source, source, reactiveEvents, futureEvents);
       }
     });
     if (!source.onGCD) {
-      if (source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(timestamp, source)) {
-        source.abilities["Death Wish"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(State.time, source)) {
+        source.abilities["Death Wish"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.rage > source.rotation["shield-slam"].rage && source.abilities["Shield Slam"].isUsable(timestamp, source)) {
-        source.abilities["Shield Slam"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.rage > source.rotation["shield-slam"].rage && source.abilities["Shield Slam"].isUsable(State.time, source)) {
+        source.abilities["Shield Slam"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.abilities["Bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["Bloodthirst"].isUsable(timestamp, source)) {
-        source.abilities["Bloodthirst"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.abilities["Bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["Bloodthirst"].isUsable(State.time, source)) {
+        source.abilities["Bloodthirst"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.abilities["Mortal Strike"] != null && source.rotation["mortal-strike"].use && source.rage > source.rotation["mortal-strike"].rage && source.abilities["Mortal Strike"].isUsable(timestamp, source)) {
-        source.abilities["Mortal Strike"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.abilities["Mortal Strike"] != null && source.rotation["mortal-strike"].use && source.rage > source.rotation["mortal-strike"].rage && source.abilities["Mortal Strike"].isUsable(State.time, source)) {
+        source.abilities["Mortal Strike"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["revenge"].use && source.rage > source.rotation["revenge"].rage && source.abilities["Revenge"].isUsable(timestamp, source)) {
-        source.abilities["Revenge"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["revenge"].use && source.rage > source.rotation["revenge"].rage && source.abilities["Revenge"].isUsable(State.time, source)) {
+        source.abilities["Revenge"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["rend"].use && source.rage > source.rotation["rend"].rage && source.abilities["Rend"] && source.abilities["Rend"].isUsable(timestamp, source)) {
+      if (source.rotation["rend"].use && source.rage > source.rotation["rend"].rage && source.abilities["Rend"] && source.abilities["Rend"].isUsable(State.time, source)) {
         let rendActive = false;
         // TODO: Ineffective
         target.auras.forEach(aura => {
@@ -118,23 +123,23 @@ export function performAction(timestamp, source, target, reactiveEvents, futureE
             rendActive = true;
         })
         if (!rendActive)
-          source.abilities["Rend"].use(timestamp, source, target, reactiveEvents, futureEvents);
+          source.abilities["Rend"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["sunder-armor"].use && source.rage > source.rotation["sunder-armor"].rage && source.abilities["Sunder Armor"] && source.abilities["Sunder Armor"].isUsable(timestamp, source)) {
-        source.abilities["Sunder Armor"].use(timestamp, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["sunder-armor"].use && source.rage > source.rotation["sunder-armor"].rage && source.abilities["Sunder Armor"] && source.abilities["Sunder Armor"].isUsable(State.time, source)) {
+        source.abilities["Sunder Armor"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
     }
 
     // Tank off-GCD action priority list
-    if (source.abilities["Bloodrage"].isUsable(timestamp, source)) {
+    if (source.abilities["Bloodrage"].isUsable(State.time, source)) {
       if (source.rage < 75)
-        source.abilities["Bloodrage"].use(timestamp, source, target, reactiveEvents, futureEvents);
+        source.abilities["Bloodrage"].use(State.time, source, target, reactiveEvents, futureEvents);
     }
-    if (source.rotation["shield-block"].use && source.rage > source.rotation["shield-block"].rage && source.abilities["Shield Block"] && source.abilities["Shield Block"].isUsable(timestamp, source)) {
-      source.abilities["Shield Block"].use(timestamp, source, target, reactiveEvents, futureEvents);
+    if (source.rotation["shield-block"].use && source.rage > source.rotation["shield-block"].rage && source.abilities["Shield Block"] && source.abilities["Shield Block"].isUsable(State.time, source)) {
+      source.abilities["Shield Block"].use(State.time, source, target, reactiveEvents, futureEvents);
     }
-    if (source.rotation["heroic-strike"].use && source.rage > source.rotation["heroic-strike"].rage && source.abilities["Heroic Strike"].isUsable(timestamp, source)) {
-      source.abilities["Heroic Strike"].use(timestamp, source, target, reactiveEvents, futureEvents);
+    if (source.rotation["heroic-strike"].use && source.rage > source.rotation["heroic-strike"].rage && source.abilities["Heroic Strike"].isUsable(State.time, source)) {
+      source.abilities["Heroic Strike"].use(State.time, source, target, reactiveEvents, futureEvents);
     }
 
 
@@ -144,10 +149,10 @@ export function performAction(timestamp, source, target, reactiveEvents, futureE
 }
 
 // TODO: Prepull stuff like potions and trinkets etc.. or put it all in FutureEvents?
-export function handleCombatStart(source, target, reactiveEvents, futureEvents) {
+export function handleCombatStart(source, target, State, reactiveEvents, futureEvents) {
   source.inCombat = true;
   if (source.name == "Tank") {
-    performAction(0, source, target, reactiveEvents, futureEvents)
+    performAction(State, source, target, reactiveEvents, futureEvents)
     futureEvents.push({
       type: "swingTimer",
       source: source.name,
