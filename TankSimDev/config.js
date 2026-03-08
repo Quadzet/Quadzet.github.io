@@ -46,7 +46,7 @@ function writePlayerStats(stats, level) {
     stats.block = 0;
     stats.blockvalue = 0;
   }
-  document.getElementById("playerhp").innerHTML = `${Math.round(health)}`;
+  document.getElementById("playerhealth").innerHTML = `${Math.round(health)}`;
   document.getElementById("playerstrength").innerHTML = `${Math.round(strength)}`;
   document.getElementById("playerstamina").innerHTML = `${Math.round(stamina)}`;
   document.getElementById("playeragility").innerHTML = `${Math.round(agility)}`;
