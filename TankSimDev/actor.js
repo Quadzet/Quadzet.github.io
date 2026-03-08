@@ -46,7 +46,15 @@ export class Actor {
         return this.getCrit();
     case 'health':
         return this.getHealth();
+    case 'on_gcd':
+        return this.onGCD;
+    case 'heroic_strike_queued':
+        return this.isHeroicStrikeQueued;
     case 'rage':
+    case 'parry':
+    case 'defense':
+    case 'haste':
+    case 'hit':
         return this[attr];
     default:
         throw new Error(`Invalid ability attribute: '${attr}'.`);
