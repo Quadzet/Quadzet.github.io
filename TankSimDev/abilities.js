@@ -82,16 +82,28 @@ export function generateRageEventFromCast(source, target, event, rageCost) {
 
 export class Ability {
   constructor(
-      name,
-      baseCooldown,
-      rageCost,
-      onGCD) {
+    name,
+    baseCooldown,
+    rageCost,
+    onGCD) {
     this.name = name
     this.baseCooldown = baseCooldown
     this.rageCost = rageCost
     this.onGCD = onGCD
     this.cooldownReady = -90000; // Set abilities to be ready 90s before cbt start to enable prepull actions
   }
+
+  getAttribute(state, attr) {
+    switch (attr) {
+      case 'cooldown':
+        return Math.max(0, this.cooldownReady - state.time);
+      case 'ragecost':
+        return this.rageCost;
+      default:
+        throw new Error(`Invalid ability attribute: '${attr}'.`);
+    }
+  }
+
   processDamageEvent(timestamp, damageEvent, source, target, reactiveEvents, futureEvents) {
     damageEvent.threat = this.threatCalculator(damageEvent, source)
     let rank = this.rank(source.stats.level);
@@ -220,8 +232,8 @@ export class Autoattack extends Ability {
   // Needs to be overridden since MHSwing is actually both HS and MHSwing...
   threatCalculator(dmg_event, attacker) {
     if (dmg_event.hit != "parry"
-        && dmg_event.hit != "dodge"
-        && dmg_event.hit != "miss") {
+      && dmg_event.hit != "dodge"
+      && dmg_event.hit != "miss") {
       if (attacker.isHeroicStrikeQueued && attacker.rage > (15 - attacker.stats.talents.impHS)) {
         let rank = this.rank(attacker.stats.level);
         return ((dmg_event.amount * this.threatModifier(rank)) + this.staticThreat(rank)) * attacker.stats.threatMod;
@@ -753,44 +765,39 @@ export function getOnUseAbilities(stats) {
 
   let potion = stats.bonuses.potion;
   if (potion !== undefined && potion != '')
-      ret.push(new Potion(AURA_DATA[potion]['name']));
+    ret.push(new Potion(AURA_DATA[potion]['name']));
   return ret;
 
 }
 
-// TODO: Make this a vector with priorities on each ability, like
-// [
-//    {prio: 1, ability: new Devastate()}
-// ]
-// Then we sort the vector wrt prio, and use TankAbilities[1].ability.name/use etc
 export function TankAbilities(tankStats) {
   let abilities = {
-    "MH Swing": new Autoattack(tankStats.bonuses.HSBook),
-    "Revenge": new Revenge(tankStats.bonuses.revengeBook),
-    "Heroic Strike": new HeroicStrike(15 - tankStats.talents.impHS),
-    "Bloodrage": new Bloodrage(),
-    "Rend": new Rend(),
+    "mainhand_swing": new Autoattack(tankStats.bonuses.HSBook),
+    "revenge": new Revenge(tankStats.bonuses.revengeBook),
+    "heroic_strike": new HeroicStrike(15 - tankStats.talents.impHS),
+    "bloodrage": new Bloodrage(),
+    "rend": new Rend(),
   }
   if (tankStats.wield == Wield.DUALWIELD)
-    abilities["OH Swing"] = new OHSwing();
+    abilities["offhand_swing"] = new OHSwing();
   if (tankStats.bonuses.iea)
-    abilities["Battle Shout"] = new BattleShout(tankStats.bonuses.battleShoutBook);
+    abilities["battle_shout"] = new BattleShout(tankStats.bonuses.battleShoutBook);
   else
-    abilities["Sunder Armor"] = new SunderArmor(tankStats.talents.impSA);
+    abilities["sunder_armor"] = new SunderArmor(tankStats.talents.impSA);
   if (tankStats.rotation["shield-slam"] && tankStats.talents.shieldslam)
-    abilities["Shield Slam"] = new ShieldSlam();
+    abilities["shield_slam"] = new ShieldSlam();
   if (tankStats.talents.bloodthirst)
-    abilities["Bloodthirst"] = new Bloodthirst();
+    abilities["bloodthirst"] = new Bloodthirst();
   if (tankStats.talents.mortalStrike)
-    abilities["Mortal Strike"] = new MortalStrike();
+    abilities["mortal_strike"] = new MortalStrike();
   if (tankStats.talents.deathwish)
-    abilities["Death Wish"] = new DeathWish();
+    abilities["death_wish"] = new DeathWish();
   if (tankStats.wield == Wield.SHIELD)
-    abilities["Shield Block"] = new ShieldBlock();
+    abilities["shield_block"] = new ShieldBlock();
 
   return abilities;
 }
 
 export const BossAbilities = {
-  "MH Swing": new Autoattack(),
+  "mainhand_swing": new Autoattack(),
 }

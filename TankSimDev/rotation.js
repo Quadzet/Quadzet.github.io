@@ -100,13 +100,13 @@ export function performAction(State, source, target, reactiveEvents, futureEvent
       }
     });
     if (!source.onGCD) {
-      if (source.rotation["death-wish"].use && source.abilities["Death Wish"] != null && source.abilities["Death Wish"].isUsable(State.time, source)) {
-        source.abilities["Death Wish"].use(State.time, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["death-wish"].use && source.abilities["death_wish"] != null && source.abilities["death_wish"].isUsable(State.time, source)) {
+        source.abilities["death_wish"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.rotation["shield-slam"].use && source.abilities["Shield Slam"] != null && source.rage > source.rotation["shield-slam"].rage && source.abilities["Shield Slam"].isUsable(State.time, source)) {
-        source.abilities["Shield Slam"].use(State.time, source, target, reactiveEvents, futureEvents);
+      if (source.rotation["shield-slam"].use && source.abilities["shield_slam"] != null && source.rage > source.rotation["shield-slam"].rage && source.abilities["shield_slam"].isUsable(State.time, source)) {
+        source.abilities["shield_slam"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
-      if (source.abilities["Bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["Bloodthirst"].isUsable(State.time, source)) {
+      if (source.abilities["bloodthirst"] != null && source.rotation["bloodthirst"].use && source.rage > source.rotation["bloodthirst"].rage && source.abilities["bloodthirst"].isUsable(State.time, source)) {
         source.abilities["Bloodthirst"].use(State.time, source, target, reactiveEvents, futureEvents);
       }
       if (source.abilities["Mortal Strike"] != null && source.rotation["mortal-strike"].use && source.rage > source.rotation["mortal-strike"].rage && source.abilities["Mortal Strike"].isUsable(State.time, source)) {

@@ -80,8 +80,10 @@ export class Actor {
         return this.getCrit();
     case 'health':
         return this.getHealth();
-    default:
+    case 'rage':
         return this[attr];
+    default:
+        throw new Error(`Invalid ability attribute: '${attr}'.`);
     }
   }
 
@@ -104,13 +106,17 @@ export class Actor {
       log_message(LOG_LEVEL.DEBUG, `performAction(): Skipping null action.`)
       return false;
     }
-    if (!(action.ability in this.abilities)) {
-      log_message(LOG_LEVEL.WARNING, `performAction(): Ability ${action.ability} ` +
-        `is not included in ${this.name}'s ability list.`);
-      return false;
+    if (action.type === 'wait') {
+      log_message(LOG_LEVEL.DEBUG, "Actor is waiting...");
+      return false; // No need to do anything, just wait until next action worth event.
+    } else if (action.type === 'use') {
+      if (!(action.ability in this.abilities)) {
+        log_message(LOG_LEVEL.WARNING, `performAction(): Ability ${action.ability} ` +
+          `is not included in ${this.name}'s ability list.`);
+        return false;
+      }
+      this.abilities[action.ability].use(State.time, this, target, reactiveEvents, futureEvents);
     }
-
-    this.abilities[action.ability].use(State.time, this, target, reactiveEvents, futureEvents);
   }
 
 
@@ -124,6 +130,16 @@ export class Actor {
     this.auras.forEach(aura => {
       aura.handleEvent(event, this, this.target, reactiveEvents, futureEvents);
     });
+
+    // Auto attacks
+    if (event.type == "swingTimer" && this.name == event.source) {
+      if (event.name == "OH Swing")
+        this.abilities["offhand_swing"].use(State.time, this, this.target, reactiveEvents, futureEvents);
+      else if (event.name == "MH Swing")
+        this.abilities["mainhand_swing"].use(State.time, this, this.target, reactiveEvents, futureEvents);
+      else
+        throw new Error(`Invalid swingTimer event name: ${event.name}.`);
+    }
 
     if (this.name == "Tank") {
       // Procs
@@ -146,7 +162,7 @@ export class Actor {
         let index = futureEvents.findIndex(e => { return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source) })
         if (index >= 0)
           futureEvents.splice(index, 1)
-        this.abilities["MH Swing"].use(State.time, this, this.target, reactiveEvents, futureEvents);
+        this.abilities["mainhand_swing"].use(State.time, this, this.target, reactiveEvents, futureEvents);
       } else {
         // Placeholder for if we just got rage to be able to take an action
         if (!this.onGCD) {

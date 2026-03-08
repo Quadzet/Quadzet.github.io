@@ -128,6 +128,19 @@ export class Aura {
         return true;
     }
 
+    getAttribute(state, attr) {
+        switch (attr) {
+            case 'stacks':
+                return this.stacks;
+            case 'duration':
+                return this.duration;
+            case 'active':
+                return this.duration > 0;
+            default:
+                throw new Error(`Invalid aura attribute: '${attr}'.`);
+        }
+    }
+
     apply(timestamp, owner, source, reactiveEvents, futureEvents) {
         if (this.duration > 0) {
             this.refresh(timestamp, owner, reactiveEvents, futureEvents);
@@ -432,18 +445,18 @@ export class FlurryAura extends Aura {
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
         const triggerAbilities = [
-            "MH Swing", "OH Swing", "Heroic Strike", "Ravenge", "Bloodthirst",
+            "MH Swing", "OH Swing", "Heroic Strike", "Revenge", "Bloodthirst",
             "Shield Slam", "Slam", "Execute", "Whirlwind", "Mortal Strike"
         ];
         if (event.type == EventType.DAMAGE
-                && [HitType.CRIT, HitType.CRIT_BLOCK].includes(event.hit)
-                && triggerAbilities.includes(event.name)
-                && event.source == owner.name) {
+            && [HitType.CRIT, HitType.CRIT_BLOCK].includes(event.hit)
+            && triggerAbilities.includes(event.name)
+            && event.source == owner.name) {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
         if (event.type == EventType.DAMAGE
-                && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.name)
-                && event.source == owner.name) {
+            && ["MH Swing", "OH Swing", "Heroic Strike"].includes(event.name)
+            && event.source == owner.name) {
             this.removeStack(event, owner, reactiveEvents, futureEvents);
         }
     }
@@ -467,17 +480,17 @@ export class EnrageAura extends Aura {
     handleEvent(event, owner, source, reactiveEvents, futureEvents) {
 
         if (owner.stats.talents.enrage > 0
-                && event.type == EventType.DAMAGE
-                && event.target == owner.name
-                && event.hit == 'crit') {
+            && event.type == EventType.DAMAGE
+            && event.target == owner.name
+            && event.hit == 'crit') {
             this.expire(event, owner, reactiveEvents, futureEvents, true);
             this.physDamageMod = owner.stats.talents.enrage * 0.05 + 1;
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
         }
 
         //  Remove a stack after successfully hitting a target
-        if (event.type == EventType.DAMAGE 
-            && event.source == owner.name 
+        if (event.type == EventType.DAMAGE
+            && event.source == owner.name
             && ["MH Swing", "OH Swing", "Devastate", "Heroic Strike", "Rend", "Revenge"].includes(event.name)) {
             this.removeStack(event, owner, reactiveEvents, futureEvents)
         }
@@ -540,7 +553,7 @@ export class EssenceOfTheRedAura extends Aura {
             });
         }
         else if (event.type == EventType.RAGE
-                && event.name == this.name) {
+            && event.name == this.name) {
             futureEvents.push({
                 timestamp: event.timestamp + 1000,
                 type: EventType.RAGE,
@@ -607,15 +620,15 @@ class WindfuryAura extends Aura {
             this.apply(event.timestamp, owner, owner.name, reactiveEvents, futureEvents);
             // If procced by an MH swing, a stack is instantly removed.
             if (["MH Swing", "Heroic Strike"].includes(event.source)) {
-                let index = futureEvents.findIndex(e => {return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source)})
-                if(index >= 0)
+                let index = futureEvents.findIndex(e => { return (e.type == "swingTimer" && e.name == "MH Swing" && e.source == event.source) })
+                if (index >= 0)
                     futureEvents.splice(index, 1)
                 owner.abilities["MH Swing"].use(event.timestamp, owner, owner.target, reactiveEvents, futureEvents);
             }
         }
         if (event.type == EventType.DAMAGE
-                && event.source == owner.name
-                && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.name)) {
+            && event.source == owner.name
+            && ["Heroic Strike", "MH Swing", "OH Swing"].includes(event.name)) {
             if (this.stacks > 0) {
                 this.removeStack(event, owner, reactiveEvents, futureEvents);
             }
@@ -721,7 +734,7 @@ export class GoaAura extends Aura {
 
         if (event.type == EventType.DAMAGE && LANDED_HITS.includes(event.hit) && event.source == owner.name) {
             let rng = Math.random();
-            if (rng < 0.3*0.83) // 17% chance to resist
+            if (rng < 0.3 * 0.83) // 17% chance to resist
                 this.apply(event.timestamp, owner, source.name, reactiveEvents, futureEvents);
         }
 
@@ -757,14 +770,14 @@ export function getOnUseAuras(gear) {
 
 // Globals
 export const Debuffs = {
-    "Sunder Armor": new SunderArmorAura(),
+    "sunder_armor": new SunderArmorAura(),
 }
 
 export const Buffs = {
-    "Defensive State": new DefensiveState(),
-    "Shield Block": new ShieldBlockAura(),
-    "Enrage": new EnrageAura(),
-    "Bloodrage": new BloodrageAura(),
+    "defensive_state": new DefensiveState(),
+    "shield_block": new ShieldBlockAura(),
+    "enrage": new EnrageAura(),
+    "bloodrage": new BloodrageAura(),
 }
 
 export function TankAuras(globals) {

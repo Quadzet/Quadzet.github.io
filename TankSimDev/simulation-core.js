@@ -23,9 +23,8 @@ export function handleEvent(event, futureEvents, State/*Actors*/) {
       handleScheduledEvent(event, source, target, reactiveEvents, futureEvents);
     }
     else if (event.type == "swingTimer") {
-      let source = State[event.source];
-      let target = State[event.target];
-      source.abilities[event.name].use(event.timestamp, source, target, reactiveEvents, futureEvents);
+      State.Tank.handleEvent(event, State, reactiveEvents, futureEvents);
+      State.Boss.handleEvent(event, State, reactiveEvents, futureEvents);
     }
     else if (event.type == "GCD") {
       let source = State[event.source];
@@ -71,7 +70,7 @@ export function handleEvent(event, futureEvents, State/*Actors*/) {
 
 export function generatePrePullEvents(Tank, Boss, eventList, FutureEvents) {
   // Prepull Death Wish
-  if (Tank.abilities["Death Wish"] && Tank.stats.rotation['death-wish'].use)
+  if (Tank.abilities["death_wish"] && Tank.stats.rotation['death-wish'].use)
     FutureEvents.push({ timestamp: -1500, type: "scheduledEvent", ability: "Death Wish" });
 
   FutureEvents.push({ timestamp: 0, type: "combatStart" });

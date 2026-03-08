@@ -1,3 +1,46 @@
+const Token = {
+  SEMICOLON: "SEMICOLON",
+  IDENTIFIER: "IDENTIFIER", // Ability, aura, or attribute name.
+  STRING: "STRING",
+  NUMBER: "NUMBER",
+  VARIABLE: "VARIABLE",
+  AND: "AND",
+  OR: "OR",
+  EQ: "EQ",
+  NEQ: "NEQ",
+  LTE: "LTE",
+  GTE: "GTE",
+  LT: "LT",
+  GT: "GT",
+  ASSIGN: "ASSIGN",
+  SEMICOLON: "SEMICOLON",
+  EOF: "EOF",
+  Keyword:  {
+    WAIT: "WAIT",
+    USE: "USE",
+    IF: "IF",
+    PLAYER: "PLAYER",
+    TARGET: "TARGET",
+    TIME: "TIME",
+  },
+};
+
+
+const Expr = {
+  STATEMENT: 'Statement',
+  USE: 'UseAction',
+  WAIT: 'WaitAction',
+  LOGICAL: 'LogicalExpression',
+  COMPARISON: 'ComparisonExpression',
+  LITERAL: 'Literal',
+  STR_LITERAL: 'StringLiteral',
+  GLOBAL: 'GlobalAttribute',
+  IDENTIFIER: 'Identifier',
+  IDENTIFIER_ATTR: 'IdentifierAttribute',
+  ACTOR_ATTR: 'ActorAttribute',
+};
+
+
 class Tokenizer {
   constructor(input) {
     this.input = input;
@@ -23,48 +66,48 @@ class Tokenizer {
       }
       // Operators etc
       else if (char === ';') {
-        this.tokens.push({ type: 'SEMICOLON', value: ';' });
+        this.tokens.push({ type: Token.SEMICOLON, value: ';' });
         this.pos++;
       }
       else if (char === '.') {
-        this.tokens.push({ type: 'DOT', value: '.' });
+        this.tokens.push({ type: Token.DOT, value: '.' });
         this.pos++;
       }
       else if (char === '&') {
-        this.tokens.push({ type: 'AND', value: '&' });
+        this.tokens.push({ type: Token.AND, value: '&' });
         this.pos++;
       }
       else if (char === '|') {
-        this.tokens.push({ type: 'OR', value: '|' });
+        this.tokens.push({ type: Token.OR, value: '|' });
         this.pos++;
       }
       // Comparison operators
       else if (char === '=' && this.peek() === '=') {
-        this.tokens.push({ type: 'EQ', value: '==' });
+        this.tokens.push({ type: Token.EQ, value: '==' });
         this.pos += 2;
       }
       else if (char === '!' && this.peek() === '=') {
-        this.tokens.push({ type: 'NEQ', value: '!=' });
+        this.tokens.push({ type: Token.NEQ, value: '!=' });
         this.pos += 2;
       }
       else if (char === '<' && this.peek() === '=') {
-        this.tokens.push({ type: 'LTE', value: '<=' });
+        this.tokens.push({ type: Token.LTE, value: '<=' });
         this.pos += 2;
       }
       else if (char === '>' && this.peek() === '=') {
-        this.tokens.push({ type: 'GTE', value: '>=' });
+        this.tokens.push({ type: Token.GTE, value: '>=' });
         this.pos += 2;
       }
       else if (char === '<') {
-        this.tokens.push({ type: 'LT', value: '<' });
+        this.tokens.push({ type: Token.LT, value: '<' });
         this.pos++;
       }
       else if (char === '>') {
-        this.tokens.push({ type: 'GT', value: '>' });
+        this.tokens.push({ type: Token.GT, value: '>' });
         this.pos++;
       }
       else if (char === '=') {
-        this.tokens.push({ type: 'ASSIGN', value: '=' });
+        this.tokens.push({ type: Token.ASSIGN, value: '=' });
         this.pos++;
       }
       // Identifiers and keywords
@@ -75,7 +118,7 @@ class Tokenizer {
         throw new Error(`Unexpected character: ${char} at position ${this.pos}`);
       }
     }
-    this.tokens.push({ type: 'EOF', value: null });
+    this.tokens.push({ type: Token.EOF, value: null });
   }
 
   skipWhiteSpaceAndComments() {
@@ -129,7 +172,7 @@ class Tokenizer {
     }
 
     this.pos++; // Skip closing quote.
-    this.tokens.push({ type: 'STRING', value });
+    this.tokens.push({ type: Token.STRING, value });
   }
 
   readNumber() {
@@ -140,7 +183,7 @@ class Tokenizer {
       value += this.input[this.pos];
       this.pos++;
     }
-    this.tokens.push({ type: 'NUMBER', value: parseFloat(value) });
+    this.tokens.push({ type: Token.NUMBER, value: parseFloat(value) });
   }
 
   isIdentifierStart(char) {
@@ -159,8 +202,8 @@ class Tokenizer {
     }
 
     // Check for keywords.
-    const keywords = ['use', 'wait', 'if', 'player', 'target', 'time'];
-    const type = keywords.includes(value) ? value.toUpperCase() : 'IDENTIFIER';
+    const keywords = Object.keys(Token.Keyword);
+    const type = keywords.includes(value.toUpperCase()) ? value.toUpperCase() : Token.IDENTIFIER;
 
     this.tokens.push({ type, value });
   }
@@ -195,7 +238,7 @@ class Parser {
 
   parse() {
     const statements = [];
-    while (this.current().type !== 'EOF') {
+    while (this.current().type !== Token.EOF) {
       statements.push(this.parseStatement());
     }
     return statements;
@@ -205,34 +248,32 @@ class Parser {
     const action = this.parseAction();
 
     let condition = null;
-    if (this.match('IF')) {
-      this.consume('IF');
+    if (this.match(Token.Keyword.IF)) {
+      this.consume(Token.Keyword.IF);
       condition = this.parsePredicate();
     }
 
-    this.consume('SEMICOLON');
+    this.consume(Token.SEMICOLON);
 
     return {
-      type: 'Statement',
+      type: Expr.STATEMENT,
       action,
       condition
     };
   }
 
   parseAction() {
-    if (this.match('USE')) {
-      this.consume('USE');
-      const ability = this.consume('STRING').value;
+    if (this.match(Token.Keyword.USE)) {
+      this.consume(Token.Keyword.USE);
+      const ability = this.consume(Token.IDENTIFIER).value;
       return {
-        type: 'UseAction',
+        type: Expr.USE,
         ability
       };
-    } else if (this.match('WAIT')) {
-      this.consume('WAIT');
-      const duration = this.parseVariable();
+    } else if (this.match(Token.Keyword.WAIT)) {
+      this.consume(Token.Keyword.WAIT);
       return {
-        type: 'WaitAction',
-        duration
+        type: Expr.WAIT,
       };
     } else {
       throw new Error(`Expected 'use' or 'wait' but got ${this.current().type}`);
@@ -242,13 +283,13 @@ class Parser {
   parsePredicate() {
     let left = this.parseComparison();
 
-    while (this.match('AND', 'OR')) {
+    while (this.match(Token.AND, Token.OR)) {
       const operator = this.current().type;
       this.pos++;
       const right = this.parseComparison();
       left = {
-        type: 'LogicalExpression',
-        operator: operator === 'AND' ? '&&' : '||',
+        type: Expr.LOGICAL,
+        operator: operator === Token.AND ? '&&' : '||',
         left,
         right
       };
@@ -260,7 +301,7 @@ class Parser {
   parseComparison() {
     const left = this.parseVariable();
 
-    if (!this.match('EQ', 'NEQ', 'LT', 'GT', 'LTE', 'GTE')) {
+    if (!this.match(Token.EQ, Token.NEQ, Token.LT, Token.GT, Token.LTE, Token.GTE)) {
       throw new Error(`Expected comparison operator but got ${this.current().type}`);
     }
 
@@ -270,7 +311,7 @@ class Parser {
     const right = this.parseVariable();
 
     return {
-      type: 'ComparisonExpression',
+      type: Expr.COMPARISON,
       operator,
       left,
       right
@@ -279,54 +320,54 @@ class Parser {
 
   parseVariable() {
     // Literals
-    if (this.match('NUMBER')) {
+    if (this.match(Token.NUMBER)) {
       return {
-        type: 'Literal',
-        value: this.consume('NUMBER').value
+        type: Expr.LITERAL,
+        value: this.consume(Token.NUMBER).value
       };
     }
-    if (this.match('STRING')) {
+    if (this.match(Token.STRING)) {
       return {
-        type: 'StringLiteral',
-        value: this.consume('STRING').value
+        type: Expr.STR_LITERAL,
+        value: this.consume(Token.STRING).value
       };
     }
 
     // Globals
-    if (this.match('TIME')) {
-      this.consume('TIME');
+    if (this.match(Token.Keyword.TIME)) {
+      this.consume(Token.Keyword.TIME);
       return {
-        type: 'GlobalAttribute',
+        type: Expr.GLOBAL,
         attribute: 'time'
       };
     }
 
     // Actor attributes
-    if (this.match('PLAYER', 'TARGET')) {
+    if (this.match(Token.Keyword.PLAYER, Token.Keyword.TARGET)) {
       const actor = this.consume(this.current().type).value;
-      this.consume('DOT');
+      this.consume(Token.DOT);
       const attribute = this.parseAttributePath();
       return {
-        type: 'ActorAttribute',
+        type: Expr.ACTOR_ATTR,
         actor,
         attribute
       };
     }
 
     // Aura/Ability attributes
-    if (this.match('STRING')) {
-      const name = this.consume('STRING').value;
-      if (this.match('DOT')) {
-        this.consume('DOT');
-        const attribute = this.consume('IDENTIFIER').value;
+    if (this.match(Token.IDENTIFIER)) {
+      const name = this.consume(Token.IDENTIFIER).value;
+      if (this.match(Token.Keyword.DOT)) {
+        this.consume(Token.Keyword.DOT);
+        const attribute = this.consume(Token.IDENTIFIER).value;
         return {
-          type: 'AbilityAttribute',
+          type: Expr.IDENTIFIER_ATTR,
           name,
           attribute
         };
       }
       return {
-        type: 'StringLiteral',
+        type: Expr.IDENTIFIER,
         value: name
       };
     }
@@ -334,8 +375,9 @@ class Parser {
     throw new Error(`Unexpected token in variable: ${this.current().type}`);
   }
 
+  // TODO: Expand this to include eg player.ability.bloodthirst.cooldown.
   parseAttributePath() {
-    const identifier = this.consume('IDENTIFIER').value;
+    const identifier = this.consume(Token.IDENTIFIER).value;
     return identifier;
   }
 }
@@ -360,22 +402,20 @@ class Compiler {
 
   // TODO: Expand return object with type (onUse/ability etc) and name.
   compileAction(action) {
-    if (action.type === 'UseAction') {
+    if (action.type === Expr.USE) {
       return (state) => ({
         type: 'use',
         ability: action.ability
       });
-    } else if (action.type === 'WaitAction') {
-      const durationFn = this.compileVariable(action.duration);
+    } else if (action.type === Expr.WAIT) {
       return (state) => ({
         type: 'wait',
-        duration: durationFn(state)
       });
     }
   }
 
   compilePredicate(predicate) {
-    if (predicate.type === 'ComparisonExpression') {
+    if (predicate.type === Expr.COMPARISON) {
       const leftFn = this.compileVariable(predicate.left);
       const rightFn = this.compileVariable(predicate.right);
       const op = predicate.operator;
@@ -394,7 +434,7 @@ class Compiler {
           default: throw new Error(`Unknown operator: ${op}`);
         }
       };
-    } else if (predicate.type === 'LogicalExpression') {
+    } else if (predicate.type === Expr.LOGICAL) {
       const leftFn = this.compilePredicate(predicate.left);
       const rightFn = this.compilePredicate(predicate.right);
 
@@ -407,30 +447,31 @@ class Compiler {
   }
 
   compileVariable(variable) {
-    if (variable.type === 'Literal') {
+    if (variable.type === Expr.LITERAL) {
       const value = variable.value;
       return () => value;
     }
 
-    if (variable.type === 'StringLiteral') {
+    if (variable.type === Expr.STR_LITERAL) {
       const value = variable.value;
       return () => value;
     }
 
-    if (variable.type === 'GlobalAttribute') {
-      if (variable.attribute === 'time') {
+    if (variable.type === Expr.GLOBAL) {
+      if (variable.attribute === Token.Keyword.TIME) {
         return (state) => state.time;
       }
     }
 
-    if (variable.type === 'ActorAttribute') {
+    if (variable.type === Expr.ACTOR_ATTR) {
       const attribute = variable.attribute;
 
       // const Actor = actorStr === 'PLAYER' ? state.Tank : state.Boss;
 
-      const actorStr = 'PLAYER' ? 'Tank' : 'Boss';
+      const actorStr = variable.actor === Token.Keyword.PLAYER ? 'Tank' : 'Boss';
       return (state) => {
 
+        // TODO: Create an enum for attributes.
         if (attribute === 'attackpower' || attribute === 'crit' ||
             attribute === 'swingtimer' || attribute === 'oh_swingtimer') {
           return state[actorStr].getAttribute(attribute);
@@ -441,29 +482,30 @@ class Compiler {
       };
     }
 
-    if (variable.type === 'AbilityAttribute') {
+    // Prioritises player over target, ability over aura.
+    if (variable.type === Expr.IDENTIFIER_ATTR) {
       const name = variable.name;
       const attribute = variable.attribute;
 
       return (state) => {
-        const ability = state.Tank.abilities?.find(a => a.name === name);
+        const ability = state.Tank.abilities[name];
         if (ability) {
-          return ability[attribute];
+          return ability.getAttribute(state, attribute);
         }
 
-        const aura = state.Tank.auras?.find(a => a.name === name);
+        const aura = state.Tank.auras.find(a => a.name === name);
         if (aura) {
-          return aura[attribute];
+          return aura.getAttribute(state, attribute);
         }
 
-        const targetAbility = state.Boss.abilities?.find(a => a.name === name);
+        const targetAbility = state.Boss.abilities[name];
         if (targetAbility) {
-          return targetAbility[attribute];
+          return targetAbility.getAttribute(state, name);
         }
 
-        const targetAura = state.Boss.auras?.find(a => a.name === name);
+        const targetAura = state.Boss.auras.find(a => a.name === name);
         if (targetAura) {
-          return targetAura[attribute];
+          return targetAura.getAttribute(state, attribute);
         }
 
         return undefined;
@@ -489,8 +531,11 @@ export class APL {
       try {
         if (rule.conditionFn(State)) {
           let action = rule.actionFn(State);
-          if (actor.actionUsable(State, action.ability)) {
-            return action;
+          if (action.type === 'use') {
+            if (actor.actionUsable(State, action.ability))
+              return action;
+          } else if (action.type === 'wait') {
+              return action;
           }
         }
       } catch (error) {
