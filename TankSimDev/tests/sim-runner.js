@@ -30,8 +30,8 @@ export function runSimulation(globals, iterations) {
   for (let i in range(iterations)) {
     let eventList = [];
     let FutureEvents = [];
-    Actors.Tank.reset();
-    Actors.Boss.reset();
+    Actors.Tank.init();
+    Actors.Boss.init();
     generatePrePullEvents(Actors.Tank, Actors.Boss, eventList, FutureEvents);
 
     while (true) {

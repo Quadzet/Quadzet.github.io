@@ -9,51 +9,17 @@ export class Actor {
     this.name = name;
     this.stats = stats;
     this.APL = APL;
-
-    this.strength = stats.strength;
-    this.stamina = stats.stamina;
-    this.agility = stats.agility;
-
-    this.staminaMod = stats.staminaMod;
-    this.strengthMod = stats.strengthMod;
-    this.agilityMod = stats.agilityMod;
-    this.flatArmor = stats.flatArmor;
-    this.flatDamage = stats.flatDamage;
-    this.threatMod = stats.threatMod;
-    this.damageMod = stats.damageMod;
-    this.physDamageMod = stats.physDamageMod;
-    this.armorMod = stats.armorMod;
-
-    this.attackpower = stats.attackpower;
-    this.haste = stats.haste;
-    this.armor = stats.armor;
-    this.bonusArmor = stats.bonusArmor;
-    this.armorMod = stats.armorMod;
-    this.defense = stats.defense;
-    this.crit = stats.crit;
-    this.hit = stats.hit;
-    this.blockvalue = stats.blockvalue;
-    this.block = stats.block;
-    this.health = stats.health;
+    this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
+    this.rageGained = 0; // remove?
+    this.rageSpent = 0;
 
     this.rotation = stats.rotation;
     this.abilities = abilities;
     this.onUseAbilities = onUseAbilities;
     this.procs = procs;
     this.auras = auras;
-    this.uptimes = {};
 
-    this.rage = stats.startRage;
-    this.rageConv = 0.00911077836 * stats.level * stats.level + 3.225598133 * stats.level + 4.2562911;
-    this.rageGained = 0; // remove?
-    this.rageSpent = 0;
-
-    // Special stuff
-    this.onGCD = false;
-    this.inCombat = false;
-    this.IEA = false;
-    this.isHeroicStrikeQueued = false;
-    this.windfury = false;
+    this.init();
   }
 
   getAttribute(attr) {
@@ -241,7 +207,8 @@ export class Actor {
   }
 
 
-  reset() {
+  // Initiate, or reset, stats to their starting values.
+  init() {
     for (let ability in this.abilities) {
       this.abilities[`${ability}`].cooldownReady = -90000;
     }
@@ -255,29 +222,40 @@ export class Actor {
     this.procs.forEach(proc => proc.reset());
     this.buffs = {};
     this.debuffs = {};
-    this.rage = this.stats.startRage;
-    this.damageMod = this.stats.damageMod;
-    this.physDamageMod = this.stats.physDamageMod;
-    this.flatArmor = this.stats.flatArmor;
-    this.flatDamage = this.stats.flatDamage;
-    this.haste = this.stats.haste;
-    this.defense = this.stats.defense;
-    this.rageGained = 0;
-    this.rageSpent = 0;
-    this.armor = this.stats.armor;
-    this.bonusArmor = this.stats.bonusArmor;
-    this.armorMod = this.stats.armorMod;
     this.uptimes = {};
 
-    this.threatMod = this.stats.threatMod;
-    this.resilience = this.stats.resilience;
-    this.hit = this.stats.hit;
-    this.crit = this.stats.crit;
-    this.block = this.stats.block;
+    this.strength = this.stats.strength;
+    this.stamina = this.stats.stamina;
+    this.agility = this.stats.agility;
 
+    this.staminaMod = this.stats.staminaMod;
+    this.strengthMod = this.stats.strengthMod;
+    this.agilityMod = this.stats.agilityMod;
+    this.flatArmor = this.stats.flatArmor;
+    this.flatDamage = this.stats.flatDamage;
+    this.threatMod = this.stats.threatMod;
+    this.damageMod = this.stats.damageMod;
+    this.physDamageMod = this.stats.physDamageMod;
+    this.armorMod = this.stats.armorMod;
+
+    this.attackpower = this.stats.attackpower;
+    this.haste = this.stats.haste;
+    this.armor = this.stats.armor;
+    this.bonusArmor = this.stats.bonusArmor;
+    this.defense = this.stats.defense;
+    this.crit = this.stats.crit;
+    this.hit = this.stats.hit;
+    this.blockvalue = this.stats.blockvalue;
+    this.block = this.stats.block;
+    this.health = this.stats.health;
+
+    this.rage = this.stats.startRage;
+    this.rageGained = 0;
+    this.rageSpent = 0;
+
+    // Special stuff
     this.onGCD = false;
     this.inCombat = false;
-
     this.IEA = false;
     this.isHeroicStrikeQueued = false;
     this.windfury = false;
