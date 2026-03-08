@@ -20,16 +20,14 @@ self.addEventListener('message', function(e) {
         let TankProcs = reconstructProcs(globals.tankStats.procs);
         let BossProcs = getBossProcs(globals);
 
-    globals.config = globals.config; // TODO: What is this and why does it exist?
-
     let aplScript = `
-    use "Death Wish";
-    use "Bloodthirst";
-    use "Revenge";
-    use "Heroic Strike" if player.rage > 50;
-    use "Sunder Armor" if player.rage > 60;
+    use death_wish;
+    use bloodthirst;
+    use revenge;
+    use heroic_strike if player.rage > 50;
+    wait if bloodthirst.cooldown < 0.5;
+    use sunder_armor if player.rage > 60;
     `;
-    //wait "Bloodthirst".cooldown if "Bloodthirst".cooldown < 0.5;
 
     let TankAPL = new APL(aplScript);
     let BossAPL = new APL('');
