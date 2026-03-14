@@ -1,5 +1,5 @@
 import { describe, test, assertTrue, assertEqual } from '../test-utils.js';
-import { setupFullTestEnv, cleanupFullTestEnv, setTalent, setRotationAbility } from '../test-env-setup.js';
+import { setupFullTestEnv, cleanupFullTestEnv, setTalent } from '../test-env-setup.js';
 
 export const tests = describe('Full updateStats() Integration Tests', () => {
 
@@ -114,25 +114,21 @@ export const tests = describe('Full updateStats() Integration Tests', () => {
     global.document.getElementById('player-level').value = '60';
   });
 
-  test('Setting rotation abilities updates globals.tankStats.rotation', async () => {
+  test('Setting APL script updates globals.tankStats.aplScript', async () => {
     await setupFullTestEnv();
     const config = await import('../../config.js');
 
-    setRotationAbility('bloodthirst', true, 50);
+    const aplScript = global.document.getElementById('apl-script');
+    aplScript.value = 'use bloodthirst;\nuse revenge;';
 
     const globals = config.updateStats();
 
-    assertTrue(globals.tankStats.rotation.bloodthirst !== undefined,
-      'bloodthirst rotation should exist');
-    assertEqual(globals.tankStats.rotation.bloodthirst.use, true,
-      'bloodthirst should be enabled');
-    assertEqual(globals.tankStats.rotation.bloodthirst.rage, 50,
-      'bloodthirst rage should be 50');
-
-    setRotationAbility('bloodthirst', false);
-    const updated = config.updateStats();
-    assertEqual(updated.tankStats.rotation.bloodthirst.use, false,
-      'bloodthirst should be disabled');
+    assertTrue(globals.tankStats.aplScript !== undefined,
+      'aplScript should exist');
+    assertTrue(globals.tankStats.aplScript.includes('bloodthirst'),
+      'aplScript should contain bloodthirst');
+    assertTrue(globals.tankStats.aplScript.includes('revenge'),
+      'aplScript should contain revenge');
   });
 
   test('Setting talents updates globals.tankStats.talents', async () => {

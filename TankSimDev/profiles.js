@@ -1,5 +1,5 @@
 "use strict";
-import { ITEM_SLOTS, ABILITIES, ENCHANT_SLOTS,
+import { ITEM_SLOTS, ENCHANT_SLOTS,
   TANK_SETTINGS, BOSS_SETTINGS } from './constants.js';
 import { AURA_DATA } from './buffs.js'
 import { selectItem, selectEnchant } from './gear.js'
@@ -8,24 +8,22 @@ import { LOG_LEVEL, log_message } from './logging.js';
 import { refreshLinks } from './wowhead.js'
 import { updateRotation } from './rotation.js'
 
+const DEFAULT_APL_SCRIPT = `use death_wish;
+use bloodthirst;
+use revenge;
+use heroic_strike if player.rage > 50;
+wait if bloodthirst.cooldown < 0.5;
+use sunder_armor if player.rage > 60;`;
+
 const DEFAULT_PROFILE = {
   "version": "1.0.0",
   "gear":
     { "head": "22418", "hands": "21581", "neck": "22732", "waist": "22422",
       "shoulder": "22419", "legs": "22417", "back": "23045", "feet": "22420",
       "chest": "22416", "wrist": "22423", "finger1": "23059",
-      "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054", 
+      "finger2": "19376", "trinket1": 0, "trinket2": 0, "mainhand": "23054",
       "offhand": "236336", "ranged": "236322" },
-  "rotation":
-    { "death-wish": { "use": false, "rage": 0 },
-      "revenge": { "use": true, "rage": 60 },
-      "rend": { "use": false, "rage": 60 },
-      "heroic-strike": { "use": false, "rage": 85 },
-      "shield-block": { "use": false, "rage": 90 },
-      "shield-slam": { "use": true, "rage": 60 },
-      "bloodthirst": { "use": false, "rage": 60 },
-      "mortal-strike": { "use": false, "rage": 60 },
-      "thunder-clap": { "use": false, "rage": 60 } },
+  "aplScript": DEFAULT_APL_SCRIPT,
   "tankSettings": 
     { "level": 50, "race-ix": 0, "startRage": "70" },
   "enchants":
@@ -70,19 +68,8 @@ function generateProfile() {
   });
   profile.gear = gear;
 
-  // Rotation
-  let rotation = {};
-  ABILITIES.forEach(ability => {
-    let obj = {};
-    let use = document.getElementById('use-' + ability).checked;
-    let rage = 0;
-    if ('death-wish' != ability)
-      rage = Number(document.getElementById(ability + '-rage').value);
-    obj.use = use;
-    obj.rage = rage;
-    rotation[`${ability}`] = obj;
-  });
-  profile.rotation = rotation;
+  // APL Script
+  profile.aplScript = document.getElementById('apl-script').value;
 
   // Tank Settings
   let tankSettings = {};
@@ -161,18 +148,10 @@ export function loadProfile(profile) {
     }
   });
 
-  let rotation = profile.rotation ? profile.rotation : {};
-  ABILITIES.forEach(ability => {
-    let abilityUse = document.getElementById('use-' + ability);
-    let abilityRage = document.getElementById(ability + '-rage');
-    let abilitySettings = rotation[`${ability}`] ? rotation[`${ability}`] : {};
-    if (!["rend", "shield-block"].includes(ability))
-      abilityUse.checked = abilitySettings.use === undefined ? true : abilitySettings.use; // Default to true
-    else
-      abilityUse.checked = abilitySettings.use === undefined ? false : abilitySettings.use; // Default to false
-    if (!['raging-blow', 'death-wish'].includes(ability) && abilitySettings.rage !== undefined)
-      abilityRage.value = abilitySettings.rage;
-  });
+  // APL Script
+  const aplScriptEl = document.getElementById('apl-script');
+  if (aplScriptEl)
+    aplScriptEl.value = profile.aplScript != null ? profile.aplScript : DEFAULT_APL_SCRIPT;
 
   // Tank Settings
   let tankSettings = profile.tankSettings == null ? {} : profile.tankSettings;

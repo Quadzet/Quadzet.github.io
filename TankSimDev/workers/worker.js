@@ -20,16 +20,7 @@ self.addEventListener('message', function(e) {
         let TankProcs = reconstructProcs(globals.tankStats.procs);
         let BossProcs = getBossProcs(globals);
 
-    let aplScript = `
-    use death_wish;
-    use bloodthirst;
-    use revenge;
-    use heroic_strike if player.rage > 50;
-    wait if bloodthirst.cooldown < 0.5;
-    use sunder_armor if player.rage > 60;
-    `;
-
-    let TankAPL = new APL(aplScript);
+    let TankAPL = new APL(globals.tankStats.aplScript || '');
     let BossAPL = new APL('');
 
     Actors = {

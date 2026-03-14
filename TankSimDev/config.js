@@ -573,18 +573,8 @@ export function updateStats() {
   // TODO: Enable stances as buffs, as well as stance dancing (execute).
   stats.damageMod *= 0.9;
 
-  ABILITIES.forEach(ability => {
-    let obj = {};
-    const element = document.getElementById('use-' + ability);
-    let use = element.checked && element.style != 'none';
-    use = use ? use : false;
-    let rage = 0;
-    if (!('death-wish' == ability))
-      rage = Number(document.getElementById(ability + '-rage').value);
-    obj.use = use;
-    obj.rage = rage;
-    stats.rotation[`${ability}`] = obj;
-  });
+  // Read APL script from textarea
+  stats.aplScript = document.querySelector("#apl-script").value;
 
   let potion;
   for (const p of POTIONS) {

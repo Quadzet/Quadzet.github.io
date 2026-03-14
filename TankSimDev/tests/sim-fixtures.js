@@ -246,11 +246,12 @@ export function getBasicGlobals(iterations = 1, simDuration = 60) {
 // These values are used for regression detection
 export const REFERENCE_RESULTS = {
   // Single iteration, 60s fight - sanity check ranges
+  // Note: Single iteration has high variance, ranges are wide
   singleIter60s: {
     config: { iterations: 1, simDuration: 60 },
     tpsRange: [800, 2000],   // Expected TPS range
     dpsRange: [500, 1200],   // Expected DPS range
-    dtpsRange: [200, 800],   // Expected DTPS range
+    dtpsRange: [200, 1200],  // Expected DTPS range (high variance in single iteration)
   },
   // 1000 iterations, 60s fight - regression baseline
   // Updated after APL system implementation

@@ -47,35 +47,7 @@ export class Action {
 }
 
 export function updateRotation(globals) {
-  let element = document.getElementById('rotation-death-wish');
-  if (getTalentValue('death-wish') > 0)
-    element.style.display = 'flex';
-  else
-    element.style.display = 'none';
-
-  element = document.getElementById('rotation-mortal-strike');
-  if (getTalentValue('mortal-strike') > 0)
-    element.style.display = 'flex';
-  else
-    element.style.display = 'none';
-
-  element = document.getElementById('rotation-shield-slam');
-  if (getTalentValue('shield-slam') > 0)
-    element.style.display = 'flex';
-  else
-    element.style.display = 'none';
-
-  element = document.getElementById('rotation-shield-block');
-  if (globals.tankStats.wield == Wield.DUALWIELD)
-    element.style.display = 'flex';
-  else
-    element.style.display = 'none';
-
-  element = document.getElementById('rotation-bloodthirst');
-  if (getTalentValue('bloodthirst') > 0)
-    element.style.display = 'flex';
-  else
-    element.style.display = 'none';
+  // No longer needed - rotation is now handled via APL script textarea
 }
 
 export function handleScheduledEvent(event, source, target, reactiveEvents, futureEvents) {

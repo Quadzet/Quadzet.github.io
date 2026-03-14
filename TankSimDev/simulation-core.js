@@ -69,8 +69,8 @@ export function handleEvent(event, futureEvents, State/*Actors*/) {
 }
 
 export function generatePrePullEvents(Tank, Boss, eventList, FutureEvents) {
-  // Prepull Death Wish
-  if (Tank.abilities["death_wish"] && Tank.stats.rotation['death-wish'].use)
+  // Prepull Death Wish (if APL script contains death_wish)
+  if (Tank.abilities["death_wish"] && Tank.stats.aplScript && Tank.stats.aplScript.includes('death_wish'))
     FutureEvents.push({ timestamp: -1500, type: "scheduledEvent", ability: "Death Wish" });
 
   FutureEvents.push({ timestamp: 0, type: "combatStart" });

@@ -180,35 +180,23 @@
       </div><!-- end of buffs-->
 
       <div id="rotation">
-        <span class="settings-header">Rotation</span>
+        <span class="settings-header">Action Priority List</span>
         <div class="hInput-rotation"><label>Starting Rage:</label><input type="number" id="startRage" name="startRage"
             min="0" max="100" value="70"></div>
-        <div class="hInput-rotation" id="rotation-revenge"><input type="checkbox" class="rotation-check"
-            id="use-revenge" value="false"><label>Revenge above </label><input type="number" class="rotation-rage"
-            id="revenge-rage" min="0" max="100" value="60"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-death-wish"><input type="checkbox" class="rotation-check"
-            id="use-death-wish" value="false"><label>Death Wish.</label><br /></div>
-        <div class="hInput-rotation" id="rotation-shield-slam"><input type="checkbox" class="rotation-check"
-            id="use-shield-slam" value="false"><label>Shield Slam above </label><input type="number"
-            class="rotation-rage" id="shield-slam-rage" min="0" max="100" value="60"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-bloodthirst"><input type="checkbox" class="rotation-check"
-            id="use-bloodthirst" value="false"><label>Bloodthirst above </label><input type="number"
-            class="rotation-rage" id="bloodthirst-rage" min="0" max="100" value="60"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-mortal-strike"><input type="checkbox" class="rotation-check"
-            id="use-mortal-strike" value="false"><label>Mortal Strike above </label><input type="number"
-            class="rotation-rage" id="mortal-strike-rage" min="0" max="100" value="60"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-rend"><input type="checkbox" class="rotation-check" id="use-rend"
-            value="false"><label>Rend above </label><input type="number" class="rotation-rage" id="rend-rage" min="0"
-            max="100" value="60"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-heroic-strike"><input type="checkbox" class="rotation-check"
-            id="use-heroic-strike" value="false"><label>Heroic Strike above </label><input type="number"
-            class="rotation-rage" id="heroic-strike-rage" min="0" max="100" value="85"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-shield-block"><input type="checkbox" class="rotation-check"
-            id="use-shield-block" value="false"><label>Shield Block above </label><input type="number"
-            class="rotation-rage" id="shield-block-rage" min="0" max="100" value="90"><span> rage.</span><br /></div>
-        <div class="hInput-rotation" id="rotation-sunder-armor"><input type="checkbox" class="rotation-check"
-            id="use-sunder-armor" value="false"><label>Sunder Armor above </label><input type="number"
-            class="rotation-rage" id="sunder-armor-rage" min="0" max="100" value="60"><span> rage.</span><br /></div>
+        <div class="apl-container">
+          <textarea id="apl-script" spellcheck="false">// APL Script: Actions are evaluated top-to-bottom.
+// Syntax: use <ability> [if <condition>];
+//         wait [if <condition>];
+// Conditions: player.rage, ability.cooldown, aura.active, etc.
+// Operators: > < >= <= == != & (and) | (or)
+
+use death_wish;
+use bloodthirst;
+use revenge;
+use heroic_strike if player.rage > 50;
+wait if bloodthirst.cooldown < 0.5;
+use sunder_armor if player.rage > 60;</textarea>
+        </div>
       </div> <!-- end of rotation -->
       <div id="misc-settings">
         <span class="settings-header">Character Settings</span>

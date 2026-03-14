@@ -51,10 +51,8 @@ export const tests = describe('updateStats() with DOM Tests', () => {
       'playerextrahit', 'playerextracrit', 'playerextraattackpower',
       'playerextraarmor', 'playerextradefense', 'playerextramhskill',
       'playerextraohskill',
-      // Rotation
-      'use-bloodthirst', 'bloodthirst-rage',
-      'use-heroic-strike', 'heroic-strike-rage',
-      'use-sunder-armor', 'sunder-armor-rage',
+      // APL Script
+      'apl-script',
       // Gear slots
       'mainhand-slot', 'offhand-slot', 'head-slot', 'chest-slot'
     ];

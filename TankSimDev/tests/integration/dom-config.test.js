@@ -17,9 +17,8 @@ export const tests = describe('DOM → Config Pipeline Tests', () => {
     assertTrue(document.getElementById('fightLength') !== null, 'fightLength should exist');
     assertTrue(document.getElementById('iterations') !== null, 'iterations should exist');
 
-    // Check rotation elements
-    assertTrue(document.getElementById('use-bloodthirst') !== null, 'use-bloodthirst should exist');
-    assertTrue(document.getElementById('bloodthirst-rage') !== null, 'bloodthirst-rage should exist');
+    // Check APL script textarea
+    assertTrue(document.getElementById('apl-script') !== null, 'apl-script should exist');
 
     // Check gear slots
     assertTrue(document.getElementById('mainhand-slot') !== null, 'mainhand-slot should exist');
@@ -79,18 +78,16 @@ export const tests = describe('DOM → Config Pipeline Tests', () => {
     cleanupDOM(dom);
   });
 
-  test('Rotation settings can be modified', async () => {
+  test('APL script can be modified', async () => {
     const { document, dom } = await setupTestDOM();
 
-    const useBloodthirst = document.getElementById('use-bloodthirst');
-    const bloodthirstRage = document.getElementById('bloodthirst-rage');
+    const aplScript = document.getElementById('apl-script');
 
-    // Enable bloodthirst
-    useBloodthirst.checked = true;
-    bloodthirstRage.value = '50';
+    // Modify APL script
+    aplScript.value = 'use bloodthirst;\nuse revenge;';
 
-    assertEqual(useBloodthirst.checked, true, 'bloodthirst should be enabled');
-    assertEqual(bloodthirstRage.value, '50', 'bloodthirst rage should be 50');
+    assertTrue(aplScript.value.includes('bloodthirst'), 'APL should contain bloodthirst');
+    assertTrue(aplScript.value.includes('revenge'), 'APL should contain revenge');
 
     cleanupDOM(dom);
   });
@@ -150,36 +147,37 @@ export const tests = describe('DOM → Config Pipeline Tests', () => {
     cleanupDOM(dom);
   });
 
-  test('All rotation abilities have use checkbox and rage input', async () => {
+  test('APL script has default content with abilities', async () => {
     const { document, dom } = await setupTestDOM();
 
-    const abilities = [
-      'revenge', 'shield-slam', 'bloodthirst', 'mortal-strike',
-      'rend', 'heroic-strike', 'shield-block', 'sunder-armor'
-    ];
+    const aplScript = document.getElementById('apl-script');
+    const content = aplScript.value;
 
-    abilities.forEach(ability => {
-      const useEl = document.getElementById(`use-${ability}`);
-      const rageEl = document.getElementById(`${ability}-rage`);
+    // Check that default APL contains expected abilities
+    assertTrue(content.includes('death_wish'), 'default APL should contain death_wish');
+    assertTrue(content.includes('bloodthirst'), 'default APL should contain bloodthirst');
+    assertTrue(content.includes('revenge'), 'default APL should contain revenge');
+    assertTrue(content.includes('heroic_strike'), 'default APL should contain heroic_strike');
+    assertTrue(content.includes('sunder_armor'), 'default APL should contain sunder_armor');
 
-      assertTrue(useEl !== null, `use-${ability} should exist`);
-      assertTrue(rageEl !== null, `${ability}-rage should exist`);
-
-      assertEqual(useEl.type, 'checkbox', `use-${ability} should be a checkbox`);
-      assertEqual(rageEl.type, 'number', `${ability}-rage should be a number input`);
-    });
+    // Check that it has condition syntax
+    assertTrue(content.includes('if '), 'default APL should contain conditions');
+    assertTrue(content.includes('player.rage'), 'default APL should reference player.rage');
 
     cleanupDOM(dom);
   });
 
-  test('Death Wish has use checkbox but no rage input', async () => {
+  test('APL script textarea is editable', async () => {
     const { document, dom } = await setupTestDOM();
 
-    const useEl = document.getElementById('use-death-wish');
-    const rageEl = document.getElementById('death-wish-rage');
+    const aplScript = document.getElementById('apl-script');
+    const originalValue = aplScript.value;
 
-    assertTrue(useEl !== null, 'use-death-wish should exist');
-    assertTrue(rageEl === null, 'death-wish-rage should not exist');
+    // Modify the script
+    aplScript.value = 'use bloodthirst;';
+
+    assertEqual(aplScript.value, 'use bloodthirst;', 'APL script should be modifiable');
+    assertTrue(aplScript.value !== originalValue, 'APL script should have changed');
 
     cleanupDOM(dom);
   });
