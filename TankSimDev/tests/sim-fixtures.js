@@ -29,6 +29,8 @@ export function getBasicTankStats() {
     "abilityCritMod": 1,
     "threatMod": 1.45,
     "physDamageMod": 1,
+    "flatArmor": 0,
+    "flatDamage": 0,
     "mainhand": {
         "name": "Gressil, Dawn of Ruin",
         "slot": "onehand",
@@ -203,6 +205,8 @@ export function getBasicBossStats() {
       "abilityCritMod": 1,
       "threatMod": 0,
       "physDamageMod": 1,
+      "flatArmor": 0,
+      "flatDamage": 0,
       "mainhand": {
           "mindmg": 4000,
           "maxdmg": 4000,
@@ -249,11 +253,12 @@ export const REFERENCE_RESULTS = {
     dtpsRange: [200, 800],   // Expected DTPS range
   },
   // 1000 iterations, 60s fight - regression baseline
+  // Updated after APL system implementation
   multiIter60s: {
     config: { iterations: 1000, simDuration: 60 },
-    tps:  { value: 1357.93, tolerance: 0.05 },
-    dps:  { value: 802.21, tolerance: 0.05 },
-    dtps: { value: 435.58, tolerance: 0.05 },
+    tps:  { value: 1142.09, tolerance: 0.05 },
+    dps:  { value: 735.95, tolerance: 0.05 },
+    dtps: { value: 581.89, tolerance: 0.05 },
   },
 };
 

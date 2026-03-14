@@ -1,21 +1,38 @@
-import { getTankProcs, getBossProcs } from '../procs.js';
+import { reconstructProcs, getBossProcs } from '../procs.js';
 import { TankAbilities, getOnUseAbilities, BossAbilities } from '../abilities.js';
 import { Actor } from '../actor.js';
 import { TankAuras, BossAuras } from '../auras.js';
 import { handleEvent, generatePrePullEvents } from '../simulation-core.js';
+import { APL } from '../apl.js';
 
 const range = (length) => Array.from({ length }, (_, i) => i);
 
 export function runSimulation(globals, iterations) {
-  let TankProcs = getTankProcs(globals);
+  let TankProcs = reconstructProcs(globals.tankStats.procs || []);
   let BossProcs = getBossProcs(globals);
 
+  let TankAPL = new APL(`
+    use death_wish;
+    use bloodthirst;
+    use revenge;
+    use heroic_strike if player.rage > 50;
+    wait if bloodthirst.cooldown < 0.5;
+    use sunder_armor if player.rage > 60;
+  `);
+  let BossAPL = new APL('');
+
   let Actors = {
-    "Tank": new Actor("Tank", globals.tankStats, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats.gear), TankProcs, TankAuras(globals)),
-    "Boss": new Actor("Boss", globals.bossStats, BossAbilities, [], BossProcs, BossAuras(globals)),
+    "Tank": new Actor("Tank", globals.tankStats, TankAPL, TankAbilities(globals.tankStats), getOnUseAbilities(globals.tankStats), TankProcs, TankAuras(globals)),
+    "Boss": new Actor("Boss", globals.bossStats, BossAPL, BossAbilities, [], BossProcs, BossAuras(globals)),
   };
   Actors["Tank"].target = Actors["Boss"];
   Actors["Boss"].target = Actors["Tank"];
+
+  let State = {
+    Tank: Actors["Tank"],
+    Boss: Actors["Boss"],
+    time: 0.0,
+  };
 
   let exampleList = [];
   let results = {
@@ -38,7 +55,8 @@ export function runSimulation(globals, iterations) {
       let event = FutureEvents.pop();
       if (!event || event.timestamp > globals.config.simDuration * 1000)
         break;
-      let newEvents = handleEvent(event, FutureEvents, Actors);
+      State.time = event.timestamp;
+      let newEvents = handleEvent(event, FutureEvents, State);
       newEvents.forEach(event => {
         eventList.push(event);
       });

@@ -3,18 +3,23 @@ import { LOG_LEVEL, LOG_LEVEL_CUTOFF, log_message } from '../../logging.js';
 
 export const tests = describe('logging.js', () => {
 
+  test('LOG_LEVEL: DEBUG has correct properties', () => {
+    assertEqual(LOG_LEVEL.DEBUG.level, 0, 'DEBUG level should be 0');
+    assertEqual(LOG_LEVEL.DEBUG.prefix, '[d] ', 'DEBUG prefix should be [d] ');
+  });
+
   test('LOG_LEVEL: INFO has correct properties', () => {
-    assertEqual(LOG_LEVEL.INFO.level, 0, 'INFO level should be 0');
+    assertEqual(LOG_LEVEL.INFO.level, 1, 'INFO level should be 1');
     assertEqual(LOG_LEVEL.INFO.prefix, '[i] ', 'INFO prefix should be [i] ');
   });
 
   test('LOG_LEVEL: WARNING has correct properties', () => {
-    assertEqual(LOG_LEVEL.WARNING.level, 1, 'WARNING level should be 1');
+    assertEqual(LOG_LEVEL.WARNING.level, 2, 'WARNING level should be 2');
     assertEqual(LOG_LEVEL.WARNING.prefix, '[w] ', 'WARNING prefix should be [w] ');
   });
 
   test('LOG_LEVEL: ERROR has correct properties', () => {
-    assertEqual(LOG_LEVEL.ERROR.level, 2, 'ERROR level should be 2');
+    assertEqual(LOG_LEVEL.ERROR.level, 3, 'ERROR level should be 3');
     assertEqual(LOG_LEVEL.ERROR.prefix, '[e] ', 'ERROR prefix should be [e] ');
   });
 
