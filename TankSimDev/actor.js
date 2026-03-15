@@ -164,7 +164,7 @@ export class Actor {
 
   // TODO: Rename to getAttackpower().
   getAP() {
-    return this.attackpower + this.strength * this.strengthMod;
+    return this.attackpower + 2 * this.strength * this.strengthMod;
   }
 
   getStamina() {
