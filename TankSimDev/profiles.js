@@ -6,7 +6,6 @@ import { selectItem, selectEnchant } from './gear.js'
 import { loadTalents, getTalents } from './talents.js';
 import { LOG_LEVEL, log_message } from './logging.js';
 import { refreshLinks } from './wowhead.js'
-import { updateRotation } from './rotation.js'
 
 const DEFAULT_APL_SCRIPT = `use death_wish;
 use bloodthirst;
@@ -226,8 +225,7 @@ export function processJson() {
     const jsonInput = document.getElementById('jsonInput').value;
     const parsedJson = JSON.parse(jsonInput);
     loadProfile(parsedJson);
-    let globals = updateStats();
-    updateRotation(globals);
+    updateStats();
   } catch (error) {
     alert(`Error processing profile JSON: ${error}.`);
   }

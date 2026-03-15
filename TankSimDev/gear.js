@@ -2,7 +2,6 @@ import { ITEMS, ENCHANT_IDS } from './constants.js'
 import { ENCHANT_DATA } from './stats.js';
 import { ENCHANT_SLOTS } from './constants.js';
 import { refreshLinks } from './wowhead.js'
-import { updateRotation } from './rotation.js'
 
 export function showEnchantDropdown(event, slot) {
   event.preventDefault();
@@ -91,8 +90,7 @@ export function generateGearList(slot) {
     event.stopPropagation();
     selectItem('0', slot);
     hideItemDropdown(slot);
-    let globals = updateStats();
-    updateRotation(globals);
+    updateStats();
   });
   dropdownList.appendChild(unequip);
 
@@ -131,8 +129,7 @@ export function generateGearList(slot) {
       event.stopPropagation();
       selectItem(id, slot);
       hideItemDropdown(slot);
-      let globals = updateStats();
-      updateRotation(globals);
+      updateStats();
     })
     dropdownList.appendChild(link);
   });

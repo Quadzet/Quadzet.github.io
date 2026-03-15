@@ -11,7 +11,6 @@ import { loadItemData } from './loadData.js'
 import { generateGearList, createGearRows, showEnchantDropdown,
   hideEnchantDropdown, showItemDropdown, hideItemDropdown } from './gear.js'
 import { refreshLinks } from './wowhead.js'
-import { updateRotation } from './rotation.js'
 import { saveInput, loadProfile, loadLocalstorage, processJson,
   copyToClipboard } from './profiles.js'
 
@@ -58,8 +57,7 @@ export function toggleAura(event, aura) {
       }
     }
   }
-  let globals = updateStats();
-  updateRotation(globals);
+  updateStats();
 }
 
 function addEventListeners() {
@@ -229,8 +227,7 @@ export function onLevelChange() {
 
   resetTalents(false);
   updateAuraRows();
-  let globals = updateStats();
-  updateRotation(globals);
+  updateStats();
   refreshLinks();
 }
 
@@ -243,8 +240,7 @@ async function onLoadPage() {
   createTalentTrees();
   await loadItemData();
   loadLocalstorage();
-  let globals = updateStats();
-  updateRotation(globals);
+  updateStats();
   enableCalc();
 }
 

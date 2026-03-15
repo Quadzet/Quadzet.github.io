@@ -1,5 +1,4 @@
 import { updateStats } from './config.js'
-import { updateRotation } from './rotation.js'
 
 function talentPointCap() {
   return Number(Math.max(0, document.querySelector("#player-level").value) - 9);
@@ -806,8 +805,7 @@ export function deselectTalent(event, name) {
   updateCounters(treeName, -1);
   updateTalentAvailability();
 
-  let globals = updateStats();
-  updateRotation(globals);
+  updateStats();
 }
 
 export function selectTalent(event, name) {
@@ -829,8 +827,7 @@ export function selectTalent(event, name) {
   updateCounters(treeName, 1);
 
   updateTalentAvailability();
-  let globals = updateStats();
-  updateRotation(globals);
+  updateStats();
 }
 
 export function resetTalents(updateGlobals = true) {
@@ -849,10 +846,8 @@ export function resetTalents(updateGlobals = true) {
 
   resetCounters();
   updateTalentAvailability();
-  if (updateGlobals) {
-    let globals = updateStats();
-    updateRotation(globals);
-  }
+  if (updateGlobals)
+    updateStats();
 }
 
 export function loadTalents(talents) {
