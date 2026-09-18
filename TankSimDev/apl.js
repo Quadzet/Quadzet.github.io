@@ -455,7 +455,8 @@ class Parser {
 
     // Actor attributes
     if (this.match(Token.Keyword.PLAYER, Token.Keyword.TARGET)) {
-      const actor = this.consume(this.current().type).value;
+      const actor = this.current().type;
+      this.consume(this.current().type);
       this.consume(Token.DOT);
       const attribute = this.parseAttributePath();
       return {

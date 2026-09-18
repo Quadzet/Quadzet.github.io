@@ -249,17 +249,17 @@ export const REFERENCE_RESULTS = {
   // Note: Single iteration has high variance, ranges are wide
   singleIter60s: {
     config: { iterations: 1, simDuration: 60 },
-    tpsRange: [800, 2000],   // Expected TPS range
-    dpsRange: [500, 1200],   // Expected DPS range
-    dtpsRange: [200, 1200],  // Expected DTPS range (high variance in single iteration)
+    tpsRange: [800, 3500],   // Expected TPS range
+    dpsRange: [500, 2000],   // Expected DPS range
+    dtpsRange: [50, 1200],   // Expected DTPS range (high variance in single iteration)
   },
   // 1000 iterations, 60s fight - regression baseline
   // Updated after APL system implementation
   multiIter60s: {
     config: { iterations: 1000, simDuration: 60 },
-    tps:  { value: 1142.09, tolerance: 0.05 },
-    dps:  { value: 735.95, tolerance: 0.05 },
-    dtps: { value: 581.89, tolerance: 0.05 },
+    tps:  { value: 2151.94, tolerance: 0.05 },
+    dps:  { value: 1307.37, tolerance: 0.05 },
+    dtps: { value: 353.29, tolerance: 0.05 },
   },
 };
 

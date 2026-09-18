@@ -83,11 +83,11 @@ export function twoRollTankBossTable(attacker, defender, damage, isWeaponBased) 
     let defense = defender.defense;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, false);
     let parry = defender.stats.level == attacker.stats.level + 3 ? 14 : defender.stats.parry + 0.1 * (defense - wepSkill);
-    let dodge = defender.stats.dodge + 0.1 * (defense - wepSkill);
+    let dodge = defender.getDodge() + 0.1 * (defense - wepSkill);
     let blockValue = defender.getBlockValue();
     let block = Math.min(5, 5 + (defense - wepSkill) * 0.1);
     let baseAttackRating = Math.min(attacker.stats.level * 5, wepSkill);
-    let crit = attacker.stats.crit - (wepSkill - (attacker.stats.level * 5)) * 0.04; // Adjust for the wep skill bonus in spellbook
+    let crit = attacker.getCrit() - (wepSkill - (attacker.stats.level * 5)) * 0.04; // Adjust for the wep skill bonus in spellbook
     if (baseAttackRating - defense < 0)
         crit += (baseAttackRating - defense) * 0.2;
     else
@@ -147,18 +147,18 @@ export function rollTankBossTable(attacker, defender, damage, yellow = false, du
     if (OHSwing) wepSkill = attacker.stats.ohskill;
     let miss = getPlayerMissChance(wepSkill, defense, attacker.stats.hit, dualWieldMiss);
     let parry = defender.stats.level == attacker.stats.level + 3 ? 14 : defender.stats.parry + 0.1 * (defense - wepSkill);
-    let dodge = defender.stats.dodge + 0.1 * (defense - wepSkill);
+    let dodge = defender.getDodge() + 0.1 * (defense - wepSkill);
     let blockValue = defender.getBlockValue();
     let block = Math.min(5, 5 + (defense - wepSkill) * 0.1);
     let baseAttackRating = Math.min(attacker.stats.level * 5, wepSkill);
-    let crit = attacker.stats.crit - (wepSkill - (attacker.stats.level * 5)) * 0.04; // Adjust for the wep skill bonus in spellbook
+    let crit = attacker.getCrit() - (wepSkill - (attacker.stats.level * 5)) * 0.04; // Adjust for the wep skill bonus in spellbook
     if (baseAttackRating - defense < 0)
         crit += (baseAttackRating - defense) * 0.2;
     else
         crit += (baseAttackRating - defense) * 0.04;
     if (defender.stats.level - attacker.stats.level > 2)
         crit -= 1.8;
-    // let crit = attacker.stats.crit - 0.04 * (wepSkill - attacker.stats.level * 5) - 4.8;
+    // let crit = attacker.getCrit() - 0.04 * (wepSkill - attacker.stats.level * 5) - 4.8;
     let glance = Math.max(0, 10 + 10 * (defender.stats.level - attacker.stats.level));
     let glanceMod = getGlanceMod(wepSkill, defender.stats.defense);
 
@@ -206,10 +206,10 @@ export function rollBossTankTable(attacker, defender, damage, yellow = false) {
     let wepSkill = attacker.stats.mhskill;
     let miss = Math.max(0, 5 - 0.04 * (wepSkill - defender.defense) - attacker.hit);
     let parry = defender.stats.parry - 0.04 * (wepSkill - defender.defense);
-    let dodge = defender.stats.dodge - 0.04 * (wepSkill - defender.defense);
+    let dodge = defender.getDodge() - 0.04 * (wepSkill - defender.defense);
     let blockValue = defender.getBlockValue();
     let block = Math.max(0, defender.block + (wepSkill - defender.defense) * 0.04);
-    let crit = Math.max(0, attacker.stats.crit + 0.04 * (wepSkill - defender.defense));
+    let crit = Math.max(0, attacker.getCrit() + 0.04 * (wepSkill - defender.defense));
     let crush = 0;
     if (attacker.stats.level - defender.stats.level > 2)
         crush = (wepSkill - Math.min(defender.stats.level * 5, defender.defense)) * 2 - 15;

@@ -210,7 +210,8 @@ export class Autoattack extends Ability {
       let damage = this.weaponSwingRoll(source);
       damage += source.flatDamage - target.flatArmor;
       damage *= (1 - armorReduction(source.stats.level, target.getArmor())) * source.getPhysDamageMod();
-      damageEvent = rollAttack(source, target, damage, false, false, false, source.stats.wield == Wield.DUALWIELD);
+      let dwMiss = source.stats.wield == Wield.DUALWIELD && !source.isHeroicStrikeQueued;
+      damageEvent = rollAttack(source, target, damage, false, false, false, dwMiss);
       damageEvent.threat = this.threatCalculator(damageEvent, source);
       damageEvent.name = "MH Swing";
       damageEvent.timestamp = timestamp

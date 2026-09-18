@@ -251,10 +251,12 @@ export class Actor {
     this.armor = this.stats.armor;
     this.bonusArmor = this.stats.bonusArmor;
     this.defense = this.stats.defense;
+    this.block = this.stats.block;
+    this.parry = this.stats.parry;
+    this.dodge = this.stats.dodge;
     this.crit = this.stats.crit;
     this.hit = this.stats.hit;
     this.blockvalue = this.stats.blockvalue;
-    this.block = this.stats.block;
     this.health = this.stats.health;
 
     this.rage = this.stats.startRage;
